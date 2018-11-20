@@ -1,0 +1,38 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/chat.min.css",
+    "inputFiles": [
+      "wwwroot/css/chat.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chat.min.js",
+    "inputFiles": [
+      "wwwroot/js/chat.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/signalr/signalr.min.js",
+    "inputFiles": [
+      "node_modules/@aspnet/signalr/dist/browser/signalr.min.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-dropdown-hover/jquery.bootstrap-dropdown-hover.min.js",
+    "inputFiles": [
+      "bower_components/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"
+    ]
+  }
+]

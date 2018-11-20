@@ -1,0 +1,180 @@
+﻿@page
+@model IdentityServer.Pages.TreeDomainDemo.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
+<link rel="stylesheet" type="text/css" media="screen" href="/lib/Guriddo_jqGrid_JS_5.3.1/css/ui.jqgrid-bootstrap.css" />
+
+
+<table id="jqGrid"></table>
+<div id="jqGridPager"></div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].SampleColumn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].Parent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].RowVersion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].CreationTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].LastModificationTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].CreationUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TreeDomain[0].LastModificationUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TreeDomain)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SampleColumn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Parent.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RowVersion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModificationTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationUser.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModificationUser.Id)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Styles
+{
+    <!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
+    <link rel="stylesheet" type="text/css" media="screen" href="/lib/Guriddo_jqGrid_JS_5.3.1/css/ui.jqgrid-bootstrap.css" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- We support more than 40 localizations -->
+    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/i18n/grid.locale-cn.js"></script>
+    <!-- This is the Javascript file of jqGrid -->
+    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/jquery.jqGrid.min.js"></script>
+
+    <script>
+        var grid = $("#jqGrid");
+
+        $(document).ready(function () {
+
+            $.jgrid.defaults.responsive = true;
+            $.jgrid.defaults.styleUI = 'Bootstrap';
+
+            grid.jqGrid({
+                url: '/TreeDomainDemo?handler=TreeGridData',
+                datatype: 'json',
+                treedatatype: "json",
+                mtype: "GET",
+
+                jsonReader: {
+                    root: "rows",
+                    page: "page",
+                    total: "total",
+                    records: "records",
+                    repeatitems: false
+                },
+
+                colNames: ["Id", "数据列", "序号", "行版本", "已启用", "创建人", "创建时间", "上次修改人", "上次修改时间", "路径"],
+                colModel: [
+                    { name: 'id', index: 'id', hidden: true, key: true },
+                    { name: 'sampleColumn', index: 'sampleColumn' },
+                    { name: 'orderNumber', index: 'orderNumber' },
+                    { name: 'rowVersion', index: 'rowVersion', align: "center" },
+                    { name: 'isEnable', index: 'isEnable', align: "center", formatter: 'checkbox' },
+                    { name: 'creationUserId', index: 'creationUserId', align: "center" },
+                    { name: 'creationTime', index: 'creationTime', align: "center" },
+                    { name: 'lastModificationUserId', index: 'lastModificationUserId', align: "center" },
+                    { name: 'lastModificationTime', index: 'lastModificationTime', align: "center" },
+                    { name: 'path', index: 'path' }
+                ],
+                height: 200,
+                width: 'auto',
+                treeGrid: true, //启用树型Grid功能
+                treeGridModel: 'adjacency', //表示返回数据的读取类型，分为两种：和adjacency
+                ExpandColumn: 'sampleColumn', //树型结构在哪列显示，在列模型中要放在非隐藏列的第一列
+                tree_root_level: 0,
+                loadonce: true,
+                //multiSort: true,
+                //sortname: 'sampleColumn',
+                //rownumbers:true,//在最左边添加行号，树形表不能加，否则节点展开会有问题
+                caption: "树表",
+                multiselect: true,
+                treeReader: {
+                    parent_id_field: "parentId",
+                    level_field: "depth",
+                    leaf_field: "isLeaf",
+                    expanded_field: "expanded",
+                    loaded: 'loaded'//指示子节点是否已经加载，bool型，如果为fales，展开节点时会自动向服务器请求子节点
+                },
+                pager: "#jqGridPager"//在treeGrid模式下没有用
+            });
+            grid.navGrid('#jqGridPager',
+                {                
+                    search: true, // show search button on the toolbar
+                    add: false,
+                    edit: false,
+                    del: false,
+                    refresh: true
+                },
+                {}, // edit options
+                {}, // add options
+                {}, // delete options
+                { multipleSearch: true, multipleGroup: true, showQuery: true } // search options - define multiple search
+            );
+        });
+    </script>
+}

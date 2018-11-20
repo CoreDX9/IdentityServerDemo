@@ -1,0 +1,9 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "jqGrid": "5.3.2",
+    "select2": "4.0.5",
+    "bootstrap-dropdown-hover": "4.2.0"
+  }
+}

@@ -1,0 +1,91 @@
+﻿@page
+@model IdentityServer.Pages.SignalR.Chat.IndexModel
+@using IdentityServer4.Extensions
+
+@section Styles
+{
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/chat.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/chat.min.css" asp-append-version="true" />
+    </environment>
+}
+
+<div class="row">
+    <input type="hidden" id="user" value="@User.GetDisplayName()"/>
+    <div class="col-md-12">@User.GetDisplayName()</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label class="control-label">Message：</label>
+            <textarea class="form-control" rows="3" style="resize:none"  placeholder="消息内容" id="messageInput"></textarea>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-7">
+        <span style="background-color: lavender">连接状态：</span>
+        <span id="connState" style="background-color: lavender">未连接</span>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <input id="offline" type="button" value="下线" class="btn btn-warning" />
+            <input id="clearChatBoard" type="button" value="清空所有在线用户的聊天版" class="btn btn-danger" />
+            <input id="online" type="button" value="上线" class="btn btn-success" style="float: right" />
+        </div>
+    </div>
+    <div class="col-md-1">
+        <div class="form-group">
+            <input id="send" type="button" value="发送" class="btn btn-primary" style="float: right" data-toggle="tooltip" title="也可以按 Ctrl + Enter(回车) 发送" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 chat-board">
+
+    </div>
+    <!-- 消息气泡模板 -->
+    <div id="messageBubbleTemplate" style="display: none">
+        <!-- Left -->
+        <div class="chat-other">
+            <div class="logo"><img src="~/icon.png" /></div>
+            <div class="name">阿奔 Ben</div>
+            <div class="content-box">
+                <div class="chat-triangle"></div>
+                <div class="content"> 苹果增加三款配件的颜色选项</div>
+            </div>
+        </div>
+        <!-- Right -->
+        <div class="chat-self">
+            <div class="logo"><img src="~/favicon.png" /></div>
+            <div class="name">好人·马克思</div>
+            <div class="content-box">
+                <div class="chat-triangle"></div>
+                <div class="content"> 但是如果你正在再发新的APP跨平台项目，我建议你考虑一下Ionic2/Ionic3。 ionic2/Ionic3的架构使得“单一职责原则”得到了体现，组件、页面之间相互独立，有利于内聚和解耦。</div>
+            </div>
+        </div>
+        <!-- Notice/Center -->
+        <div class="chat-notice">
+            <span>2017年12月10日 23:13</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <environment include="Development">
+        <script src="~/npm/@@aspnet/signalr/dist/browser/signalr.js"></script>
+        <script src="~/js/chat.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/signalr/signalr.min.js" asp-append-version="true"></script>
+        <script src="~/js/chat.min.js" asp-append-version="true"></script>
+    </environment>
+}

@@ -1,0 +1,25 @@
+﻿@page
+@model ShowRecoveryCodesModel
+@{
+    ViewData["Title"] = "Your Recovery Codes";
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+@if (Model.RecoveryCodes?.Length > 0)
+{
+    foreach (var code in Model.RecoveryCodes)
+    {
+        <kbd>@code</kbd>
+    }
+
+    <p></p>
+    <p>There are 10 recovery codes to use. Your recovery codes will show once only. Please copy your recovery codes to safe place before close this page.</p>
+}
+else
+{
+    <p>Your recovery codes are already shown before. If you lost your recovery codes. You can <a asp-area="Identity" asp-page="./GenerateRecoveryCodes">click here</a> to generate new recovery codes.</p>
+}
+
+<p>If you lose your device. You can use one of codes to access to your account. Any code can be used once only.</p>
+<p>If you lose your device and recovery codes you will lose access to your account.</p>

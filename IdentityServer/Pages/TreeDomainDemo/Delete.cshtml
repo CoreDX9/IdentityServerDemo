@@ -1,0 +1,76 @@
+﻿@page
+@model IdentityServer.Pages.TreeDomainDemo.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>TreeDomain</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.SampleColumn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.SampleColumn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.Parent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.Parent.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.OrderNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.OrderNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.RowVersion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.RowVersion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.IsDeleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.IsDeleted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.CreationTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.CreationTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.LastModificationTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.LastModificationTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.CreationUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.CreationUser.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TreeDomain.LastModificationUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TreeDomain.LastModificationUser.Id)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="TreeDomain.Id" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>
