@@ -9,12 +9,16 @@
 
   <ItemGroup>
     <Compile Remove="Areas\IdentityServer\Data\**" />
+    <Compile Remove="log\**" />
     <Compile Remove="publish\**" />
     <Content Remove="Areas\IdentityServer\Data\**" />
+    <Content Remove="log\**" />
     <Content Remove="publish\**" />
     <EmbeddedResource Remove="Areas\IdentityServer\Data\**" />
+    <EmbeddedResource Remove="log\**" />
     <EmbeddedResource Remove="publish\**" />
     <None Remove="Areas\IdentityServer\Data\**" />
+    <None Remove="log\**" />
     <None Remove="publish\**" />
   </ItemGroup>
 
@@ -61,12 +65,6 @@
     <Content Update="Views\Shared\_404NotFound.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="urls.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="http://json.schemastore.org/bower" /></VisualStudio></ProjectExtensions>
