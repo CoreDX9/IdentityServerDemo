@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /IdentityServer/bower_components
+/.publish/IdentityServer/win-x64
