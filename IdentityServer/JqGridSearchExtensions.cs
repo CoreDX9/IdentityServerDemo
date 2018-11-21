@@ -121,7 +121,7 @@ namespace IdentityServer
             var isGen = false;
             var pt = typeof(T).GetProperty(rule.PascalField).PropertyType;
             //如果属性类型是可空值类型，取出内部类型
-            if (pt.CanBeReferencedBy(typeof(Nullable<>)))
+            if (pt.IsDerivedFrom(typeof(Nullable<>)))
             {
                 isGen = true;
                 pt = pt.GenericTypeArguments[0];

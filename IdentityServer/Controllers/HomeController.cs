@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -51,6 +52,13 @@ namespace IdentityServer.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult ConsentCookie()
+        {
+            var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+            consentFeature.GrantConsent();
+            return Json(true);
         }
 
         [HttpDelete, HttpGet, HttpHead, HttpOptions, HttpPatch, HttpPost, HttpPut]

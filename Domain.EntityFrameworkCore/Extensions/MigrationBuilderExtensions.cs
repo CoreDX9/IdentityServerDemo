@@ -114,7 +114,7 @@ go";
                 throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
 
             foreach (var entityType in migration.TargetModel.GetEntityTypes().Where(entity =>
-                viewAssembly.GetType(entity.Name).CanBeReferencedBy(typeof(ITree<>))))
+                viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(ITree<>))))
             {
                 migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
                     entityType.GetProperties().Select(pro => pro.Relational().ColumnName));

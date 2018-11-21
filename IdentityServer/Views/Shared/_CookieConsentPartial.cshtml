@@ -8,7 +8,7 @@
 
 @if (showBanner)
 {
-    <nav id="cookieConsent" class="navbar navbar-default navbar-fixed-top" role="alert">
+    <nav id="cookieConsent" class="navbar navbar-default navbar-fixed-top" role="alert" style="background-color: lightgray">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#cookieConsent .navbar-collapse">
@@ -31,11 +31,27 @@
         </div>
     </nav>
     <script>
-        (function () {
-            document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click", function (el) {
-                document.cookie = el.target.dataset.cookieString;
-                document.querySelector("#cookieConsent").classList.add("hidden");
-            }, false);
+        (function() {
+            document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click",
+                function(el) {
+                    var dt = new Date();
+                    dt.setSeconds(dt.getSeconds() + 60);
+                    document.cookie = "cookietest=1; expires=" + dt.toGMTString();
+                    var cookiesEnabled = document.cookie.indexOf("cookietest=") !== -1;
+                    if (cookiesEnabled) {
+                        document.cookie = el.target.dataset.cookieString;
+                    } else {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", '/Home/ConsentCookie');
+                        xhr.onload = function () {
+                            log(xhr.status, JSON.parse(xhr.responseText));
+                            log(document.cookie);
+                        };
+                        xhr.send();
+                    }
+                    document.querySelector("#cookieConsent").classList.add("hidden");
+                },
+                false);
         })();
     </script>
 }

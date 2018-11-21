@@ -12,7 +12,7 @@ namespace Util.TypeExtensions
         /// <param name="type">需要测试的类型</param>
         /// <param name="pattern">要匹配的类型，如 typeof(int)，typeof(IEnumerable)，typeof(List&lt;&gt;)，typeof(List&lt;int&gt;)，typeof(IDictionary&lt;,&gt;)</param>
         /// <returns>如果 <paramref name="type"/> 指定的类型继承自 <paramref name="pattern"/> 指定的类型，或实现了 <paramref name="pattern"/> 指定的接口，则返回 true，否则返回 false</returns>
-        public static bool CanBeReferencedBy(this Type type, Type pattern)
+        public static bool IsDerivedFrom(this Type type, Type pattern)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (pattern == null) throw new ArgumentNullException(nameof(pattern));

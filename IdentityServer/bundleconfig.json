@@ -6,6 +6,12 @@
     ]
   },
   {
+    "outputFileName": "wwwroot/css/animate.min.css",
+    "inputFiles": [
+      "node_modules/animate.css/animate.min.css"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/css/chat.min.css",
     "inputFiles": [
       "wwwroot/css/chat.css"

@@ -117,12 +117,12 @@ namespace EntityFrameworkCore.Extensions.Extensions
                         var enumDbDescription = string.Empty;
                         if (entityType.ClrType?.GetProperty(property.Name)?.PropertyType.IsEnum == true
                             || (entityType.ClrType?.GetProperty(property.Name)?.PropertyType
-                                    .CanBeReferencedBy(typeof(Nullable<>)) == true
+                                    .IsDerivedFrom(typeof(Nullable<>)) == true
                                 && entityType.ClrType?.GetProperty(property.Name)?.PropertyType.GenericTypeArguments[0]
                                     .IsEnum == true))
                         {
                             var @enum = entityType.ClrType?.GetProperty(property.Name)?.PropertyType
-                                            .CanBeReferencedBy(typeof(Nullable<>)) == true
+                                            .IsDerivedFrom(typeof(Nullable<>)) == true
                                 ? entityType.ClrType?.GetProperty(property.Name)?.PropertyType.GenericTypeArguments[0]
                                 : entityType.ClrType?.GetProperty(property.Name)?.PropertyType;
 

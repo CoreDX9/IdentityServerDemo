@@ -46,6 +46,7 @@ namespace IdentityServer
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                //GDPR支持配置
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
@@ -139,7 +140,6 @@ namespace IdentityServer
                 //迁移程序集名
                 migrationsAssemblyName = "DbMigration";
 
-                
                 services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 {
                     options.UseSqlServer(connectionString, b =>
@@ -273,6 +273,7 @@ namespace IdentityServer
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddDeveloperSigningCredential();
 
+            //配置IdentityServer4存储
             if (useInMemoryDatabase)
             {
                 id4.AddConfigurationStore(options =>
@@ -334,31 +335,30 @@ namespace IdentityServer
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
                 {
-                    builder.AllowAnyOrigin()/*WithOrigins("http://localhost:5003", "http://localhost:5007")*/
+                    builder.WithOrigins("https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 }));
 
+            //注入CSP（内容安全策略）服务
             services.AddCsp();
-            //services.AddHsts(options =>
+
+            //注入Hsts（传输安全）服务
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+                //options.ExcludedHosts.Add("localhost:5000");
+            });
+
+            //services.AddHttpsRedirection(options =>
             //{
-            //    options.Preload = true;
-            //    options.IncludeSubDomains = true;
-            //    options.MaxAge = TimeSpan.FromDays(60);
-            //    options.ExcludedHosts.Add("localhost:5000");
-            //    options.ExcludedHosts.Add("localhost:5001");
-            //    options.ExcludedHosts.Add("localhost:5002");
-            //    options.ExcludedHosts.Add("localhost:5003");
-            //    options.ExcludedHosts.Add("localhost:5004");
-            //    options.ExcludedHosts.Add("localhost:5005");
-            //    options.ExcludedHosts.Add("127.0.0.1:5000");
-            //    options.ExcludedHosts.Add("127.0.0.1:5001");
-            //    options.ExcludedHosts.Add("127.0.0.1:5002");
-            //    options.ExcludedHosts.Add("127.0.0.1:5003");
-            //    options.ExcludedHosts.Add("127.0.0.1:5004");
-            //    options.ExcludedHosts.Add("127.0.0.1:5005");
+            //    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //    options.HttpsPort = 5001;
             //});
 
+            //注入开发环境文件夹浏览服务
             if (Environment.IsDevelopment())
             {
                 services.AddDirectoryBrowser();
@@ -383,7 +383,7 @@ namespace IdentityServer
                 app.UseExceptionHandler("/Home/Error");
 
                 //app.UseHsts();
-                //HstsBuilderExtensions.UseHsts(app);
+                HstsBuilderExtensions.UseHsts(app);
             }
 
             //注册默认404页面到管道
@@ -418,8 +418,13 @@ namespace IdentityServer
                     }
                 });
 
-            //注册强制Https跳转到管道
-            app.UseHttpsRedirection();
+            //开发环境或检查到相应配置的生产环境启用https跳转
+            if (Configuration.GetSection("RafHost").GetSection("Endpoints").GetSection("Https")
+                .GetValue("IsEnabled", false) || Environment.IsDevelopment())
+            {
+                //注册强制Https跳转到管道
+                app.UseHttpsRedirection();
+            }
 
             //注册响应压缩到管道
             app.UseResponseCompression();
@@ -477,9 +482,10 @@ namespace IdentityServer
 
                 // Allow AJAX, WebSocket and EventSource connections to:
                 csp.AllowConnections
+                    .ToSelf()
                     .To("ws://localhost:5000")
                     .To("wss://localhost:5001")
-                    .ToSelf();
+;
 
                 // Allow fonts to be downloaded from:
                 csp.AllowFonts
@@ -539,8 +545,6 @@ namespace IdentityServer
             if (Environment.IsDevelopment())
             {
                 var npmContentTypeProvider = new FileExtensionContentTypeProvider();
-                npmContentTypeProvider.Mappings.Add(".log", "text/plain");
-
                 var npmStaticFileOptions = new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(Environment.ContentRootPath + "/node_modules"),
@@ -551,15 +555,13 @@ namespace IdentityServer
 
                 app.UseStaticFiles(npmStaticFileOptions);
 
-                var contentTypeProvider = new FileExtensionContentTypeProvider();
-                contentTypeProvider.Mappings.Add(".log", "text/plain");
-
+                var bowerContentTypeProvider = new FileExtensionContentTypeProvider();
                 var bowerStaticFileOptions = new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(Environment.ContentRootPath + "/bower_components"),
                     RequestPath = "/bower",
                     ServeUnknownFileTypes = false,
-                    ContentTypeProvider = contentTypeProvider
+                    ContentTypeProvider = bowerContentTypeProvider
                 };
                 
                 app.UseStaticFiles(bowerStaticFileOptions);
@@ -568,7 +570,7 @@ namespace IdentityServer
             //注册静态文件到管道（wwwroot文件夹）
             app.UseStaticFiles();
 
-            //注册Cookie策略到管道
+            //注册Cookie策略到管道（GDPR）
             app.UseCookiePolicy();
 
             //注册跨域策略到管道

@@ -34,13 +34,13 @@ namespace Domain.EntityFrameworkCore.Extensions
             //里面的int类型参数只是因为nameof表达式中的泛型类型必须是封闭类型，故而随便填一个int，不会影响属性名
             //IDomainEntity<>接口实现了IEntity接口
             foreach (var domain in modelBuilder.Model.GetEntityTypes().Where(e =>
-                    !e.IsQueryType && !e.IsOwned() && e.ClrType.CanBeReferencedBy(typeof(IDomainEntity<>)))
+                    !e.IsQueryType && !e.IsOwned() && e.ClrType.IsDerivedFrom(typeof(IDomainEntity<>)))
                 .Select(e => e.ClrType))
             {
                 modelBuilder.Entity(domain, b =>
                 {
                     //如果实体继承自DomainEntityBase<,>并且主键Id为Guid类型，则添加字符串转换器（用来兼容非sqlserver数据库，efcore2.1以上支持）
-                    if (domain.CanBeReferencedBy(typeof(DomainEntityBase<,>)) &&
+                    if (domain.IsDerivedFrom(typeof(DomainEntityBase<,>)) &&
                         domain.GetProperty(nameof(DomainEntityBase<int, int>.Id))?.PropertyType == typeof(Guid))
                     {
                         b.Property(nameof(DomainEntityBase<int, int>.Id)).HasConversion(new GuidToStringConverter());
@@ -105,7 +105,7 @@ namespace Domain.EntityFrameworkCore.Extensions
         public static ModelBuilder ConfigTreeViewsThatSubClassOfDomainTreeEntityViewBase(this ModelBuilder modelBuilder, DbContext dbContext)
         {
             var treeViews = modelBuilder.Model.GetEntityTypes()
-                .Where(en => en.IsQueryType && en.ClrType.CanBeReferencedBy(typeof(DomainTreeEntityViewBase<,,>)))
+                .Where(en => en.IsQueryType && en.ClrType.IsDerivedFrom(typeof(DomainTreeEntityViewBase<,,>)))
                 .Select(en => en.ClrType);
             //var treeViews = dbContext.GetType().GetProperties()
             //    .Where(pro => pro.PropertyType.CanBeReferencedBy(typeof(DbQuery<>)))
