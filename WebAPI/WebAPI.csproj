@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ResolvedFileToPublish Include="Certificate/server.pfx">
+      <RelativePath>Certificate/server.pfx</RelativePath>
+    </ResolvedFileToPublish>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
