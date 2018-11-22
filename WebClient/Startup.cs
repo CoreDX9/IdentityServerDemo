@@ -41,9 +41,9 @@ namespace WebClient
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "Cookies";
-                    options.DefaultChallengeScheme = "oidc"; //OpenID Connect的简称
+                    options.DefaultChallengeScheme = "oidc";
                 })
-                .AddCookie("Cookies")
+                .AddCookie("Cookies") //这里的参数要和AddAuthentication(options)的options.DefaultScheme相同
                 //.AddOpenIdConnect("oidc", options =>
                 //{
                 //    options.SignInScheme = "Cookies";
@@ -59,8 +59,8 @@ namespace WebClient
 
                 //    //options.Scope.Add("api1");
                 //    //options.Scope.Add("offline_access");
-                //});
-                .AddOpenIdConnect("oidc", options =>
+                //})
+                .AddOpenIdConnect("oidc", options => //这里的authenticationScheme要和AddAuthentication(options)的options.DefaultChallengeScheme相同
                 {
                     //这里的值要和AddCookie()的参数一致
                     //存在多个AddCookie()时和其中一个一致

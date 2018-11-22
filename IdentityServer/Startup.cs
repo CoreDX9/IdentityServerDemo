@@ -386,41 +386,10 @@ namespace IdentityServer
                 HstsBuilderExtensions.UseHsts(app);
             }
 
-            //注册默认404页面到管道
-            app.UseStatusCodePages(async context =>
-                {
-                    if (context.HttpContext.Response.StatusCode != (int) HttpStatusCode.NotFound)
-                    {
-                        return;
-                    }
-
-                    PathString pathString = "/Home/NotFound";
-                    QueryString queryString = default;
-                    PathString originalPath = context.HttpContext.Request.Path;
-                    QueryString originalQueryString = context.HttpContext.Request.QueryString;
-                    context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(new StatusCodeReExecuteFeature()
-                    {
-                        OriginalPathBase = context.HttpContext.Request.PathBase.Value,
-                        OriginalPath = originalPath.Value,
-                        OriginalQueryString = (originalQueryString.HasValue ? originalQueryString.Value : null)
-                    });
-                    context.HttpContext.Request.Path = pathString;
-                    context.HttpContext.Request.QueryString = queryString;
-                    try
-                    {
-                        await context.Next(context.HttpContext);
-                    }
-                    finally
-                    {
-                        context.HttpContext.Request.QueryString = originalQueryString;
-                        context.HttpContext.Request.Path = originalPath;
-                        context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(null);
-                    }
-                });
-
-            //开发环境或检查到相应配置的生产环境启用https跳转
-            if (Configuration.GetSection("RafHost").GetSection("Endpoints").GetSection("Https")
-                .GetValue("IsEnabled", false) || Environment.IsDevelopment())
+            //检查到相应配置启用https跳转
+            if (Configuration.GetValue("UseHttpsRedirection", false) &&
+                (Configuration.GetSection("RafHost").GetSection("Endpoints").GetSection("Https")
+                     .GetValue("IsEnabled", false) || Environment.IsDevelopment()))
             {
                 //注册强制Https跳转到管道
                 app.UseHttpsRedirection();
@@ -516,6 +485,38 @@ namespace IdentityServer
                 //    context.ShouldNotSend = context.HttpContext.Request.Path.StartsWithSegments("/api");
                 //    return Task.CompletedTask;
                 //};
+            });
+
+            //注册默认404页面到管道
+            app.UseStatusCodePages(async context =>
+            {
+                if (context.HttpContext.Response.StatusCode != (int)HttpStatusCode.NotFound)
+                {
+                    return;
+                }
+
+                PathString pathString = "/Home/NotFound";
+                QueryString queryString = default;
+                PathString originalPath = context.HttpContext.Request.Path;
+                QueryString originalQueryString = context.HttpContext.Request.QueryString;
+                context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(new StatusCodeReExecuteFeature()
+                {
+                    OriginalPathBase = context.HttpContext.Request.PathBase.Value,
+                    OriginalPath = originalPath.Value,
+                    OriginalQueryString = (originalQueryString.HasValue ? originalQueryString.Value : null)
+                });
+                context.HttpContext.Request.Path = pathString;
+                context.HttpContext.Request.QueryString = queryString;
+                try
+                {
+                    await context.Next(context.HttpContext);
+                }
+                finally
+                {
+                    context.HttpContext.Request.QueryString = originalQueryString;
+                    context.HttpContext.Request.Path = originalPath;
+                    context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(null);
+                }
             });
 
             //注册开发环境文件浏览器
