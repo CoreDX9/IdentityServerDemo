@@ -64,7 +64,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(sbyte):
                     {
                         enumObject = sbyte.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<sbyte>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<sbyte>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -75,7 +75,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(short):
                     {
                         enumObject = short.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<short>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<short>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -86,7 +86,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(int):
                     {
                         enumObject = int.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<int>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<int>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -97,7 +97,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(long):
                     {
                         enumObject = long.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<long>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<long>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -113,7 +113,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(byte):
                     {
                         enumObject = byte.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<byte>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<byte>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -124,7 +124,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(ushort):
                     {
                         enumObject = ushort.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<ushort>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<ushort>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -135,7 +135,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(uint):
                     {
                         enumObject = uint.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<uint>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<uint>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
@@ -146,7 +146,7 @@ namespace Util.TypeExtensions
                 case var t when t == typeof(ulong):
                     {
                         enumObject = ulong.TryParse(stringOrNumber, out var rei)
-                            ? Enum.GetValues(t).Cast<ulong>().Any(en => en == rei)
+                            ? Enum.GetValues(@enum).Cast<ulong>().Any(en => en == rei)
                                 ?
                                 Enum.ToObject(@enum, rei)
                                 :
