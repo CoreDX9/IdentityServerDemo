@@ -15,6 +15,10 @@
   <ItemGroup>
     <!--包含App_Data文件夹（在首次和今后的运行中生成应用数据的空文件夹），但是发布时无法创建空文件夹，只能内部包含空文件来间接创建文件夹-->
     <_App_DataDir Include="App_Data/**/.publish" />
+    <Compile Remove="log\**" />
+    <Content Remove="log\**" />
+    <EmbeddedResource Remove="log\**" />
+    <None Remove="log\**" />
     <DotnetPublishFiles Include="@(_App_DataDir)">
       <DestinationRelativePath>App_Data/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
@@ -26,13 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.0.9" />
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.0" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.8.391" />
     <PackageReference Include="FluentEmail.Razor" Version="2.5.2" />
-    <PackageReference Include="IdentityServer4" Version="2.2.0" />
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.1.0" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.1.1" />
+    <PackageReference Include="IdentityServer4" Version="2.3.0" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.1" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="2.7.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
