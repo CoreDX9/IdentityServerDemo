@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using IdentityServer4.AccessTokenValidation;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Microsoft.AspNetCore.Builder;
@@ -6,17 +8,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -75,6 +81,46 @@ namespace WebAPI
             //    options.ExcludedHosts.Add("127.0.0.1:5004");
             //    options.ExcludedHosts.Add("127.0.0.1:5005");
             //});
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "IdentityServer Web API", Version = "v1",
+                    Description = "A simple example ASP.NET Core IdentityServer Web API. \r\n IdentityServer clientId: jsIm",
+                    TermsOfService = "None",
+                    Contact = new Contact
+                    {
+                        Name = "CoreDX",
+                        Email = string.Empty,
+                        Url = "http://localhost:5002/Home/Contact"
+                    },
+                    License = new License
+                    {
+                        Name = "许可证名字",
+                        Url = "http://localhost:5002/Home/Contact"
+                    }
+                });
+
+                var basePath = Environment.ContentRootPath;
+
+                var xmlPath = Path.Combine(basePath, "WebAPI.xml");
+
+                c.IncludeXmlComments(xmlPath, true);
+
+                c.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                {
+                    Type = "oauth2",
+                    Flow = "implicit",
+                    AuthorizationUrl = "https://localhost:5001/connect/authorize",
+                    Scopes = new Dictionary<string, string>
+                    {
+                        { "api1", "api1" },
+                    }
+                });
+
+                c.OperationFilter<IdentityServer4OAuth2OperationFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -185,6 +231,31 @@ namespace WebAPI
             app.UseAuthentication();
 
             app.UseMvc();
+
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI V1");
+                });
+        }
+    }
+
+    /// <summary>
+    /// IdentityServer4认证处理
+    /// </summary>
+    public class IdentityServer4OAuth2OperationFilter : IOperationFilter
+    {
+        public void Apply(Operation operation, OperationFilterContext context)
+        {
+
+            if (operation.Security == null)
+                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
+            var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
+            {
+
+                {"oauth2", new List<string> { "openid", "profile", "api1" }}
+            };
+            operation.Security.Add(oAuthRequirements);
         }
     }
 }

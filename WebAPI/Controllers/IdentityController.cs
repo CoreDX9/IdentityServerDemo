@@ -8,11 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    /// <summary>
+    /// 身份控制器
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class IdentityController : ControllerBase
     {
+        /// <summary>
+        /// 获取身份信息
+        /// </summary>
+        /// <returns>身份信息</returns>
         [HttpGet]
         public IActionResult Get()
         {

@@ -5,7 +5,17 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Administrator\source\repos\IdentityServerDemo\WebAPI\WebAPI.xml</DocumentationFile>
+    <NoWarn>1701;1702;1998;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
+    <XmlDocs Include="./**/*.xml" />
+    <DotnetPublishFiles Include="@(XmlDocs)">
+      <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+
     <ResolvedFileToPublish Include="Certificate/server.pfx">
       <RelativePath>Certificate/server.pfx</RelativePath>
     </ResolvedFileToPublish>
@@ -16,6 +26,7 @@
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
 </Project>

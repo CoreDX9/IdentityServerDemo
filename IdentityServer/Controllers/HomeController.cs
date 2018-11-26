@@ -15,17 +15,11 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
-using Repository.EntityFrameworkCore.Identity;
 
 namespace IdentityServer.Controllers
 {
     public class HomeController : BaseController
     {
-        private readonly ApplicationIdentityDbContext _dbContext;
-        public HomeController(ApplicationIdentityDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
         [ActionName("Index")]
         public async Task<IActionResult> IndexAsync()
         {
@@ -43,7 +37,6 @@ namespace IdentityServer.Controllers
         [Route("test/[controller]/con", Name = "test")]
         public IActionResult Contact()
         {
-            _dbContext.SaveChanges();
             ViewData["Message"] = "Your contact page.";
 
             return View();

@@ -186,9 +186,10 @@ namespace IdentityServer
                 .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddDefaultTokenProviders();
 
-            //配置无权访问ForbidResult的跳转链接
+            //配置Identity跳转链接
             services.ConfigureApplicationCookie(options =>
             {
+                options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
             });
 
