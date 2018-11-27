@@ -24,6 +24,11 @@ namespace Domain.Identity
 
         public string Description { get; set; }
 
+        /// <summary>
+        /// 需要使用.Include(r => r.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
+        /// </summary>
+        public virtual IEnumerable<ApplicationUser> Users => UserRoles?.Select(ur => ur.User);
+
         #region ITree成员
 
         [ForeignKey(nameof(ParentId))]

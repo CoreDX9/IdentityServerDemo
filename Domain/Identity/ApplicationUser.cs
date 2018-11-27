@@ -28,6 +28,11 @@ namespace Domain.Identity
         [DbDescription("性别")]
         public virtual Sex? Sex { get; set; }
 
+        /// <summary>
+        /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
+        /// </summary>
+        public virtual IEnumerable<ApplicationRole> Roles => UserRoles?.Select(ur => ur.Role);
+
         #region 导航属性
 
         public virtual List<ApplicationUserClaim> Claims { get; set; } = new List<ApplicationUserClaim>();
