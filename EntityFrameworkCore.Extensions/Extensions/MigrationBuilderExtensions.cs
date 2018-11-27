@@ -157,5 +157,50 @@ namespace EntityFrameworkCore.Extensions.Extensions
                 }
             }
         }
+
+        /// <summary>
+        /// 从模型注解添加表和列说明，需要先在OnModelCreating方法调用ConfigDatabaseDescription生成注解
+        /// </summary>
+        /// <param name="migrationBuilder"></param>
+        /// <param name="migration"></param>
+        /// <returns></returns>
+        public static MigrationBuilder ApplyDatabaseDescription(this MigrationBuilder migrationBuilder, Migration migration)
+        {
+            var defaultSchema = "dbo";
+            var descriptionAnnotationName = ModelBuilderExtensions.DbDescriptionAnnotationName;
+
+            foreach (var entityType in migration.TargetModel.GetEntityTypes())
+            {
+                //添加表说明
+                var tableName = entityType.Relational().TableName;
+                var schema = entityType.Relational().Schema;
+                var tableDescriptionAnnotation = entityType.FindAnnotation(descriptionAnnotationName);
+
+                if (tableDescriptionAnnotation != null)
+                {
+                    migrationBuilder.AddOrUpdateTableDescription(
+                        tableName,
+                        tableDescriptionAnnotation.Value.ToString(),
+                        schema.IsNullOrEmpty() ? defaultSchema : schema);
+                }
+
+                //添加列说明
+                foreach (var property in entityType.GetProperties())
+                {
+                    var columnDescriptionAnnotation = property.FindAnnotation(descriptionAnnotationName);
+
+                    if (columnDescriptionAnnotation != null)
+                    {
+                        migrationBuilder.AddOrUpdateColumnDescription(
+                            tableName,
+                            property.Relational().ColumnName,
+                            columnDescriptionAnnotation.Value.ToString(),
+                            schema.IsNullOrEmpty() ? defaultSchema : schema);
+                    }
+                }
+            }
+
+            return migrationBuilder;
+        }
     }
 }

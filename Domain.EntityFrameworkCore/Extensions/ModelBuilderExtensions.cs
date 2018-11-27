@@ -72,7 +72,17 @@ namespace Domain.EntityFrameworkCore.Extensions
                     }
 
                     //配置记录默认为启用状态
-                    b.Property(nameof(IEntity.IsEnable)).IsRequired().HasDefaultValue(true).HasDefaultValueSql("True");
+                    b.Property(nameof(IEntity.IsEnable)).IsRequired().HasDefaultValue(true);
+
+                    if (dbContext.Database.IsSqlServer())
+                    {
+                        b.Property(nameof(IEntity.IsEnable)).HasDefaultValueSql("'True'");
+                    }
+
+                    if (dbContext.Database.IsSqlServer())
+                    {
+                        b.Property(nameof(IEntity.IsDeleted)).HasDefaultValueSql("'False'");
+                    }
 
                     //配置乐观并发列
                     b.Property(nameof(IEntity.RowVersion)).IsRowVersion();
@@ -100,9 +110,8 @@ namespace Domain.EntityFrameworkCore.Extensions
         /// 配置继承自DomainTreeEntityViewBase&lt;TKey, TEntityView , TIdentityUserKey&gt;的实体视图
         /// </summary>
         /// <param name="modelBuilder">模型构造器</param>
-        /// <param name="dbContext">ef上下文</param>
         /// <returns>传入的模型构造器</returns>
-        public static ModelBuilder ConfigTreeViewsThatSubClassOfDomainTreeEntityViewBase(this ModelBuilder modelBuilder, DbContext dbContext)
+        public static ModelBuilder ConfigTreeViewsThatSubClassOfDomainTreeEntityViewBase(this ModelBuilder modelBuilder)
         {
             var treeViews = modelBuilder.Model.GetEntityTypes()
                 .Where(en => en.IsQueryType && en.ClrType.IsDerivedFrom(typeof(DomainTreeEntityViewBase<,,>)))

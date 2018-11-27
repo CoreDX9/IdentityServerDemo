@@ -17,7 +17,11 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     Enabled = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 200, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 200, nullable: true),
-                    Description = table.Column<string>(maxLength: 1000, nullable: true)
+                    Description = table.Column<string>(maxLength: 1000, nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    LastAccessed = table.Column<DateTime>(nullable: true),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,7 +67,14 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     IncludeJwtId = table.Column<bool>(nullable: false),
                     AlwaysSendClientClaims = table.Column<bool>(nullable: false),
                     ClientClaimsPrefix = table.Column<string>(maxLength: 200, nullable: true),
-                    PairWiseSubjectSalt = table.Column<string>(maxLength: 200, nullable: true)
+                    PairWiseSubjectSalt = table.Column<string>(maxLength: 200, nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    LastAccessed = table.Column<DateTime>(nullable: true),
+                    UserSsoLifetime = table.Column<int>(nullable: true),
+                    UserCodeType = table.Column<string>(maxLength: 100, nullable: true),
+                    DeviceCodeLifetime = table.Column<int>(nullable: false),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,7 +93,10 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
                     Required = table.Column<bool>(nullable: false),
                     Emphasize = table.Column<bool>(nullable: false),
-                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false)
+                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    NonEditable = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,6 +117,27 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     table.PrimaryKey("PK_ApiClaims", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ApiClaims_ApiResources_ApiResourceId",
+                        column: x => x.ApiResourceId,
+                        principalTable: "ApiResources",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApiProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Key = table.Column<string>(maxLength: 250, nullable: false),
+                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    ApiResourceId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiProperties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApiProperties_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
                         principalTable: "ApiResources",
                         principalColumn: "Id",
@@ -141,9 +176,10 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(maxLength: 1000, nullable: true),
-                    Value = table.Column<string>(maxLength: 2000, nullable: true),
+                    Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
-                    Type = table.Column<string>(maxLength: 250, nullable: true),
+                    Type = table.Column<string>(maxLength: 250, nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
                     ApiResourceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -326,9 +362,10 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(maxLength: 2000, nullable: true),
-                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    Value = table.Column<string>(maxLength: 4000, nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
-                    Type = table.Column<string>(maxLength: 250, nullable: true),
+                    Type = table.Column<string>(maxLength: 250, nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
                     ClientId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -363,6 +400,27 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentityProperties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Key = table.Column<string>(maxLength: 250, nullable: false),
+                    Value = table.Column<string>(maxLength: 2000, nullable: false),
+                    IdentityResourceId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityProperties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdentityProperties_IdentityResources_IdentityResourceId",
+                        column: x => x.IdentityResourceId,
+                        principalTable: "IdentityResources",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApiScopeClaims",
                 columns: table => new
                 {
@@ -385,6 +443,11 @@ namespace DbMigration.IdentityServer.ConfigurationDb
             migrationBuilder.CreateIndex(
                 name: "IX_ApiClaims_ApiResourceId",
                 table: "ApiClaims",
+                column: "ApiResourceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiProperties_ApiResourceId",
+                table: "ApiProperties",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
@@ -471,6 +534,11 @@ namespace DbMigration.IdentityServer.ConfigurationDb
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IdentityProperties_IdentityResourceId",
+                table: "IdentityProperties",
+                column: "IdentityResourceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityResources_Name",
                 table: "IdentityResources",
                 column: "Name",
@@ -481,6 +549,9 @@ namespace DbMigration.IdentityServer.ConfigurationDb
         {
             migrationBuilder.DropTable(
                 name: "ApiClaims");
+
+            migrationBuilder.DropTable(
+                name: "ApiProperties");
 
             migrationBuilder.DropTable(
                 name: "ApiScopeClaims");
@@ -517,6 +588,9 @@ namespace DbMigration.IdentityServer.ConfigurationDb
 
             migrationBuilder.DropTable(
                 name: "IdentityClaims");
+
+            migrationBuilder.DropTable(
+                name: "IdentityProperties");
 
             migrationBuilder.DropTable(
                 name: "ApiScopes");

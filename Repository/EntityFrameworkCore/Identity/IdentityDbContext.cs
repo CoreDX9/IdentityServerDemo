@@ -71,12 +71,14 @@ namespace Repository.EntityFrameworkCore.Identity
                 .ConfigPermission()
                 //配置唯一索引
                 .ConfigUniqueKey()
+                //配置数据库表和列说明
+                .ConfigDatabaseDescription()
                 //配置主键值转换器、自增长标识、默认值、并发标识、导航属性、查询过滤器
                 .ConfigEntitiesThatImplementedFromIDomainEntity(this)
                 //配置视图名称
                 .ConfigViewsThatImplementedFromITree()
                 //配置视图查询过滤器
-                .ConfigTreeViewsThatSubClassOfDomainTreeEntityViewBase(this);
+                .ConfigTreeViewsThatSubClassOfDomainTreeEntityViewBase();
 
             #region 拥有属性（类似ef6.x的复杂属性）配置，实体中某些属性是复杂的类而不是简单数据时的配置，用ToTable()可以把复杂属性内部的简单数据属性存储到指定表，不用则直接把内部的简单数据属性存在主表，内部的其他复杂属性同理
 

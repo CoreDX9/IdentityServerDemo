@@ -37,12 +37,14 @@ namespace DbMigration.Identity
 
                     b.Property<string>("Description");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -99,12 +101,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -155,12 +159,14 @@ namespace DbMigration.Identity
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -193,7 +199,8 @@ namespace DbMigration.Identity
 
                     b.Property<string>("SecurityStamp");
 
-                    b.Property<int?>("Sex");
+                    b.Property<int?>("Sex")
+                        .HasAnnotation("DbDescription", "性别 ( 性别枚举; 1 : 男; 2 : 女 )");
 
                     b.Property<bool>("TwoFactorEnabled");
 
@@ -234,12 +241,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -280,12 +289,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -332,12 +343,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -379,12 +392,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -425,12 +440,14 @@ namespace DbMigration.Identity
 
                     b.Property<string>("Description");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -476,12 +493,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -499,7 +518,8 @@ namespace DbMigration.Identity
                         .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("SampleColumn")
-                        .HasColumnName("SC");
+                        .HasColumnName("SC")
+                        .HasAnnotation("DbDescription", "示例列");
 
                     b.HasKey("Id");
 
@@ -508,6 +528,8 @@ namespace DbMigration.Identity
                     b.HasIndex("LastModificationUserId");
 
                     b.ToTable("Domains");
+
+                    b.HasAnnotation("DbDescription", "示例实体");
                 });
 
             modelBuilder.Entity("Domain.Sample.TreeDomain", b =>
@@ -523,12 +545,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -548,7 +572,8 @@ namespace DbMigration.Identity
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<string>("SampleColumn");
+                    b.Property<string>("SampleColumn")
+                        .HasAnnotation("DbDescription", "示例列");
 
                     b.HasKey("Id");
 
@@ -559,6 +584,8 @@ namespace DbMigration.Identity
                     b.HasIndex("ParentId");
 
                     b.ToTable("TreeDomains");
+
+                    b.HasAnnotation("DbDescription", "示例树形实体");
                 });
 
             modelBuilder.Entity("Domain.Security.OrganizationPermissionDeclaration", b =>
@@ -574,12 +601,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -637,12 +666,14 @@ namespace DbMigration.Identity
 
                     b.Property<string>("Description");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -689,12 +720,14 @@ namespace DbMigration.Identity
 
                     b.Property<string>("FriendlyName");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -737,12 +770,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -793,12 +828,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -847,12 +884,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -901,12 +940,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -957,12 +998,14 @@ namespace DbMigration.Identity
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
 
                     b.Property<bool?>("IsEnable")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
+                        .HasDefaultValueSql("'True'");
 
                     b.Property<DateTimeOffset>("LastModificationTime");
 
@@ -1141,11 +1184,15 @@ namespace DbMigration.Identity
                             b1.Property<string>("DomainId")
                                 .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                            b1.Property<string>("C1");
+                            b1.Property<string>("C1")
+                                .HasAnnotation("DbDescription", "示例复杂实体属性列1");
 
-                            b1.Property<string>("C2");
+                            b1.Property<string>("C2")
+                                .HasAnnotation("DbDescription", "示例复杂实体属性列2");
 
                             b1.ToTable("ComplexProperty");
+
+                            b1.HasEntityTypeAnnotation("DbDescription", "示例复杂实体属性类（分表存储时会成为表说明，内部属性存储到主表时没有作用）");
 
                             b1.HasOne("Domain.Sample.Domain")
                                 .WithOne("ComplexProperty")
@@ -1157,11 +1204,15 @@ namespace DbMigration.Identity
                                     b2.Property<string>("ComplexEntityPropertyDomainId")
                                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                                    b2.Property<string>("C3");
+                                    b2.Property<string>("C3")
+                                        .HasAnnotation("DbDescription", "示例复杂实体属性列3");
 
-                                    b2.Property<string>("C4");
+                                    b2.Property<string>("C4")
+                                        .HasAnnotation("DbDescription", "示例复杂实体属性列4");
 
                                     b2.ToTable("ComplexProperty2");
+
+                                    b2.HasEntityTypeAnnotation("DbDescription", "示例复杂实体属性类2（分表存储时会成为表说明，内部属性存储到主表时没有作用，上级表（ComplexEntityProperty的属性所在的表）分表存储时内部属性存储到上级表时会覆盖上级表的表说明）");
 
                                     b2.HasOne("Domain.Sample.ComplexEntityProperty")
                                         .WithOne("ComplexProperty2")
