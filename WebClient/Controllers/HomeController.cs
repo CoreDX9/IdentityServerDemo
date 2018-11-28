@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using WebClient.Models;
+using Util.TypeExtensions;
 
 namespace WebClient.Controllers
 {
@@ -20,33 +22,11 @@ namespace WebClient.Controllers
             return View();
         }
 
-        [Authorize]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
 
             return View();
-        }
-
-        public async Task<IActionResult> CallApiUsingUserAccessToken()
-        {                
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);//client.SetBearerToken(accessToken);//不知道为啥这个扩展方法出不来System.Net.Http.HttpClientExtensions.SetBearerToken(this HttpClient client, string token)
-
-            var content = await client.GetStringAsync("https://localhost:5003/identity");
-
-            ViewBag.Json = JArray.Parse(content).ToString();
-            return View();
-        }
-
-        [Authorize]
-        public async Task Logout()
-        {
-            //OpenID Connect中间件已经实现注销协议，只需调用即可
-            await HttpContext.SignOutAsync("Cookies");
-            await HttpContext.SignOutAsync("oidc");
         }
 
         public IActionResult Contact()
@@ -65,6 +45,44 @@ namespace WebClient.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Authorize]
+        public IActionResult Login()
+        {
+            var returnUrl = HttpContext.Request.Headers[HeaderNames.Referer].ToString();
+            returnUrl = returnUrl.IsNullOrEmpty()  ? "/Home/Index" : returnUrl;
+
+            return Redirect(returnUrl);
+        }
+
+        [Authorize]
+        public async Task Logout()
+        {
+            //退出Cookies架构登录，清除本地Cookie
+            await HttpContext.SignOutAsync("Cookies");
+            //退出oidc架构登录，OpenID Connect中间件已经实现退出登录协议
+            await HttpContext.SignOutAsync("oidc");
+        }
+
+        [Authorize]
+        public IActionResult UserInfo()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public async Task<IActionResult> CallApiUsingUserAccessToken()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);//client.SetBearerToken(accessToken);//不知道为啥这个扩展方法出不来System.Net.Http.HttpClientExtensions.SetBearerToken(this HttpClient client, string token)
+
+            var content = await client.GetStringAsync("https://localhost:5003/identity");
+
+            ViewBag.Json = JArray.Parse(content).ToString();
+            return View();
         }
     }
 }

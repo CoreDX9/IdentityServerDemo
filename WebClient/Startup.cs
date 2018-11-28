@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebClient.AutoRefresh;
 
 namespace WebClient
 {
@@ -44,9 +40,9 @@ namespace WebClient
                     options.DefaultChallengeScheme = "oidc";
                 })
                 .AddCookie("Cookies") //这里的参数要和AddAuthentication(options)的options.DefaultScheme相同
-                //.AddOpenIdConnect("oidc", options =>
-                //{
-                //    options.SignInScheme = "Cookies";
+                                      //.AddOpenIdConnect("oidc", options =>
+                                      //{
+                                      //    options.SignInScheme = "Cookies";
 
                 //    options.Authority = "https://localhost:5001";
                 //    options.RequireHttpsMetadata = true;
@@ -60,6 +56,7 @@ namespace WebClient
                 //    //options.Scope.Add("api1");
                 //    //options.Scope.Add("offline_access");
                 //})
+                .AddAutomaticTokenRefresh()//access_token过期自动刷新，需要拥有offline_access权限
                 .AddOpenIdConnect("oidc", options => //这里的authenticationScheme要和AddAuthentication(options)的options.DefaultChallengeScheme相同
                 {
                     //这里的值要和AddCookie()的参数一致
@@ -78,6 +75,11 @@ namespace WebClient
 
                     options.Scope.Add("api1");
                     options.Scope.Add("offline_access");
+                    options.Scope.Add("email");
+                    options.Scope.Add("phone");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("openid");
+                    options.Scope.Add("address");
                 });
                 //.AddOpenIdConnect("oidc", options =>
                 //{
@@ -99,7 +101,7 @@ namespace WebClient
                 //    options.Scope.Add("offline_access");
                 //});
 
-            services.AddCsp(nonceByteAmount: 32);
+            services.AddCsp();
             //services.AddHsts(options =>
             //{
             //    options.Preload = true;
