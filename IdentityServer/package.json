@@ -8,6 +8,7 @@
     "@aspnet/signalr": "1.0.4",
     "jquery.qrcode": "1.0.3",
     "animate.css": "3.7.0",
-    "layui-src": "2.4.5"
+    "layui-src": "2.4.5",
+    "linq-js": "2.1.23"
   }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Domain.Security;
 using Entity;
@@ -31,6 +32,7 @@ namespace Domain.Identity
         /// <summary>
         /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
+        [NotMapped]
         public virtual IEnumerable<ApplicationRole> Roles => UserRoles?.Select(ur => ur.Role);
 
         #region 导航属性

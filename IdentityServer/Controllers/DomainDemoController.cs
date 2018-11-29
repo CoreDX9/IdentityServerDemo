@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repository.EntityFrameworkCore.Identity;
+using X.PagedList;
 
 namespace IdentityServer.Controllers
 {
@@ -23,10 +24,21 @@ namespace IdentityServer.Controllers
         }
 
         // GET: DomainDemo
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 10)
         {
-            var identityDbContext = _context.Domains;//.Include(d => d.CreationUser).Include(d => d.LastModificationUser);
-            return View(await identityDbContext.ToListAsync());
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.PageSize = pageSize;
+            var identityDbContext = _context.Domains.OrderBy(d=>d.OrderNumber);//.Include(d => d.CreationUser).Include(d => d.LastModificationUser);
+            var model = await identityDbContext.ToPagedListAsync(pageIndex, pageSize);
+
+            if (this.IsAjaxRequest())
+            {
+                return PartialView("_IndexTBody", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         // GET: DomainDemo/Details/5

@@ -27,6 +27,7 @@ namespace Domain.Identity
         /// <summary>
         /// 需要使用.Include(r => r.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
+        [NotMapped]
         public virtual IEnumerable<ApplicationUser> Users => UserRoles?.Select(ur => ur.User);
 
         #region ITree成员

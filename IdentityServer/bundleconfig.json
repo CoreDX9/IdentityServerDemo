@@ -40,5 +40,14 @@
     "inputFiles": [
       "bower_components/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/linq-js/linq.min.js",
+    "inputFiles": [
+      "node_modules/linq-js/dist/linq.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
   }
 ]

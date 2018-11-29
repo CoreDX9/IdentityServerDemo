@@ -1,9 +1,21 @@
-﻿@model IEnumerable<Domain.Sample.Domain>
+﻿@using X.PagedList
+@using IdentityServer
+@model IPagedList<Domain.Sample.Domain>
 
 @{
     ViewData["Title"] = "Index";
+    var model1 = new Domain.Sample.Domain();
 }
 
+@section Styles
+{
+    <environment include="Development">
+        <link rel="stylesheet" href="~/npm/layui-src/src/css/layui.css"/>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/layui/css/layui.css" asp-append-version="true">
+    </environment>
+}
 <h2>Index</h2>
 
 <p>
@@ -40,38 +52,113 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SampleColumn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RowVersion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModificationTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationUser.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModificationUser.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        <partial name="_IndexTBody" model="Model"/>
     </tbody>
 </table>
+
+<div class="layui-form layui-form-pane" style="background-color: white">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">无刷新翻页</label>
+        <div class="layui-input-block">
+            <input id="ajaxPagination" type="checkbox" name="yyy" lay-skin="switch" lay-text="ON|OFF">
+        </div>
+    </div>
+    <div id="pager"></div>
+</div>
+
+@section Scripts
+{
+    <environment include="Development">
+        <script src="~/npm/layui-src/src/layui.js"></script>
+        <script src="~/npm/linq-js/dist/linq.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+        <script src="~/lib/linq-js/linq.min.js" asp-append-version="true"></script>
+    </environment>
+    <script>
+        $(document).ready(function () {
+            window.Enumerable.config.extends.array = true; //开启针对 Array 的扩展，使 Array 对象拥有 LINQ 的功能，可以直接使用 LINQ 提供的方法。（推荐开启）
+
+            (function initPager() {
+                var locationUrl = parseUrl(window.location);
+                var pageParams = locationUrl.queryParams;
+                var pageIndex = parseInt(pageParams.pageIndex) || @ViewBag.PageIndex;
+                var pageSize = parseInt(pageParams.pageSize) || @ViewBag.PageSize;
+                var count = @Model.TotalItemCount;
+                var limits = [5, 10, 20, 30, 40, 50];
+
+                if (!limits.any(l => l === pageSize)) {
+                    limits.push(pageSize);
+                    limits = limits.orderBy(l => l).toArray();
+                }
+
+                window.layui.use(['laypage', 'form'], function() {
+                    var laypage = window.layui.laypage;
+
+                    //完整功能
+                    laypage.render({
+                        elem: 'pager',
+                        count: count,
+                        curr: pageIndex,
+                        limit: pageSize,
+                        limits: limits,
+                        layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip'],
+                        jump: function (pager, first) {
+                            if (!first) {
+                                if ($('#ajaxPagination')[0].checked) {
+                                    $.ajax({
+                                        url: locationUrl.path,
+                                        data: {
+                                            pageIndex: pager.curr,
+                                            pageSize: pager.limit
+                                        },
+                                        success: function(res) {
+                                            $('tbody').empty().append($(res));
+                                        }
+                                    });
+                                } else {
+                                    var j = document.createElement('a');
+                                    var $j = $(j);
+                                    $j.attr('href', locationUrl.path + '?pageIndex=' + pager.curr + '&pageSize=' + pager.limit).css('display', 'none');
+                                    $('body').append($j);
+                                    j.click();
+                                }
+                            }
+                        }
+                    });
+                });
+            })();
+        });
+
+        function parseUrl(url) {
+            //创建一个a标签
+            var a =  document.createElement('a');
+            //将url赋值给标签的href属性。
+            a.href = url;
+            return {
+                source: url,
+                protocol: a.protocol.replace(':',''), //协议
+                host: a.hostname,   //主机名称
+                port: a.port,   //端口
+                queryString: a.search,  //查询字符串
+                queryParams: (function(){  //查询参数
+                    var ret = {},
+                        seg = a.search.replace(/^\?/,'').split('&'),
+                        len = seg.length, i = 0, s;
+                    for (;i<len;i++) {
+                        if (!seg[i]) { continue; }
+                        s = seg[i].split('=');
+                        ret[s[0]] = s[1];
+                    }
+                    return ret;
+                })(),
+                file: (a.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1], //文件名
+                hash: a.hash.replace('#',''), //哈希参数
+                path: a.pathname.replace(/^([^\/])/,'/$1'), //路径
+                relative: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1],  //相对路径
+                segments: a.pathname.replace(/^\//,'').split('/') //路径片段
+            };
+        }
+    </script>
+}
