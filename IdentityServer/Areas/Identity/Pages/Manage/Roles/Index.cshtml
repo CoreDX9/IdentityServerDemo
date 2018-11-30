@@ -4,6 +4,10 @@
     ViewData["Title"] = "Roles";
 }
 
+@section Styles {
+    <partial name="_JqGridStylesPartial" />
+}
+
 <h4>@ViewData["Title"]</h4>
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="row">
@@ -13,18 +17,9 @@
     </div>
 </div>
 
-@section Styles {
-    <!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
-    <link rel="stylesheet" type="text/css" media="screen" href="/lib/Guriddo_jqGrid_JS_5.3.1/css/ui.jqgrid-bootstrap.css" />
-}
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
-    <!-- We support more than 40 localizations -->
-    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/i18n/grid.locale-cn.js"></script>
-    <!-- This is the Javascript file of jqGrid -->
-    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/jquery.jqGrid.min.js"></script>
+    <partial name="_JqGridScriptsPartial" />
 
     <script>
         var grid = $("#jqGrid");
@@ -85,7 +80,7 @@
                 width: 847,
                 sortname: 'name',
                 multiselect: true,
-                sortable: true,	
+                sortable: true,
                 caption: "角色列表"
             });
         });

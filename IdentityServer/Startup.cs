@@ -399,6 +399,7 @@ namespace IdentityServer
             //注册响应压缩到管道
             app.UseResponseCompression();
 
+            //注册内容安全策略到管道
             // Content Security Policy
             app.UseCsp(csp =>
             {
@@ -410,6 +411,7 @@ namespace IdentityServer
                 csp.AllowScripts
                     .FromSelf() //This domain
                     .AllowUnsafeInline()
+                    .AllowUnsafeEval()
                     .From("localhost:5000") //These two domains
                     .From("localhost:5001")
                     .From("localhost:5002")

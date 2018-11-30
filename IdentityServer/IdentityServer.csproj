@@ -19,6 +19,12 @@
       <DestinationRelativePath>App_Data/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
 
+    <!--包含bootstrap文件-->
+    <_BootstrapFiles Include="bower_components/bootstrap/dist/**/*.*" />
+    <DotnetPublishFiles Include="@(_BootstrapFiles)">
+      <DestinationRelativePath>wwwroot/lib/bootstrap/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+
     <!--包含layui文件-->
     <_LayuiFiles Include="node_modules/layui-src/dist/**/*.*" />
     <DotnetPublishFiles Include="@(_LayuiFiles)">
@@ -66,6 +72,18 @@
   <ItemGroup>
     <ProjectReference Include="..\DbMigration\DbMigration.csproj" />
     <ProjectReference Include="..\Extensions.Logging.File\Extensions.Logging.File.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Pages\SignalR\Chat\_ChatScriptsPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Pages\SignalR\Chat\_ChatStylesPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_SignalRScriptsPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="http://json.schemastore.org/bower" /></VisualStudio></ProjectExtensions>

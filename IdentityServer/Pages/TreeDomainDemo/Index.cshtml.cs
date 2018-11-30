@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
 using Util.TypeExtensions;
+using X.PagedList;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
@@ -18,11 +17,42 @@ namespace IdentityServer.Pages.TreeDomainDemo
             _context = context;
         }
 
-        public IList<TreeDomain> TreeDomain { get;set; }
+        public IPagedList<TreeDomain> TreeDomain { get;set; }
 
-        public async Task OnGetAsync()
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public int ItemCount { get; set; }
+
+        public async Task OnGetAsync(int pageIndex = 1, int pageSize = 10)
         {
-            TreeDomain = await _context.TreeDomains.ToListAsync();
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            ItemCount = _context.TreeDomains.Count();
+        }
+
+        public async Task<IActionResult> OnGetVueDataAsync(int pageIndex = 1, int pageSize = 10)
+        {
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+
+            TreeDomain = await _context.TreeDomains.OrderBy(t => t.OrderNumber).ToPagedListAsync(pageIndex, pageSize);
+
+            var model = TreeDomain.Select(t => new
+            {
+                t.SampleColumn,
+                t.ParentId,
+                t.OrderNumber,
+                RowVersion = t.RowVersion.ToHexString().TrimStart('0'),
+                t.IsDeleted,
+                CreationTime = t.CreationTime.ToString("yyyy-MM-dd HH:mm:ss zzz"),
+                LastModificationTime = t.LastModificationTime.ToString("yyyy-MM-dd HH:mm:ss zzz"),
+                t.CreationUserId,
+                t.LastModificationUserId,
+                EditLink = Url.Page("Edit",new{id = t.Id}),
+                DetailsLink = Url.Page("Details", new{id = t.Id}),
+                DeleteLink = Url.Page("Delete", new{id = t.Id})
+            });
+            return new JsonResult(model);
             //.Include(t => t.CreationUser)
             //.Include(t => t.LastModificationUser)
             //.Include(t => t.Parent).ToListAsync();

@@ -5,15 +5,17 @@
     ViewData["Title"] = "Index";
 }
 
+@section Styles
+    {
+    <partial name="_JqGridStylesPartial" />
+    <partial name="_LayuiStylesPartial" />
+}
+
 <h2>Index</h2>
 
 <p>
     <a asp-page="Create">Create New</a>
 </p>
-
-<!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
-<link rel="stylesheet" type="text/css" media="screen" href="/lib/Guriddo_jqGrid_JS_5.3.1/css/ui.jqgrid-bootstrap.css" />
-
 
 <table id="jqGrid"></table>
 <div id="jqGridPager"></div>
@@ -51,65 +53,66 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model.TreeDomain)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SampleColumn)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Parent.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RowVersion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsDeleted)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreationTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastModificationTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreationUser.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastModificationUser.Id)
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
+    <tbody id="vueApp">
+        <tr v-for="item in treeDomains">
+            <td>
+                {{item.sampleColumn}}
+            </td>
+            <td>
+                {{item.parentId}}
+            </td>
+            <td>
+                {{item.orderNumber}}
+            </td>
+            <td>
+                {{item.rowVersion}}
+            </td>
+            <td>
+                {{item.isDeleted}}
+            </td>
+            <td>
+                {{item.creationTime}}
+            </td>
+            <td>
+                {{item.lastModificationTime}}
+            </td>
+            <td>
+                {{item.creationUserId}}
+            </td>
+            <td>
+                {{item.lastModificationUserId}}
+            </td>
+            <td>
+                <a v-bind:href=item.editLink >Edit</a> |
+                <a v-bind:href=item.detailsLink >Details</a> |
+                <a v-bind:href=item.deleteLink >Delete</a>
+            </td>
+        </tr>
     </tbody>
 </table>
 
-@section Styles
-{
-    <!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
-    <link rel="stylesheet" type="text/css" media="screen" href="/lib/Guriddo_jqGrid_JS_5.3.1/css/ui.jqgrid-bootstrap.css" />
-}
+<div class="layui-form layui-form-pane" style="background-color: white">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">无刷新翻页</label>
+        <div class="layui-input-block">
+            <input id="ajaxPagination" type="checkbox" name="yyy" lay-skin="switch" lay-text="ON|OFF">
+        </div>
+    </div>
+    <div id="layPager"></div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
-    <!-- We support more than 40 localizations -->
-    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/i18n/grid.locale-cn.js"></script>
-    <!-- This is the Javascript file of jqGrid -->
-    <script type="text/ecmascript" src="/lib/Guriddo_jqGrid_JS_5.3.1/js/jquery.jqGrid.min.js"></script>
+    <partial name="_LinqJsScriptsPartial" />
+    <partial name="_JqGridScriptsPartial" />
+    <partial name="_LayuiScriptsPartial" />
+    <partial name="_VueScriptsPartial"/>
 
     <script>
         var grid = $("#jqGrid");
 
         $(document).ready(function () {
+            window.Enumerable.config.extends.array = true;
 
             $.jgrid.defaults.responsive = true;
             $.jgrid.defaults.styleUI = 'Bootstrap';
@@ -163,7 +166,7 @@
                 pager: "#jqGridPager"//在treeGrid模式下没有用
             });
             grid.navGrid('#jqGridPager',
-                {                
+                {
                     search: true, // show search button on the toolbar
                     add: false,
                     edit: false,
@@ -175,6 +178,92 @@
                 {}, // delete options
                 { multipleSearch: true, multipleGroup: true, showQuery: true } // search options - define multiple search
             );
+
+            (function initPager() {
+                var locationUrl = parseUrl(window.location);
+                var layerLoading;
+
+                var vueData = {
+                    treeDomains: {}
+                };
+                var vueApp;
+
+                var pageParams = locationUrl.queryParams;
+                var pageIndex = parseInt(pageParams.pageIndex || '@Model.PageIndex');
+                var pageSize = parseInt(pageParams.pageSize || '@Model.PageSize');
+                var count = @Model.ItemCount;
+                var limits = [5, 10, 20, 30, 40, 50];
+
+                var ajaxOptions = {
+                    url: locationUrl.path + '?handler=vueData',
+                    data: {
+                        pageIndex: pageIndex,
+                        pageSize: pageSize
+                    },
+                    success: function(res) {
+                        vueData.treeDomains = res;
+                        layer.close(layerLoading);
+                    },
+                    error: function(xhr, err, ex) {
+                        layer.close(layerLoading);
+                        layer.open({
+                            shade: 0.3,
+                            shadeClose: true,
+                            content: '数据载入失败：' + err + '; ' + ex,
+                            closeBtn: 0
+                        });
+                    }
+                };
+
+                if (!limits.any(l => l === pageSize)) {
+                    limits.push(pageSize);
+                    limits = limits.orderBy(l => l).toArray();
+                }
+
+                window.layui.use(['laypage', 'layer', 'form'], function() {
+                    var laypage = window.layui.laypage;
+                    var layer = window.layui.layer;
+
+                    laypage.render({
+                        elem: 'layPager',
+                        count: count,
+                        curr: pageIndex,
+                        limit: pageSize,
+                        limits: limits,
+                        layout: ['prev', 'page', 'next', 'skip', 'limit', 'count', 'refresh'],
+                        jump: function (pager, first) {
+                            if (!first) {
+                                if ($('#ajaxPagination')[0].checked) {
+                                    layerLoading = layer.load(0,
+                                        {
+                                            shade: 0.3,
+                                            shadeClose: false,
+                                            scrollbar: false
+                                        });
+                                    ajaxOptions.data = {
+                                        pageIndex: pager.curr,
+                                        pageSize: pager.limit
+                                    };
+                                    $.ajax(ajaxOptions);
+                                } else {
+                                    var j = document.createElement('a');
+                                    var $j = $(j);
+                                    $j.attr('href', locationUrl.path + '?pageIndex=' + pager.curr + '&pageSize=' + pager.limit).css('display', 'none');
+                                    $('body').append($j);
+                                    j.click();
+                                }
+                            } else {
+                                $.ajax(ajaxOptions);
+
+                                vueApp = new Vue({
+                                    el: '#vueApp',
+                                    data: vueData
+                                });
+                            }
+                        }
+                    });
+                });
+            })();
         });
     </script>
 }

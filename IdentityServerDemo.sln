@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebAppli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityHistoryMQReceive", "RabbitMQReceive\EntityHistoryMQReceive.csproj", "{1C983BEA-0D75-4455-BF48-253899147E69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Logging.File", "Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Logging.File", "Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

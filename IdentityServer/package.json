@@ -9,6 +9,7 @@
     "jquery.qrcode": "1.0.3",
     "animate.css": "3.7.0",
     "layui-src": "2.4.5",
-    "linq-js": "2.1.23"
+    "linq-js": "2.1.23",
+    "vue": "2.5.17"
   }
 }

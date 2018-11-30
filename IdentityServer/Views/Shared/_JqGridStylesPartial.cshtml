@@ -1,0 +1,15 @@
+<environment include="Development">
+    <link rel="stylesheet" href="~/bower/jqGrid/css/ui.jqgrid-bootstrap.css" />
+</environment>
+<environment exclude="Development">
+    <link rel="stylesheet" href="/lib/jqGrid/css/ui.jqgrid-bootstrap.min.css" asp-append-version="true" />
+</environment>
+
+<style>
+        /*不加这个css，Bootstrap多级表头框线会出问题*/
+    th.ui-th-column-header.ui-th-ltr[role=columnheader] {
+        border-bottom: solid;
+        border-bottom-color: rgb(221, 221, 221);
+        border-bottom-width: 1px;
+    }
+</style>

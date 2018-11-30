@@ -1,0 +1,8 @@
+<environment include="Development">
+    <link rel="stylesheet" href="~/bower/bootstrap/dist/css/bootstrap.css" />
+</environment>
+<environment exclude="Development">
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+          asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css"
+          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+</environment>
