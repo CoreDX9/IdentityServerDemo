@@ -1,21 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@using IdentityServer.Controllers
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<HomeController> Localizer
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - IdentityServer</title>
-    
-    <partial name="_BootstrapStylesPartial"/>
-    <partial name="_AnimateCssStylesPartial"/>
-    <partial name="_SiteStylesPartial"/>
+
+    <partial name="_BootstrapStylesPartial" />
+    <partial name="_AnimateCssStylesPartial" />
+    <partial name="_SiteStylesPartial" />
 
     @RenderSection("Styles", required: false)
 </head>
 <body>
 
     <div id="background" class="backgroundPic"></div>
-    <div id="navBlur" class="animated slideInDown faster backgroundBeforePic" ></div>
-    <div id="containerBlur" class="animated bounceInDown backgroundBeforePic" ></div>
+    <div id="navBlur" class="animated slideInDown faster backgroundBeforePic"></div>
+    <div id="containerBlur" class="animated bounceInDown backgroundBeforePic"></div>
 
     <nav class="navbar navbar-default navbar-fixed-top animated slideInDown faster">
         <div class="container">
@@ -30,43 +33,44 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">@Localizer["About"]</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">@Localizer["Contact"]</a></li>
+                    <li><a asp-area="Manage" asp-controller="Localization" asp-action="Index">@Localizer["Management Localization"]</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            IdentityManager
+                            @Localizer["IdentityManager"]
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Identity" asp-page="/Manage/Users/Index">UserManager</a></li>
-                            <li><a asp-area="Identity" asp-page="/Manage/Roles/Index">RoleManager</a></li>
+                            <li><a asp-area="Identity" asp-page="/Manage/Users/Index">@Localizer["UserManager"]</a></li>
+                            <li><a asp-area="Identity" asp-page="/Manage/Roles/Index">@Localizer["RoleManager"]</a></li>
                             @*<li class="divider"></li> 分割线*@
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Demo
+                            @Localizer["Demo"]
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="" asp-page="/RazorPageDemo">RazorPageDemo</a></li>
-                            <li><a asp-area="" asp-page="/SimpleRazorPage2" asp-page-handler="Demo">SimpleRazorPage2-Demo</a></li>
+                            <li><a asp-area="" asp-page="/RazorPageDemo">@Localizer["RazorPage演示"]</a></li>
+                            <li><a asp-area="" asp-page="/SimpleRazorPage2" asp-page-handler="Demo">@Localizer["SimpleRazorPage2-演示"]</a></li>
                             <li class="divider"></li>
-                            <li><a asp-area="" asp-controller="DomainDemo" asp-action="Index">DomainDemo</a></li>
-                            <li><a asp-area="" asp-page="/TreeDomainDemo/Index">TreeDomainDemo</a></li>
+                            <li><a asp-area="" asp-controller="Localization" asp-action="Index">@Localizer["Domain演示"]</a></li>
+                            <li><a asp-area="" asp-page="/TreeDomainDemo/Index">@Localizer["TreeDomain演示"]</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            SignalR
+                            @Localizer["SignalR"]
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="" asp-page="/SignalR/Chat/Index">Chat</a></li>
+                            <li><a asp-area="" asp-page="/SignalR/Chat/Index">@Localizer["Chat"]</a></li>
                         </ul>
                     </li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="GetControllerAndAction">GetControllerAndAction</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="GetControllerAndAction">@Localizer["GetControllerAndAction"]</a></li>
                 </ul>
                 <partial name="_LoginPartial" />
             </div>
@@ -83,10 +87,10 @@
         </footer>
     </div>
 
-    <partial name="_JQueryScriptsPartial"/>
-    <partial name="_BootstrapScriptsPartial"/>
-    <partial name="_BootstrapDropdownHoverScriptsPartial"/>
-    <partial name="_SiteScriptsPartial"/>
+    <partial name="_JQueryScriptsPartial" />
+    <partial name="_BootstrapScriptsPartial" />
+    <partial name="_BootstrapDropdownHoverScriptsPartial" />
+    <partial name="_SiteScriptsPartial" />
 
     <script asp-add-nonce="true">
         $(document).ready(function () {
@@ -104,7 +108,7 @@
                 containerBlur();
             });
 
-            $('body > nav > div > div.navbar-collapse.collapse').eq(0).resize(function() {
+            $('body > nav > div > div.navbar-collapse.collapse').eq(0).resize(function () {
                 navBlur();
             });
 

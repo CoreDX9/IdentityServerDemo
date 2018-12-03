@@ -9,7 +9,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -52,6 +54,19 @@ namespace IdentityServer.Controllers
             var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
             consentFeature.GrantConsent();
             return Json(true);
+        }
+
+        public IActionResult SetLanguage(string lang)
+        {
+            var returnUrl = HttpContext.RequestReferer() ?? "/Home";
+
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(lang)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return Redirect(returnUrl);
         }
 
         [HttpDelete, HttpGet, HttpHead, HttpOptions, HttpPatch, HttpPost, HttpPut]

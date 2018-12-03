@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using Domain.Identity;
@@ -6,6 +8,7 @@ using Extensions.Logging.File;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
+using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
@@ -13,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Repository.EntityFrameworkCore.Identity;
 using Repository.RabbitMQ;
@@ -53,9 +58,6 @@ namespace IdentityServer
 
             //注入响应压缩服务（gzip）
             services.AddResponseCompression();
-
-            //注入MVC相关服务
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //注入SignalR服务
             var signalRServer = services.AddSignalR();
@@ -192,6 +194,53 @@ namespace IdentityServer
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
             });
+
+            //配置本地化数据服务存储
+            if (useInMemoryDatabase)
+            {
+                services.AddEntityFrameworkInMemoryDatabase()
+                    .AddDbContext<LocalizationModelContext>(
+                        options => { options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot); },
+                        ServiceLifetime.Singleton,
+                        ServiceLifetime.Singleton);
+            }
+            else
+            {
+                services.AddDbContext<LocalizationModelContext>(options =>
+                    {
+                        options.UseSqlServer(connectionString, b =>
+                        {
+                            b.MigrationsAssembly(migrationsAssemblyName);
+                            b.EnableRetryOnFailure(3);
+                        });
+                    },
+                    ServiceLifetime.Singleton,
+                    ServiceLifetime.Singleton);
+            }
+
+            //注入基于Sql数据的本地化服务，需要先注入LocalizationModelContext
+            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+
+            //注入MVC相关服务
+            services.AddMvc()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            //配置请求本地化选项
+            services.Configure<RequestLocalizationOptions>(
+                options =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("zh-CN"),
+                        new CultureInfo("en-US")
+                    };
+
+                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                });
 
             //注入电子邮件发送服务
             services.AddScoped<IEmailSender, EmailSender>();
@@ -382,9 +431,6 @@ namespace IdentityServer
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-
-                //app.UseHsts();
-                HstsBuilderExtensions.UseHsts(app);
             }
 
             //检查到相应配置启用https跳转
@@ -392,6 +438,8 @@ namespace IdentityServer
                 (Configuration.GetSection("RafHost").GetSection("Endpoints").GetSection("Https")
                      .GetValue("IsEnabled", false) || Environment.IsDevelopment()))
             {
+                //app.UseHsts();
+                HstsBuilderExtensions.UseHsts(app);
                 //注册强制Https跳转到管道
                 app.UseHttpsRedirection();
             }
@@ -489,6 +537,10 @@ namespace IdentityServer
                 //    return Task.CompletedTask;
                 //};
             });
+
+            //注册请求本地化到管道
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(locOptions.Value);
 
             //注册默认404页面到管道
             app.UseStatusCodePages(async context =>

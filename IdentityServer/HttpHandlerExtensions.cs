@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -20,12 +22,19 @@ namespace IdentityServer
             return IsAjaxRequest(page.HttpContext);
         }
 
-        private static bool IsAjaxRequest(HttpContext context)
+        private static bool IsAjaxRequest(this HttpContext context)
         {
             var headerKey = "x-requested-with";
 
             return context.Request.Headers.ContainsKey(headerKey)
                    && context.Request.Headers[headerKey] == "XMLHttpRequest";
+        }
+
+        public static string RequestReferer(this HttpContext context)
+        {
+            return context.Request.Headers[HttpRequestHeader.Referer.ToString()].IsNullOrEmpty()
+                ? null
+                : context.Request.Headers[HttpRequestHeader.Referer.ToString()].ToString();
         }
     }
 }

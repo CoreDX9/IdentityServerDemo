@@ -5,6 +5,7 @@ using Domain.Identity;
 using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,15 @@ namespace IdentityServer
 
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
+                try
+                {
+                    scope.ServiceProvider.GetRequiredService<LocalizationModelContext>().Database.Migrate();
+                }
+                catch
+                {
+                    // ignored
+                }
+
                 try
                 {
                     scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();

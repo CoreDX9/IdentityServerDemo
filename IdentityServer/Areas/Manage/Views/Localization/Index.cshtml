@@ -1,0 +1,152 @@
+﻿@using X.PagedList
+@using IdentityServer
+@model IPagedList<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Styles
+{
+    <partial name="_LayuiStylesPartial"/>
+}
+<h2>Index</h2>
+
+<p>
+    <button type="button" id="reset-cache" >Reset cache</button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Key)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LocalizationCulture)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ResourceKey)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <partial name="_IndexTBody" model="Model"/>
+    </tbody>
+</table>
+
+<div class="layui-form layui-form-pane" style="background-color: white">
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">无刷新翻页</label>
+        <div class="layui-input-block">
+            <input id="ajaxPagination" type="checkbox" name="yyy" lay-skin="switch" lay-text="ON|OFF">
+        </div>
+    </div>
+    <div id="layPager"></div>
+</div>
+
+@section Scripts
+{
+    <partial name="_LinqJsScriptsPartial"/>
+    <partial name="_LayuiScriptsPartial"/>
+
+    <script>
+        $(document).ready(function () {
+            window.Enumerable.config.extends.array = true; //开启针对 Array 的扩展，使 Array 对象拥有 LINQ 的功能，可以直接使用 LINQ 提供的方法。（推荐开启）
+
+            (function initPager() {
+                var locationUrl = parseUrl(window.location);
+                var pageParams = locationUrl.queryParams;
+                var pageIndex = parseInt(pageParams.pageIndex || '@ViewBag.PageIndex');
+                var pageSize = parseInt(pageParams.pageSize || '@ViewBag.PageSize');
+                var count = @Model.TotalItemCount;
+                var limits = [5, 10, 20, 30, 40, 50];
+
+                if (!limits.any(l => l === pageSize)) {
+                    limits.push(pageSize);
+                    limits = limits.orderBy(l => l).toArray();
+                }
+
+                window.layui.use(['laypage', 'layer', 'form'], function() {
+                    var laypage = window.layui.laypage;
+                    var layer = window.layui.layer;
+
+                    laypage.render({
+                        elem: 'layPager',
+                        count: count,
+                        curr: pageIndex,
+                        limit: pageSize,
+                        limits: limits,
+                        layout: ['prev', 'page', 'next', 'skip', 'limit', 'count', 'refresh'],
+                        jump: function (pager, first) {
+                            if (!first) {
+                                if ($('#ajaxPagination')[0].checked) {
+                                    var loading = layer.load(0,
+                                        {
+                                            shade: 0.3,
+                                            shadeClose: false,
+                                            scrollbar: false
+                                        });
+
+                                    $.ajax({
+                                        url: locationUrl.path,
+                                        data: {
+                                            pageIndex: pager.curr,
+                                            pageSize: pager.limit
+                                        },
+                                        success: function(res) {
+                                            $('tbody').empty().append($(res));
+                                            layer.close(loading);
+                                        },
+                                        error: function (xhr, err, ex) {
+                                            layer.close(loading);
+                                            layer.open({
+                                                shade: 0.3,
+                                                shadeClose: true,
+                                                content: '数据载入失败：' + err,
+                                                closeBtn: 0
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    var j = document.createElement('a');
+                                    var $j = $(j);
+                                    $j.attr('href', locationUrl.path + '?pageIndex=' + pager.curr + '&pageSize=' + pager.limit).css('display', 'none');
+                                    $('body').append($j);
+                                    j.click();
+                                }
+                            }
+                        }
+                    });
+                });
+            })();
+
+            $('#reset-cache').click(resetCache);
+        });
+
+        function resetCache() {
+            $.ajax({
+                url:'@Url.Action("ResetCache")',
+                success: function(res) {
+                    layer.open({
+                        shade: 0.3,
+                        shadeClose: true,
+                        content: '刷新成功',
+                        closeBtn: 0
+                    });
+                },
+                error: function (xhr, err, ex) {
+                    layer.open({
+                        shade: 0.3,
+                        shadeClose: true,
+                        content: '刷新失败',
+                        closeBtn: 0
+                    });
+                }
+            });
+        }
+    </script>
+}
