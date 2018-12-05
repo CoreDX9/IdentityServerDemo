@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 b27e9a2d1c8df3847ab9261d56521cf10cbb2a95 CoreDX9 <coredx@live.cn> 1543799388 +0800	clone: from https://github.com/CoreDX9/IdentityServerDemo.git
+b27e9a2d1c8df3847ab9261d56521cf10cbb2a95 9245d44fe72b75abe70a0545187834ca89c8a027 CoreDX9 <coredx@live.cn> 1543799660 +0800	commit: 删除多余文件
+9245d44fe72b75abe70a0545187834ca89c8a027 7e2f1a3390ea3536622465caa52da901ee61744d CoreDX9 <coredx@live.cn> 1543980323 +0800	pull --no-rebase --progress origin: Fast-forward

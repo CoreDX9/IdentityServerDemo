@@ -1,0 +1,6 @@
+<environment include="Development">
+    <link rel="stylesheet" href="~/css/chat.css" />
+</environment>
+<environment exclude="Development">
+    <link rel="stylesheet" href="~/css/chat.min.css" asp-append-version="true" />
+</environment>

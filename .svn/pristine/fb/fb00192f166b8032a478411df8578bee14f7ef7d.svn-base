@@ -1,0 +1,62 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  //写本地log文件
+  //已创建logger的categoryName区分配置。可配置多规则多文件写入
+  "FileLogging": {
+    // 相对路径：log:current path+'\log'
+    // 绝对路径：C://log
+    // linux 绝对路径：/var/log/netcorewebapp
+    //多环境部署，可以使用环境变量配置文件方式。
+    "DefaultPath": "log", //默认文件地址
+    "DefaultMaxMB": 500, //默认最大文件大小
+    "DefaultFileName": "yyyyMMdd", //默认文件名字
+    "DefaultRollingType": "Day", //默认文件新建方式
+    //过滤器，以.分割，逐层匹配
+    "LogLevel": {
+      "Default": "Information",
+      "System": "Information",
+      "Microsoft": "Information"
+    },
+    //log需要写入的文件。
+    "Path": {
+      "Test.NewFile": "log/secfile"
+    },
+    //log名字
+    "FileName": {
+      "Test.NewFile": "yyyyMMddHH"
+    },
+    //文件新建方式，未实现
+    "RollingType": {
+      "Test.NewFile": "Minute"
+    }
+  },
+  //没有RabbitMQ的机器上设置UseEntityHistory为false
+  "UseEntityHistory": false,
+  //RabbitMQ连接选项
+  "EntityHistoryRecorder": {
+    "HostName": "localhost",
+    "AutomaticRecoveryEnabled": true,
+    "NetworkRecoveryIntervalSeconds": 10,
+    "TopologyRecoveryEnabled": true
+  },
+  //没有Redis的机器上设置UseRedisForSignalR为false
+  "UseRedisForSignalR": false,
+  //Redis连接选项
+  "RedisForSignalR": {
+    "Host": "localhost",
+    "Port": 6379,
+    "Password": "123456"
+  },
+  //是否启用强制https跳转，如果没有配置https则不会生效
+  "UseHttpsRedirection": true,
+  "AllowedHosts": "*",
+  //在没有数据库软件的机器上或者不想用数据库的时候设为true
+  "UseInMemoryDatabase": false,
+  "ConnectionStrings": {
+    "IdentityServerDbContextConnection": "Server=(localdb)\\mssqllocaldb;Database=IdentityServerDb-Production;Trusted_Connection=True;MultipleActiveResultSets=true"
+  }
+}

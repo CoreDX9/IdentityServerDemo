@@ -1,0 +1,78 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=YunNan, L=Kunming, O=CoreDX, OU=CoreDX, CN=CoreDX/emailAddress=coredx@live.cn
+        Validity
+            Not Before: Nov 20 08:40:09 2018 GMT
+            Not After : Nov 19 08:40:09 2021 GMT
+        Subject: C=CN, ST=YunNan, O=CoreDX, OU=CoreDX, CN=localhost/emailAddress=coredx@live.cn
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:c6:3d:5b:9e:c2:d4:97:67:78:aa:7d:7d:bf:76:
+                    14:f6:d3:83:df:97:0f:8f:d2:82:c4:da:2c:74:56:
+                    25:09:4c:d6:c1:78:b9:8d:3d:c2:bb:02:58:f5:ff:
+                    e1:0b:09:c5:e7:15:03:73:09:f8:10:97:d3:f7:e8:
+                    4b:86:22:48:aa:d7:26:7c:72:8a:16:20:aa:b3:67:
+                    8a:84:2e:e0:a5:60:65:68:27:31:79:b6:76:13:7d:
+                    7a:12:2e:02:ec:0c:be:05:ec:b2:42:e3:6b:51:ba:
+                    8a:05:af:ec:7c:50:e2:67:2c:93:b1:02:b9:d3:88:
+                    df:a9:7d:93:7f:93:57:8f:83:19:8f:ff:f6:cf:0a:
+                    b5:61:df:7b:24:42:62:fc:7c:07:04:4c:dc:73:95:
+                    50:dd:5a:f1:c7:21:50:7d:af:1c:eb:32:7b:12:d0:
+                    a2:d4:52:18:b4:b3:0b:cc:0d:16:9e:a1:a1:b2:8f:
+                    1f:21:63:a2:ca:d5:a1:be:b0:20:19:d8:f9:e9:9f:
+                    fd:e9:8c:2e:47:d2:79:a7:4d:d7:af:92:3b:33:73:
+                    22:3a:f4:22:b0:ba:19:41:02:a5:fa:25:8a:7c:4e:
+                    f0:ef:d2:06:3d:7d:61:b6:76:0a:85:1b:dc:b1:16:
+                    e7:c0:6f:db:83:c1:1a:81:48:91:18:13:ca:6a:8e:
+                    4e:71
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Digital Signature, Non Repudiation, Key Encipherment
+            X509v3 Subject Alternative Name: 
+                IP Address:127.0.0.1, DNS:localhost
+    Signature Algorithm: sha256WithRSAEncryption
+         b3:1c:9b:d5:26:d9:98:bb:c8:88:04:ae:90:32:8a:71:b2:23:
+         e7:a2:ed:cc:f7:8c:84:fa:75:4f:fd:37:26:c7:37:5d:a0:dc:
+         29:7d:70:1c:01:72:d2:4f:50:27:74:76:a9:97:97:40:5f:4c:
+         7a:37:88:bb:ab:4e:24:d1:da:3c:d6:bd:17:6d:8a:d7:35:fb:
+         fa:bd:64:54:a1:76:8f:5a:27:cd:aa:48:bd:68:03:34:79:33:
+         4b:5d:65:02:82:10:ab:1a:b2:73:3a:ae:e1:08:39:49:c5:12:
+         0c:65:41:46:6f:c1:5b:43:14:b9:67:a7:c7:f5:23:fd:cb:b4:
+         de:9b:e7:98:6d:5c:08:65:75:d8:b3:b0:0c:ab:dc:b5:73:b0:
+         ca:48:e4:25:49:8d:4d:f8:b9:92:82:24:01:d4:bc:1c:24:b8:
+         e2:dd:cc:81:e5:66:aa:c0:af:18:ac:e4:06:a3:bf:65:f6:b5:
+         65:6e:cf:ee:2c:11:53:0c:15:22:01:d7:e1:59:65:c5:c3:ae:
+         e8:3d:3b:63:b5:14:2e:42:b7:40:f6:29:0f:7d:87:a5:9b:0c:
+         9c:b5:ea:68:cb:ed:05:9c:dd:c1:1c:8b:00:b0:47:2a:21:53:
+         1b:02:a9:b6:b8:2d:5d:f4:fa:3a:c7:78:b4:c6:c1:ea:7b:b1:
+         29:c1:32:3d
+-----BEGIN CERTIFICATE-----
+MIIDpzCCAo+gAwIBAgIBATANBgkqhkiG9w0BAQsFADCBgjELMAkGA1UEBhMCQ04x
+DzANBgNVBAgMBll1bk5hbjEQMA4GA1UEBwwHS3VubWluZzEPMA0GA1UECgwGQ29y
+ZURYMQ8wDQYDVQQLDAZDb3JlRFgxDzANBgNVBAMMBkNvcmVEWDEdMBsGCSqGSIb3
+DQEJARYOY29yZWR4QGxpdmUuY24wHhcNMTgxMTIwMDg0MDA5WhcNMjExMTE5MDg0
+MDA5WjBzMQswCQYDVQQGEwJDTjEPMA0GA1UECAwGWXVuTmFuMQ8wDQYDVQQKDAZD
+b3JlRFgxDzANBgNVBAsMBkNvcmVEWDESMBAGA1UEAwwJbG9jYWxob3N0MR0wGwYJ
+KoZIhvcNAQkBFg5jb3JlZHhAbGl2ZS5jbjCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBAMY9W57C1JdneKp9fb92FPbTg9+XD4/SgsTaLHRWJQlM1sF4uY09
+wrsCWPX/4QsJxecVA3MJ+BCX0/foS4YiSKrXJnxyihYgqrNnioQu4KVgZWgnMXm2
+dhN9ehIuAuwMvgXsskLja1G6igWv7HxQ4mcsk7ECudOI36l9k3+TV4+DGY//9s8K
+tWHfeyRCYvx8BwRM3HOVUN1a8cchUH2vHOsyexLQotRSGLSzC8wNFp6hobKPHyFj
+osrVob6wIBnY+emf/emMLkfSeadN16+SOzNzIjr0IrC6GUECpfolinxO8O/SBj19
+YbZ2CoUb3LEW58Bv24PBGoFIkRgTymqOTnECAwEAAaM2MDQwCQYDVR0TBAIwADAL
+BgNVHQ8EBAMCBeAwGgYDVR0RBBMwEYcEfwAAAYIJbG9jYWxob3N0MA0GCSqGSIb3
+DQEBCwUAA4IBAQCzHJvVJtmYu8iIBK6QMopxsiPnou3M94yE+nVP/TcmxzddoNwp
+fXAcAXLST1AndHapl5dAX0x6N4i7q04k0do81r0XbYrXNfv6vWRUoXaPWifNqki9
+aAM0eTNLXWUCghCrGrJzOq7hCDlJxRIMZUFGb8FbQxS5Z6fH9SP9y7Tem+eYbVwI
+ZXXYs7AMq9y1c7DKSOQlSY1N+LmSgiQB1LwcJLji3cyB5WaqwK8YrOQGo79l9rVl
+bs/uLBFTDBUiAdfhWWXFw67oPTtjtRQuQrdA9ikPfYelmwyctepoy+0FnN3BHIsA
+sEcqIVMbAqm2uC1d9Po6x3i0xsHqe7EpwTI9
+-----END CERTIFICATE-----

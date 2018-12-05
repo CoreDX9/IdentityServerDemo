@@ -1,0 +1,22 @@
+{
+  //以下为Kestrel配置信息,同时支持https和HTTP
+  "RafHost": {
+    "Endpoints": {
+      "Http": {
+        "IsEnabled": true,
+        "Address": "0.0.0.0",
+        "Port": "5000"
+      },
+      "Https": {
+        "IsEnabled": true,
+        "Address": "0.0.0.0",
+        "Port": "5001",
+        "Certificate": {
+          "Source": "File",
+          "Path": "Certificate/server.pfx",
+          "Password": "123456"
+        }
+      }
+    }
+  }
+}

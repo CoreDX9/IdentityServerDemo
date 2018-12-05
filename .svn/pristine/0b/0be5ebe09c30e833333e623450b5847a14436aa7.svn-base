@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "qrcode_js": "1.0.0",
+    "select2": "4.0.5",
+    "@aspnet/signalr": "1.0.4",
+    "jquery.qrcode": "1.0.3",
+    "animate.css": "3.7.0",
+    "layui-src": "2.4.5",
+    "linq-js": "2.1.23",
+    "vue": "2.5.17"
+  }
+}

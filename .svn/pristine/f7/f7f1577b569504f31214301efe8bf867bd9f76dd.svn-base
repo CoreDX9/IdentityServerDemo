@@ -1,0 +1,143 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery/jquery.min.js",
+    "inputFiles": [
+      "bower_components/jquery/dist/jquery.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-validation/jquery.validate.min.js",
+    "inputFiles": [
+      "bower_components/jquery-validation/dist/jquery.validate.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-validation/additional-methods.min.js",
+    "inputFiles": [
+      "bower_components/jquery-validation/dist/additional-methods.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-validation/localization/messages_zh.min.js",
+    "inputFiles": [
+      "bower_components/jquery-validation/dist/localization/messages_zh.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+    "inputFiles": [
+      "bower_components/jquery-validation-unobtrusive/src/jquery.validate.unobtrusive.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/qrcode_js/qrcode.min.js",
+    "inputFiles": [
+      "node_modules/qrcode_js/qrcode.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/animate.css/animate.min.css",
+    "inputFiles": [
+      "node_modules/animate.css/animate.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/chat.min.css",
+    "inputFiles": [
+      "wwwroot/css/chat.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chat.min.js",
+    "inputFiles": [
+      "wwwroot/js/chat.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/signalr/signalr.min.js",
+    "inputFiles": [
+      "node_modules/@aspnet/signalr/dist/browser/signalr.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-dropdown-hover/jquery.bootstrap-dropdown-hover.min.js",
+    "inputFiles": [
+      "bower_components/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/linq-js/linq.min.js",
+    "inputFiles": [
+      "node_modules/linq-js/dist/linq.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jqGrid/css/ui.jqgrid-bootstrap.min.css",
+    "inputFiles": [
+      "bower_components/jqGrid/css/ui.jqgrid-bootstrap.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/jqGrid/js/jquery.jqGrid.min.js",
+    "inputFiles": [
+      "bower_components/jqGrid/js/jquery.jqGrid.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jqGrid/js/i18n/grid.locale-cn.min.js",
+    "inputFiles": [
+      "bower_components/jqGrid/js/i18n/grid.locale-cn.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/vue/vue.min.js",
+    "inputFiles": [
+      "node_modules/vue/dist/vue.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  }
+]

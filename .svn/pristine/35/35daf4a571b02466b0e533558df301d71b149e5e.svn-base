@@ -1,0 +1,6 @@
+<environment include="Development">
+    <link rel="stylesheet" href="~/npm/layui-src/src/css/layui.css"/>
+</environment>
+<environment exclude="Development">
+    <link rel="stylesheet" href="~/lib/layui/css/layui.css" asp-append-version="true">
+</environment>

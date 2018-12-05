@@ -1,0 +1,49 @@
+﻿@page
+@using IdentityServer.Models
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@{
+    ViewData["Title"] = "SimpleRazorPage";
+}
+@*这种方式定义的Razor页面不支持授权和页面扫描功能（）
+    因为这种定义方式VS编译器会强制继承Microsoft.AspNetCore.Mvc.RazorPages.Page
+    无法利用自定义基类实现透明化扩展，除非如下方式手动实现OnGetRazorPageInfoAsync()*@
+@functions
+{
+
+    public void OnGet()
+    {
+        ViewData["Title"] += "-Get";
+        ViewBag.me = "Me";
+    }
+
+    public void OnPost()
+    {
+
+    }
+
+    public async Task<IActionResult> OnGetRazorPageInfoAsync()
+    {
+        var info = new AreaInfo.PageInfo
+        {
+            Name = this.GetType().Name,
+            Area = PageContext.ActionDescriptor.AreaName,
+            HandlerTypeFullName = PageContext.ActionDescriptor.HandlerTypeInfo.FullName,
+        };
+
+        foreach (var handlerMethod in PageContext.ActionDescriptor.HandlerMethods)
+        {
+            info.PageHandlers.Add(new AreaInfo.PageInfo.PageHandlerInfo
+            {
+                HttpMethod = handlerMethod.HttpMethod,
+                Name = handlerMethod.Name,
+                SignName = handlerMethod.MethodInfo.ToString(),
+                Url = Url.Page(PageContext.ActionDescriptor.DisplayName, handlerMethod.Name, new {area = PageContext.ActionDescriptor.AreaName})
+            });
+        }
+
+        return new JsonResult(info);
+    }
+
+}
+<h2>SimpleRazorPage-@ViewBag?.me</h2>
+
