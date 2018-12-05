@@ -1,5 +1,8 @@
 ﻿@using X.PagedList
 @using IdentityServer
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
 @model IPagedList<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>
 
 @{
@@ -39,10 +42,34 @@
 </table>
 
 <div class="layui-form layui-form-pane" style="background-color: white">
-    <div class="layui-form-item" pane>
-        <label class="layui-form-label">无刷新翻页</label>
-        <div class="layui-input-block">
-            <input id="ajaxPagination" type="checkbox" name="yyy" lay-skin="switch" lay-text="ON|OFF">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label"><localize>免刷新翻页</localize></label>
+            <div class="layui-input-block">
+                <input id="ajaxPagination" type="checkbox" lay-skin="switch" lay-text="ON|OFF">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label"><localize>隐藏已翻译文本</localize></label>
+            <div class="layui-input-block">
+                <input id="hiddenTranslatedText" name="hiddenTranslatedText" type="checkbox" lay-skin="switch" lay-text="ON|OFF">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label"><localize>本地化文化</localize></label>
+            <div class="layui-input-inline">
+                <select id="culture" name="culture" asp-items="Context.RequestServices.GetService<IOptions<RequestLocalizationOptions>>().Value.SupportedCultures.Select(i=>new SelectListItem(i.Name,i.Name))" >
+                    <option value=""><localize>--All--</localize></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label"><localize>资源键</localize></label>
+            <div class="layui-input-inline">
+                <select id="resourceKey" name="resourceKey" asp-items="((List<string>)ViewBag.ResourceKeys).Select(i=>new SelectListItem(i,i))" >
+                    <option value=""><localize>--All--</localize></option>
+                </select>
+            </div>
         </div>
     </div>
     <div id="layPager"></div>
@@ -64,17 +91,35 @@
                 var pageSize = parseInt(pageParams.pageSize || '@ViewBag.PageSize');
                 var count = @Model.TotalItemCount;
                 var limits = [5, 10, 20, 30, 40, 50];
+                var firstPager = true;
+                var fromJump = true;
 
                 if (!limits.any(l => l === pageSize)) {
                     limits.push(pageSize);
                     limits = limits.orderBy(l => l).toArray();
                 }
 
+                if (pageParams.hiddenTranslatedText === 'on') {
+                    $('#hiddenTranslatedText').prop('checked', true);
+                }
+
+                $('#culture option').each(function() {
+                    if (pageParams.culture === $(this).val()) {
+                        $(this).attr('selected', 'selected');
+                    }
+                });
+
+                $('#resourceKey option').each(function() {
+                    if (pageParams.resourceKey === $(this).val()) {
+                        $(this).attr('selected', 'selected');
+                    }
+                });
+
                 window.layui.use(['laypage', 'layer', 'form'], function() {
                     var laypage = window.layui.laypage;
                     var layer = window.layui.layer;
 
-                    laypage.render({
+                    var laypageOption = {
                         elem: 'layPager',
                         count: count,
                         curr: pageIndex,
@@ -82,7 +127,7 @@
                         limits: limits,
                         layout: ['prev', 'page', 'next', 'skip', 'limit', 'count', 'refresh'],
                         jump: function (pager, first) {
-                            if (!first) {
+                            if (!(first && firstPager) && fromJump) {
                                 if ($('#ajaxPagination')[0].checked) {
                                     var loading = layer.load(0,
                                         {
@@ -95,10 +140,20 @@
                                         url: locationUrl.path,
                                         data: {
                                             pageIndex: pager.curr,
-                                            pageSize: pager.limit
+                                            pageSize: pager.limit,
+                                            culture: $('#culture').val(),
+                                            resourceKey: $('#resourceKey').val(),
+                                            hiddenTranslatedText:
+                                                ($('#hiddenTranslatedText')[0].checked
+                                                    ? $('#hiddenTranslatedText').val()
+                                                    : '')
                                         },
-                                        success: function(res) {
+                                        success: function (res) {
                                             $('tbody').empty().append($(res));
+                                            laypageOption.count = parseInt($('#totalItemCount').val());
+                                            fromJump = false;
+                                            laypage.render(laypageOption);
+                                            fromJump = true;
                                             layer.close(loading);
                                         },
                                         error: function (xhr, err, ex) {
@@ -114,13 +169,31 @@
                                 } else {
                                     var j = document.createElement('a');
                                     var $j = $(j);
-                                    $j.attr('href', locationUrl.path + '?pageIndex=' + pager.curr + '&pageSize=' + pager.limit).css('display', 'none');
+                                    $j.attr('href',
+                                        locationUrl.path +
+                                        '?pageIndex=' +
+                                        pager.curr +
+                                        '&pageSize=' +
+                                        pager.limit +
+                                        '&culture=' +
+                                        $('#culture').val() +
+                                        '&resourceKey=' +
+                                        $('#resourceKey').val() +
+                                        '&hiddenTranslatedText=' +
+                                        ($('#hiddenTranslatedText')[0].checked
+                                            ? $('#hiddenTranslatedText').val()
+                                            : '')
+                                    ).css('display', 'none');
                                     $('body').append($j);
                                     j.click();
                                 }
+                            } else {
+                                firstPager = false;
                             }
                         }
-                    });
+                    }
+
+                    laypage.render(laypageOption);
                 });
             })();
 

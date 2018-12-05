@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -218,6 +219,8 @@ namespace IdentityServer
                     ServiceLifetime.Singleton);
             }
 
+            //注入修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）
+            services.AddSingleton<IStringLocalizerFactory, MySqlStringLocalizerFactory>();
             //注入基于Sql数据的本地化服务，需要先注入LocalizationModelContext
             services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
 

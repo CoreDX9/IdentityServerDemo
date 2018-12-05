@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
@@ -70,8 +71,8 @@ namespace IdentityServer.Controllers
         }
 
         [HttpDelete, HttpGet, HttpHead, HttpOptions, HttpPatch, HttpPost, HttpPut]
-        [ActionName("GetControllerAndAction")]
-        public async Task<ActionResult> GetControllerAndActionAsync()
+        [ActionName("GetControllersAndActions")]
+        public async Task<ActionResult> GetControllersAndActionsAsync()
         {
             //创建控制器类型列表
             List<Type> controllerTypes = new List<Type>();

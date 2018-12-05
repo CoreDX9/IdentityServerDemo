@@ -1,5 +1,10 @@
-﻿@model IEnumerable<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>
-
+﻿@using X.PagedList
+@model IEnumerable<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>
+<tr style="display: none">
+    <td style="display: none">
+        <input id="totalItemCount" style="display: none" value="@(((IPagedList<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>)Model).TotalItemCount)" />
+    </td>
+</tr>
 @foreach (var item in Model) {
     <tr>
         <td>

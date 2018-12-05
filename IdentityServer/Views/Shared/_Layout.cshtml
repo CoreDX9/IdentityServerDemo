@@ -1,7 +1,4 @@
-﻿@using IdentityServer.Controllers
-@using Microsoft.Extensions.Localization
-@inject IStringLocalizer<HomeController> Localizer
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -33,44 +30,44 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">@Localizer["About"]</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">@Localizer["Contact"]</a></li>
-                    <li><a asp-area="Manage" asp-controller="Localization" asp-action="Index">@Localizer["Management Localization"]</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index"><localize>Home</localize></a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About"><localize>About</localize></a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact"><localize>Contact</localize></a></li>
+                    <li><a asp-area="Manage" asp-controller="Localization" asp-action="Index"><localize>Localization Manager</localize></a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            @Localizer["IdentityManager"]
+                            <localize>Identity Manager</localize>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="Identity" asp-page="/Manage/Users/Index">@Localizer["UserManager"]</a></li>
-                            <li><a asp-area="Identity" asp-page="/Manage/Roles/Index">@Localizer["RoleManager"]</a></li>
+                            <li><a asp-area="Identity" asp-page="/Manage/Users/Index"><localize>User Manager</localize></a></li>
+                            <li><a asp-area="Identity" asp-page="/Manage/Roles/Index"><localize>Role Manager</localize></a></li>
                             @*<li class="divider"></li> 分割线*@
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            @Localizer["Demo"]
+                            <localize>Demo</localize>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="" asp-page="/RazorPageDemo">@Localizer["RazorPage演示"]</a></li>
-                            <li><a asp-area="" asp-page="/SimpleRazorPage2" asp-page-handler="Demo">@Localizer["SimpleRazorPage2-演示"]</a></li>
+                            <li><a asp-area="" asp-page="/RazorPageDemo"><localize>Razor page demo</localize></a></li>
+                            <li><a asp-area="" asp-page="/SimpleRazorPage2" asp-page-handler="Demo"><localize>Simple razor page 2 demo</localize></a></li>
                             <li class="divider"></li>
-                            <li><a asp-area="" asp-controller="Localization" asp-action="Index">@Localizer["Domain演示"]</a></li>
-                            <li><a asp-area="" asp-page="/TreeDomainDemo/Index">@Localizer["TreeDomain演示"]</a></li>
+                            <li><a asp-area="" asp-controller="Localization" asp-action="Index"><localize>Domain demo</localize></a></li>
+                            <li><a asp-area="" asp-page="/TreeDomainDemo/Index"><localize>TreeDomain demo</localize></a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            @Localizer["SignalR"]
+                            <localize>SignalR</localize>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a asp-area="" asp-page="/SignalR/Chat/Index">@Localizer["Chat"]</a></li>
+                            <li><a asp-area="" asp-page="/SignalR/Chat/Index"><localize>Chat</localize></a></li>
                         </ul>
                     </li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="GetControllerAndAction">@Localizer["GetControllerAndAction"]</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="GetControllersAndActions"><localize>Get controllers and actions</localize></a></li>
                 </ul>
                 <partial name="_LoginPartial" />
             </div>

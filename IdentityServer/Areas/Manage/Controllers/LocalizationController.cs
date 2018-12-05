@@ -4,6 +4,7 @@ using IdentityServer.HttpHandlerBase;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NUglify.Helpers;
 using X.PagedList;
 
 namespace IdentityServer.Areas.Manage.Controllers
@@ -20,15 +21,34 @@ namespace IdentityServer.Areas.Manage.Controllers
         }
 
         // GET: DomainDemo
-        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string culture, string resourceKey, string hiddenTranslatedText, int pageIndex = 1, int pageSize = 10)
         {
             ViewBag.PageIndex = pageIndex;
             ViewBag.PageSize = pageSize;
-            var identityDbContext = _context.LocalizationRecords.OrderBy(d=>d.Id);
-            var model = await identityDbContext.ToPagedListAsync(pageIndex, pageSize);
+            var resourceKeys = _context.LocalizationRecords.AsNoTracking().GroupBy(r => r.ResourceKey).Select(r => r.Key).ToList();
+            ViewBag.ResourceKeys = resourceKeys;
+            var query = _context.LocalizationRecords.AsNoTracking();
+            if (hiddenTranslatedText == "on")
+            {
+                query = query.Where(r => r.Text == r.Key + "." + r.LocalizationCulture);
+            }
+            if (!culture.IsNullOrWhiteSpace())
+            {
+                query = query.Where(r => r.LocalizationCulture == culture);
+            }
 
+            if (!resourceKey.IsNullOrWhiteSpace())
+            {
+                query = query.Where(r => r.ResourceKey == resourceKey);
+            }
+
+            query = query.OrderBy(d=>d.Id);
+            var model = await query.ToPagedListAsync(pageIndex, pageSize);
+            //Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseStream
             if (this.IsAjaxRequest())
             {
+                var partialView = PartialView("_IndexTBody", model);
+
                 return PartialView("_IndexTBody", model);
             }
             else
