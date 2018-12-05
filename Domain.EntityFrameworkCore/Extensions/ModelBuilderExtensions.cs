@@ -269,8 +269,16 @@ namespace Domain.EntityFrameworkCore.Extensions
         /// <returns>传入的模型构造器</returns>
         public static ModelBuilder ConfigViewsThatImplementedFromITree(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Query<ApplicationRoleView>().ToView("view_AppRoles");
-            modelBuilder.Query<TreeDomainView>().ToView("view_TreeDomains");
+            modelBuilder.Query<ApplicationRoleView>(b =>
+            {
+                b.Ignore(rv => rv.Parent);
+                b.ToView("view_AppRoles");
+            });
+            modelBuilder.Query<TreeDomainView>(b =>
+            {
+                b.Ignore(rv => rv.Parent);
+                b.ToView("view_TreeDomains");
+            });
 
             return modelBuilder;
         }
