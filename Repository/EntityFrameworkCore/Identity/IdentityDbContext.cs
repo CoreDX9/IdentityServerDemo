@@ -6,6 +6,7 @@ using Domain.Sample;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Domain.EntityFrameworkCore.Extensions;
+using Domain.Security;
 using EntityFrameworkCore.Extensions.Extensions;
 using Repository.RabbitMQ;
 
@@ -23,6 +24,12 @@ namespace Repository.EntityFrameworkCore.Identity
 
         public virtual DbSet<Domain.Sample.Domain> Domains { get; set; }
         public virtual DbSet<TreeDomain> TreeDomains { get; set; }
+        public virtual DbSet<Organization> Organizations { get; set; }
+        public virtual DbSet<PermissionDefinition> PermissionDefinitions { get; set; }
+        public virtual DbSet<UserPermissionDeclaration> UserPermissionDeclarations { get; set; }
+        public virtual DbSet<RolePermissionDeclaration> RolePermissionDeclarations { get; set; }
+        public virtual DbSet<OrganizationPermissionDeclaration> OrganizationPermissionDeclarations { get; set; }
+        public virtual DbSet<RequestHandlerPermissionDeclaration> RequestHandlerPermissionDeclarations { get; set; }
 
         #endregion
 
