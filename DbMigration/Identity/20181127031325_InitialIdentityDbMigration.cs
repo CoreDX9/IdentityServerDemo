@@ -1133,6 +1133,8 @@ namespace DbMigration.Identity
             //自动扫描迁移模型并创建树形实体视图
             migrationBuilder.CreateTreeEntityView(this,
                     AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
+                .CreateIdentityTreeEntityView(this,
+                    AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
                 //从模型注解应用表和列说明
                 .ApplyDatabaseDescription(this);
         }

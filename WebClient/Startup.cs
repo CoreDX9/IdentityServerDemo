@@ -30,7 +30,7 @@ namespace WebClient
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 

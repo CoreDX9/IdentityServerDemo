@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Domain.Identity;
 using Extensions.Logging.File;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
@@ -226,9 +229,28 @@ namespace IdentityServer
 
             //注入MVC相关服务
             services.AddMvc()
+                //注入FluentValidation服务
+                .AddFluentValidation(fv =>
+                {
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true;
+                    fv.ImplicitlyValidateChildProperties = true;
+                })
+                //注入视图本地化服务
                 .AddViewLocalization()
+                //注入数据注解本地化服务
                 .AddDataAnnotationsLocalization()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                //设定兼容性
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            //注入FluentValidation验证器
+            services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
+
+            //AssemblyScanner.FindValidatorsInAssemblyContaining<Startup>().ForEach(pair => {
+            //    // RegisterValidatorsFromAssemblyContaing does this:
+            //    services.Add(ServiceDescriptor.Transient(pair.InterfaceType, pair.ValidatorType));
+            //    // Also register it as its concrete type as well as the interface type
+            //    services.Add(ServiceDescriptor.Transient(pair.ValidatorType, pair.ValidatorType));
+            //});
 
             //配置请求本地化选项
             services.Configure<RequestLocalizationOptions>(
@@ -416,6 +438,7 @@ namespace IdentityServer
             {
                 services.AddDirectoryBrowser();
             }
+            File.WriteAllLines(@"F:\sss.txt",services.Select(s=>$"服务类型：{s.ServiceType.FullName} 实现类型：{s.ImplementationType?.FullName}"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -423,6 +446,9 @@ namespace IdentityServer
         {
             //添加文件日志
             loggerFactory.AddFile(Configuration.GetSection("FileLogging"));
+
+            //配置FluentValidation的本地化
+            app.ConfigLocalizationFluentValidation();
 
             //注册管道是有顺序的
 
@@ -554,7 +580,7 @@ namespace IdentityServer
                 }
 
                 PathString pathString = "/Home/NotFound";
-                QueryString queryString = default;
+                QueryString queryString = new QueryString();
                 PathString originalPath = context.HttpContext.Request.Path;
                 QueryString originalQueryString = context.HttpContext.Request.QueryString;
                 context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(new StatusCodeReExecuteFeature()
