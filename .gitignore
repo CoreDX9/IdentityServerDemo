@@ -263,3 +263,4 @@ __pycache__/
 /.publish/IdentityServer/win-x64
 /.publish
 /IdentityServer/wwwroot/lib
+/.svn
