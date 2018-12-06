@@ -264,3 +264,4 @@ __pycache__/
 /.publish
 /IdentityServer/wwwroot/lib
 /.svn
+.svn/wc.db
