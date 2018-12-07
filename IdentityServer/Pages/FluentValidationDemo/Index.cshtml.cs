@@ -39,10 +39,10 @@ namespace IdentityServer.Pages.FluentValidationDemo
             {
                 RuleFor(x => x.S).NotNull();
                 RuleFor(x => x.B).NotNull();
-                RuleFor(x => x.B.C).NotNull().When(x => x.B != null).WithMessage((a, s) => ValidatorOptions.LanguageManager.GetString(a.GetType().FullName + "+CustomRuleB.C"));
-                RuleFor(x => x.Dp.E).NotNull().When(x => x.Dp != null).WithMessage((a, s) => ValidatorOptions.LanguageManager.GetString(a.GetType().FullName + "+CustomRuleDp.E"));
+                RuleFor(x => x.B.C).NotNull().When(x => x.B != null).WithLanguageManagedMessage("'{PropertyName}' 是必填的");
+                RuleFor(x => x.Dp.E).NotNull().When(x => x.Dp != null).WithLanguageManagedMessage("'{PropertyName}' 是必填的");
                 RuleFor(x => x.T).Equal(a => a.S);
-                RuleFor(x => x.T).Must(t => t.Length > 1).WithMessage((a, s) => ValidatorOptions.LanguageManager.GetString(a.GetType().FullName + "+CustomRuleT"));
+                RuleFor(x => x.T).Must(t => t?.Length > 1).WithLanguageManagedMessage("'{PropertyName}' 需要至少2个字");
             }
         }
 
