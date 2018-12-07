@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using Domain.Identity;
 using Extensions.Logging.File;
@@ -438,7 +437,6 @@ namespace IdentityServer
             {
                 services.AddDirectoryBrowser();
             }
-            File.WriteAllLines(@"F:\sss.txt",services.Select(s=>$"服务类型：{s.ServiceType.FullName} 实现类型：{s.ImplementationType?.FullName}"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
