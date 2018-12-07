@@ -1,4 +1,0 @@
-﻿
-@{
-    Layout = "/Areas/Identity/Pages/Manage/Users/_Layout.cshtml";
-}

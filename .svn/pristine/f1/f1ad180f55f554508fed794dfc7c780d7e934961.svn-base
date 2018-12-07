@@ -1,6 +1,0 @@
-<environment include="Development">
-    <script src="~/bower/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.js"></script>
-</environment>
-<environment exclude="Development">
-    <script src="~/lib/bootstrap-dropdown-hover/jquery.bootstrap-dropdown-hover.min.js" asp-append-version="true"></script>
-</environment>

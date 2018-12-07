@@ -1,4 +1,0 @@
-﻿@using IdentityServer
-@using IdentityServer4
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@addTagHelper *, Joonasw.AspNetCore.SecurityHeaders

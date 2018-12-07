@@ -1,8 +1,0 @@
-﻿@page
-@model IdentityServer.Pages.RazorPageDemoModel
-@{
-    ViewData["Title"] = "RazorPageDemo";
-}
-
-<h2>RazorPageDemo</h2>
-
