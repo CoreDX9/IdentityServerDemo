@@ -12,6 +12,18 @@
     ]
   },
   {
+    "outputFileName": "wwwroot/library/jquery-resize/jquery-resize.min.js",
+    "inputFiles": [
+      "wwwroot/library/jquery-resize/jquery-resize.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/library/parse-url/parse-url.min.js",
+    "inputFiles": [
+      "wwwroot/library//parse-urlparse-url.js"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/lib/jquery/jquery.min.js",
     "inputFiles": [
       "bower_components/jquery/dist/jquery.min.js"
