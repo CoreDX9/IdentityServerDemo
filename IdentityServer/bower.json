@@ -9,5 +9,8 @@
     "bootstrap": "v3.3.7",
     "jquery-validation": "1.19.0",
     "jquery-validation-unobtrusive": "v3.2.11"
+  },
+  "resolutions": {
+    "jquery": "3.3.1"
   }
 }
