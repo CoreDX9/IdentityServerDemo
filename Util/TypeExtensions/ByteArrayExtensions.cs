@@ -5,6 +5,10 @@ namespace Util.TypeExtensions
 {
     public static class ByteArrayExtensions
     {
+        public static string ToString(this byte[] bytes, Encoding encoding)
+        {
+            return encoding.GetString(bytes);
+        }
         public static string ToBase64String(this byte[] value)
         {
             return Convert.ToBase64String(value);

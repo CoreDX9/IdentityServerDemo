@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer.HttpHandlerBase;
 using Localization.SqlLocalizer.DbStringLocalizer;
@@ -25,7 +27,27 @@ namespace IdentityServer.Areas.Manage.Controllers
         {
             ViewBag.PageIndex = pageIndex;
             ViewBag.PageSize = pageSize;
-            var resourceKeys = _context.LocalizationRecords.AsNoTracking().GroupBy(r => r.ResourceKey).Select(r => r.Key).ToList();
+
+            List<string> resourceKeys = null;
+
+            for (int i = 0; i <= 3; i++)
+            {
+                try
+                {
+                    resourceKeys = _context.LocalizationRecords.AsNoTracking().GroupBy(r => r.ResourceKey)
+                        .Select(r => r.Key).ToList();
+                    break;
+                }
+                catch
+                {
+                    if (i >= 3)
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(500);
+                }
+            }
+            
             ViewBag.ResourceKeys = resourceKeys;
             var query = _context.LocalizationRecords.AsNoTracking();
             if (hiddenTranslatedText == "on")
@@ -44,11 +66,9 @@ namespace IdentityServer.Areas.Manage.Controllers
 
             query = query.OrderBy(d=>d.Id);
             var model = await query.ToPagedListAsync(pageIndex, pageSize);
-            //Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseStream
+
             if (this.IsAjaxRequest())
             {
-                var partialView = PartialView("_IndexTBody", model);
-
                 return PartialView("_IndexTBody", model);
             }
             else

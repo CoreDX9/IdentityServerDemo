@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domain.Security;
 using Repository.EntityFrameworkCore.Identity;
+using IdentityServer.HttpHandlerBase;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
-    public class PermissionDefinitionController : Controller
+    public class PermissionDefinitionController : BaseController
     {
         private readonly ApplicationIdentityDbContext _context;
 

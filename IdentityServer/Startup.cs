@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using AutoMapper;
 using Domain.Identity;
 using Extensions.Logging.File;
 using FluentValidation;
@@ -58,6 +59,9 @@ namespace IdentityServer
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            //注入AutoMapper服务
+            services.AddAutoMapper();
 
             //注入响应压缩服务（gzip）
             services.AddResponseCompression();

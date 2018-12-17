@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@(Layout = null)
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -63,13 +64,25 @@
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a asp-area="HPlus" asp-controller="Home" asp-action="Page2" class="J_menuItem">页面2</a>
-                            </li>
-                            <li>
-                                <a asp-area="HPlus" asp-controller="Home" asp-action="Page3" class="J_menuItem">页面3</a>
+                                <a asp-area="Manage" asp-controller="Home" asp-action="Page2" class="J_menuItem">页面2</a>
                             </li>
                             <li>
                                 <a asp-area="Manage" asp-controller="Localization" asp-action="Index" class="J_menuItem">本地化翻译</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-users"></i>
+                            <span class="nav-label">用户管理</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a asp-area="Manage" asp-controller="Users" asp-action="Index" class="J_menuItem">用户列表</a>
+                            </li>
+                            <li>
+                                <a asp-area="Manage" asp-controller="Users" asp-action="Create" class="J_menuItem">添加用户</a>
                             </li>
                         </ul>
                     </li>
@@ -78,7 +91,7 @@
         </nav>
         <!--左侧导航结束-->
         <!--右侧部分开始-->
-        <div id="page-wrapper" class="gray-bg dashbard-1">
+        <div id="page-wrapper" class="gray-bg">
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header">
@@ -182,7 +195,11 @@
                 </button>
                 <nav class="page-tabs J_menuTabs">
                     <div class="page-tabs-content">
-                        <a href="javascript:;" class="active J_menuTab" data-id="@Url.Action("Page1", "Home", new {area = "HPlus"})">首页 </a>
+                        <a href="javascript:;" class="active J_menuTab" data-id="@Url.Action("Page1", "Home", new {area = "Manage"})">
+                            首页
+                            @*取消注释激活关闭按钮*@
+                            @*<i class="fa fa-times-circle J_closeTab"></i>*@
+                        </a>
                     </div>
                 </nav>
                 <button class="roll-nav roll-right J_tabRight">
@@ -208,7 +225,7 @@
                 <a href="login.html" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
             </div>
             <div class="row J_mainContent" id="content-main">
-                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="@Url.Action("Page1", "Home", new {area = "HPlus"})" frameborder="0" data-id="@Url.Action("Page1", "Home", new {area = "HPlus"})" seamless></iframe>
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="@Url.Action("Page1", "Home", new {area = "Manage"})" frameborder="0" data-id="@Url.Action("Page1", "Home", new {area = "Manage"})" seamless></iframe>
             </div>
             <div class="footer">
                 <div class="pull-right">

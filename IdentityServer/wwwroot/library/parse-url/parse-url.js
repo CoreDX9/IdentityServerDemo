@@ -1,10 +1,10 @@
-﻿; (function(window) {
+﻿; (function (window) {
     window.parseUrl = function (url) {
         //创建一个a标签
         var a = document.createElement('a');
         //将url赋值给标签的href属性。
         a.href = url;
-        return {
+        var result = {
             source: url,
             protocol: a.protocol.replace(':', ''), //协议
             host: a.hostname, //主机名称
@@ -31,5 +31,17 @@
             relative: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [null, ''])[1], //相对路径
             segments: a.pathname.replace(/^\//, '').split('/') //路径片段
         };
+        var isDefaultPort = ((result.protocol === 'http' && (result.port === '80' || result.port === '')) ||
+            (result.protocol === 'https' && (result.port === '443' || result.port === '')));
+        result.link =
+            result.protocol +
+            '://' +
+            result.host +
+            (isDefaultPort ? '' : ':' + result.port) +
+            result.path +
+            result.queryString +
+            result.hash;
+
+        return result;
     };
 })(window);

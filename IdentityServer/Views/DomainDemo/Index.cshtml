@@ -111,6 +111,13 @@
                                         },
                                         success: function(res) {
                                             $('tbody').empty().append($(res));
+                                            window.history.pushState({},
+                                                '',
+                                                locationUrl.path +
+                                                '?pageIndex=' +
+                                                pager.curr +
+                                                '&pageSize=' +
+                                                pager.limit);
                                             layer.close(loading);
                                         },
                                         error: function (xhr, err, ex) {

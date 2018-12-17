@@ -115,19 +115,22 @@ $(function () {
         }
     });
 
+    //点击链接显示选项卡
     function menuItem() {
+        var $this = $(this);
         // 获取标识数据
-        var dataUrl = $(this).attr('href'),
-            dataIndex = $(this).data('index'),
-            menuName = $.trim($(this).text()),
+        var dataUrl = $this.attr('href'),
+            dataIndex = $this.data('index'),
+            menuName = $.trim($this.text()),
             flag = true;
         if (dataUrl === undefined || $.trim(dataUrl).length === 0)return false;
 
         // 选项卡菜单已存在
         $('.J_menuTab').each(function () {
-            if ($(this).data('id') === dataUrl) {
-                if (!$(this).hasClass('active')) {
-                    $(this).addClass('active').siblings('.J_menuTab').removeClass('active');
+            var $eachThis = $(this);
+            if ($eachThis.data('id') === dataUrl) {
+                if (!$eachThis.hasClass('active')) {
+                    $eachThis.addClass('active').siblings('.J_menuTab').removeClass('active');
                     scrollToTab(this);
                     // 显示tab对应的内容区
                     $('.J_mainContent .J_iframe').each(function () {
@@ -148,43 +151,46 @@ $(function () {
 
         // 选项卡菜单不存在
         if (flag) {
-            var str = '<a href="javascript:;" class="active J_menuTab" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
+            var str = '<a href="javascript:;" class="active J_menuTab" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle J_closeTab"></i></a>';
             $('.J_menuTab').removeClass('active');
 
             // 添加选项卡对应的iframe
-            var str1 = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + dataUrl + '" frameborder="0" data-id="' + dataUrl + '" seamless></iframe>';
-            $('.J_mainContent').find('iframe.J_iframe').hide().parents('.J_mainContent').append(str1);
+            var str1 = '<iframe class="J_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" frameborder="0" data-id="' + dataUrl + '" seamless></iframe>';
+            var iframe = $(str1);
+            $('.J_mainContent').find('iframe.J_iframe').hide().parents('.J_mainContent').append(iframe);
 
             //显示loading提示
             var loading = layer.load();
 
-            $('.J_mainContent iframe:visible').load(dataUrl, {}, function () {
+            iframe.on('load', function () {
                 //iframe加载完成后隐藏loading提示
                 layer.close(loading);
             });
+            iframe.attr('src', dataUrl);
+
             // 添加选项卡
             $('.J_menuTabs .page-tabs-content').append(str);
             scrollToTab($('.J_menuTab.active'));
         }
         return false;
     }
-
     $('.J_menuItem').on('click', menuItem);
 
-    // 关闭选项卡菜单
+    // 关闭选项卡
     function closeTab() {
-        var closeTabId = $(this).parents('.J_menuTab').data('id');
-        var currentWidth = $(this).parents('.J_menuTab').width();
+        var $this = $(this);
+        var closeTabId = $this.parents('.J_menuTab').data('id');
+        var currentWidth = $this.parents('.J_menuTab').width();
 
         // 当前元素处于活动状态
-        if ($(this).parents('.J_menuTab').hasClass('active')) {
+        if ($this.parents('.J_menuTab').hasClass('active')) {
             var activeId;
 
             // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
-            if ($(this).parents('.J_menuTab').next('.J_menuTab').length > 0) {
+            if ($this.parents('.J_menuTab').next('.J_menuTab').length > 0) {
 
-                activeId = $(this).parents('.J_menuTab').next('.J_menuTab:eq(0)').data('id');
-                $(this).parents('.J_menuTab').next('.J_menuTab:eq(0)').addClass('active');
+                activeId = $this.parents('.J_menuTab').next('.J_menuTab:eq(0)').data('id');
+                $this.parents('.J_menuTab').next('.J_menuTab:eq(0)').addClass('active');
 
                 $('.J_mainContent .J_iframe').each(function () {
                     if ($(this).data('id') === activeId) {
@@ -217,9 +223,9 @@ $(function () {
             }
 
             // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
-            if ($(this).parents('.J_menuTab').prev('.J_menuTab').length > 0) {
-                activeId = $(this).parents('.J_menuTab').prev('.J_menuTab:last').data('id');
-                $(this).parents('.J_menuTab').prev('.J_menuTab:last').addClass('active');
+            if ($this.parents('.J_menuTab').prev('.J_menuTab').length > 0) {
+                activeId = $this.parents('.J_menuTab').prev('.J_menuTab:last').data('id');
+                $this.parents('.J_menuTab').prev('.J_menuTab:last').addClass('active');
                 $('.J_mainContent .J_iframe').each(function () {
                     if ($(this).data('id') === activeId) {
                         $(this).show().siblings('.J_iframe').hide();
@@ -261,8 +267,7 @@ $(function () {
         }
         return false;
     }
-
-    $('.J_menuTabs').on('click', '.J_menuTab i', closeTab);
+    $('.J_menuTabs').on('click', '.J_menuTab .J_closeTab', closeTab);
 
     //关闭其他选项卡
     function closeOtherTabs(){
@@ -280,11 +285,11 @@ $(function () {
     }
     $('.J_tabShowActive').on('click', showActiveTab);
 
-
     // 点击选项卡菜单
     function activeTab() {
-        if (!$(this).hasClass('active')) {
-            var currentId = $(this).data('id');
+        var $this = $(this);
+        if (!$this.hasClass('active')) {
+            var currentId = $this.data('id');
             // 显示tab对应的内容区
             $('.J_mainContent .J_iframe').each(function () {
                 if ($(this).data('id') === currentId) {
@@ -294,11 +299,10 @@ $(function () {
 
                 return null;
             });
-            $(this).addClass('active').siblings('.J_menuTab').removeClass('active');
+            $this.addClass('active').siblings('.J_menuTab').removeClass('active');
             scrollToTab(this);
         }
     }
-
     $('.J_menuTabs').on('click', '.J_menuTab', activeTab);
 
     //刷新iframe
@@ -307,12 +311,11 @@ $(function () {
         var url = target.attr('src');
         //显示loading提示
         var loading = layer.load();
-        target.attr('src', url).load(url, {}, function () {
+        target.on('load', function () {
             //关闭loading提示
             layer.close(loading);
-        });
+        }).attr('src', url);
     }
-
     $('.J_menuTabs').on('dblclick', '.J_menuTab', refreshTab);
 
     // 左移按扭
@@ -323,15 +326,15 @@ $(function () {
 
     // 关闭全部
     $('.J_tabCloseAll').on('click', function () {
-        $('.page-tabs-content').children("[data-id]").not(":first").each(function () {
+        var $pageTabsContent = $('.page-tabs-content');
+        $pageTabsContent.children("[data-id]").not(":first").each(function () {
             $('.J_iframe[data-id="' + $(this).data('id') + '"]').remove();
             $(this).remove();
         });
-        $('.page-tabs-content').children("[data-id]:first").each(function () {
+        $pageTabsContent.children("[data-id]:first").each(function () {
             $('.J_iframe[data-id="' + $(this).data('id') + '"]').show();
             $(this).addClass("active");
         });
-        $('.page-tabs-content').css("margin-left", "0");
+        $pageTabsContent.css("margin-left", "0");
     });
-
 });

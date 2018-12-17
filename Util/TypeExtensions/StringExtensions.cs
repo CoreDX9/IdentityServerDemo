@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Util.TypeExtensions
@@ -15,6 +16,11 @@ namespace Util.TypeExtensions
         public static bool IsNullOrWhiteSpace(this string value)
         {
             return string.IsNullOrWhiteSpace(value);
+        }
+
+        public static byte[] ToBytes(this string value, Encoding encoding)
+        {
+            return encoding.GetBytes(value);
         }
 
         public static byte[] ToBytesFromBase64String(this string base64String)

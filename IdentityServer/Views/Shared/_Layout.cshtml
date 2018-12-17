@@ -40,6 +40,7 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a asp-area="Manage" asp-controller="Home" asp-action="Index"><localize>Manager Home</localize></a></li>
                             <li><a asp-area="Identity" asp-page="/Manage/Users/Index"><localize>User Manager</localize></a></li>
                             <li><a asp-area="Identity" asp-page="/Manage/Roles/Index"><localize>Role Manager</localize></a></li>
                             @*<li class="divider"></li> 分割线*@
@@ -55,7 +56,7 @@
                             <li><a asp-area="" asp-page="/SimpleRazorPage2" asp-page-handler="Demo"><localize>Simple razor page 2 demo</localize></a></li>
                             <li><a asp-area="" asp-page="/FluentValidationDemo/Index"><localize>FluentValidation demo</localize></a></li>
                             <li class="divider"></li>
-                            <li><a asp-area="" asp-controller="Localization" asp-action="Index"><localize>Domain demo</localize></a></li>
+                            <li><a asp-area="" asp-controller="DomainDemo" asp-action="Index"><localize>Domain demo</localize></a></li>
                             <li><a asp-area="" asp-page="/TreeDomainDemo/Index"><localize>TreeDomain demo</localize></a></li>
                         </ul>
                     </li>
