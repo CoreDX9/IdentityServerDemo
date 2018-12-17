@@ -60,6 +60,9 @@ namespace IdentityServer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            //注入视图渲染服务
+            services.AddTransient<RazorViewToStringRenderer>();
+
             //注入AutoMapper服务
             services.AddAutoMapper();
 

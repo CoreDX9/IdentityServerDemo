@@ -16,10 +16,12 @@ namespace IdentityServer.Areas.Manage.Controllers
     {
         private readonly LocalizationModelContext _context;
         private readonly IStringExtendedLocalizerFactory _stringExtendedLocalizerFactory;
-        public LocalizationController(LocalizationModelContext context, IStringExtendedLocalizerFactory stringExtendedLocalizerFactory)
+        private readonly RazorViewToStringRenderer _razorViewToStringRenderer;
+        public LocalizationController(LocalizationModelContext context, IStringExtendedLocalizerFactory stringExtendedLocalizerFactory, RazorViewToStringRenderer razorViewToStringRenderer)
         {
             _context = context;
-            this._stringExtendedLocalizerFactory = stringExtendedLocalizerFactory;
+            _stringExtendedLocalizerFactory = stringExtendedLocalizerFactory;
+            _razorViewToStringRenderer = razorViewToStringRenderer;
         }
 
         // GET: DomainDemo
@@ -66,6 +68,9 @@ namespace IdentityServer.Areas.Manage.Controllers
 
             query = query.OrderBy(d=>d.Id);
             var model = await query.ToPagedListAsync(pageIndex, pageSize);
+
+            //Razor视图渲染为字符串
+            //var razorViewString = await _razorViewToStringRenderer.RenderViewToStringAsync("_IndexTBody1", model, RouteData, ControllerContext.ActionDescriptor, HttpContext, ModelState);
 
             if (this.IsAjaxRequest())
             {
