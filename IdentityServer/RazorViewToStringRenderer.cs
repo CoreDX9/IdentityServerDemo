@@ -34,7 +34,7 @@ namespace IdentityServer
         }
 
         /// <summary>
-        /// 渲染并返回结果（不支持依赖UrlHelper的链接生成，如果需要，可以在Asp.Net Core 2.2之后注入并使用LinkGenerator）
+        /// 渲染并返回结果（在非Web环境中不支持依赖UrlHelper的链接生成，如果需要，可以在Asp.Net Core 2.2之后注入并使用LinkGenerator）
         /// </summary>
         /// <typeparam name="TModel">视图模型类型</typeparam>
         /// <param name="viewName">视图名称（或视图路径）</param>
@@ -99,14 +99,7 @@ namespace IdentityServer
             HttpContext defaultHttpContext;
             if (httpContext != null)
             {
-                defaultHttpContext = new DefaultHttpContext(httpContext.Features)
-                {
-                    RequestServices = httpContext.RequestServices,
-                    Items = httpContext.Items,
-                    //Session = httpContext.Session,
-                    TraceIdentifier = httpContext.TraceIdentifier,
-                    User = httpContext.User
-                };
+                defaultHttpContext = httpContext;
             }
             else
             {
@@ -117,6 +110,15 @@ namespace IdentityServer
             }
 
             return new ActionContext(defaultHttpContext, routeData ?? new RouteData(), actionDescriptor ?? new ActionDescriptor(), modelStateDictionary ?? new ModelStateDictionary());
+        }
+    }
+
+    public static class RazorViewToStringRendererExtensions
+    {
+        public static async Task<string> RenderViewToStringAsync<TModel>(this RazorViewToStringRenderer razorViewToStringRenderer,string viewName, TModel model, ControllerContext controllerContext)
+        {
+            return await razorViewToStringRenderer.RenderViewToStringAsync(viewName, model, controllerContext.RouteData,
+                controllerContext.ActionDescriptor, controllerContext.HttpContext, controllerContext.ModelState);
         }
     }
 }
