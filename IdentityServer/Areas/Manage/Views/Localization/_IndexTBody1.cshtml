@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Routing
+@using X.PagedList
+@model IEnumerable<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>
+@inject LinkGenerator LinkGenerator
+@(Layout = null)
+<tr style="display: none">
+    <td style="display: none">
+        <input id="totalItemCount" style="display: none" value="@(((IPagedList<Localization.SqlLocalizer.DbStringLocalizer.LocalizationRecord>)Model).TotalItemCount)" />
+    </td>
+</tr>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Key)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Text)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LocalizationCulture)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ResourceKey)
+        </td>
+        <td>
+            <a href="@LinkGenerator.GetUriByAction("Edit", "Localization", new {area = "Manage", id = item.Id}, "https", new HostString("localhost", 5001))">Edit</a> |
+            <a href="@LinkGenerator.GetUriByAction(Context, "Delete", values: new {area = "Manage", id = item.Id})">Details</a> |
+            <a asp-action="Index">Index</a>
+        </td>
+    </tr>
+}

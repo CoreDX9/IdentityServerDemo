@@ -34,17 +34,19 @@ namespace IdentityServer
         }
 
         /// <summary>
-        /// 渲染并返回结果
+        /// 渲染并返回结果（在非Web环境中不支持依赖UrlHelper的链接生成，如果需要，可以在Asp.Net Core 2.2之后注入并使用LinkGenerator）
         /// </summary>
         /// <typeparam name="TModel">视图模型类型</typeparam>
         /// <param name="viewName">视图名称（或视图路径）</param>
         /// <param name="model">视图模型</param>
         /// <param name="routeData">路由数据，传入实际数据可以使用相对路径查找视图、视图引用的部分视图和其他资源，一般直接传入HttpContext中的RouteData</param>
         /// <param name="actionDescriptor">动作描述信息，传入实际数据可以使用相对路径查找视图、视图引用的部分视图和其他资源，一般直接传入HttpContext中的ActionDescriptor</param>
+        /// <param name="httpContext">Http上下文</param>
+        /// <param name="modelStateDictionary">模型状态字典</param>
         /// <returns></returns>
-        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model, RouteData routeData = null, ActionDescriptor actionDescriptor = null)
+        public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model, RouteData routeData = null, ActionDescriptor actionDescriptor = null, HttpContext httpContext = null, ModelStateDictionary modelStateDictionary = null)
         {
-            var actionContext = GetActionContext(routeData, actionDescriptor);
+            var actionContext = GetActionContext(routeData, actionDescriptor, httpContext, modelStateDictionary);
             var view = FindView(actionContext, viewName);
 
             using (var output = new StringWriter())
@@ -92,13 +94,31 @@ namespace IdentityServer
             throw new InvalidOperationException(errorMessage);
         }
 
-        private ActionContext GetActionContext(RouteData routeData = null, ActionDescriptor actionDescriptor = null)
+        private ActionContext GetActionContext(RouteData routeData = null, ActionDescriptor actionDescriptor = null, HttpContext httpContext = null, ModelStateDictionary modelStateDictionary = null)
         {
-            var httpContext = new DefaultHttpContext
+            HttpContext defaultHttpContext;
+            if (httpContext != null)
             {
-                RequestServices = _serviceProvider
-            };
-            return new ActionContext(httpContext, routeData ?? new RouteData(), actionDescriptor ?? new ActionDescriptor());
+                defaultHttpContext = httpContext;
+            }
+            else
+            {
+                defaultHttpContext = new DefaultHttpContext
+                {
+                    RequestServices = _serviceProvider,
+                };
+            }
+
+            return new ActionContext(defaultHttpContext, routeData ?? new RouteData(), actionDescriptor ?? new ActionDescriptor(), modelStateDictionary ?? new ModelStateDictionary());
+        }
+    }
+
+    public static class RazorViewToStringRendererExtensions
+    {
+        public static async Task<string> RenderViewToStringAsync<TModel>(this RazorViewToStringRenderer razorViewToStringRenderer,string viewName, TModel model, ControllerContext controllerContext)
+        {
+            return await razorViewToStringRenderer.RenderViewToStringAsync(viewName, model, controllerContext.RouteData,
+                controllerContext.ActionDescriptor, controllerContext.HttpContext, controllerContext.ModelState);
         }
     }
 }
