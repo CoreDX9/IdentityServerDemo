@@ -2,554 +2,733 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - H+</title>
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 响应式视口 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Manage</title>
+    <!-- Bootstrap Core CSS -->
     <partial name="_BootstrapStylesPartial" />
-    <partial name="_AnimateCssStylesPartial" />
-    <partial name="_SiteStylesPartial" />
-    <partial name="_LayuiStylesPartial"/>
+    @*<partial name="_WavesStylesPartial" />*@
+    <!-- Custom CSS -->
+    <link href="css/manage/style.css" rel="stylesheet">
+    <link href="css/manage/tabs.css" rel="stylesheet">
+    <!-- 主体颜色 You can change the theme colors from here -->
+    <link href="css/manage/colors/blue.css" id="theme" rel="stylesheet">
+    <style>
+        .page-wrapper .container-fluid {
+            padding: 0;
+        }
 
-    <link href="~/library/h-plus/css/font-awesome.css" rel="stylesheet" />
-    <link href="~/library/h-plus/css/style.css" rel="stylesheet" />
+        .content-tabs {
+            margin: 0;
+        }
+
+        .J_mainContent {
+            margin: 0;
+        }
+
+        .page-titles {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
-<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
-
-    <div id="wrapper">
-        <!--左侧导航开始-->
-        <nav class="navbar-default navbar-static-side" role="navigation">
-            <div class="nav-close">
-                <i class="fa fa-times-circle"></i>
-            </div>
-            <div class="sidebar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li class="nav-header">
-                        <div class="dropdown profile-element">
-                            <span><img alt="image" class="img-circle" src="" /></span>
-                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                                <span class="clear">
-                                    <span class="block m-t-xs"><strong class="font-bold">Beaut-zihan</strong></span>
-                                    <span class="text-muted text-xs block">超级管理员<b class="caret"></b></span>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li>
-                                    <a class="J_menuItem" href="form_avatar.html">修改头像</a>
-                                </li>
-                                <li>
-                                    <a class="J_menuItem" href="profile.html">个人资料</a>
-                                </li>
-                                <li>
-                                    <a class="J_menuItem" href="contacts.html">联系我们</a>
-                                </li>
-                                <li>
-                                    <a class="J_menuItem" href="mailbox.html">信箱</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="login.html">安全退出</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="logo-element">
-                            H+
-                        </div>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa fa-home"></i>
-                            <span class="nav-label">主页</span>
-                            <span class="fa arrow"></span>
-                        </a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a asp-area="Manage" asp-controller="Home" asp-action="Page2" class="J_menuItem">页面2</a>
-                            </li>
-                            <li>
-                                <a asp-area="Manage" asp-controller="Localization" asp-action="Index" class="J_menuItem">本地化翻译</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa fa-users"></i>
-                            <span class="nav-label">用户管理</span>
-                            <span class="fa arrow"></span>
-                        </a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a asp-area="Manage" asp-controller="Users" asp-action="Index" class="J_menuItem">用户列表</a>
-                            </li>
-                            <li>
-                                <a asp-area="Manage" asp-controller="Users" asp-action="Create" class="J_menuItem">添加用户</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <!--左侧导航结束-->
-        <!--右侧部分开始-->
-        <div id="page-wrapper" class="gray-bg">
-            <div class="row border-bottom">
-                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
-                    <div class="navbar-header">
-                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
-                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
-                            <div class="form-group">
-                                <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search">
-                            </div>
-                        </form>
-                    </div>
-                    <ul class="nav navbar-top-links navbar-right">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                                <i class="fa fa-envelope"></i> <span class="label label-warning">16</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-messages">
-                                <li class="m-t-xs">
-                                    <div class="dropdown-messages-box">
-                                        <a href="profile.html" class="pull-left">
-                                            <img alt="image" class="img-circle" src="">
-                                        </a>
-                                        <div class="media-body">
-                                            <small class="pull-right">46小时前</small>
-                                            <strong>小四</strong> 这个在日本投降书上签字的军官，建国后一定是个不小的干部吧？
-                                            <br>
-                                            <small class="text-muted">3天前 2016.11.8</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <div class="dropdown-messages-box">
-                                        <a href="profile.html" class="pull-left">
-                                            <img alt="image" class="img-circle" src="">
-                                        </a>
-                                        <div class="media-body ">
-                                            <small class="pull-right text-navy">25小时前</small>
-                                            <strong>国民岳父</strong> 如何看待“男子不满自己爱犬被称为狗，刺伤路人”？——这人比犬还凶
-                                            <br>
-                                            <small class="text-muted">昨天</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <div class="text-center link-block">
-                                        <a class="J_menuItem" href="mailbox.html">
-                                            <i class="fa fa-envelope"></i> <strong> 查看所有消息</strong>
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                                <i class="fa fa-bell"></i> <span class="label label-primary">8</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-alerts">
-                                <li>
-                                    <a href="mailbox.html">
-                                        <div>
-                                            <i class="fa fa-envelope fa-fw"></i> 您有16条未读消息
-                                            <span class="pull-right text-muted small">4分钟前</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="profile.html">
-                                        <div>
-                                            <i class="fa fa-qq fa-fw"></i> 3条新回复
-                                            <span class="pull-right text-muted small">12分钟钱</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <div class="text-center link-block">
-                                        <a class="J_menuItem" href="notifications.html">
-                                            <strong>查看所有 </strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="hidden-xs">
-                            <a href="index_v1.html" class="J_menuItem" data-index="0"><i class="fa fa-cart-arrow-down"></i> 购买</a>
-                        </li>
-                        <li class="dropdown hidden-xs">
-                            <a class="right-sidebar-toggle" aria-expanded="false">
-                                <i class="fa fa-tasks"></i> 主题
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="row content-tabs">
-                <button class="roll-nav roll-left J_tabLeft">
-                    <i class="fa fa-backward"></i>
-                </button>
-                <nav class="page-tabs J_menuTabs">
-                    <div class="page-tabs-content">
-                        <a href="javascript:;" class="active J_menuTab" data-id="@Url.Action("Page1", "Home", new {area = "Manage"})">
-                            首页
-                            @*取消注释激活关闭按钮*@
-                            @*<i class="fa fa-times-circle J_closeTab"></i>*@
-                        </a>
-                    </div>
-                </nav>
-                <button class="roll-nav roll-right J_tabRight">
-                    <i class="fa fa-forward"></i>
-                </button>
-                <div class="btn-group roll-nav roll-right">
-                    <button class="dropdown J_tabClose" data-toggle="dropdown">
-                        关闭操作<span class="caret"></span>
-                    </button>
-                    <ul role="menu" class="dropdown-menu dropdown-menu-right">
-                        <li class="J_tabShowActive">
-                            <a>定位当前选项卡</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="J_tabCloseAll">
-                            <a>关闭全部选项卡</a>
-                        </li>
-                        <li class="J_tabCloseOther">
-                            <a>关闭其他选项卡</a>
-                        </li>
-                    </ul>
-                </div>
-                <a href="login.html" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
-            </div>
-            <div class="row J_mainContent" id="content-main">
-                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="@Url.Action("Page1", "Home", new {area = "Manage"})" frameborder="0" data-id="@Url.Action("Page1", "Home", new {area = "Manage"})" seamless></iframe>
-            </div>
-            <div class="footer">
-                <div class="pull-right">
-                    &copy; 2014-2017 <a href="http://www.zi-han.net/" target="_blank">zihan's blog</a>
-                </div>
-            </div>
-        </div>
-        <!--右侧部分结束-->
-        <!--右侧边栏开始-->
-        <div id="right-sidebar">
-            <div class="sidebar-container">
-                <ul class="nav nav-tabs navs-3">
-                    <li class="active">
-                        <a data-toggle="tab" href="#tab-1">
-                            <i class="fa fa-gear"></i> 主题
-                        </a>
-                    </li>
-                    <li class="">
-                        <a data-toggle="tab" href="#tab-2">
-                            通知
-                        </a>
-                    </li>
-                    <li>
-                        <a data-toggle="tab" href="#tab-3">
-                            项目进度
-                        </a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div id="tab-1" class="tab-pane active">
-                        <div class="sidebar-title">
-                            <h3> <i class="fa fa-comments-o"></i> 主题设置</h3>
-                            <small><i class="fa fa-tim"></i> 你可以从这里选择和预览主题的布局和样式，这些设置会被保存在本地，下次打开的时候会直接应用这些设置。</small>
-                        </div>
-                        <div class="skin-setttings">
-                            <div class="title">主题设置</div>
-                            <div class="setings-item">
-                                <span>收起左侧菜单</span>
-                                <div class="switch">
-                                    <div class="onoffswitch">
-                                        <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="collapsemenu">
-                                        <label class="onoffswitch-label" for="collapsemenu">
-                                            <span class="onoffswitch-inner"></span>
-                                            <span class="onoffswitch-switch"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setings-item">
-                                <span>固定顶部</span>
-                                <div class="switch">
-                                    <div class="onoffswitch">
-                                        <input type="checkbox" name="fixednavbar" class="onoffswitch-checkbox" id="fixednavbar">
-                                        <label class="onoffswitch-label" for="fixednavbar">
-                                            <span class="onoffswitch-inner"></span>
-                                            <span class="onoffswitch-switch"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setings-item">
-                                <span>
-                                    固定宽度
-                                </span>
-                                <div class="switch">
-                                    <div class="onoffswitch">
-                                        <input type="checkbox" name="boxedlayout" class="onoffswitch-checkbox" id="boxedlayout">
-                                        <label class="onoffswitch-label" for="boxedlayout">
-                                            <span class="onoffswitch-inner"></span>
-                                            <span class="onoffswitch-switch"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="title">皮肤选择</div>
-                            <div class="setings-item default-skin nb">
-                                <span class="skin-name ">
-                                    <a href="#" class="s-skin-0">
-                                        默认皮肤
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="setings-item blue-skin nb">
-                                <span class="skin-name ">
-                                    <a href="#" class="s-skin-1">
-                                        蓝色主题
-                                    </a>
-                                </span>
-                            </div>
-                            <div class="setings-item yellow-skin nb">
-                                <span class="skin-name ">
-                                    <a href="#" class="s-skin-3">
-                                        黄色/紫色主题
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="tab-2" class="tab-pane">
-                        <div class="sidebar-title">
-                            <h3> <i class="fa fa-comments-o"></i> 最新通知</h3>
-                            <small><i class="fa fa-tim"></i> 您当前有10条未读信息</small>
-                        </div>
-                        <div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                        <div class="m-t-xs">
-                                            <i class="fa fa-star text-warning"></i>
-                                            <i class="fa fa-star text-warning"></i>
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        据天津日报报道：瑞海公司董事长于学伟，副董事长董社轩等10人在13日上午已被控制。
-                                        <br>
-                                        <small class="text-muted">今天 4:21</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                    </div>
-                                    <div class="media-body">
-                                        HCY48之音乐大魔王会员专属皮肤已上线，快来一键换装拥有他，宣告你对华晨宇的爱吧！
-                                        <br>
-                                        <small class="text-muted">昨天 2:45</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                        <div class="m-t-xs">
-                                            <i class="fa fa-star text-warning"></i>
-                                            <i class="fa fa-star text-warning"></i>
-                                            <i class="fa fa-star text-warning"></i>
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        写的好！与您分享
-                                        <br>
-                                        <small class="text-muted">昨天 1:10</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                    </div>
-                                    <div class="media-body">
-                                        国外极限小子的炼成！这还是亲生的吗！！
-                                        <br>
-                                        <small class="text-muted">昨天 8:37</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                    </div>
-                                    <div class="media-body">
-                                        一只流浪狗被收留后，为了减轻主人的负担，坚持自己觅食，甚至......有些东西，可能她比我们更懂。
-                                        <br>
-                                        <small class="text-muted">今天 4:21</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                    </div>
-                                    <div class="media-body">
-                                        这哥们的新视频又来了，创意杠杠滴，帅炸了！
-                                        <br>
-                                        <small class="text-muted">昨天 2:45</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                        <div class="m-t-xs">
-                                            <i class="fa fa-star text-warning"></i>
-                                            <i class="fa fa-star text-warning"></i>
-                                            <i class="fa fa-star text-warning"></i>
-                                        </div>
-                                    </div>
-                                    <div class="media-body">
-                                        最近在补追此剧，特别喜欢这段表白。
-                                        <br>
-                                        <small class="text-muted">昨天 1:10</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="sidebar-message">
-                                <a href="#">
-                                    <div class="pull-left text-center">
-                                        <img alt="image" class="img-circle message-avatar" src="">
-                                    </div>
-                                    <div class="media-body">
-                                        我发起了一个投票 【你认为下午大盘会翻红吗？】
-                                        <br>
-                                        <small class="text-muted">星期一 8:37</small>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="tab-3" class="tab-pane">
-                        <div class="sidebar-title">
-                            <h3> <i class="fa fa-cube"></i> 最新任务</h3>
-                            <small><i class="fa fa-tim"></i> 您当前有14个任务，10个已完成</small>
-                        </div>
-                        <ul class="sidebar-list">
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>市场调研</h4> 按要求接收教材；
-
-                                    <div class="small">已完成： 22%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 22%;" class="progress-bar progress-bar-warning"></div>
-                                    </div>
-                                    <div class="small text-muted m-t-xs">项目截止： 4:00 - 2015.10.01</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>可行性报告研究报上级批准 </h4> 编写目的编写本项目进度报告的目的在于更好的控制软件开发的时间,对团队成员的 开发进度作出一个合理的比对
-
-                                    <div class="small">已完成： 48%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 48%;" class="progress-bar"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>立项阶段</h4> 东风商用车公司 采购综合综合查询分析系统项目进度阶段性报告武汉斯迪克科技有限公司
-
-                                    <div class="small">已完成： 14%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 14%;" class="progress-bar progress-bar-info"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="label label-primary pull-right">NEW</span>
-                                    <h4>设计阶段</h4>
-                                    <!--<div class="small pull-right m-t-xs">9小时以后</div>-->
-                                    项目进度报告(Project Progress Report)
-                                    <div class="small">已完成： 22%</div>
-                                    <div class="small text-muted m-t-xs">项目截止： 4:00 - 2015.10.01</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>拆迁阶段</h4> 科研项目研究进展报告 项目编号: 项目名称: 项目负责人:
-
-                                    <div class="small">已完成： 22%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 22%;" class="progress-bar progress-bar-warning"></div>
-                                    </div>
-                                    <div class="small text-muted m-t-xs">项目截止： 4:00 - 2015.10.01</div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>建设阶段 </h4> 编写目的编写本项目进度报告的目的在于更好的控制软件开发的时间,对团队成员的 开发进度作出一个合理的比对
-
-                                    <div class="small">已完成： 48%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 48%;" class="progress-bar"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <div class="small pull-right m-t-xs">9小时以后</div>
-                                    <h4>获证开盘</h4> 编写目的编写本项目进度报告的目的在于更好的控制软件开发的时间,对团队成员的 开发进度作出一个合理的比对
-
-                                    <div class="small">已完成： 14%</div>
-                                    <div class="progress progress-mini">
-                                        <div style="width: 14%;" class="progress-bar progress-bar-info"></div>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--右侧边栏结束-->
+<body class="fix-header fix-sidebar card-no-border">
+    <!-- ============================================================== -->
+    <!-- 预加载 - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+        </svg>
     </div>
-
+    <!-- ============================================================== -->
+    <!-- 页面主体 - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper">
+        <!-- ============================================================== -->
+        <!-- 顶栏 - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        <header class="topbar">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                <!-- ============================================================== -->
+                <!-- Logo -->
+                <!-- ============================================================== -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.html">
+                        <!-- Logo icon --><b>
+                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                            <!-- Dark Logo icon -->
+                            <img src="../assets/images/logo-icon.png" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo icon -->
+                            <img src="../assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />
+                        </b>
+                        <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span>
+                            <!-- dark Logo text -->
+                            <img src="../assets/images/logo-text.png" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo text -->
+                            <img src="../assets/images/logo-light-text.png" class="light-logo" alt="homepage" />
+                        </span>
+                    </a>
+                </div>
+                <!-- ============================================================== -->
+                <!-- Logo结束 -->
+                <!-- ============================================================== -->
+                <div class="navbar-collapse">
+                    <!-- ============================================================== -->
+                    <!-- 导航和功能按钮 -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav mr-auto mt-md-0">
+                        <!-- This is  -->
+                        <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a></li>
+                        <li class="nav-item"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a></li>
+                        <!-- ============================================================== -->
+                        <!-- 搜索 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item hidden-sm-down search-box">
+                            <a class="nav-link hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-search"></i></a>
+                            <form class="app-search">
+                                <input type="text" class="form-control" placeholder="Search & enter">
+                                <a class="srh-btn"><i class="ti-close"></i></a>
+                            </form>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- 消息 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown mega-dropdown">
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-view-grid"></i>
+                            </a>
+                            <div class="dropdown-menu scale-up-left">
+                                <ul class="mega-dropdown-menu row">
+                                    <li class="col-lg-3 col-xlg-2 m-b-30">
+                                        <h4 class="m-b-20">CAROUSEL</h4>
+                                        <!-- CAROUSEL -->
+                                        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner" role="listbox">
+                                                <div class="carousel-item active">
+                                                    <div class="container"> <img class="d-block img-fluid" src="../assets/images/big/img1.jpg" alt="First slide"></div>
+                                                </div>
+                                                <div class="carousel-item">
+                                                    <div class="container"><img class="d-block img-fluid" src="../assets/images/big/img2.jpg" alt="Second slide"></div>
+                                                </div>
+                                                <div class="carousel-item">
+                                                    <div class="container"><img class="d-block img-fluid" src="../assets/images/big/img3.jpg" alt="Third slide"></div>
+                                                </div>
+                                            </div>
+                                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="sr-only">Next</span>
+                                            </a>
+                                        </div>
+                                        <!-- End CAROUSEL -->
+                                    </li>
+                                    <li class="col-lg-3 m-b-30">
+                                        <h4 class="m-b-20">ACCORDION</h4>
+                                        <!-- Accordian -->
+                                        <div id="accordion" class="nav-accordion" role="tablist" aria-multiselectable="true">
+                                            <div class="card">
+                                                <div class="card-header" role="tab" id="headingOne">
+                                                    <h5 class="mb-0">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                                                           aria-expanded="true" aria-controls="collapseOne">
+                                                            Collapsible Group Item #1
+                                                        </a>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseOne" class="collapse show" role="tabpanel"
+                                                     aria-labelledby="headingOne">
+                                                    <div class="card-body">
+                                                        Anim pariatur cliche reprehenderit, enim eiusmod high.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" role="tab" id="headingTwo">
+                                                    <h5 class="mb-0">
+                                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                           href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                            Collapsible Group Item #2
+                                                        </a>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                                    <div class="card-body">
+                                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" role="tab" id="headingThree">
+                                                    <h5 class="mb-0">
+                                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                           href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                            Collapsible Group Item #3
+                                                        </a>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseThree" class="collapse" role="tabpanel"
+                                                     aria-labelledby="headingThree">
+                                                    <div class="card-body">
+                                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="col-lg-3  m-b-30">
+                                        <h4 class="m-b-20">CONTACT US</h4>
+                                        <!-- Contact -->
+                                        <form>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="exampleInputname1"
+                                                       placeholder="Enter Name" />
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="email" class="form-control" placeholder="Enter email" />
+                                            </div>
+                                            <div class="form-group">
+                                                <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Message"></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-info">Submit</button>
+                                        </form>
+                                    </li>
+                                    <li class="col-lg-3 col-xlg-4 m-b-30">
+                                        <h4 class="m-b-20">List style</h4>
+                                        <!-- List style -->
+                                        <ul class="list-style-none">
+                                            <li>
+                                                <a href="javascript:void(0)">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    You can give link
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0)">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    Give link
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0)">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    Another Give link
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0)">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    Forth link
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0)">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    Another fifth link
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- 消息结束 -->
+                        <!-- ============================================================== -->
+                    </ul>
+                    <!-- ============================================================== -->
+                    <!-- 用户配置和搜索 -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav my-lg-0">
+                        <!-- ============================================================== -->
+                        <!-- 评论 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-message"></i>
+                                <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right mailbox scale-up">
+                                <ul>
+                                    <li>
+                                        <div class="drop-title">Notifications</div>
+                                    </li>
+                                    <li>
+                                        <div class="message-center">
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5>Luanch Admin</h5> <span class="mail-desc">
+                                                        Just see the my new
+                                                        admin!
+                                                    </span> <span class="time">9:30 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="btn btn-success btn-circle"><i class="ti-calendar"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5>Event today</h5> <span class="mail-desc">
+                                                        Just a reminder that
+                                                        you have event
+                                                    </span> <span class="time">9:10 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="btn btn-info btn-circle"><i class="ti-settings"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5>Settings</h5> <span class="mail-desc">
+                                                        You can customize this
+                                                        template as you want
+                                                    </span> <span class="time">9:08 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="btn btn-primary btn-circle"><i class="ti-user"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span>
+                                                    <span class="time">9:02 AM</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link text-center" href="javascript:void(0);">
+                                            <strong>
+                                                Check all
+                                                notifications
+                                            </strong> <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- 评论结束 -->
+                        <!-- ============================================================== -->
+                        <!-- ============================================================== -->
+                        <!-- 消息 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-email"></i>
+                                <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                            </a>
+                            <div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+                                <ul>
+                                    <li>
+                                        <div class="drop-title">You have 4 new messages</div>
+                                    </li>
+                                    <li>
+                                        <div class="message-center">
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="user-img">
+                                                    <img src="../assets/images/users/1.jpg"
+                                                         alt="user" class="img-circle"> <span class="profile-status online pull-right"></span>
+                                                </div>
+                                                <div class="mail-contnet">
+                                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span>
+                                                    <span class="time">9:30 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="user-img">
+                                                    <img src="../assets/images/users/2.jpg"
+                                                         alt="user" class="img-circle"> <span class="profile-status busy pull-right"></span>
+                                                </div>
+                                                <div class="mail-contnet">
+                                                    <h5>Sonu Nigam</h5> <span class="mail-desc">
+                                                        I've sung a song! See
+                                                        you at
+                                                    </span> <span class="time">9:10 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="user-img">
+                                                    <img src="../assets/images/users/3.jpg"
+                                                         alt="user" class="img-circle"> <span class="profile-status away pull-right"></span>
+                                                </div>
+                                                <div class="mail-contnet">
+                                                    <h5>Arijit Sinh</h5> <span class="mail-desc">I am a singer!</span>
+                                                    <span class="time">9:08 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="#">
+                                                <div class="user-img">
+                                                    <img src="../assets/images/users/4.jpg"
+                                                         alt="user" class="img-circle"> <span class="profile-status offline pull-right"></span>
+                                                </div>
+                                                <div class="mail-contnet">
+                                                    <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span>
+                                                    <span class="time">9:02 AM</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link text-center" href="javascript:void(0);">
+                                            <strong>
+                                                See all
+                                                e-Mails
+                                            </strong> <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- 消息结束 -->
+                        <!-- ============================================================== -->
+                        <!-- ============================================================== -->
+                        <!-- 配置 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <img src="../assets/images/users/1.jpg"
+                                     alt="user" class="profile-pic" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right scale-up">
+                                <ul class="dropdown-user">
+                                    <li>
+                                        <div class="dw-user-box">
+                                            <div class="u-img">
+                                                <img src="../assets/images/users/1.jpg"
+                                                     alt="user">
+                                            </div>
+                                            <div class="u-text">
+                                                <h4>Steave Jobs</h4>
+                                                <p class="text-muted">varun@gmail.com</p><a href="profile.html"
+                                                                                            class="btn btn-rounded btn-danger btn-sm">View Profile</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><i class="ti-user"></i> My Profile</a></li>
+                                    <li><a href="#"><i class="ti-wallet"></i> My Balance</a></li>
+                                    <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><i class="ti-settings"></i> Account Setting</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#"><i class="fa fa-power-off"></i> Logout</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- 语言 -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false"><i class="flag-icon flag-icon-us"></i></a>
+                            <div class="dropdown-menu dropdown-menu-right scale-up">
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-in"></i> India</a>
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-fr"></i> French</a>
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-cn"></i> China</a>
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i> Dutch</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- ============================================================== -->
+        <!-- 顶栏结束 -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- 左边栏 - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <aside class="left-sidebar">
+            <!-- 边栏滚动 -->
+            <div class="scroll-sidebar">
+                <!-- 用户配置 -->
+                <div class="user-profile" style="background: url(../assets/images/background/user-info.jpg) no-repeat;">
+                    <!-- 头像 -->
+                    <div class="profile-img">
+                        <img src="../assets/images/users/profile.png"
+                             alt="user" />
+                    </div>
+                    <!-- 配置文本 -->
+                    <div class="profile-text">
+                        <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="true">Markarn Doe</a>
+                        <div class="dropdown-menu animated flipInY">
+                            <a href="#" class="dropdown-item">
+                                <i class="ti-user"></i>
+                                My Profile
+                            </a> <a href="#" class="dropdown-item"><i class="ti-wallet"></i> My Balance</a>
+                            <a href="#" class="dropdown-item"><i class="ti-email"></i> Inbox</a>
+                            <div class="dropdown-divider"></div> <a href="#" class="dropdown-item">
+                                <i class="ti-settings"></i>
+                                Account Setting
+                            </a>
+                            <div class="dropdown-divider"></div> <a href="https://wrappixel.com/demos/admin-templates/material-pro/material/login.html"
+                                                                    class="dropdown-item"><i class="fa fa-power-off"></i>Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- 配置文本结束 -->
+                <!-- 导航栏 -->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li class="nav-small-cap">系统</li>
+                        <li>
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                                <i class="mdi mdi-gauge"></i><span class="hide-menu">管理</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a class="J_menuItem" asp-area="Manage" asp-controller="Localization" asp-action="Index">本地化翻译</a></li>
+                                <li><a class="J_menuItem" asp-area="Manage" asp-controller="Users" asp-action="Index">用户管理</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- 导航栏结束 -->
+            </div>
+            <!-- 边栏滚动结束 -->
+            <!-- 底部按钮 -->
+            <div class="sidebar-footer">
+                <a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a>
+                <a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
+                <a href="" class="link" data-toggle="tooltip" title="Logout"><i class="mdi mdi-power"></i></a>
+            </div>
+            <!-- 底部按钮结束 -->
+        </aside>
+        <!-- ============================================================== -->
+        <!-- 左边栏结束 - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- 页面主要内容  -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- 内容容器  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- 面包屑导航和右边栏触发按钮 -->
+                <!-- ============================================================== -->
+                <div class="row page-titles">
+                    <div class="col-12 align-self-center">
+                        <h3 class="text-themecolor">Dashboard</h3>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                    </div>
+                    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+                </div>
+                <!-- ============================================================== -->
+                <!-- 面包屑导航和右边栏触发按钮结束 -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- 选项卡面板和内容 -->
+                <!-- ============================================================== -->
+                <div class="row content-tabs">
+                    <button class="roll-nav roll-left J_tabLeft">
+                        <i class="fa fa-backward"></i>
+                    </button>
+                    <nav class="page-tabs J_menuTabs">
+                        <div class="page-tabs-content">
+                            <!--<a href="javascript:;" class="active J_menuTab" data-id="ui-cards.html">
+                                卡片UI
+                            </a>-->
+                        </div>
+                    </nav>
+                    <button class="roll-nav roll-right J_tabRight">
+                        <i class="fa fa-forward"></i>
+                    </button>
+                    <div class="btn-group roll-nav roll-right">
+                        <button class="dropdown J_tabClose" data-toggle="dropdown">
+                            选项卡操作<span class="caret"></span>
+                        </button>
+                        <ul role="menu" class="dropdown-menu dropdown-menu-right">
+                            <li class="nav-item J_tabShowActive">
+                                <a class="nav-link text-dark">定位当前选项卡</a>
+                            </li>
+                            <div class="dropdown-divider"></div>
+                            <li class="nav-item J_tabCloseAll">
+                                <a class="nav-link text-dark">关闭全部选项卡</a>
+                            </li>
+                            <li class="nav-item J_tabCloseOther">
+                                <a class="nav-link text-dark">关闭其他选项卡</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row J_mainContent" id="content-main">
+                    <!--<iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="ui-cards.html" frameborder="0" data-id="ui-cards.html" seamless></iframe>-->
+                </div>
+                <!-- ============================================================== -->
+                <!-- 选项卡面板和内容结束 -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- 右边栏 -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <div class="right-sidebar">
+                    <div class="slimscrollright">
+                        <div class="rpanel-title"> Service Panel <span><i class="ti-close right-side-toggle"></i></span> </div>
+                        <div class="r-panel-body">
+                            <ul id="themecolors" class="m-t-20">
+                                <li><b>With Light sidebar</b></li>
+                                <li><a href="javascript:void(0)" data-theme="default" class="default-theme">1</a></li>
+                                <li><a href="javascript:void(0)" data-theme="green" class="green-theme">2</a></li>
+                                <li><a href="javascript:void(0)" data-theme="red" class="red-theme">3</a></li>
+                                <li><a href="javascript:void(0)" data-theme="blue" class="blue-theme working">4</a></li>
+                                <li><a href="javascript:void(0)" data-theme="purple" class="purple-theme">5</a></li>
+                                <li><a href="javascript:void(0)" data-theme="megna" class="megna-theme">6</a></li>
+                                <li class="d-block m-t-30"><b>With Dark sidebar</b></li>
+                                <li><a href="javascript:void(0)" data-theme="default-dark" class="default-dark-theme">7</a></li>
+                                <li><a href="javascript:void(0)" data-theme="green-dark" class="green-dark-theme">8</a></li>
+                                <li><a href="javascript:void(0)" data-theme="red-dark" class="red-dark-theme">9</a></li>
+                                <li><a href="javascript:void(0)" data-theme="blue-dark" class="blue-dark-theme">10</a></li>
+                                <li><a href="javascript:void(0)" data-theme="purple-dark" class="purple-dark-theme">11</a></li>
+                                <li><a href="javascript:void(0)" data-theme="megna-dark" class="megna-dark-theme ">12</a></li>
+                            </ul>
+                            <ul class="m-t-20 chatonline">
+                                <li><b>Chat option</b></li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/1.jpg" alt="user-img" class="img-circle"> <span>Varun Dhavan <small class="text-success">online</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/2.jpg" alt="user-img" class="img-circle"> <span>Genelia Deshmukh <small class="text-warning">Away</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/3.jpg" alt="user-img" class="img-circle"> <span>Ritesh Deshmukh <small class="text-danger">Busy</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/4.jpg" alt="user-img" class="img-circle"> <span>Arijit Sinh <small class="text-muted">Offline</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/5.jpg" alt="user-img" class="img-circle"> <span>Govinda Star <small class="text-success">online</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/6.jpg" alt="user-img" class="img-circle"> <span>John Abraham<small class="text-success">online</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/7.jpg" alt="user-img" class="img-circle"> <span>Hritik Roshan<small class="text-success">online</small></span></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user-img" class="img-circle"> <span>Pwandeep rajan <small class="text-success">online</small></span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- 右边栏结束 -->
+                <!-- ============================================================== -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- 内容容器结束  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- 页脚 -->
+            <!-- ============================================================== -->
+            <footer class="footer"> © 2018 Material Pro Admin by wrappixel.com </footer>
+            <!-- ============================================================== -->
+            <!-- 页脚结束 -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- 页面主要内容结束  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- 页面主体结束 -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Jquery -->
+    <!-- ============================================================== -->
     <partial name="_JQueryScriptsPartial" />
+    <!-- Bootstrap -->
     <partial name="_BootstrapScriptsPartial" />
-    <partial name="_LayuiScriptsPartial" />
-    <partial name="_SiteScriptsPartial" />
-
-    <script src="~/library/h-plus/js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="~/library/h-plus/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="~/library/h-plus/js/hplus.js"></script>
-    <script src="~/library/h-plus/js/contabs.js"></script>
-
-    <script src="~/library/h-plus/js/plugins/pace/pace.min.js"></script>
-
+    <!-- 滚动条插件 -->
+    <partial name="_JQuerySlimScrollScriptsPartial" />
+    <!-- 点击波纹特效 -->
+    @*<partial name="_WavesScriptsPartial" />*@
+    <!-- 菜单栏插件 -->
+    <partial name="_SidebarMenuScriptsPartial" />
+    <!--元素粘贴插件 -->
+    <partial name="_StickyKitScriptsPartial" />
+    <!-- Custom JavaScript -->
+    <partial name="_CustomScriptsPartial" />
+    <!-- ============================================================== -->
+    <!-- 本页用插件 -->
+    <!-- ============================================================== -->
+    <!-- 样式切换插件 -->
+    <partial name="_JQueryStyleSwitcherScriptsPartial" />
+    <!-- 拖动排序插件 -->
+    <partial name="_SortableScriptsPartial" />
+    <!-- ============================================================== -->
+    <!-- 本页用脚本 -->
+    <!-- ============================================================== -->
     <script>
-        layui.use(['layer'], function() {
+        //调整iframe大小
+        $(window).resize(function () {
+            $('.J_iframe')
+                .height(
+                    $(window).height()
+                    - $('header').height()
+                    - $('.page-titles').height()
+                    - $('.content-tabs').height()
+                    - $('footer').outerHeight()
+                    - 1
+                );
         });
+
+        //点击选项卡高亮对应菜单
+        $('.J_menuTabs').on('click', '.J_menuTab', function (event) {
+            var element = $('#sidebarnav a').filter(function () {
+                return $(this).attr('href') === $(event.target).attr('data-id');
+            });
+
+            var li = element.parents('li');
+            if (!li.eq(li.length - 1).hasClass('active')) {
+                li.eq(li.length - 1).children('a').trigger('click');
+            }
+            setTimeout(function () {
+                $('#sidebarnav').metisMenu('dispose');
+                $('#sidebarnav .active').removeClass('active');
+                $('#sidebarnav .in').removeClass('in');
+                element = element.addClass('active').parent().addClass('active');
+                while (true) {
+                    if (element.is('li')) {
+                        element = element.parent().addClass('in').parent().addClass('active');
+                    }
+                    else {
+                        break;
+                    }
+                }
+                $('#sidebarnav').metisMenu();
+            }, 200);
+
+            return false;
+        });
+
+        //启用拖动排序选项卡
+        var sortable = Sortable.create($('.page-tabs-content')[0], {});
+
+        //Waves.attach('.waves-effect', ['waves-block']);
+        //Waves.init();
     </script>
 </body>
 </html>

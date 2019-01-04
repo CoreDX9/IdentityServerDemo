@@ -3,7 +3,8 @@
     "outputFileName": "wwwroot/css/site.min.css",
     "inputFiles": [
       "wwwroot/css/site.css"
-    ]
+    ],
+    "sourceMap": false
   },
   {
     "outputFileName": "wwwroot/js/site.min.js",
@@ -84,6 +85,15 @@
     }
   },
   {
+    "outputFileName": "wwwroot/css/manage/animate.css",
+    "inputFiles": [
+      "node_modules/animate.css/animate.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
     "outputFileName": "wwwroot/css/chat.min.css",
     "inputFiles": [
       "wwwroot/css/chat.css"
@@ -147,6 +157,75 @@
     "outputFileName": "wwwroot/lib/vue/vue.min.js",
     "inputFiles": [
       "node_modules/vue/dist/vue.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/jquery-slimscroll/jquery.slimscroll.min.js",
+    "inputFiles": [
+      "bower_components/jquery-slimscroll/jquery.slimscroll.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/Waves/waves.min.js",
+    "inputFiles": [
+      "bower_components/Waves/dist/waves.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/Waves/waves.min.css",
+    "inputFiles": [
+      "bower_components/Waves/dist/waves.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/manage/sidebarmenu.min.js",
+    "inputFiles": [
+      "wwwroot/js/manage/sidebarmenu.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/sticky-kit/sticky-kit.min.js",
+    "inputFiles": [
+      "node_modules/sticky-kit/dist/sticky-kit.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/manage/custom.min.js",
+    "inputFiles": [
+      "wwwroot/js/manage/custom.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/manage/contabs.min.js",
+    "inputFiles": [
+      "wwwroot/js/manage/contabs.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/library/styleswitcher/jQuery.style.switcher.min.js",
+    "inputFiles": [
+      "wwwroot/library/styleswitcher/jQuery.style.switcher.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/Sortable/Sortable.min.js",
+    "inputFiles": [
+      "bower_components/Sortable/Sortable.min.js"
     ],
     "minify": {
       "enabled": false

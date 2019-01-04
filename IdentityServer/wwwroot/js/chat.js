@@ -192,7 +192,7 @@ function chatContentResize(jq) {
 
 function chatBoardResize() {
     var bc = $('.body-content');
-    var h1 = $(window).height() - 20;
+    var h1 = $(window).height() - 61;
 
     bc.css('height', h1);
     var h2 = 0;

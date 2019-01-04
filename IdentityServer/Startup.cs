@@ -500,8 +500,9 @@ namespace IdentityServer
                     .From("localhost:5003")
                     .From("localhost:5004")
                     .From("localhost:5005")
-                    .From("ajax.aspnetcdn.com");
-                    //.AddNonce();//此项与AllowUnsafeInline冲突，会被AllowUnsafeInline选项覆盖
+                    .From("ajax.aspnetcdn.com")
+                    .From("cdnjs.cloudflare.com");
+                //.AddNonce();//此项与AllowUnsafeInline冲突，会被AllowUnsafeInline选项覆盖
 
                 // CSS allowed from:
                 csp.AllowStyles
@@ -513,11 +514,14 @@ namespace IdentityServer
                     .From("localhost:5003")
                     .From("localhost:5004")
                     .From("localhost:5005")
-                    .From("ajax.aspnetcdn.com");
+                    .From("ajax.aspnetcdn.com")
+                    .From("fonts.googleapis.com")
+                    .From("cdnjs.cloudflare.com");
                 //.AddNonce();//此项与AllowUnsafeInline冲突，会被AllowUnsafeInline选项覆盖
 
                 csp.AllowImages
                     .FromSelf()
+                    .DataScheme()
                     .From("localhost:5000") //These two domains
                     .From("localhost:5001")
                     .From("localhost:5002")
@@ -544,6 +548,7 @@ namespace IdentityServer
                 // Allow fonts to be downloaded from:
                 csp.AllowFonts
                     .FromSelf()
+                    .From("fonts.gstatic.com")
                     .From("ajax.aspnetcdn.com");
 
                 // Allow object, embed, and applet sources from:
