@@ -44,25 +44,25 @@ namespace Domain.EntityFrameworkCore.EntityTypeConfigurations
                 .WithMany(o => o.PermissionDeclarations)
                 .HasForeignKey(op => op.OrganizationId);
 
-            builder.HasOne(op => op.ParentPermissionDeclaration)
-                .WithMany()
-                .HasForeignKey(op => op.ParentPermissionDeclarationId);
+            //builder.HasOne(op => op.ParentPermissionDeclaration)
+            //    .WithMany()
+            //    .HasForeignKey(op => op.ParentPermissionDeclarationId);
 
             builder.ToTable("OrganizationPermissionDeclarations");
         }
     }
 
-    public class RequestHandlerPermissionDeclarationConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclaration>
-    {
-        public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclaration> builder)
-        {
-            builder.HasOne(rhp => rhp.Rule)
-                .WithMany(r => r.PermissionDeclarations)
-                .HasForeignKey(rhp => rhp.RuleId);
+    //public class RequestHandlerPermissionDeclarationConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclaration>
+    //{
+    //    public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclaration> builder)
+    //    {
+    //        builder.HasOne(rhp => rhp.Rule)
+    //            .WithMany(r => r.PermissionDeclarations)
+    //            .HasForeignKey(rhp => rhp.RuleId);
 
-            builder.ToTable("RequestHandlerPermissionDeclarations");
-        }
-    }
+    //        builder.ToTable("RequestHandlerPermissionDeclarations");
+    //    }
+    //}
 
     public class RequestAuthorizationRuleConfig : IEntityTypeConfiguration<RequestAuthorizationRule>
     {
@@ -72,35 +72,35 @@ namespace Domain.EntityFrameworkCore.EntityTypeConfigurations
         }
     }
 
-    public class RequestHandlerPermissionDeclarationRoleConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclarationRole>
-    {
-        public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclarationRole> builder)
-        {
-            builder.HasOne(rhpr => rhpr.Role)
-                .WithMany()
-                .HasForeignKey(rhpr => rhpr.RoleId);
+    //public class RequestHandlerPermissionDeclarationRoleConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclarationRole>
+    //{
+    //    public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclarationRole> builder)
+    //    {
+    //        builder.HasOne(rhpr => rhpr.Role)
+    //            .WithMany()
+    //            .HasForeignKey(rhpr => rhpr.RoleId);
 
-            builder.HasOne(rhpr => rhpr.PermissionDeclaration)
-                .WithMany(rhp => rhp.PermissionDeclarationRoles)
-                .HasForeignKey(rhpr => rhpr.PermissionDeclarationId);
+    //        builder.HasOne(rhpr => rhpr.PermissionDeclaration)
+    //            .WithMany(rhp => rhp.PermissionDeclarationRoles)
+    //            .HasForeignKey(rhpr => rhpr.PermissionDeclarationId);
 
-            builder.ToTable("RequestHandlerPermissionDeclarationRoles");
-        }
-    }
+    //        builder.ToTable("RequestHandlerPermissionDeclarationRoles");
+    //    }
+    //}
 
-    public class RequestHandlerPermissionDeclarationOrganizationConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclarationOrganization>
-    {
-        public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclarationOrganization> builder)
-        {
-            builder.HasOne(rhpo => rhpo.Organization)
-                .WithMany()
-                .HasForeignKey(rhpo => rhpo.OrganizationId);
+    //public class RequestHandlerPermissionDeclarationOrganizationConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclarationOrganization>
+    //{
+    //    public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclarationOrganization> builder)
+    //    {
+    //        builder.HasOne(rhpo => rhpo.Organization)
+    //            .WithMany()
+    //            .HasForeignKey(rhpo => rhpo.OrganizationId);
 
-            builder.HasOne(rhpo => rhpo.PermissionDeclaration)
-                .WithMany(rhp => rhp.PermissionDeclarationOrganizations)
-                .HasForeignKey(rhpo => rhpo.PermissionDeclarationId);
+    //        builder.HasOne(rhpo => rhpo.PermissionDeclaration)
+    //            .WithMany(rhp => rhp.PermissionDeclarationOrganizations)
+    //            .HasForeignKey(rhpo => rhpo.PermissionDeclarationId);
 
-            builder.ToTable("RequestHandlerPermissionDeclarationOrganizations");
-        }
-    }
+    //        builder.ToTable("RequestHandlerPermissionDeclarationOrganizations");
+    //    }
+    //}
 }

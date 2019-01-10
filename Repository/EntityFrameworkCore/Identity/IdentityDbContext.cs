@@ -29,7 +29,7 @@ namespace Repository.EntityFrameworkCore.Identity
         public virtual DbSet<UserPermissionDeclaration> UserPermissionDeclarations { get; set; }
         public virtual DbSet<RolePermissionDeclaration> RolePermissionDeclarations { get; set; }
         public virtual DbSet<OrganizationPermissionDeclaration> OrganizationPermissionDeclarations { get; set; }
-        public virtual DbSet<RequestHandlerPermissionDeclaration> RequestHandlerPermissionDeclarations { get; set; }
+        //public virtual DbSet<RequestHandlerPermissionDeclaration> RequestHandlerPermissionDeclarations { get; set; }
 
         #endregion
 

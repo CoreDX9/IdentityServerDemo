@@ -12,13 +12,24 @@ namespace Domain.Security
         Number = 2
     }
 
-    
+    /// <summary>
+    /// 权限定义
+    /// </summary>
     public class PermissionDefinition : DomainEntityBase<Guid, Guid>
     {
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// 说明
+        /// </summary>
         public string Description { get; set; }
 
+        /// <summary>
+        /// 值类型
+        /// </summary>
         public PermissionValueType ValueType { get; set; }
     }
 }

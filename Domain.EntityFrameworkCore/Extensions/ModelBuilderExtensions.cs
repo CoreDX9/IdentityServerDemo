@@ -289,10 +289,10 @@ namespace Domain.EntityFrameworkCore.Extensions
                 .ApplyConfiguration(new RolePermissionDeclarationConfig())
                 .ApplyConfiguration(new UserPermissionDeclarationConfig())
                 .ApplyConfiguration(new OrganizationPermissionDeclarationConfig())
-                .ApplyConfiguration(new RequestHandlerPermissionDeclarationConfig())
-                .ApplyConfiguration(new RequestAuthorizationRuleConfig())
-                .ApplyConfiguration(new RequestHandlerPermissionDeclarationRoleConfig())
-                .ApplyConfiguration(new RequestHandlerPermissionDeclarationOrganizationConfig());
+                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationConfig())
+                .ApplyConfiguration(new RequestAuthorizationRuleConfig());
+                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationRoleConfig())
+                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationOrganizationConfig());
         }
     }
 }

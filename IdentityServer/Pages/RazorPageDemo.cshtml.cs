@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IdentityServer.Pages
 {
+    //[MyAuthorize]
     public class RazorPageDemoModel : PageModelBase
     {
         public void OnGet()

@@ -1,0 +1,43 @@
+﻿@model Domain.Security.RolePermissionDeclaration
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>RolePermissionDeclaration</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RoleId" class="control-label"></label>
+                <select asp-for="RoleId" class ="form-control" asp-items="ViewBag.Role"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="PermissionValue" class="control-label"></label>
+                <input asp-for="PermissionValue" class="form-control" />
+                <span asp-validation-for="PermissionValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PermissionDefinitionId" class="control-label"></label>
+                <select asp-for="PermissionDefinitionId" class ="form-control" asp-items="ViewBag.PermissionDefinition"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Remark" class="control-label"></label>
+                <input asp-for="Remark" class="form-control" />
+                <span asp-validation-for="Remark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

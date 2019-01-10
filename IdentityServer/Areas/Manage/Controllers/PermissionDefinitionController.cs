@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Security;
 using Repository.EntityFrameworkCore.Identity;
 using IdentityServer.HttpHandlerBase;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
@@ -51,8 +52,8 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/PermissionDefinition/Create
         public IActionResult Create()
         {
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -61,17 +62,18 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,ValueType,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] PermissionDefinition permissionDefinition)
+        public async Task<IActionResult> Create([Bind("Name,Description,ValueType,Remark,IsEnable,IsDeleted")] PermissionDefinition permissionDefinition)
         {
             if (ModelState.IsValid)
             {
                 permissionDefinition.Id = Guid.NewGuid();
+                permissionDefinition.CreationUserId = Guid.Parse(User.GetSubjectId());
                 _context.Add(permissionDefinition);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
-            ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
+            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }
 
@@ -88,8 +90,8 @@ namespace IdentityServer.Areas.Manage.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
-            ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
+            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }
 
@@ -98,7 +100,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,ValueType,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] PermissionDefinition permissionDefinition)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,ValueType,Id,Remark,RowVersion,IsEnable")] PermissionDefinition permissionDefinition)
         {
             if (id != permissionDefinition.Id)
             {
@@ -125,8 +127,8 @@ namespace IdentityServer.Areas.Manage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
-            ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
+            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }
 

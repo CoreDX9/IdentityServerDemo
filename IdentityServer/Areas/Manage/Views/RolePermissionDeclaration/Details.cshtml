@@ -1,0 +1,90 @@
+﻿@model Domain.Security.RolePermissionDeclaration
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>RolePermissionDeclaration</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Role)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Role.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PermissionValue)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PermissionValue)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PermissionDefinition)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PermissionDefinition.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Remark)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Remark)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.OrderNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.OrderNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RowVersion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RowVersion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsEnable)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsEnable)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsDeleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsDeleted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreationTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastModificationTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastModificationTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreationUser.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastModificationUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastModificationUser.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

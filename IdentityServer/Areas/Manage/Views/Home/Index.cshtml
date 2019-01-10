@@ -496,6 +496,8 @@
                             <ul aria-expanded="false" class="collapse">
                                 <li><a class="J_menuItem" asp-area="Manage" asp-controller="Localization" asp-action="Index">本地化翻译</a></li>
                                 <li><a class="J_menuItem" asp-area="Manage" asp-controller="Users" asp-action="Index">用户管理</a></li>
+                                <li><a class="J_menuItem" asp-area="Manage" asp-controller="PermissionDefinition" asp-action="Index">权限定义</a></li>
+                                <li><a class="J_menuItem" asp-area="Manage" asp-controller="RolePermissionDeclaration" asp-action="Index">角色权限分配</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -556,7 +558,7 @@
                         <i class="fa fa-forward"></i>
                     </button>
                     <div class="btn-group roll-nav roll-right">
-                        <button class="dropdown J_tabClose" data-toggle="dropdown">
+                        <button class="dropdown-toggle dropdown J_tabClose" data-toggle="dropdown" aria-expanded="false">
                             选项卡操作<span class="caret"></span>
                         </button>
                         <ul role="menu" class="dropdown-menu dropdown-menu-right">
@@ -681,6 +683,7 @@
     <!-- ============================================================== -->
     <!-- 本页用脚本 -->
     <!-- ============================================================== -->
+    <partial name="_BootstrapDropdownHoverScriptsPartial" />
     <script>
         //调整iframe大小
         $(window).resize(function () {
@@ -727,6 +730,7 @@
         //启用拖动排序选项卡
         var sortable = Sortable.create($('.page-tabs-content')[0], {});
 
+        $('.content-tabs [data-toggle="dropdown"]').bootstrapDropdownHover();
         //Waves.attach('.waves-effect', ['waves-block']);
         //Waves.init();
     </script>

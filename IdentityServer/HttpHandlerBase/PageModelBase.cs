@@ -59,39 +59,5 @@ namespace IdentityServer.HttpHandlerBase
                 TempData = TempData
             };
         }
-
-        [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any)]//响应缓存30分钟
-        public async Task<IActionResult> OnGetRazorPageInfoAsync()
-        {
-            return new JsonResult(GetPageInfo());
-        }
-        
-        //public async Task<IActionResult> OnPostRazorPageInfoAsync()
-        //{
-        //    return new JsonResult(GetPageInfo());
-        //}
-
-        private AreaInfo.PageInfo GetPageInfo()
-        {
-            var info = new AreaInfo.PageInfo
-            {
-                Name = this.GetType().Name,
-                Area = PageContext.ActionDescriptor.AreaName,
-                HandlerTypeFullName = PageContext.ActionDescriptor.HandlerTypeInfo.FullName,
-            };
-
-            foreach (var handlerMethod in PageContext.ActionDescriptor.HandlerMethods)
-            {
-                info.PageHandlers.Add(new AreaInfo.PageInfo.PageHandlerInfo
-                {
-                    HttpMethod = handlerMethod.HttpMethod,
-                    Name = handlerMethod.Name,
-                    SignName = handlerMethod.MethodInfo.ToString(),
-                    Url = Url.Page(PageContext.ActionDescriptor.DisplayName, handlerMethod.Name, new { area = PageContext.ActionDescriptor.AreaName })
-                });
-            }
-
-            return info;
-        }
     }
 }

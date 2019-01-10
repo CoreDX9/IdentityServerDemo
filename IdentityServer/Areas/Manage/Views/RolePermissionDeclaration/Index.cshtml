@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Domain.Security.RolePermissionDeclaration>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PermissionValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PermissionDefinition)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Remark)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RowVersion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsEnable)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModificationTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModificationUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PermissionValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PermissionDefinition.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RowVersion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsEnable)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModificationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationUser.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModificationUser.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
