@@ -25,6 +25,10 @@ namespace IdentityServer
     {
         public static void Main(string[] args)
         {
+#if !DEBUG
+            //通过特殊手段运行应用可能导致工作目录与程序文件所在目录不一致，需要调整，否则配置文件和其他数据无法加载（仅限发布模式，调试模式修改工作目录也可能导致配置和其他数据无法加载）
+            System.IO.Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+#endif
             var host = CreateWebHostBuilder(args).Build();
             EnsureRequestHandlerIdentificationDoNotHaveDuplicate(host.Services);
             SeedData.EnsureSeedData(host.Services);
