@@ -26,6 +26,7 @@ namespace IdentityServer.Models
             {
                 public string Name { get; set; }
                 public string ActionName { get; set; }
+                public string HandlerIdentification { get; set; }
                 public string SignName { get; set; }
                 public string Desc { get; set; }
                 public string Url { get; set; }
@@ -43,6 +44,7 @@ namespace IdentityServer.Models
             public class PageHandlerInfo
             {
                 public string Name { get; set; }
+                public string HandlerIdentification { get; set; }
                 public string SignName { get; set; }
                 public string Url { get; set; }
                 public string HttpMethod { get; set; }

@@ -6,8 +6,18 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 #endif
 
+using System;
+using System.Linq;
+using System.Reflection;
+using Domain.Security;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer
 {
@@ -15,12 +25,51 @@ namespace IdentityServer
     {
         public static void Main(string[] args)
         {
-            var host = CreateWebHostBuilder(args).Build();//.Run();
+            var host = CreateWebHostBuilder(args).Build();
+            EnsureRequestHandlerIdentificationDoNotHaveDuplicate(host.Services);
             SeedData.EnsureSeedData(host.Services);
             host.Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        /// <summary>
+        /// 检查确保请求处理方法上的RequestHandlerIdentificationAttribute的UniqueKey没有重复的
+        /// </summary>
+        /// <param name="serviceProvider">服务提供者</param>
+        private static void EnsureRequestHandlerIdentificationDoNotHaveDuplicate(IServiceProvider serviceProvider)
+        {
+            using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var actionDescriptorCollectionProvider =
+                    scope.ServiceProvider.GetRequiredService<IActionDescriptorCollectionProvider>();
+                var pageLoader = scope.ServiceProvider.GetRequiredService<IPageLoader>();
+
+                var duplicateOfRequestHandlerIdentifications =
+                    actionDescriptorCollectionProvider.ActionDescriptors.Items
+                        .OfType<ControllerActionDescriptor>()
+                        .Select(action => action.MethodInfo)
+                        .Concat(
+                            actionDescriptorCollectionProvider.ActionDescriptors.Items
+                                .OfType<PageActionDescriptor>()
+                                .Select(page => pageLoader.Load(page).HandlerMethods.Select(handler => handler.MethodInfo))
+                                .SelectMany(vb => vb))
+                        .Where(m => m.GetCustomAttribute<RequestHandlerIdentificationAttribute>() != null)
+                        .Select(m => m.GetCustomAttribute<RequestHandlerIdentificationAttribute>().UniqueKey)
+                        .GroupBy(name => name)
+                        .Where(group => group.Count() > 1)
+                        .Select(group => new { key = group.Key, count = group.Count() });
+
+                if (duplicateOfRequestHandlerIdentifications.Any())
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<RequestHandlerIdentificationAttribute>>();
+                    var msg = $"\"{string.Join('、', duplicateOfRequestHandlerIdentifications.Select(x => x.key))}\" 在 RequestHandlerIdentificationAttribute 中重复出现。";
+                    var exception = new Exception(msg);
+                    logger.LogError(exception, msg);
+                    throw exception;
+                }
+            }
+        }
+
+        private static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             var host = WebHost.CreateDefaultBuilder(args)
                 .UseApplicationInsights()

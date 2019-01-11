@@ -13,13 +13,13 @@ namespace Domain.Security
         /// <summary>
         /// 初始化新的实例
         /// </summary>
-        /// <param name="name">名称</param>
-        public RequestHandlerIdentificationAttribute(string name) => Name = name;
+        /// <param name="uniqueKey">名称</param>
+        public RequestHandlerIdentificationAttribute(string uniqueKey) => UniqueKey = uniqueKey;
 
         /// <summary>
-        /// 名称
+        /// 唯一键
         /// </summary>
-        public virtual string Name { get; }
+        public virtual string UniqueKey { get; }
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ namespace Domain.Security
         /// 如果不存在，则以签名和类型名为准，如果没有匹配的请求处理器，则视为无效授权规则
         /// 所以如果希望在修改方法名、参数、类名、命名空间等时保持授权规则不会失效，请为请求处理器标注RequestHandlerIdentificationAttribute特性
         /// </summary>
-        public string IdentificationName { get; set; }
+        public string IdentificationKey { get; set; }
 
         /// <summary>
         /// 授权规则配置JSON
@@ -54,6 +54,7 @@ namespace Domain.Security
         //public virtual List<RequestHandlerPermissionDeclaration> PermissionDeclarations { get; set; } = new List<RequestHandlerPermissionDeclaration>();
     }
 
+    //todo:回头看要不要删掉
     //public class RequestHandlerPermissionDeclarationRole : DomainEntityBase<Guid, Guid>
     //{
     //    public Guid? RoleId { get; set; }

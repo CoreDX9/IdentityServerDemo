@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Domain.Security;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,7 @@ namespace IdentityServer.Controllers
         }
 
         [MyAuthorize]
+        [RequestHandlerIdentification("home-about")]
         [ActionName("About")]
         public async Task<IActionResult> AboutAsync()
         {
@@ -105,8 +107,10 @@ namespace IdentityServer.Controllers
                         var act = new AreaInfo.ControllerInfo.ActionInfo
                         {
                             Name = action.MethodInfo.Name,
-                            SignName = action.MethodInfo.ToString(),
                             ActionName = action.ActionName,
+                            HandlerIdentification = (action.MethodInfo.GetCustomAttribute(typeof(RequestHandlerIdentificationAttribute)) as RequestHandlerIdentificationAttribute)
+                                ?.UniqueKey,
+                            SignName = action.MethodInfo.ToString(),
                             Desc = (action.MethodInfo.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute)
                                 ?.Description,
                             Url = Url.Action(action.ActionName, conInfo.Name, new { area = conInfo.Area }),
@@ -134,6 +138,8 @@ namespace IdentityServer.Controllers
                         {
                             HttpMethod = handlerMethod.HttpMethod,
                             Name = handlerMethod.Name,
+                            HandlerIdentification = (handlerMethod.MethodInfo.GetCustomAttribute(typeof(RequestHandlerIdentificationAttribute)) as RequestHandlerIdentificationAttribute)
+                                ?.UniqueKey,
                             SignName = handlerMethod.MethodInfo.ToString(),
                             Url = Url.Page(page.DisplayName, handlerMethod.Name, new { area = page.AreaName })
                         });
@@ -141,7 +147,7 @@ namespace IdentityServer.Controllers
                     areaInfo.Pages.Add(pageInfo);
                 }
             }
-            
+
             return Json(data);
         }
 
