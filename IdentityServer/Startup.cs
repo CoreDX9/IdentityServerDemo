@@ -8,6 +8,7 @@ using Domain.Identity;
 using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using IdentityServer.CustomServices;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
@@ -232,6 +233,8 @@ namespace IdentityServer
             services.AddSingleton<IStringLocalizerFactory, MySqlStringLocalizerFactory>();
             //注入基于Sql数据的本地化服务，需要先注入LocalizationModelContext
             services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+            //注入请求处理器信息获取服务
+            services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
 
             //注入MVC相关服务
             services.AddMvc()

@@ -1,0 +1,57 @@
+﻿@model Domain.Identity.Organization
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Organization</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ParentId" class="control-label"></label>
+                <select asp-for="ParentId" class ="form-control" asp-items="ViewBag.ParentId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Remark" class="control-label"></label>
+                <input asp-for="Remark" class="form-control" />
+                <span asp-validation-for="Remark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastModificationTime" class="control-label"></label>
+                <input asp-for="LastModificationTime" class="form-control" />
+                <span asp-validation-for="LastModificationTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreationUserId" class="control-label"></label>
+                <select asp-for="CreationUserId" class ="form-control" asp-items="ViewBag.CreationUserId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastModificationUserId" class="control-label"></label>
+                <select asp-for="LastModificationUserId" class ="form-control" asp-items="ViewBag.LastModificationUserId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

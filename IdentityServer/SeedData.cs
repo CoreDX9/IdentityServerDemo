@@ -25,19 +25,28 @@ namespace IdentityServer
                 {
                     scope.ServiceProvider.GetRequiredService<LocalizationModelContext>().Database.Migrate();
                 }
-                catch
+                catch(Exception ex)//DbContext.Database.ProviderName = "Microsoft.EntityFrameworkCore.InMemory"
                 {
-                    // ignored
+                    if (ex.Message !=
+                        "Relational-specific methods can only be used when the context is using a relational database provider."
+                    )
+                    {
+                        throw;
+                    }
                 }
 
                 try
                 {
                     scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    //DbContext.Database.ProviderName = "Microsoft.EntityFrameworkCore.InMemory"
-                    // ignored
+                    if (ex.Message !=
+                        "Relational-specific methods can only be used when the context is using a relational database provider."
+                    )
+                    {
+                        throw;
+                    }
                 }
 
                 {
@@ -47,11 +56,16 @@ namespace IdentityServer
                     {
                         context.Database.Migrate();
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // ignored
+                        if (ex.Message !=
+                            "Relational-specific methods can only be used when the context is using a relational database provider."
+                        )
+                        {
+                            throw;
+                        }
                     }
-                    
+
                     EnsureSeedData(context);
                 }
 
@@ -62,11 +76,16 @@ namespace IdentityServer
                     {
                         context.Database.Migrate();
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // ignored
+                        if (ex.Message !=
+                            "Relational-specific methods can only be used when the context is using a relational database provider."
+                        )
+                        {
+                            throw;
+                        }
                     }
-                    
+
                     var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                     var alice = userMgr.FindByNameAsync("alice").Result;
                     if (alice == null)

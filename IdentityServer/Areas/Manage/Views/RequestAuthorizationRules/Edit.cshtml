@@ -1,0 +1,59 @@
+﻿@using IdentityServer.CustomServices
+@model Domain.Security.RequestAuthorizationRule
+@inject IRequestHandlerInfo RequestHandlerInfo
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>RequestAuthorizationRule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">链接</label>
+                <input readonly="readonly" class="form-control" value="@RequestHandlerInfo.GetRequestHandlerUrlInfos().Single(h=>h.Key.ToString() == Model.HandlerMethodSignature && h.Key.DeclaringType.FullName == Model.TypeFullName).Value" />
+            </div>
+            <div class="form-group">
+                <label asp-for="HandlerMethodSignature" class="control-label"></label>
+                <input readonly="readonly" asp-for="HandlerMethodSignature" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeFullName" class="control-label"></label>
+                <input readonly="readonly" asp-for="TypeFullName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="IdentificationKey" class="control-label"></label>
+                <input readonly="readonly" asp-for="IdentificationKey" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorizationRuleConfigJson" class="control-label"></label>
+                <input asp-for="AuthorizationRuleConfigJson" class="form-control" />
+                <span asp-validation-for="AuthorizationRuleConfigJson" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="RowVersion" />
+            <div class="form-group">
+                <label asp-for="Remark" class="control-label"></label>
+                <input asp-for="Remark" class="form-control" />
+                <span asp-validation-for="Remark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsEnable" class="control-label"></label>
+                <input asp-for="IsEnable" class="form-control" />
+                <span asp-validation-for="IsEnable" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

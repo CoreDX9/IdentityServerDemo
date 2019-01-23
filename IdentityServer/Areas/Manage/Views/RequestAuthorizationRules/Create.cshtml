@@ -1,0 +1,103 @@
+﻿@using Domain.Security
+@using IdentityServer.CustomServices
+@using Newtonsoft.Json
+@model Domain.Security.RequestAuthorizationRule
+@inject IRequestHandlerInfo RequestHandlerInfo
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>RequestAuthorizationRule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">链接</label>
+                <select class="form-control" asp-items="ViewBag.Handlers" onchange="selectChange(this)">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="HandlerMethodSignature" class="control-label"></label>
+                <input readonly="readonly" asp-for="HandlerMethodSignature" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeFullName" class="control-label"></label>
+                <input readonly="readonly" asp-for="TypeFullName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="IdentificationKey" class="control-label"></label>
+                <input readonly="readonly" asp-for="IdentificationKey" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorizationRuleConfigJson" class="control-label"></label>
+                <input asp-for="AuthorizationRuleConfigJson" class="form-control" />
+                <span asp-validation-for="AuthorizationRuleConfigJson" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Remark" class="control-label"></label>
+                <input asp-for="Remark" class="form-control" />
+                <span asp-validation-for="Remark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+        <p>
+            配置json示例
+        </p>
+        <p>
+            @{
+                //授权规则组（内部可以有子分组）
+                var j = new RequestAuthorizationRule.AuthorizationRuleGroup()
+                {
+                    //该分组内任意规则或子分组匹配成功即视为该分组匹配成功
+                    GroupOperate = RequestAuthorizationRule.AuthorizationRuleGroup.Operate.Any,
+                    //规则列表
+                    Rules = new List<RequestAuthorizationRule.AuthorizationRule>()
+                    {
+                        //规则1
+                        new RequestAuthorizationRule.AuthorizationRule()
+                        {
+                            //用户获得的权限的有效来源列表
+                            Origins = new List<RequestAuthorizationRule.AuthorizationRule.PermissionOrigin>()
+                            {
+                                //权限来源1
+                                new RequestAuthorizationRule.AuthorizationRule.PermissionOrigin()
+                                {
+                                    //从用户所在角色获得权限（有角色列表的话表示用户只有从指定角色获得该权限才有效）
+                                    Type = RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role
+                                }
+                            },
+                            //授权成功所需的权限Id
+                            PermissionDefinitionId = new Guid(),
+                            //授权成功所需的最小权限值
+                            Value = 1
+                        }
+                    }
+                };
+            }
+            @JsonConvert.SerializeObject(j)
+        </p>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts
+{
+    <script>
+        function selectChange(el) {
+            var val = el.value.split('|');
+            $('#IdentificationKey').val(val[0]);
+            $('#TypeFullName').val(val[1]);
+            $('#HandlerMethodSignature').val(val[2]);
+        }
+    </script>
+}

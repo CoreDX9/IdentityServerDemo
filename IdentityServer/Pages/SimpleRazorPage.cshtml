@@ -27,7 +27,7 @@
         {
             Name = this.GetType().Name,
             Area = PageContext.ActionDescriptor.AreaName,
-            HandlerTypeFullName = PageContext.ActionDescriptor.HandlerTypeInfo.FullName,
+            TypeFullName = PageContext.ActionDescriptor.HandlerTypeInfo.FullName,
         };
 
         foreach (var handlerMethod in PageContext.ActionDescriptor.HandlerMethods)
@@ -36,7 +36,7 @@
             {
                 HttpMethod = handlerMethod.HttpMethod,
                 Name = handlerMethod.Name,
-                SignName = handlerMethod.MethodInfo.ToString(),
+                Signature = handlerMethod.MethodInfo.ToString(),
                 Url = Url.Page(PageContext.ActionDescriptor.DisplayName, handlerMethod.Name, new {area = PageContext.ActionDescriptor.AreaName})
             });
         }

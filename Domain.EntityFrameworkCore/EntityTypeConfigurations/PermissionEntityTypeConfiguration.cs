@@ -52,6 +52,7 @@ namespace Domain.EntityFrameworkCore.EntityTypeConfigurations
         }
     }
 
+    //todo:回头看看要不要删掉
     //public class RequestHandlerPermissionDeclarationConfig : IEntityTypeConfiguration<RequestHandlerPermissionDeclaration>
     //{
     //    public void Configure(EntityTypeBuilder<RequestHandlerPermissionDeclaration> builder)
