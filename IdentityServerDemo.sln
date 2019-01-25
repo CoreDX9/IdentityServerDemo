@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityHistoryMQReceive", "R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Logging.File", "Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpScriptDemo", "CSharpScriptDemo\CSharpScriptDemo.csproj", "{ED2A7D11-8350-4B19-A3B0-23273727339E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,10 @@ Global
 		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

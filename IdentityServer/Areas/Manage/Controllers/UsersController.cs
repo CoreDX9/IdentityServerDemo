@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
-using static IdentityServer.JqGridSearchExtensions;
+using static IdentityServer.Extensions.JqGridSearchExtensions;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {

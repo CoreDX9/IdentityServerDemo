@@ -1,4 +1,6 @@
-﻿namespace IdentityServer.HttpHandlerBase
+﻿using IdentityServer.Extensions;
+
+namespace IdentityServer.HttpHandlerBase
 {
     public interface INotFoundResult
     {

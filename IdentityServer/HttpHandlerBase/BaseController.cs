@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IdentityServer.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.HttpHandlerBase
 {

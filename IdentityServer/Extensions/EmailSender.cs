@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace IdentityServer
+namespace IdentityServer.Extensions
 {
     public class EmailSender : IEmailSender
     {

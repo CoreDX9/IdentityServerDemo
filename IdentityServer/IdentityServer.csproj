@@ -21,8 +21,15 @@
       <DestinationRelativePath>wwwroot/lib/bootstrap/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
 
+    <!--包含monaco-editor文件-->
+    <_MonacoEditorFiles Include="node_modules/monaco-editor/min/vs/**/*.*" />
+    <DotnetPublishFiles Include="@(_MonacoEditorFiles)">
+      <DestinationRelativePath>wwwroot/lib/monaco-editor/vs/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+
     <!--包含layui文件-->
     <_LayuiFiles Include="node_modules/layui-src/dist/**/*.*" />
+    <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
     <DotnetPublishFiles Include="@(_LayuiFiles)">
       <DestinationRelativePath>wwwroot/lib/layui/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
@@ -50,6 +57,8 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Redis" Version="1.1.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.10.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -68,11 +77,6 @@
     <ProjectReference Include="..\DbMigration\DbMigration.csproj" />
     <ProjectReference Include="..\Extensions.Logging.File\Extensions.Logging.File.csproj" />
     <ProjectReference Include="..\Util\Util.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\HPlus\Data\" />
-    <Folder Include="Areas\HPlus\Models\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="http://json.schemastore.org/bower" /></VisualStudio></ProjectExtensions>

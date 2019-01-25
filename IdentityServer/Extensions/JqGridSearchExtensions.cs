@@ -7,7 +7,7 @@ using IdentityServer.Models;
 using Newtonsoft.Json;
 using Util.TypeExtensions;
 
-namespace IdentityServer
+namespace IdentityServer.Extensions
 {
     /// <summary>
     /// JqGrid搜索表达式扩展

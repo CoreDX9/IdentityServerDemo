@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Util.TypeExtensions;
 
-namespace IdentityServer
+namespace IdentityServer.Extensions
 {
     public static class FluentValidationExtensions
     {

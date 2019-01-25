@@ -1,0 +1,100 @@
+﻿@page
+@using Microsoft.CodeAnalysis.CSharp.Scripting;
+@using Microsoft.CodeAnalysis.Scripting;
+@{
+    ViewData["Title"] = "CSharp";
+}
+
+@functions
+{
+
+    public void OnGet()
+
+    {
+
+    }
+
+    public async Task<IActionResult> OnGetResultAsync(string script)
+    {
+        string result;
+        try
+        {
+            result = (await CSharpScript.EvaluateAsync(script)).ToString();
+        }
+        catch (CompilationErrorException e)
+        {
+            result = string.Join(Environment.NewLine, e.Diagnostics);
+        }
+        return Content(result);
+    }
+}
+
+<h2>CSharp</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <button id="run" type="button">Run</button>
+        <div id="code-editor" style="height: 400px; border: 1px solid grey"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="result" style="background-color: white; height: 100%;"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_MonacoEditorScriptsPartial"/>
+    <script>
+        (function loadMonacoEditor() {
+            if (!window.isMonacoEditorLoaded) {
+                setTimeout(loadMonacoEditor, 100);
+                return;
+            }
+
+            var editor = window.monaco.editor.create($('#code-editor')[0],
+                {
+                    value: [
+                        'using System;',
+                        '',
+                        'public class Point',
+                        '{',
+                        '    public int X {get; set;}',
+                        '    public int Y {get; set;}',
+                        '',
+                        '    public Point(int x, int y)',
+                        '    {',
+                        '        X = x;',
+                        '        Y = y;',
+                        '    }',
+                        '',
+                        '    public override string ToString()',
+                        '    {',
+                        '        return $"({X}, {Y})";',
+                        '    }',
+                        '}',
+                        '',
+                        'var random = new Random();',
+                        '',
+                        'int a = random.Next(0, 1000);',
+                        'int b = random.Next(0, 1000);',
+                        'Func<int, int, int> plus = (l, r) => l + r;',
+                        '$"{a}+{b}={plus(a, b)}\\r\\nPoint : {new Point(random.Next(0, 1000), random.Next(0, 1000))}"'
+                    ].join('\n'),
+                    language: 'csharp',
+                    wordWrap: 'on'
+                });
+
+            $('#code-editor').resize(function() { editor.layout(); });
+
+            $('#run').on('click',
+                function() {
+                    $.ajax({
+                        url: '/onlinecode/csharp?handler=result&script=' + encodeURIComponent(editor.getValue()),
+                        success: function(res) {
+                            $('#result').text(res);
+                        }
+                    });
+                });
+        })();
+    </script>
+}

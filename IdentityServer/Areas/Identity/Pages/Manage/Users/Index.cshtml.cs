@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repository.EntityFrameworkCore.Identity;
-using static IdentityServer.JqGridSearchExtensions;
+using static IdentityServer.Extensions.JqGridSearchExtensions;
 using static System.Math;
 
 namespace IdentityServer.Areas.Identity.Pages.Manage.Users

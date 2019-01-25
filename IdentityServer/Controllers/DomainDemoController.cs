@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Identity;
+using IdentityServer.Extensions;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;

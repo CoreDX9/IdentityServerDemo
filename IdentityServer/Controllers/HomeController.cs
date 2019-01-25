@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using Domain.Security;
 using IdentityServer.CustomServices;
+using IdentityServer.Extensions;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Http;

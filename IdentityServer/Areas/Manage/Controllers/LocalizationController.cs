@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IdentityServer.Extensions;
 using IdentityServer.HttpHandlerBase;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Mvc;

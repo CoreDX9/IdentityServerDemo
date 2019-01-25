@@ -1,0 +1,25 @@
+<environment include="Development">
+    <script src="~/npm/monaco-editor/dev/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': '/npm/monaco-editor/dev/vs' } });
+    </script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/monaco-editor/vs/loader.js" asp-append-version="true"></script>
+    <script>
+        require.config({ paths: { 'vs': '/lib/monaco-editor/vs' } });
+    </script>
+</environment>
+<script>
+    window.isMonacoEditorLoaded = false;
+    require.config({
+        'vs/nls': {
+            availableLanguages: {
+                '*': 'zh-cn'
+            }
+        }
+    });
+    require(['vs/editor/editor.main'], function() {
+        window.isMonacoEditorLoaded = true;
+    });
+</script>

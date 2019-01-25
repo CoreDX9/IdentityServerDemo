@@ -230,5 +230,14 @@
     "minify": {
       "enabled": false
     }
+  },
+  {
+    "outputFileName": "wwwroot/lib/monaco-editor/vs/editor/editor.main.nls.zh-cn-1.js",
+    "inputFiles": [
+      "wwwroot/js/editor.main.nls.zh-cn.js"
+    ],
+    "minify": {
+      "enabled": true
+    }
   }
 ]

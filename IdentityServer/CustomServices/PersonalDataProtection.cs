@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Util.TypeExtensions;
 
-namespace IdentityServer
+namespace IdentityServer.CustomServices
 {
     /// <summary>
     /// AES数据加密器

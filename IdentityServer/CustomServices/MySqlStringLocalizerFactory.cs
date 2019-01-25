@@ -8,7 +8,7 @@ using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-namespace IdentityServer
+namespace IdentityServer.CustomServices
 {
     public class MySqlStringLocalizerFactory : SqlStringLocalizerFactory, IStringLocalizerFactory
     {

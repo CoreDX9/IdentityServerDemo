@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
 
-namespace IdentityServer
+namespace IdentityServer.Extensions
 {
     /// <summary>
     /// DisplayName-related extensions for <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper" /> and <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper`1" />.

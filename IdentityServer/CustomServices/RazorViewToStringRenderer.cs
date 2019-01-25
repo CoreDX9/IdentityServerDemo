@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
-namespace IdentityServer
+namespace IdentityServer.CustomServices
 {
     /// <summary>
     /// 将Razor视图渲染为字符串

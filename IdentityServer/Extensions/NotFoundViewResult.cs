@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer
+namespace IdentityServer.Extensions
 {
     public class NotFoundViewResult : ViewResult
     {

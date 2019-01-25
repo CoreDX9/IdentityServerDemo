@@ -9,6 +9,7 @@ using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using IdentityServer.CustomServices;
+using IdentityServer.Extensions;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
