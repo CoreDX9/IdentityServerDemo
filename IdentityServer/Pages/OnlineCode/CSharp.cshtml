@@ -90,8 +90,14 @@
                 function() {
                     $.ajax({
                         url: '/onlinecode/csharp?handler=result&script=' + encodeURIComponent(editor.getValue()),
-                        success: function(res) {
-                            $('#result').text(res);
+                        success: function (res) {
+                            var $re = $('#result').text('');
+                            var strs = res.split('\r\n');
+                            for (var i = 0, len = strs.length; i < len; i++) {
+                                var p = $('<p></p>');
+                                p.text(strs[i]);
+                                $re.append(p);
+                            }
                         }
                     });
                 });
