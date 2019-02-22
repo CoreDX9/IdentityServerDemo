@@ -7,7 +7,7 @@ namespace Util.TypeExtensions
     /// <summary>
     /// 枚举方式
     /// </summary>
-    public enum EnumerateType
+    public enum EnumerateType : byte
     {
         /// <summary>
         /// 深度优先，先序
@@ -28,7 +28,17 @@ namespace Util.TypeExtensions
     {
         T Current { get; }
 
+        IHierarchical<T> Parent { get; }
+
         IEnumerable<IHierarchical<T>> Children { get; }
+
+        int Depth { get; }
+
+        bool IsRoot { get; }
+
+        bool IsLeaf { get; }
+
+        bool HasChildren { get; }
     }
 
     /// <summary>
@@ -67,9 +77,24 @@ namespace Util.TypeExtensions
                 _childSelector = childSelector;
             }
 
+            /// <summary>
+            /// 实例化分层数据
+            /// </summary>
+            /// <param name="item">数据</param>
+            /// <param name="parent">上层数据</param>
+            /// <param name="childSelector">下层数据选择器</param>
+            private Hierarchical(T item, IHierarchical<T> parent, Func<T, IEnumerable<T>> childSelector)
+            {
+                Current = item;
+                Parent = parent;
+                _childSelector = childSelector;
+            }
+
             #region IHierarchicalDataItem<T> 成员
 
             public T Current { get; }
+
+            public IHierarchical<T> Parent { get; }
 
             public IEnumerable<IHierarchical<T>> Children
             {
@@ -81,10 +106,18 @@ namespace Util.TypeExtensions
 
                     foreach (T item in children)
                     {
-                        yield return new Hierarchical<T>(item, _childSelector);
+                        yield return new Hierarchical<T>(item, this, _childSelector);
                     }
                 }
             }
+
+            public int Depth => Parent?.Depth + 1 ?? 0;
+
+            public bool IsRoot => Parent == null;
+
+            public bool IsLeaf => !(Children?.Any() ?? false);
+
+            public bool HasChildren => !IsLeaf;
 
             #endregion
         }

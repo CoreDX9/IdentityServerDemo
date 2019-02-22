@@ -84,6 +84,8 @@ namespace IdentityServer.Extensions
             return expression;
         }
 
+        private static readonly string[] SpecialRuleOps = {"in", "ni", "nu", "nn"};
+
         /// <summary>
         /// 构造条件表达式
         /// </summary>
@@ -92,7 +94,8 @@ namespace IdentityServer.Extensions
         /// <param name="parameter">参数</param>
         /// <param name="propertyMap">属性映射</param>
         /// <returns>返回bool的条件表达式</returns>
-        private static Expression BuildRuleExpression<T>(JqGridSearchRule rule, ParameterExpression parameter, IDictionary<string, string> propertyMap)
+        private static Expression BuildRuleExpression<T>(JqGridSearchRule rule, ParameterExpression parameter,
+            IDictionary<string, string> propertyMap)
         {
             Expression l;
 
@@ -111,12 +114,12 @@ namespace IdentityServer.Extensions
                 l = Expression.Property(parameter, rule.PascalField);
             }
 
-            Expression r = null;//值表达式
-            Expression e;//返回bool的各种比较表达式
+            Expression r = null; //值表达式
+            Expression e; //返回bool的各种比较表达式
 
             //属于和不属于比较是多值比较，需要调用Contains方法，而不是调用比较操作符
             //为空和不为空的右值为常量null，不需要构造
-            var specialRuleOps = new[] { "in", "ni", "nu", "nn" };
+            var specialRuleOps = SpecialRuleOps;
 
             var isGen = false;
             var pt = typeof(T).GetProperty(rule.PascalField).PropertyType;
@@ -126,6 +129,7 @@ namespace IdentityServer.Extensions
                 isGen = true;
                 pt = pt.GenericTypeArguments[0];
             }
+
             //根据属性类型创建要比较的常量值表达式（也就是r）
             if (!specialRuleOps.Contains(rule.Op))
             {
@@ -224,63 +228,105 @@ namespace IdentityServer.Extensions
 
             switch (rule.Op)
             {
-                case "eq"://等于
+                case "eq": //等于
                     e = Expression.Equal(l, r);
                     break;
-                case "ne"://不等于
+                case "ne": //不等于
                     e = Expression.NotEqual(l, r);
                     break;
-                case "lt"://小于
+                case "lt": //小于
                     e = Expression.LessThan(l, r);
                     break;
-                case "le"://小于等于
+                case "le": //小于等于
                     e = Expression.LessThanOrEqual(l, r);
                     break;
-                case "gt"://大于
+                case "gt": //大于
                     e = Expression.GreaterThan(l, r);
                     break;
-                case "ge"://大于等于
+                case "ge": //大于等于
                     e = Expression.GreaterThanOrEqual(l, r);
                     break;
-                case "bw"://开头是（字符串）
-                    if (pt == typeof(string)) {e = Expression.Call(l, pt.GetMethod("StartsWith", new[] { typeof(string) }), r);}
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的开始于表达式"); }
+                case "bw": //开头是（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Call(l, pt.GetMethod(nameof(string.StartsWith), new[] {typeof(string)}), r);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的开始于表达式");
+                    }
+
                     break;
-                case "bn"://开头不是（字符串）
-                    if (pt == typeof(string)) { e = Expression.Not(Expression.Call(l, pt.GetMethod("StartsWith", new[] { typeof(string) }), r)); }
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的不开始于表达式"); }
+                case "bn": //开头不是（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.StartsWith), new[] {typeof(string)}), r));
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的不开始于表达式");
+                    }
+
                     break;
-                case "ew"://结尾是（字符串）
-                    if (pt == typeof(string)) { e = Expression.Call(l, pt.GetMethod("EndsWith", new[] { typeof(string) }), r); }
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的结束于表达式"); }
+                case "ew": //结尾是（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Call(l, pt.GetMethod(nameof(string.EndsWith), new[] {typeof(string)}), r);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的结束于表达式");
+                    }
+
                     break;
-                case "en"://结尾不是（字符串）
-                    if (pt == typeof(string)) { e = Expression.Not(Expression.Call(l, pt.GetMethod("EndsWith", new[] { typeof(string) }), r)); }
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的不结束于表达式"); }
+                case "en": //结尾不是（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.EndsWith), new[] {typeof(string)}), r));
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的不结束于表达式");
+                    }
+
                     break;
-                case "cn"://包含（字符串）
-                    if (pt == typeof(string)) { e = Expression.Call(l, pt.GetMethod("Contains", new[] { typeof(string) }), r); }
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的包含表达式"); }
+                case "cn": //包含（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Call(l, pt.GetMethod(nameof(string.Contains), new[] {typeof(string)}), r);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的包含表达式");
+                    }
+
                     break;
-                case "nc"://不包含（字符串）
-                    if (pt == typeof(string)) { e = Expression.Not(Expression.Call(l, pt.GetMethod("Contains", new[] { typeof(string) }), r)); }
-                    else { throw new InvalidOperationException($"不支持创建{pt.FullName}类型的包含表达式"); }
+                case "nc": //不包含（字符串）
+                    if (pt == typeof(string))
+                    {
+                        e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.Contains), new[] {typeof(string)}), r));
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"不支持创建{pt.FullName}类型的包含表达式");
+                    }
+
                     break;
-                case "in"://属于（是候选值列表之一）
+                case "in": //属于（是候选值列表之一）
                     e = BuildContainsExpression(rule, l, pt);
                     break;
-                case "ni"://不属于（不是候选值列表之一）
+                case "ni": //不属于（不是候选值列表之一）
                     e = Expression.Not(BuildContainsExpression(rule, l, pt));
                     break;
-                case "nu"://为空
+                case "nu": //为空
                     r = Expression.Constant(null);
                     e = Expression.Equal(l, r);
                     break;
-                case "nn"://不为空
+                case "nn": //不为空
                     r = Expression.Constant(null);
                     e = Expression.Not(Expression.Equal(l, r));
                     break;
-                case "bt"://区间
+                case "bt": //区间
                     throw new NotImplementedException($"尚未实现创建{rule.Op}类型的比较表达式");
                 default:
                     throw new InvalidOperationException($"不支持创建{rule.Op}类型的比较表达式");
@@ -307,7 +353,7 @@ namespace IdentityServer.Extensions
             Expression e = null;
 
             var genMethod = typeof(Queryable).GetMethods()
-                .Single(m1 => m1.Name == "Contains" && m1.GetParameters().Length == 2);
+                .Single(m1 => m1.Name == nameof(Queryable.Contains) && m1.GetParameters().Length == 2);
 
             var jsonArray = JsonConvert.DeserializeObject<string[]>(rule.Data);
 
