@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Util.TypeExtensions
 {
@@ -38,7 +39,7 @@ namespace Util.TypeExtensions
 
         bool IsLeaf { get; }
 
-        bool HasChildren { get; }
+        bool HasChild { get; }
     }
 
     /// <summary>
@@ -64,7 +65,9 @@ namespace Util.TypeExtensions
         /// <typeparam name="T">数据类型</typeparam>
         private class Hierarchical<T> : IHierarchical<T>
         {
+            private object _locker;
             private readonly Func<T, IEnumerable<T>> _childSelector;
+            private IEnumerable<IHierarchical<T>> _children;
 
             /// <summary>
             /// 实例化分层数据
@@ -73,6 +76,8 @@ namespace Util.TypeExtensions
             /// <param name="childSelector">下层数据选择器</param>
             public Hierarchical(T item, Func<T, IEnumerable<T>> childSelector)
             {
+                _locker = new object();
+                _children = null;
                 Current = item;
                 _childSelector = childSelector;
             }
@@ -84,10 +89,25 @@ namespace Util.TypeExtensions
             /// <param name="parent">上层数据</param>
             /// <param name="childSelector">下层数据选择器</param>
             private Hierarchical(T item, IHierarchical<T> parent, Func<T, IEnumerable<T>> childSelector)
+                : this(item, childSelector)
             {
-                Current = item;
                 Parent = parent;
-                _childSelector = childSelector;
+            }
+
+            /// <summary>
+            /// 初始化下层节点集合
+            /// </summary>
+            /// <returns>迭代结果集合接口</returns>
+            private IEnumerable<IHierarchical<T>> InitializeChildren()
+            {
+                var children = _childSelector(Current);
+                if (children == null)
+                    yield break;
+
+                foreach (T item in children)
+                {
+                    yield return new Hierarchical<T>(item, this, _childSelector);
+                }
             }
 
             #region IHierarchicalDataItem<T> 成员
@@ -100,16 +120,31 @@ namespace Util.TypeExtensions
             {
                 get
                 {
-                    var children = _childSelector(Current);
-                    if (children == null)
-                        yield break;
+                    if (_children == null)
+                        lock (_locker)
+                            if (_children == null)
+                                _children = InitializeChildren().ToArray();
 
-                    foreach (T item in children)
-                    {
-                        yield return new Hierarchical<T>(item, this, _childSelector);
-                    }
+                    return _children;
                 }
             }
+
+            //无缓存方法，每次访问相同节点都会重新枚举数据源并生成结果对象
+            //包含相同数据T的包装IHierarchical<T>每次都不一样
+            //public IEnumerable<IHierarchical<T>> Children
+            //{
+            //    get
+            //    {
+            //        var children = _childSelector(Current);
+            //        if (children == null)
+            //            yield break;
+
+            //        foreach (T item in children)
+            //        {
+            //            yield return new Hierarchical<T>(item, this, _childSelector);
+            //        }
+            //    }
+            //}
 
             public int Depth => Parent?.Depth + 1 ?? 0;
 
@@ -117,7 +152,7 @@ namespace Util.TypeExtensions
 
             public bool IsLeaf => !(Children?.Any() ?? false);
 
-            public bool HasChildren => !IsLeaf;
+            public bool HasChild => !IsLeaf;
 
             #endregion
         }

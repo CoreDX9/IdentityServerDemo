@@ -77,6 +77,10 @@ namespace DomainSample
             p5.Parent = p2;
             p5.ParentId = p2.Id;
 
+            var hi = p1.AsHierarchical();
+
+            var b = hi.Children.First() == hi.Children.First();
+
             foreach (var p in p1.AsEnumerable())
             {
                 Console.WriteLine($@"person id:{p.Id} name:{p.Name} depth:{p.Depth} pId:{p.ParentId} children:{string.Join(',', p.Children.Select(x => x.Id))}");
