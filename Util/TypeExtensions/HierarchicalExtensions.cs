@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Util.TypeExtensions
 {
@@ -65,7 +64,7 @@ namespace Util.TypeExtensions
         /// <typeparam name="T">数据类型</typeparam>
         private class Hierarchical<T> : IHierarchical<T>
         {
-            private object _locker;
+            private readonly object _locker;
             private readonly Func<T, IEnumerable<T>> _childSelector;
             private IEnumerable<IHierarchical<T>> _children;
 
