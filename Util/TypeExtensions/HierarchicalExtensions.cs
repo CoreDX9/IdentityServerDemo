@@ -26,18 +26,74 @@ namespace Util.TypeExtensions
     /// <typeparam name="T">数据类型</typeparam>
     public interface IHierarchical<out T>
     {
+        /// <summary>
+        /// 当前节点的数据
+        /// </summary>
         T Current { get; }
 
+        /// <summary>
+        /// 根节点
+        /// </summary>
+        IHierarchical<T> Root { get; }
+
+        /// <summary>
+        /// 双亲（父）节点
+        /// </summary>
         IHierarchical<T> Parent { get; }
 
+        /// <summary>
+        /// 祖先节点集合
+        /// </summary>
+        IEnumerable<IHierarchical<T>> Ancestors { get; }
+
+        /// <summary>
+        /// 子节点集合
+        /// </summary>
         IEnumerable<IHierarchical<T>> Children { get; }
 
-        int Depth { get; }
+        /// <summary>
+        /// 后代节点集合
+        /// </summary>
+        IEnumerable<IHierarchical<T>> Descendant { get; }
 
+        /// <summary>
+        /// 兄弟节点集合
+        /// </summary>
+        IEnumerable<IHierarchical<T>> Sibling { get; }
+
+        /// <summary>
+        /// 节点的层
+        /// </summary>
+        int Level { get; }
+
+        /// <summary>
+        /// 节点（以当前节点为根的子树）的高度
+        /// </summary>
+        int Height { get; }
+
+        /// <summary>
+        /// 节点的度
+        /// </summary>
+        int Degree { get; }
+
+        /// <summary>
+        /// 树（以当前节点为根的子树）的所有节点的度的最大值
+        /// </summary>
+        int MaxDegreeOfTree { get; }
+
+        /// <summary>
+        /// 当前节点是否是根节点
+        /// </summary>
         bool IsRoot { get; }
 
+        /// <summary>
+        /// 当前节点是否是叶子节点
+        /// </summary>
         bool IsLeaf { get; }
 
+        /// <summary>
+        /// 当前节点是否有子节点
+        /// </summary>
         bool HasChild { get; }
     }
 
@@ -57,6 +113,20 @@ namespace Util.TypeExtensions
         {
             return new Hierarchical<T>(item, childSelector);
         }
+
+        /// <summary>
+        /// 获取从根到节点的路径（中顺序经过的节点集合）
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        /// <param name="node">节点</param>
+        /// <returns>路径中按经过顺序组成的节点集合</returns>
+        public static IEnumerable<IHierarchical<T>> GetPathFromRoot<T>(this IHierarchical<T> node) =>
+            node.Ancestors.Reverse();
+
+        //public static IEnumerable<IHierarchical<T>> GetPathFromNode<T>(this IHierarchical<T> node, IHierarchical<T> from)
+        //public static IEnumerable<IHierarchical<T>> GetPathToNode<T>(this IHierarchical<T> node, IHierarchical<T> to)
+        //public static bool IsDescendantOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
+        //public static bool IsAncestorOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
 
         /// <summary>
         /// 分层数据
@@ -113,7 +183,34 @@ namespace Util.TypeExtensions
 
             public T Current { get; }
 
+            public IHierarchical<T> Root
+            {
+                get
+                {
+                    IHierarchical<T> node = this;
+
+                    while (node.Parent != null)
+                        node = node.Parent;
+
+                    return node;
+                }
+            }
+
             public IHierarchical<T> Parent { get; }
+
+            public IEnumerable<IHierarchical<T>> Ancestors
+            {
+                get
+                {
+                    IHierarchical<T> node = Parent;
+
+                    while (node != null)
+                    {
+                        yield return node;
+                        node = node.Parent;
+                    }
+                }
+            }
 
             public IEnumerable<IHierarchical<T>> Children
             {
@@ -127,6 +224,27 @@ namespace Util.TypeExtensions
                     return _children;
                 }
             }
+
+            public IEnumerable<IHierarchical<T>> Descendant
+            {
+                get
+                {
+                    Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(Children);
+
+                    while (stack.Count > 0)
+                    {
+                        IHierarchical<T> node = stack.Pop();
+                        yield return node;
+
+                        foreach (IHierarchical<T> child in node.Children)
+                        {
+                            stack.Push(child);
+                        }
+                    }
+                }
+            }
+
+            public IEnumerable<IHierarchical<T>> Sibling => Parent?.Children?.Where(node => node != this);
 
             //无缓存方法，每次访问相同节点都会重新枚举数据源并生成结果对象
             //包含相同数据T的包装IHierarchical<T>每次都不一样
@@ -145,11 +263,17 @@ namespace Util.TypeExtensions
             //    }
             //}
 
-            public int Depth => Parent?.Depth + 1 ?? 0;
+            public int Level => Parent?.Level + 1 ?? 0;
+
+            public int Height => (Descendant.Any() ? Descendant.Select(node => node.Level).Max() - Level : 0) + 1;
+
+            public int Degree => Children?.Count() ?? 0;
+
+            public int MaxDegreeOfTree => Math.Max(Degree, Descendant.Any() ? Descendant.Select(node => node.Degree).Max() : 0);
 
             public bool IsRoot => Parent == null;
 
-            public bool IsLeaf => !(Children?.Any() ?? false);
+            public bool IsLeaf => Degree == 0;
 
             public bool HasChild => !IsLeaf;
 
