@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Util.TypeExtensions
 {
@@ -42,7 +43,7 @@ namespace Util.TypeExtensions
         IHierarchical<T> Parent { get; }
 
         /// <summary>
-        /// 祖先节点集合
+        /// 祖先节点集合（按路径距离升序）
         /// </summary>
         IEnumerable<IHierarchical<T>> Ancestors { get; }
 
@@ -52,7 +53,7 @@ namespace Util.TypeExtensions
         IEnumerable<IHierarchical<T>> Children { get; }
 
         /// <summary>
-        /// 后代节点集合
+        /// 后代节点集合（深度优先先序遍历）
         /// </summary>
         IEnumerable<IHierarchical<T>> Descendant { get; }
 
@@ -77,7 +78,7 @@ namespace Util.TypeExtensions
         int Degree { get; }
 
         /// <summary>
-        /// 树（以当前节点为根的子树）的所有节点的度的最大值
+        /// 树（以当前节点为根的子树）的所有节点中度最大的节点的度
         /// </summary>
         int MaxDegreeOfTree { get; }
 
@@ -95,6 +96,14 @@ namespace Util.TypeExtensions
         /// 当前节点是否有子节点
         /// </summary>
         bool HasChild { get; }
+
+        /// <summary>
+        /// 以当前节点为根返回树形排版的结构字符串
+        /// </summary>
+        /// <param name="formatter">数据对象格式化器（内容要为一行，否则会影响排版）</param>
+        /// <param name="convertSingleLine">处理掉换行符变成单行文本</param>
+        /// <returns></returns>
+        string ToString(Func<T, string> formatter, bool convertSingleLine = false);
     }
 
     /// <summary>
@@ -113,20 +122,6 @@ namespace Util.TypeExtensions
         {
             return new Hierarchical<T>(item, childSelector);
         }
-
-        /// <summary>
-        /// 获取从根到节点的路径（中顺序经过的节点集合）
-        /// </summary>
-        /// <typeparam name="T">数据类型</typeparam>
-        /// <param name="node">节点</param>
-        /// <returns>路径中按经过顺序组成的节点集合</returns>
-        public static IEnumerable<IHierarchical<T>> GetPathFromRoot<T>(this IHierarchical<T> node) =>
-            node.Ancestors.Reverse();
-
-        //public static IEnumerable<IHierarchical<T>> GetPathFromNode<T>(this IHierarchical<T> node, IHierarchical<T> from)
-        //public static IEnumerable<IHierarchical<T>> GetPathToNode<T>(this IHierarchical<T> node, IHierarchical<T> to)
-        //public static bool IsDescendantOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
-        //public static bool IsAncestorOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
 
         /// <summary>
         /// 分层数据
@@ -229,14 +224,14 @@ namespace Util.TypeExtensions
             {
                 get
                 {
-                    Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(Children);
+                    Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(Children.Reverse());
 
                     while (stack.Count > 0)
                     {
                         IHierarchical<T> node = stack.Pop();
                         yield return node;
 
-                        foreach (IHierarchical<T> child in node.Children)
+                        foreach (IHierarchical<T> child in node.Children.Reverse())
                         {
                             stack.Push(child);
                         }
@@ -263,7 +258,7 @@ namespace Util.TypeExtensions
             //    }
             //}
 
-            public int Level => Parent?.Level + 1 ?? 0;
+            public int Level => Parent?.Level + 1 ?? 1;
 
             public int Height => (Descendant.Any() ? Descendant.Select(node => node.Level).Max() - Level : 0) + 1;
 
@@ -277,7 +272,155 @@ namespace Util.TypeExtensions
 
             public bool HasChild => !IsLeaf;
 
+            public string ToString(Func<T, string> formatter, bool convertSingleLine = false)
+            {
+                var sbr = new StringBuilder();
+                sbr.AppendLine(convertSingleLine
+                    ? formatter(Current).Replace("\r", @"\r").Replace("\n", @"\n")
+                    : formatter(Current));
+
+                var sb = new StringBuilder();
+                foreach (var node in Descendant)
+                {
+                    sb.Append(convertSingleLine
+                        ? formatter(node.Current).Replace("\r", @"\r").Replace("\n", @"\n")
+                        : formatter(node.Current));
+                    sb.Insert(0, node == node.Parent.Children.Last() ? "└─" : "├─");
+
+                    for (int i = 0; i < node.Ancestors.Count() - (Ancestors?.Count() ?? 0) - 1; i++)
+                    {
+                        sb.Insert(0,
+                            node.Ancestors.ElementAt(i) == node.Ancestors.ElementAt(i + 1).Children.Last()
+                                ? "    "
+                                : "│  ");
+                    }
+
+                    sbr.AppendLine(sb.ToString());
+                    sb.Clear();
+                }
+
+                return sbr.ToString();
+            }
+
+            public override string ToString()
+            {
+                return ToString(node => node.ToString());
+            }
+
             #endregion
+        }
+
+        /// <summary>
+        /// 获取从根到节点的路径（中顺序经过的节点集合）
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        /// <param name="node">节点</param>
+        /// <returns>路径中按经过顺序组成的节点集合</returns>
+        public static IEnumerable<IHierarchical<T>> GetPathFromRoot<T>(this IHierarchical<T> node) =>
+            node.Ancestors.Reverse();
+
+        /// <summary>
+        /// 判断节点是否是指定节点的祖先节点
+        /// </summary>
+        /// <typeparam name="T">节点数据类型</typeparam>
+        /// <param name="node">待判断的节点</param>
+        /// <param name="target">目标节点</param>
+        /// <returns>判断结果</returns>
+        public static bool IsAncestorOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
+        {
+            if (node.Root != target.Root)
+                throw new InvalidOperationException($"{nameof(node)} and {nameof(target)} are not at same tree.");
+
+            return target.Ancestors.SingleOrDefault(n => n == node) != null;
+        }
+
+        /// <summary>
+        /// 判断节点是否是指定节点的后代节点
+        /// </summary>
+        /// <typeparam name="T">节点数据类型</typeparam>
+        /// <param name="node">待判断的节点</param>
+        /// <param name="target">目标节点</param>
+        /// <returns>判断结果</returns>
+        public static bool IsDescendantOf<T>(this IHierarchical<T> node, IHierarchical<T> target)
+        {
+            if (node.Root != target.Root)
+                throw new InvalidOperationException($"{nameof(node)} and {nameof(target)} are not at same tree.");
+
+            return target.IsAncestorOf(node);
+        }
+
+        /// <summary>
+        /// 获取从指定节点到当前节点的路径
+        /// </summary>
+        /// <typeparam name="T">节点数据类型</typeparam>
+        /// <param name="node">当前节点（终点）</param>
+        /// <param name="from">目标节点（起点）</param>
+        /// <returns>按从目标节点到当前节点顺序经过的节点集合</returns>
+        public static IEnumerable<IHierarchical<T>> GetPathFromNode<T>(this IHierarchical<T> node,
+            IHierarchical<T> from)
+        {
+            if(node.Root != from.Root)
+                throw new InvalidOperationException($"{nameof(node)} and {nameof(from)} are not at same tree.");
+
+            yield return from;
+
+            if (node == from) yield break;
+
+            if (node.IsAncestorOf(from))
+            {
+                foreach (var ancestor in from.Ancestors)
+                {
+                    yield return ancestor;
+                    if (ancestor == node)
+                    {
+                        yield break;
+                    }
+                }
+            }
+
+            var ancestorsOfNode = node.Ancestors.ToArray();
+            if (node.IsDescendantOf(from))
+            {
+                for (int i = Array.IndexOf(ancestorsOfNode, from) - 1; i >= 0; i--)
+                {
+                    yield return ancestorsOfNode[i];
+                }
+
+                yield return node;
+                yield break;
+            }
+
+            var keyNode = ancestorsOfNode.Intersect(from.Ancestors).OrderByDescending(no => no.Level).First();
+            foreach (var ancestor in from.Ancestors)
+            {
+                yield return ancestor;
+                if (ancestor == keyNode)
+                {
+                    break;
+                }
+            }
+
+            for (int i = Array.IndexOf(ancestorsOfNode, keyNode) - 1; i >= 0; i--)
+            {
+                yield return ancestorsOfNode[i];
+            }
+
+            yield return node;
+        }
+
+        /// <summary>
+        /// 获取从当前节点到指定节点的路径
+        /// </summary>
+        /// <typeparam name="T">节点数据类型</typeparam>
+        /// <param name="node">当前节点（起点）</param>
+        /// <param name="to">目标节点（终点）</param>
+        /// <returns>按从当前节点到目标节点顺序经过的节点集合</returns>
+        public static IEnumerable<IHierarchical<T>> GetPathToNode<T>(this IHierarchical<T> node, IHierarchical<T> to)
+        {
+            if (node.Root != to.Root)
+                throw new InvalidOperationException($"{nameof(node)} and {nameof(to)} are not at same tree.");
+
+            return to.GetPathFromNode(node);
         }
 
         /// <summary>
@@ -289,7 +432,7 @@ namespace Util.TypeExtensions
         /// <param name="predicate">子孙筛选条件</param>
         /// <returns>筛选的子孙</returns>
         public static IEnumerable<IHierarchical<T>> GetDescendantDfsDlr<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate)
+            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null)
         {
             predicate = predicate ?? (t => true);
             Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(childSelector(root).Where(predicate).Reverse());
@@ -327,7 +470,7 @@ namespace Util.TypeExtensions
         /// <param name="predicate">子孙筛选条件</param>
         /// <returns>筛选的子孙</returns>
         public static IEnumerable<IHierarchical<T>> GetDescendantsBfs<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate)
+            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null)
         {
             predicate = predicate ?? (t => true);
             Queue<IHierarchical<T>> queue = new Queue<IHierarchical<T>>(childSelector(root).Where(predicate));
@@ -354,7 +497,7 @@ namespace Util.TypeExtensions
         /// <param name="enumerateType">枚举方式</param>
         /// <returns>已枚举的集合</returns>
         public static IEnumerable<IHierarchical<T>> AsEnumerable<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate,
+            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null,
             EnumerateType enumerateType = EnumerateType.DfsDlr)
         {
             yield return root;

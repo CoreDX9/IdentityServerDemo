@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using Domain;
 using Entity;
 using Util.TypeExtensions;
@@ -77,9 +78,58 @@ namespace DomainSample
             p5.Parent = p2;
             p5.ParentId = p2.Id;
 
-            var hi = p1.AsHierarchical();
+            TreeNode[] nodes = {
+                new TreeNode("@babel", null),
+                new TreeNode("code-frame", "@babel"),
+                new TreeNode("lib\r\n(code-frame)", "code-frame"),
+                new TreeNode("core", "@babel"),
+                new TreeNode("lib", "core"),
+                new TreeNode("config", "lib"),
+                new TreeNode("files", "config"),
+                new TreeNode("helpers", "config"),
+                new TreeNode("validation", "config"),
+                new TreeNode("tools", "lib"),
+                new TreeNode("transformation", "lib"),
+                new TreeNode("file", "transformation"),
+                new TreeNode("util", "transformation"),
+                new TreeNode("node_modules", "core"),
+                new TreeNode(".bin", "node_modules"),
+                new TreeNode("debug", "node_modules"),
+                new TreeNode("dist", "debug"),
+                new TreeNode("src", "debug"),
+                new TreeNode("ms", "node_modules"),
+                new TreeNode("generator", "@babel"),
+            };
 
-            var b = hi.Children.First() == hi.Children.First();
+            var hNodes = nodes[0].AsHierarchical(tNode => nodes.Where(t => t.ParentValue == tNode.Value));
+            var strNodes = hNodes.ToString(tn => tn.Value, true);
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine(strNodes);
+            Console.WriteLine("-------------------------------------------------------------");
+
+            var test = hNodes.AsEnumerable(c => c.Children);
+            var testC = test.Count();
+
+            var start = test.ElementAt(new Random().Next(0, testC));
+            var stst = start.ToString(tn => tn.Value, true);
+            var end = test.ElementAt(new Random().Next(0, testC));
+            var enst = end.ToString(tn => tn.Value, true);
+
+            var path = start.GetPathToNode(end);
+
+            var strPath = string.Join(" -> ", path.Select(p => p.Current.Value));
+
+            Console.WriteLine("节点路径查找");
+            Console.WriteLine($"起点：{start.Current.Value}");
+            Console.WriteLine($"终点：{end.Current.Value}");
+            Console.WriteLine($"路径：{strPath}");
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine($"起点的子树：\r\n{stst}");
+            Console.WriteLine($"终点的子树：\r\n{enst}");
+            Console.WriteLine("-------------------------------------------------------------");
+
+            var hi = p1.AsHierarchical();
+            var b = hi.Children?.First() == hi?.Children?.First();
 
             foreach (var p in p1.AsEnumerable())
             {
@@ -143,5 +193,22 @@ namespace DomainSample
     public class STT2 : ChangeTrackableSample2<double>
     {
         public int j { get; set; }
+    }
+
+    public class TreeNode
+    {
+        public TreeNode(string value, string parentValue)
+        {
+            ParentValue = parentValue;
+            Value = value;
+        }
+        public string ParentValue { get; set; }
+
+        public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(Value)}: {Value}; {nameof(ParentValue)}: {ParentValue}";
+        }
     }
 }
