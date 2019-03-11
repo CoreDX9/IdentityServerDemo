@@ -16,6 +16,11 @@ namespace Util.TypeExtensions
         DfsDlr,
 
         /// <summary>
+        /// 深度优先，后序
+        /// </summary>
+        DfsLrd,
+
+        /// <summary>
         /// 广度优先（层序）
         /// </summary>
         Bfs
@@ -55,12 +60,12 @@ namespace Util.TypeExtensions
         /// <summary>
         /// 后代节点集合（深度优先先序遍历）
         /// </summary>
-        IEnumerable<IHierarchical<T>> Descendant { get; }
+        IEnumerable<IHierarchical<T>> Descendants { get; }
 
         /// <summary>
         /// 兄弟节点集合
         /// </summary>
-        IEnumerable<IHierarchical<T>> Sibling { get; }
+        IEnumerable<IHierarchical<T>> Siblings { get; }
 
         /// <summary>
         /// 节点的层
@@ -101,9 +106,9 @@ namespace Util.TypeExtensions
         /// 以当前节点为根返回树形排版的结构字符串
         /// </summary>
         /// <param name="formatter">数据对象格式化器（内容要为一行，否则会影响排版）</param>
-        /// <param name="convertSingleLine">处理掉换行符变成单行文本</param>
+        /// <param name="convertToSingleLine">处理掉换行符变成单行文本</param>
         /// <returns></returns>
-        string ToString(Func<T, string> formatter, bool convertSingleLine = false);
+        string ToString(Func<T, string> formatter, bool convertToSingleLine = false);
     }
 
     /// <summary>
@@ -220,7 +225,7 @@ namespace Util.TypeExtensions
                 }
             }
 
-            public IEnumerable<IHierarchical<T>> Descendant
+            public IEnumerable<IHierarchical<T>> Descendants
             {
                 get
                 {
@@ -239,7 +244,7 @@ namespace Util.TypeExtensions
                 }
             }
 
-            public IEnumerable<IHierarchical<T>> Sibling => Parent?.Children?.Where(node => node != this);
+            public IEnumerable<IHierarchical<T>> Siblings => Parent?.Children?.Where(node => node != this);
 
             //无缓存方法，每次访问相同节点都会重新枚举数据源并生成结果对象
             //包含相同数据T的包装IHierarchical<T>每次都不一样
@@ -260,11 +265,11 @@ namespace Util.TypeExtensions
 
             public int Level => Parent?.Level + 1 ?? 1;
 
-            public int Height => (Descendant.Any() ? Descendant.Select(node => node.Level).Max() - Level : 0) + 1;
+            public int Height => (Descendants.Any() ? Descendants.Select(node => node.Level).Max() - Level : 0) + 1;
 
             public int Degree => Children?.Count() ?? 0;
 
-            public int MaxDegreeOfTree => Math.Max(Degree, Descendant.Any() ? Descendant.Select(node => node.Degree).Max() : 0);
+            public int MaxDegreeOfTree => Math.Max(Degree, Descendants.Any() ? Descendants.Select(node => node.Degree).Max() : 0);
 
             public bool IsRoot => Parent == null;
 
@@ -272,17 +277,17 @@ namespace Util.TypeExtensions
 
             public bool HasChild => !IsLeaf;
 
-            public string ToString(Func<T, string> formatter, bool convertSingleLine = false)
+            public string ToString(Func<T, string> formatter, bool convertToSingleLine = false)
             {
                 var sbr = new StringBuilder();
-                sbr.AppendLine(convertSingleLine
+                sbr.AppendLine(convertToSingleLine
                     ? formatter(Current).Replace("\r", @"\r").Replace("\n", @"\n")
                     : formatter(Current));
 
                 var sb = new StringBuilder();
-                foreach (var node in Descendant)
+                foreach (var node in Descendants)
                 {
-                    sb.Append(convertSingleLine
+                    sb.Append(convertToSingleLine
                         ? formatter(node.Current).Replace("\r", @"\r").Replace("\n", @"\n")
                         : formatter(node.Current));
                     sb.Insert(0, node == node.Parent.Children.Last() ? "└─" : "├─");
@@ -428,21 +433,21 @@ namespace Util.TypeExtensions
         /// </summary>
         /// <typeparam name="T">数据类型</typeparam>
         /// <param name="root">根</param>
-        /// <param name="childSelector">下层数据选择器</param>
         /// <param name="predicate">子孙筛选条件</param>
         /// <returns>筛选的子孙</returns>
-        public static IEnumerable<IHierarchical<T>> GetDescendantDfsDlr<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null)
+        public static IEnumerable<IHierarchical<T>> GetDescendantsDfsDlr<T>(this IHierarchical<T> root,
+            Func<IHierarchical<T>, bool> predicate = null)
         {
-            predicate = predicate ?? (t => true);
-            Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(childSelector(root).Where(predicate).Reverse());
+            var children = predicate == null ? root.Children : root.Children.Where(predicate);
+            Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(children.Reverse());
 
             while (stack.Count > 0)
             {
                 IHierarchical<T> node = stack.Pop();
                 yield return node;
 
-                foreach (IHierarchical<T> child in childSelector(node).Where(predicate).Reverse())
+                children = predicate == null ? node.Children : node.Children.Where(predicate);
+                foreach (IHierarchical<T> child in children.Reverse())
                 {
                     stack.Push(child);
                 }
@@ -462,25 +467,61 @@ namespace Util.TypeExtensions
         }
 
         /// <summary>
+        /// 获取子孙数据（深度优先，后序）
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        /// <param name="root">根</param>
+        /// <param name="predicate">子孙筛选条件</param>
+        /// <returns>筛选的子孙</returns>
+        public static IEnumerable<IHierarchical<T>> GetDescendantsDfsLrd<T>(this IHierarchical<T> root,
+            Func<IHierarchical<T>, bool> predicate = null)
+        {
+            var children = predicate == null ? root.Children : root.Children.Where(predicate);
+            Stack<IHierarchical<T>> stack = new Stack<IHierarchical<T>>(children.Reverse());
+
+            IHierarchical<T> lastAccessedNode = null;
+
+            while (stack.Count > 0)
+            {
+                var node = stack.Peek();
+
+                if (node.Children.Any() && node.Children.Last() != lastAccessedNode)
+                {
+                    children = predicate == null ? node.Children : node.Children.Where(predicate);
+                    foreach (IHierarchical<T> child in children.Reverse())
+                    {
+                        stack.Push(child);
+                    }
+                }
+                else
+                {
+                    yield return node;
+
+                    lastAccessedNode = node;
+                    stack.Pop();
+                }
+            }
+        }
+
+        /// <summary>
         /// 获取子孙数据（广度优先）
         /// </summary>
         /// <typeparam name="T">数据类型</typeparam>
         /// <param name="root">根</param>
-        /// <param name="childSelector">下层数据选择器</param>
         /// <param name="predicate">子孙筛选条件</param>
         /// <returns>筛选的子孙</returns>
         public static IEnumerable<IHierarchical<T>> GetDescendantsBfs<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null)
+            Func<IHierarchical<T>, bool> predicate = null)
         {
             predicate = predicate ?? (t => true);
-            Queue<IHierarchical<T>> queue = new Queue<IHierarchical<T>>(childSelector(root).Where(predicate));
+            Queue<IHierarchical<T>> queue = new Queue<IHierarchical<T>>(root.Children.Where(predicate));
 
             while (queue.Count > 0)
             {
                 IHierarchical<T> node = queue.Dequeue();
                 yield return node;
 
-                foreach (IHierarchical<T> child in childSelector(node).Where(predicate))
+                foreach (IHierarchical<T> child in node.Children.Where(predicate))
                 {
                     queue.Enqueue(child);
                 }
@@ -492,32 +533,44 @@ namespace Util.TypeExtensions
         /// </summary>
         /// <typeparam name="T">数据类型</typeparam>
         /// <param name="root">根</param>
-        /// <param name="childSelector">下层数据选择器</param>
         /// <param name="predicate">子孙筛选条件</param>
         /// <param name="enumerateType">枚举方式</param>
         /// <returns>已枚举的集合</returns>
         public static IEnumerable<IHierarchical<T>> AsEnumerable<T>(this IHierarchical<T> root,
-            Func<IHierarchical<T>, IEnumerable<IHierarchical<T>>> childSelector, Func<IHierarchical<T>, bool> predicate = null,
-            EnumerateType enumerateType = EnumerateType.DfsDlr)
+            EnumerateType enumerateType = EnumerateType.DfsDlr,
+            Func<IHierarchical<T>, bool> predicate = null)
         {
-            yield return root;
-
             switch (enumerateType)
             {
                 case EnumerateType.DfsDlr:
-                    foreach (var descendant in GetDescendantDfsDlr(root, childSelector, predicate))
+                    yield return root;
+
+                    foreach (var descendant in GetDescendantsDfsDlr(root, predicate))
                     {
                         yield return descendant;
                     }
+
+                    break;
+                case EnumerateType.DfsLrd:
+                    foreach (var descendant in GetDescendantsDfsLrd(root, predicate))
+                    {
+                        yield return descendant;
+                    }
+
+                    yield return root;
 
                     break;
                 case EnumerateType.Bfs:
-                    foreach (var descendant in GetDescendantsBfs(root, childSelector, predicate))
+                    yield return root;
+
+                    foreach (var descendant in GetDescendantsBfs(root, predicate))
                     {
                         yield return descendant;
                     }
-
+                    
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(enumerateType), enumerateType, null);
             }
         }
     }

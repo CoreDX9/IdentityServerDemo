@@ -94,7 +94,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
             //填充第一棵树
             var sortedData = roots.FirstOrDefault()
                 ?.AsHierarchical(p => data.Where(c => c.ParentId == p.Id))
-                ?.AsEnumerable(h => h.Children, null)
+                ?.AsEnumerable()
                 ?.Select(h => h.Current);
 
             //填充剩下的树
@@ -102,7 +102,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
             {
                 sortedData = sortedData.Union(
                     root.AsHierarchical(p => data.Where(c => c.ParentId == p.Id))
-                        .AsEnumerable(h => h.Children, null)
+                        .AsEnumerable()
                         .Select(h => h.Current)
                 );
             }

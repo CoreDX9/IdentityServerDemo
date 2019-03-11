@@ -65,7 +65,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
             //填充第一棵树
             var sortedRoles = roots.First()
                 .AsHierarchical(p => roles.Where(c => c.ParentId == p.Id))
-                .AsEnumerable(h => h.Children, null)
+                .AsEnumerable()
                 .Select(h => h.Current);
 
             //填充剩下的树
@@ -73,7 +73,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
             {
                 sortedRoles = sortedRoles.Union(
                     root.AsHierarchical(p => roles.Where(c => c.ParentId == p.Id))
-                        .AsEnumerable(h => h.Children, null)
+                        .AsEnumerable()
                         .Select(h => h.Current)
                 );
             }

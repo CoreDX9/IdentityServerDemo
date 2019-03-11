@@ -106,7 +106,7 @@ namespace DomainSample
             Console.WriteLine(strNodes);
             Console.WriteLine("-------------------------------------------------------------");
 
-            var test = hNodes.AsEnumerable(c => c.Children);
+            var test = hNodes.AsEnumerable();
             var testC = test.Count();
 
             var start = test.ElementAt(new Random().Next(0, testC));

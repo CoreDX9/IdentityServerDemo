@@ -32,7 +32,7 @@ namespace Entity
             EnumerateType enumerateType = EnumerateType.DfsDlr)
             where T : ITree<T>
         {
-            foreach (var item in root.AsHierarchical().AsEnumerable(entity => entity.Children, null, enumerateType))
+            foreach (var item in root.AsHierarchical().AsEnumerable(enumerateType))
             {
                 yield return (T)item.Current;
             }
