@@ -63,9 +63,14 @@ namespace Util.TypeExtensions
         IEnumerable<IHierarchical<T>> Descendants { get; }
 
         /// <summary>
-        /// 兄弟节点集合
+        /// 兄弟节点集合（不包括自身节点）
         /// </summary>
         IEnumerable<IHierarchical<T>> Siblings { get; }
+
+        /// <summary>
+        /// 在兄弟节点中的排行
+        /// </summary>
+        int IndexOfSiblings { get; }
 
         /// <summary>
         /// 节点的层
@@ -245,6 +250,23 @@ namespace Util.TypeExtensions
             }
 
             public IEnumerable<IHierarchical<T>> Siblings => Parent?.Children?.Where(node => node != this);
+
+            public int IndexOfSiblings
+            {
+                get
+                {
+                    if (Parent == null) return 0;
+
+                    int index = 0;
+                    foreach (var child in Parent.Children)
+                    {
+                        if (child == this) break;
+                        index++;
+                    }
+
+                    return index;
+                }
+            }
 
             //无缓存方法，每次访问相同节点都会重新枚举数据源并生成结果对象
             //包含相同数据T的包装IHierarchical<T>每次都不一样
