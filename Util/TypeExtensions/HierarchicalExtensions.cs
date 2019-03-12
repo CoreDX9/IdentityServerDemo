@@ -377,6 +377,24 @@ namespace Util.TypeExtensions
         }
 
         /// <summary>
+        /// 获取节点与指定节点的最近公共祖先节点
+        /// </summary>
+        /// <typeparam name="T">节点数据类型</typeparam>
+        /// <param name="node">待查找的节点</param>
+        /// <param name="target">目标节点</param>
+        /// <returns>最近的公共祖先节点</returns>
+        public static IHierarchical<T> GetNearestCommonAncestor<T>(this IHierarchical<T> node, IHierarchical<T> target)
+        {
+            if (node.Root != target.Root)
+                throw new InvalidOperationException($"{nameof(node)} and {nameof(target)} are not at same tree.");
+
+            if (node.IsAncestorOf(target)) return node;
+            if (target.IsAncestorOf(node)) return target;
+
+            return node.Ancestors.Intersect(target.Ancestors).OrderByDescending(no => no.Level).First();
+        }
+
+        /// <summary>
         /// 获取从指定节点到当前节点的路径
         /// </summary>
         /// <typeparam name="T">节点数据类型</typeparam>
