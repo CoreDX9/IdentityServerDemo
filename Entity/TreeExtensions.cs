@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Util.Hierarchical;
 using Util.TypeExtensions;
 
 namespace Entity
