@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="3.10.5" />
+    <PackageReference Include="IdentityModel" Version="3.10.6" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="2.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>

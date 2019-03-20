@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="2.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
