@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -77,7 +74,7 @@ namespace WebClient.Controllers
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);//client.SetBearerToken(accessToken);//不知道为啥这个扩展方法出不来System.Net.Http.HttpClientExtensions.SetBearerToken(this HttpClient client, string token)
+            client.SetBearerToken(accessToken);
 
             var content = await client.GetStringAsync("https://localhost:5003/identity");
 

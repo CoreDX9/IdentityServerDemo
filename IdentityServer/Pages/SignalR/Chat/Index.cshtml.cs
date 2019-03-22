@@ -15,6 +15,7 @@ namespace IdentityServer.Pages.SignalR.Chat
         {
             _chatHubContext = chatHubContext;
         }
+
         public void OnGet()
         {
 

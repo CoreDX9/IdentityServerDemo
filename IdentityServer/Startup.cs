@@ -238,7 +238,11 @@ namespace IdentityServer
             services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
 
             //注入MVC相关服务
-            services.AddMvc()
+            services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注入获取任何已经注册到服务容器的服务
+                {
+                    //options.Filters.Add<MyAsyncPageFilter>();
+                    //options.Filters.Add<MyAuthorizeAttribute>();
+                })
                 //注入FluentValidation服务
                 .AddFluentValidation(fv =>
                 {
