@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Domain.Identity;
 using Domain.Security;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Repository.EntityFrameworkCore.Identity;
 using Util.TypeExtensions;
@@ -32,46 +34,37 @@ namespace IdentityServer.Extensions
             }
 
             //基于数据库权限信息的授权判断
-            //var dbContext =
-            //    context.HttpContext.RequestServices.GetRequiredService<ApplicationIdentityDbContext>();
+            var dbContext =
+                context.HttpContext.RequestServices.GetRequiredService<ApplicationIdentityDbContext>();
 
-            //if (context.ActionDescriptor is ControllerActionDescriptor cad)
-            //{
-            //    var key =
-            //        (cad.MethodInfo.GetCustomAttribute(typeof(RequestHandlerIdentificationAttribute)) as
-            //            RequestHandlerIdentificationAttribute)?.UniqueKey;
-            //    RequestAuthorizationRule.AuthorizationRuleGroup rule = null;
-            //    if (!key.IsNullOrEmpty())
-            //    {
-            //        rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.IdentificationKey == key)?.AuthorizationRuleConfig;
-            //    }
-            //    else
-            //    {
-            //        var sign = cad.MethodInfo.ToString();
-            //        var typeName = cad.MethodInfo.DeclaringType.FullName;
-            //        rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.TypeFullName == typeName && r.HandlerMethodSignature == sign)?.AuthorizationRuleConfig;
-            //    }
-
-            //    if (rule != null)
-            //    {
-            //        var result = Validate(rule, dbContext, Guid.Parse(context.HttpContext.User.GetSubjectId()));
-            //    }
-            //}
-
-            //在不访问数据库的情况下获取部分User信息，此处获得的信息是通过IdentityServer扩展功能获取的，默认项目模板没有
-            //var userId = context.HttpContext.User.GetSubjectId();
-            //在这里判断权限，对于Razor页面，是在匹配Handler之前就进来了，需要读取QueryString的handler的值进行进一步判断
-            //并且handler匹配失败会跳转回普通的OnGet去处理，需要注意
-
-            #region 示例，判断用户名并决定是否授权，其他规则自行实现
-
-            if (context.HttpContext?.User?.Identity?.Name?.ToLower() == "coredx")
+            if (context.ActionDescriptor is ControllerActionDescriptor cad)
             {
-                await Task.CompletedTask;
-                return;
-            }
+                var key =
+                    (cad.MethodInfo.GetCustomAttribute(typeof(RequestHandlerIdentificationAttribute)) as
+                        RequestHandlerIdentificationAttribute)?.UniqueKey;
+                RequestAuthorizationRule.AuthorizationRuleGroup rule;
+                if (!key.IsNullOrEmpty())
+                {
+                    rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.IdentificationKey == key)?.AuthorizationRuleConfig;
+                }
+                else
+                {
+                    var sign = cad.MethodInfo.ToString();
+                    var typeName = cad.MethodInfo.DeclaringType.FullName;
+                    rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.TypeFullName == typeName && r.HandlerMethodSignature == sign)?.AuthorizationRuleConfig;
+                }
 
-            #endregion
+                if (rule != null)
+                {
+                    var isValid = Validate(rule, dbContext, Guid.Parse(context.HttpContext.User.GetSubjectId()));
+
+                    if (isValid)
+                    {
+                        await Task.CompletedTask;
+                        return;
+                    }
+                }
+            }
 
             //到最后都没有通过授权表示授权失败，返回阻止访问（未登录跳转已经在上面了，到这里肯定已经登录了）
             context.Result = new ForbidResult();
@@ -112,10 +105,11 @@ namespace IdentityServer.Extensions
                 foreach (var origin in rule.Origins ?? new List<RequestAuthorizationRule.AuthorizationRule.PermissionOrigin>())
                 {
                     var originRuleTrue = false;//某个来源是否验证成功
+                    ApplicationUser user;
                     switch (origin.Type)
                     {
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.User:
-                            var upd = db.UserPermissionDeclarations.SingleOrDefault(o =>
+                            var upd = db.UserPermissionDeclarations.AsNoTracking().SingleOrDefault(o =>
                                 o.PermissionDefinitionId == rule.PermissionDefinitionId && o.UserId == userId);
 
                             if (upd != null)
@@ -143,72 +137,135 @@ namespace IdentityServer.Extensions
 
                             break;
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role:
-                            foreach (var roleId in origin.Values )
-                            {
-                                /*todo:角色权限要继续查看上层角色是否有权限，如果子级角色存在权限表示子级角色要覆盖上层角色的权限
-                                 *todo:角色权限只循环用户所在角色是来源要求角色或子角色，实际权限值以子级角色的权限值为准，前提是来源要求角色本身有相应权限或来源要求角色从其上级角色继承了权限
-                                 */
-                            }
+                            user = db.Users.AsNoTracking()
+                                .Include(u => u.UserRoles)
+                                .ThenInclude(ur => ur.Role)
+                                .ThenInclude(r => r.PermissionDeclarations)
+                                .Single(u => u.Id == userId);//查询用户及其角色权限信息
 
-                            var rpd = db.RolePermissionDeclarations.FirstOrDefault(o =>
-                                o.PermissionDefinitionId == rule.PermissionDefinitionId);
-
-                            if (rpd != null)
+                            //循环所有用户角色
+                            foreach (var role in user.Roles)
                             {
-                                switch (pd.ValueType)
+                                var tmpRole = role;
+                                var found = false;
+
+                                while (tmpRole != null)//循环查找某个角色或其上层角色是否与某个角色来源要求匹配
                                 {
-                                    case PermissionValueType.Boolean:
-                                        if (rpd.PermissionValue > 0)
+                                    if (origin.Values?.Any() != true || origin.Values.Contains(tmpRole.Id))//如果找到，就设置flag并跳出循环
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+
+                                    tmpRole = tmpRole.Parent;
+                                }
+
+                                if (found)//如果找到匹配角色，查找角色或其上层角色是否有相应权限
+                                {
+                                    tmpRole = role;
+                                    while (tmpRole != null)
+                                    {
+                                        var permissionDeclaration =
+                                            tmpRole.PermissionDeclarations.SingleOrDefault(pd1 =>
+                                                pd1.PermissionDefinitionId == rule.PermissionDefinitionId);
+
+                                        if (permissionDeclaration != null)
                                         {
-                                            originRuleTrue = true;
+                                            switch (pd.ValueType)
+                                            {
+                                                case PermissionValueType.Boolean:
+                                                    if (permissionDeclaration.PermissionValue > 0)
+                                                    {
+                                                        originRuleTrue = true;
+                                                    }
+
+                                                    break;
+                                                case PermissionValueType.Number:
+                                                    if (permissionDeclaration.PermissionValue >= rule.Value)
+                                                    {
+                                                        originRuleTrue = true;
+                                                    }
+
+                                                    break;
+                                                default:
+                                                    throw new ArgumentOutOfRangeException();
+                                            }
+
+                                            if (originRuleTrue)
+                                            {
+                                                break;
+                                            }
                                         }
 
-                                        break;
-                                    case PermissionValueType.Number:
-                                        if (rpd.PermissionValue >= rule.Value)
-                                        {
-                                            originRuleTrue = true;
-                                        }
+                                        tmpRole = tmpRole.Parent;
+                                    }
 
+                                    if (originRuleTrue)
+                                    {
                                         break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                    }
                                 }
                             }
 
                             break;
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType
                             .Organization:
-                            foreach (var organizationId in origin.Values)
-                            {
-                                /*todo:组织权限只看用户所在组织是否有权限
-                                 *todo:组织权限只循环用户所在组织是来源要求组织或子组织，实际权限值以用户所在组织的权限值为准，前提是来源要求组织本身有相应权限
-                                 */
-                            }
+                            user = db.Users.AsNoTracking()
+                                .Include(u => u.UserOrganizations)
+                                .ThenInclude(uo => uo.Organization)
+                                .ThenInclude(r => r.PermissionDeclarations)
+                                .Single(u => u.Id == userId);//查询用户及其组织权限信息
 
-                            var opd = db.OrganizationPermissionDeclarations.FirstOrDefault(o =>
-                                o.PermissionDefinitionId == rule.PermissionDefinitionId);
-
-                            if (opd != null)
+                            //循环所有用户组织
+                            foreach (var organization in user.Organizations)
                             {
-                                switch (pd.ValueType)
+                                var tmpOrganization = organization;
+                                var found = false;
+
+                                while (tmpOrganization != null)//循环查找某个组织或其上层组织是否与某个组织来源要求匹配
                                 {
-                                    case PermissionValueType.Boolean:
-                                        if (opd.PermissionValue > 0)
+                                    if (origin.Values?.Any() != true || origin.Values.Contains(tmpOrganization.Id))//如果找到，就设置flag并跳出循环
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+
+                                    tmpOrganization = tmpOrganization.Parent;
+                                }
+
+                                if (found)//如果找到匹配组织，查找组织是否有相应权限
+                                {
+                                    var permissionDeclaration =
+                                        organization.PermissionDeclarations.SingleOrDefault(pd1 =>
+                                            pd1.PermissionDefinitionId == rule.PermissionDefinitionId);
+
+                                    if (permissionDeclaration != null)
+                                    {
+                                        switch (pd.ValueType)
                                         {
-                                            originRuleTrue = true;
+                                            case PermissionValueType.Boolean:
+                                                if (permissionDeclaration.PermissionValue > 0)
+                                                {
+                                                    originRuleTrue = true;
+                                                }
+
+                                                break;
+                                            case PermissionValueType.Number:
+                                                if (permissionDeclaration.PermissionValue >= rule.Value)
+                                                {
+                                                    originRuleTrue = true;
+                                                }
+
+                                                break;
+                                            default:
+                                                throw new ArgumentOutOfRangeException();
                                         }
 
-                                        break;
-                                    case PermissionValueType.Number:
-                                        if (opd.PermissionValue >= rule.Value)
+                                        if (originRuleTrue)
                                         {
-                                            originRuleTrue = true;
+                                            break;
                                         }
-
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                    }
                                 }
                             }
 

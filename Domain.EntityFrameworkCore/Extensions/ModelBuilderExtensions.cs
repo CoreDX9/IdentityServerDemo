@@ -243,6 +243,22 @@ namespace Domain.EntityFrameworkCore.Extensions
                     .IsRequired();
             });
 
+            modelBuilder.Entity<ApplicationUser>(b =>
+            {
+                b.HasMany(e => e.UserOrganizations)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(e => e.UserId)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Organization>(b =>
+            {
+                b.HasMany(e => e.UserOrganizations)
+                    .WithOne(e => e.Organization)
+                    .HasForeignKey(e => e.OrganizationId)
+                    .IsRequired();
+            });
+
             #endregion
 
             #region Identity表名配置
@@ -254,6 +270,7 @@ namespace Domain.EntityFrameworkCore.Extensions
             modelBuilder.Entity<ApplicationRole>(b => b.ToTable("AppRoles"));
             modelBuilder.Entity<ApplicationRoleClaim>(b => b.ToTable("AppRoleClaims"));
             modelBuilder.Entity<ApplicationUserRole>(b => b.ToTable("AppUserRoles"));
+            modelBuilder.Entity<ApplicationUserOrganizations>(b => b.ToTable("AppUserOrganizations"));
 
             #endregion
 

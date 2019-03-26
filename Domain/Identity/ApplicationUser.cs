@@ -35,13 +35,19 @@ namespace Domain.Identity
         [NotMapped]
         public virtual IEnumerable<ApplicationRole> Roles => UserRoles?.Select(ur => ur.Role);
 
+        /// <summary>
+        /// 需要使用.Include(u => u.UserOrganizations).ThenInclude(uo => uo.Organization)预加载或启用延迟加载
+        /// </summary>
+        [NotMapped]
+        public virtual IEnumerable<Organization> Organizations => UserOrganizations?.Select(uo => uo.Organization);
+
         #region 导航属性
 
         public virtual List<ApplicationUserClaim> Claims { get; set; } = new List<ApplicationUserClaim>();
         public virtual List<ApplicationUserLogin> Logins { get; set; } = new List<ApplicationUserLogin>();
         public virtual List<ApplicationUserToken> Tokens { get; set; } = new List<ApplicationUserToken>();
         public virtual List<ApplicationUserRole> UserRoles { get; set; } = new List<ApplicationUserRole>();
-
+        public virtual List<ApplicationUserOrganizations> UserOrganizations { get; set; } = new List<ApplicationUserOrganizations>();
         public virtual List<UserPermissionDeclaration> PermissionDeclarations { get; set; } = new List<UserPermissionDeclaration>();
 
         #endregion

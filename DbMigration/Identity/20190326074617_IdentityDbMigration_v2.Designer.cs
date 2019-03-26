@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.EntityFrameworkCore.Identity;
 
 namespace DbMigration.Identity
 {
     [DbContext(typeof(ApplicationIdentityDbContext))]
-    partial class ApplicationIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190326074617_IdentityDbMigration_v2")]
+    partial class IdentityDbMigration_v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -383,7 +385,7 @@ namespace DbMigration.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AppUserOrganizations");
+                    b.ToTable("ApplicationUserOrganizations");
                 });
 
             modelBuilder.Entity("Domain.Identity.ApplicationUserRole", b =>
