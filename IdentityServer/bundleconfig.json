@@ -163,6 +163,51 @@
     }
   },
   {
+    "outputFileName": "wwwroot/lib/axios/axios.min.js",
+    "inputFiles": [
+      "node_modules/axios/dist/axios.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/element-ui/index.js",
+    "inputFiles": [
+      "node_modules/element-ui/lib/index.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/element-ui/index.css",
+    "inputFiles": [
+      "node_modules/element-ui/lib/theme-chalk/index.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/avue/index.js",
+    "inputFiles": [
+      "node_modules/@smallwei/avue/lib/index.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/avue/index.css",
+    "inputFiles": [
+      "node_modules/@smallwei/avue/lib/theme-chalk/index.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
     "outputFileName": "wwwroot/lib/jquery-slimscroll/jquery.slimscroll.min.js",
     "inputFiles": [
       "bower_components/jquery-slimscroll/jquery.slimscroll.min.js"

@@ -21,5 +21,8 @@
     });
     require(['vs/editor/editor.main'], function() {
         window.isMonacoEditorLoaded = true;
+        if (typeof window.onMonacoEditorLoaded === "function") {
+            window.onMonacoEditorLoaded();
+        }
     });
 </script>
