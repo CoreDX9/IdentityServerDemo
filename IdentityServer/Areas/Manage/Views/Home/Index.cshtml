@@ -1,25 +1,66 @@
 ﻿@(Layout = null)
 <!DOCTYPE html>
-<html>
+<html class="fill-height">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>Manage</title>
 
     <partial name="_ElementUiStylesPartial" />
     <partial name="_AvueStylesPartial" />
     <partial name="_AnimateCssStylesPartial" />
     <partial name="_SiteStylesPartial" />
-    
+
     <style>
+        body {
+            margin: 0;
+        }
+
+        .fill-height {
+            height: 100%;
+        }
+
+        .my-el-tab {
+            border: none;
+            box-shadow: none;
+        }
+
+        .my-el-tab .el-tabs__content {
+            padding: 0;
+            position: absolute;
+            top: 39px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .tab-pan-iframe {
+            border: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         .el-scrollbar .el-scrollbar__wrap {
             overflow-x: hidden;
         }
+
+        .my-el-menu .el-menu-item {
+            height: auto;
+        }
+
+        .my-el-menu .line-feed {
+            width: auto;
+            line-height: normal;
+            display: inline-block;
+            word-break: normal;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
 </head>
-<body style="margin: 0">
-    <div id="vue-app">
-        <el-container v-bind:style="{height: styleCtrlObject.windowHeight + 'px'}">
+<body class="fill-height">
+    <div id="vue-app" class="fill-height">
+        <el-container class="fill-height">
             <el-header style="border-bottom: 1px solid #778899">
                 <el-row>
                     <el-col>
@@ -28,78 +69,37 @@
                 </el-row>
             </el-header>
             <el-container>
-                <el-aside style="border-right: 1px solid #778899" width="200px">
-                    <el-scrollbar :native="false"
-                                  :noresize="false"
-                                  style="height: 100%">
+                <el-aside style="width: 201px; border-right: 1px solid #778899">
+                    <el-scrollbar class="fill-height"
+                                  :native="false"
+                                  :noresize="false">
                         <el-row>
                             <el-col>
-                                <el-menu ref="menu"
-                                         @@open="handleOpen"
-                                         style="border: none; width: max-content; min-width: 100%">
-                                    <el-submenu index="sys">
-                                        <template slot="title">
-                                            <i class="el-icon-location"></i>
-                                            <span>系统</span>
-                                        </template>
-                                        <el-menu-item-group>
-                                            <template slot="title">管理</template>
-                                            <el-menu-item index="sys-trans">本地化翻译管理</el-menu-item>
-                                            <el-menu-item index="sys-user">用户管理</el-menu-item>
-                                            <el-menu-item index="sys-org">组织管理</el-menu-item>
-                                            <el-menu-item index="sys-permDef">权限定义</el-menu-item>
-                                            <el-menu-item index="sys-authRule">授权规则定义</el-menu-item>
-                                            <el-menu-item index="sys-permDecOrg">组织权限分配</el-menu-item>
-                                            <el-menu-item index="sys-permDecRole">角色权限分配</el-menu-item>
-                                            <el-menu-item index="sys-permDecUser">用户权限分配</el-menu-item>
-                                        </el-menu-item-group>
-                                        <el-menu-item-group title="分组2">
-                                            <el-menu-item index="1-3">选项3</el-menu-item>
-                                        </el-menu-item-group>
-                                        <el-submenu index="1-4">
-                                            <template slot="title">选项4</template>
-                                            <el-menu-item index="1-4-1">选项1</el-menu-item>
-                                        </el-submenu>
-                                    </el-submenu>
-                                    <el-menu-item index="2">
-                                        <i class="el-icon-menu"></i>
-                                        <span slot="title">导航二</span>
-                                    </el-menu-item>
-                                    <el-menu-item index="3" disabled>
-                                        <i class="el-icon-document"></i>
-                                        <span slot="title">导航三</span>
-                                    </el-menu-item>
-                                    <el-menu-item index="4">
-                                        <i class="el-icon-setting"></i>
-                                        <span slot="title">导航四</span>
-                                    </el-menu-item>
-                                </el-menu>
+                                <side-bar :menu="menu"
+                                          :default-active="activeMenuItem"
+                                          @@open="handleMenuEvent"
+                                          @@close="handleMenuEvent"
+                                          @@selecr="handleMenuEvent"></side-bar>
                             </el-col>
                         </el-row>
                     </el-scrollbar>
                 </el-aside>
                 <el-container>
-                    <el-main>
-                        <el-row>
-                            <el-col>
-                                Main
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col>
-                                <el-tabs type="border-card"
+                    <el-main class="fill-height" style="padding: 0;">
+                        <el-row class="fill-height">
+                            <el-col class="fill-height">
+                                <el-tabs class="fill-height my-el-tab"
+                                         type="border-card"
                                          closable
                                          @@tab-remove="removeTab"
                                          v-model="activeTab">
-
                                     <el-tab-pane :lazy="true"
                                                  :key="item.name"
                                                  v-for="(item, index) in editableTabs"
                                                  :label="item.title"
                                                  :name="item.name"
                                                  style="height: 100%">
-                                        {{item.content}}
-                                        <iframe style="width: 100%; height: 100%" src="https://localhost:5001/"></iframe>
+                                        <iframe class="tab-pan-iframe" src="https://localhost:5001/"></iframe>
                                     </el-tab-pane>
                                 </el-tabs>
                             </el-col>
@@ -117,56 +117,163 @@
         </el-container>
     </div>
 
+    <partial name="_LinqJsScriptsPartial" />
     <partial name="_JQueryScriptsPartial" />
     <partial name="_VueScriptsPartial" />
     <partial name="_ElementUiScriptsPartial" />
     <partial name="_AvueScriptsPartial" />
-    <partial name="_SiteScriptsPartial" />
+    <partial name="_SideBarPartial" />
 
     <script>
-        //挂载JQuery到Vue原型链
-        Vue.prototype.$ = $;
+        Vue.prototype.$ = $; //挂载JQuery到Vue原型链
+        Vue.prototype.Enumerable = Enumerable; //挂载linq-js到Vue原型链
 
         var vueApp = new Vue({
             el: '#vue-app',
+            mounted: function() {
+                setTimeout(() => this.activeMenuItem = 'sys-user', 1500);
+            },
             data: function () {
                 return {
-                    styleCtrlObject: {
-                        windowHeight: window.innerHeight
+                    activeTab: "a",
+                    activeMenuItem: null,
+                    menu: {
+                        items: [
+                            {
+                                index: 'main',
+                                icon: {
+                                    type: 'css', //css：class名；img：src属性值
+                                    value: 'el-icon-setting'
+                                },
+                                title: '主页',
+                                link: '/'
+                            }
+                        ],
+                        groups: [],
+                        subMenus: [
+                            {
+                                index: 'sys',
+                                icon: {
+                                    type: 'css',
+                                    value: 'el-icon-location'
+                                },
+                                title: '系统管理',
+                                items: [
+                                    {
+                                        index: 'sys-trans',
+                                        icon: null,
+                                        title: '本地化翻译管理',
+                                        link: '/Manage/Localization'
+                                    }
+                                ],
+                                groups: [
+                                    {
+                                        icon: null,
+                                        title: '账户系统',
+                                        items: [
+                                            {
+                                                index: 'sys-user',
+                                                icon: null,
+                                                title: '用户管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-role',
+                                                icon: null,
+                                                title: '角色管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-org',
+                                                icon: null,
+                                                title: '组织管理',
+                                                link: '/'
+                                            }
+                                        ]
+                                    }, {
+                                        icon: null,
+                                        title: '权限系统',
+                                        items: [
+                                            {
+                                                index: 'sys-perm-def',
+                                                icon: null,
+                                                title: '权限定义管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-auth-rule',
+                                                icon: null,
+                                                title: '授权规则管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-perm-dec-user',
+                                                icon: null,
+                                                title: '用户权限管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-perm-dec-role',
+                                                icon: null,
+                                                title: '角色权限管理',
+                                                link: '/'
+                                            }, {
+                                                index: 'sys-perm-dec-org',
+                                                icon: null,
+                                                title: '组织权限管理',
+                                                link: '/'
+                                            }
+                                        ]
+                                    }
+                                ],
+                                subMenus: [
+                                    {
+                                        index: 'sys1',
+                                        icon: {
+                                            type: 'css',
+                                            value: 'el-icon-location'
+                                        },
+                                        title: '系统管理1',
+                                        items: [
+                                            {
+                                                index: 'sys-trans1',
+                                                icon: null,
+                                                title: '本地化翻译管理1',
+                                                link: '/Manage/Localization'
+                                            }
+                                        ]
+                                    }]
+                            }
+                        ]
                     },
-                    activeTab:"bbb",
                     editableTabs: [
-                        { name: 'aaa', title: 'aaa', content: 'aaa' },
-                        { name: 'bbb', title: 'bbb', content: 'bbb' },
-                        { name: 'ccc', title: 'ccc', content: 'ccc' },
+                        { name: 'a', title: 'a' },
+                        { name: 'b', title: 'b' },
+                        { name: 'c', title: 'c' },
+                        { name: 'd', title: 'd' },
+                        { name: 'e', title: 'e' },
+                        { name: 'f', title: 'f' },
+                        { name: 'g', title: 'g' },
+                        { name: 'h', title: 'h' },
+                        { name: 'i', title: 'i' },
+                        { name: 'j', title: 'j' }
                     ]
                 };
             },
-            mounted: function () {
-                console.log(this.$refs.menu);
-                var _this = this;
-
-                this.$(window).on('resize',
-                    function () {
-                        _this.styleCtrlObject.windowHeight = window.innerHeight;
-                    });
-            },
             methods: {
-                handleOpen(key, keyPath) {
+                handleMenuEvent: function (key, keyPath) {
                     //this.$message('打开菜单。key:' + key + '；keyPath:' + keyPath);
+                    console.log(key, keyPath);
                 },
-                removeTab(targetName) {
+                removeTab: function (targetName) {
                     var _this = this;
+                    var tabs = _this.editableTabs;
 
-                    this.editableTabs.forEach((tab, index) => {
+                    tabs.forEach(function (tab, index) {
                         if (tab.name === targetName) {
-                            var nextTab = _this.editableTabs[index + 1] || _this.editableTabs[index - 1];
+                            var nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
                                 _this.activeTab = nextTab.name;
                             }
                         }
                     });
-                    this.editableTabs = this.editableTabs.filter(tab => tab.name !== targetName);
+
+                    _this.editableTabs = tabs.where(function (tab) { return tab.name !== targetName }).toArray();
                 }
             }
         });

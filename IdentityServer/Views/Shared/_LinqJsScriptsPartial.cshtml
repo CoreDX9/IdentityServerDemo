@@ -4,3 +4,6 @@
 <environment exclude="Development">
     <script src="~/lib/linq-js/linq.min.js" asp-append-version="true"></script>
 </environment>
+<script>
+    Enumerable.config.extends.array = true; //开启针对 Array 的扩展，使 Array 对象拥有 LINQ 的功能，可以直接使用 LINQ 提供的方法。（推荐开启）
+</script>

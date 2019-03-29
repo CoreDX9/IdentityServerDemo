@@ -1,0 +1,113 @@
+﻿<template id="side-bar">
+    <el-menu ref="menu"
+             class="my-el-menu"
+             :default-active="defaultActive"
+             @@select="onSelect"
+             @@open="onOpen"
+             @@close="onClose">
+        <el-menu-item v-for="item in menu.items"
+                      :key="item.index"
+                      :index="item.index">
+            <i v-if="item.icon && item.icon.type == 'css'" :class="item.icon.value"></i>
+            <img v-if="item.icon && item.icon.type == 'img'" :src="item.icon.value" style="width: 24px" />
+            <span slot="title">{{item.title}}</span>
+        </el-menu-item>
+        <el-menu-item-group v-for="group in menu.groups">
+            <template slot="title">
+                <i v-if="group.icon && group.icon.type == 'css'" :class="group.icon.value"></i>
+                <img v-if="group.icon && group.icon.type == 'img'" :src="group.icon.value" style="width: 24px" />
+                <span slot="title">{{group.title}}</span>
+            </template>
+            <el-menu-item v-for="gItem in group.items"
+                          :index="gItem.index">
+                <i v-if="gItem.icon && gItem.icon.type == 'css'" :class="gItem.icon.value"></i>
+                <img v-if="gItem.icon && gItem.icon.type == 'img'" :src="gItem.icon.value" style="width: 24px" />
+                <span slot="title">{{gItem.title}}</span>
+            </el-menu-item>
+        </el-menu-item-group>
+        <sub-side-bar v-for="subMenu in menu.subMenus"
+                      :menu="subMenu"></sub-side-bar>
+    </el-menu>
+</template>
+
+<script>
+    Vue.component('SideBar',
+        {
+            name: 'SideBar',
+            props: {
+                menu: {},
+                defaultActive: {
+                    type: String,
+                    default: ''
+                }
+            },
+            data: function() {
+                return {}
+            },
+            methods: {
+                open: function (index) {
+                    this.$refs.menu.open(index);
+                },
+                close: function (index) {
+                    this.$refs.menu.close(index);
+                },
+                onSelect: function(index, indexPath) {
+                    this.$emit('open', index, indexPath);
+                },
+                onOpen: function (index, indexPath) {
+                    this.$emit('open', index, indexPath);
+                },
+                onClose: function (index, indexPath) {
+                    this.$emit('close', index, indexPath);
+                }
+            },
+            template: document.getElementById('side-bar').innerHTML
+        });
+</script>
+
+<template id="sub-side-bar">
+    <el-submenu :index="menu.index">
+        <template slot="title">
+            <i v-if="menu.icon && menu.icon.type == 'css'" :class="menu.icon.value"></i>
+            <img v-if="menu.icon && menu.icon.type == 'img'" :src="menu.icon.value" style="width: 24px" />
+            <span slot="title">{{menu.title}}</span>
+        </template>
+        <el-menu-item v-for="item in menu.items"
+                      :index="item.index"
+                      :key="item.index">
+            <i v-if="item.icon && item.icon.type == 'css'" :class="item.icon.value"></i>
+            <img v-if="item.icon && item.icon.type == 'img'" :src="item.icon.value" style="width: 24px" />
+            <span slot="title">{{item.title}}</span>
+        </el-menu-item>
+        <el-menu-item-group v-for="group in menu.groups">
+            <template slot="title">
+                <i v-if="group.icon && group.icon.type == 'css'" :class="group.icon.value"></i>
+                <img v-if="group.icon && group.icon.type == 'img'" :src="group.icon.value" style="width: 24px" />
+                <span slot="title">{{group.title}}</span>
+            </template>
+            <el-menu-item v-for="gItem in group.items"
+                          :index="gItem.index"
+                          :key="gItem.index">
+                <i v-if="gItem.icon && gItem.icon.type == 'css'" :class="gItem.icon.value"></i>
+                <img v-if="gItem.icon && gItem.icon.type == 'img'" :src="gItem.icon.value" style="width: 24px" />
+                <span slot="title">{{gItem.title}}</span>
+            </el-menu-item>
+        </el-menu-item-group>
+        <sub-side-bar v-for="subMenu in menu.subMenus"
+                      :menu="subMenu"></sub-side-bar>
+    </el-submenu>
+</template>
+
+<script>
+    Vue.component('SubSideBar',
+        {
+            name: 'SubSideBar',
+            props: {
+                menu: {}
+            },
+            data: function() {
+                return {}
+            },
+            template: document.getElementById('sub-side-bar').innerHTML
+        });
+</script>
