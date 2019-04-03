@@ -28,7 +28,7 @@
         .my-el-tab .el-tabs__content {
             padding: 0;
             position: absolute;
-            top: 39px;
+            top: 41px;
             bottom: 0;
             left: 0;
             right: 0;
@@ -56,6 +56,13 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+
+        i.el-icon-refresh:hover {
+            transition: all .3s cubic-bezier(.645,.045,.355,1);
+            background-color: #C0C4CC;
+            color: #FFF;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body class="fill-height">
@@ -79,7 +86,7 @@
                                           :default-active="activeMenuItem"
                                           @@open="handleMenuEvent"
                                           @@close="handleMenuEvent"
-                                          @@selecr="handleMenuEvent"></side-bar>
+                                          @@select="onMenuSelect"></side-bar>
                             </el-col>
                         </el-row>
                     </el-scrollbar>
@@ -89,17 +96,26 @@
                         <el-row class="fill-height">
                             <el-col class="fill-height">
                                 <el-tabs class="fill-height my-el-tab"
-                                         type="border-card"
+                                         type="card"
                                          closable
-                                         @@tab-remove="removeTab"
+                                         @@tab-click="onTabClick"
+                                         @@tab-remove="onTabRemove"
                                          v-model="activeTab">
-                                    <el-tab-pane :lazy="true"
-                                                 :key="item.name"
-                                                 v-for="(item, index) in editableTabs"
-                                                 :label="item.title"
-                                                 :name="item.name"
-                                                 style="height: 100%">
-                                        <iframe class="tab-pan-iframe" src="https://localhost:5001/"></iframe>
+                                    <el-tab-pane style="height: 100%"
+                                                 ref="manageTab"
+                                                 :lazy="true"
+                                                 v-for="(item, index) in manageTabs"
+                                                 :key="item.index"
+                                                 :name="item.index">
+                                        <span slot="label">
+                                            <i v-if="item.icon && item.icon.type === 'css'" :class="item.icon.value"></i>
+                                            <img v-if="item.icon && item.icon.type === 'img'" :src="item.icon.value" />
+                                            {{item.title}}
+                                            <i class="el-icon-refresh"
+                                               v-show="activeTab === item.index"
+                                               @@click="refreshTab($refs.manageTab, item)"></i>
+                                        </span>
+                                        <iframe class="tab-pan-iframe" :src="item.link"></iframe>
                                     </el-tab-pane>
                                 </el-tabs>
                             </el-col>
@@ -131,11 +147,11 @@
         var vueApp = new Vue({
             el: '#vue-app',
             mounted: function() {
-                setTimeout(() => this.activeMenuItem = 'sys-user', 1500);
+                //setTimeout(() => this.activeMenuItem = 'sys-user', 1500);
             },
             data: function () {
                 return {
-                    activeTab: "a",
+                    activeTab: '',
                     activeMenuItem: null,
                     menu: {
                         items: [
@@ -175,7 +191,7 @@
                                                 index: 'sys-user',
                                                 icon: null,
                                                 title: '用户管理',
-                                                link: '/'
+                                                link: '/Manage/Users'
                                             }, {
                                                 index: 'sys-role',
                                                 icon: null,
@@ -185,7 +201,7 @@
                                                 index: 'sys-org',
                                                 icon: null,
                                                 title: '组织管理',
-                                                link: '/'
+                                                link: '/Manage/Organizations'
                                             }
                                         ]
                                     }, {
@@ -196,27 +212,27 @@
                                                 index: 'sys-perm-def',
                                                 icon: null,
                                                 title: '权限定义管理',
-                                                link: '/'
+                                                link: '/Manage/PermissionDefinition'
                                             }, {
                                                 index: 'sys-auth-rule',
                                                 icon: null,
                                                 title: '授权规则管理',
-                                                link: '/'
+                                                link: '/Manage/RequestAuthorizationRules'
                                             }, {
                                                 index: 'sys-perm-dec-user',
                                                 icon: null,
                                                 title: '用户权限管理',
-                                                link: '/'
+                                                link: '/Manage/UserPermissionDeclaration'
                                             }, {
                                                 index: 'sys-perm-dec-role',
                                                 icon: null,
                                                 title: '角色权限管理',
-                                                link: '/'
+                                                link: '/Manage/RolePermissionDeclaration'
                                             }, {
                                                 index: 'sys-perm-dec-org',
                                                 icon: null,
                                                 title: '组织权限管理',
-                                                link: '/'
+                                                link: '/Manage/OrganizationPermissionDeclaration'
                                             }
                                         ]
                                     }
@@ -241,39 +257,88 @@
                             }
                         ]
                     },
-                    editableTabs: [
-                        { name: 'a', title: 'a' },
-                        { name: 'b', title: 'b' },
-                        { name: 'c', title: 'c' },
-                        { name: 'd', title: 'd' },
-                        { name: 'e', title: 'e' },
-                        { name: 'f', title: 'f' },
-                        { name: 'g', title: 'g' },
-                        { name: 'h', title: 'h' },
-                        { name: 'i', title: 'i' },
-                        { name: 'j', title: 'j' }
-                    ]
+                    manageTabs: []
                 };
             },
+            computed: {
+                menuLinks: function() {
+                    var menu = this.menu;
+
+                    var menuDic = [];
+                    var enumItems = function(items) {
+                        for (var i = 0; i < items.length; i++) {
+                            menuDic.push(items[i]);
+                        }
+                    };
+                    var enumGroups = function(groups) {
+                        for (var i = 0; i < groups.length; i++) {
+                            if (groups[i].items && groups[i].items.length > 0) enumItems(groups[i].items);
+                        }
+                    };
+                    var enumSubMenus = function(subMenus) {
+                        for (var i = 0; i < subMenus.length; i++) {
+                            if (subMenus[i].items && subMenus[i].items.length > 0) enumItems(subMenus[i].items);
+                            if (subMenus[i].groups && subMenus[i].groups.length > 0) enumGroups(subMenus[i].groups);
+                            if (subMenus[i].subMenus && subMenus[i].subMenus.length > 0) enumSubMenus(subMenus[i].subMenus);
+                        }
+                    };
+
+                    if (menu.items && menu.items.length > 0) enumItems(menu.items);
+                    if (menu.groups && menu.groups.length > 0)enumGroups(menu.groups);
+                    if (menu.subMenus && menu.subMenus.length > 0)enumSubMenus(menu.subMenus);
+
+                    return menuDic;
+                }
+            },
             methods: {
+                refreshTab: function(refArr, item) {
+                    var tab = refArr.single(function (ref) { return ref.name === item.index });
+                    tab.$el.children[0].contentWindow.location.reload(true);
+                },
+                onMenuSelect: function(index, indexPath) {
+                    var menuLinks = this.menuLinks;
+                    var manageTabs = this.manageTabs;
+
+                    for (var i = 0; i < manageTabs.length; i++) {
+                        if (manageTabs[i].name === index) {
+                            this.activeTab = index;
+                            return;
+                        }
+                    }
+
+                    var menuItem = menuLinks.single(function(item) {
+                        return item.index === index;
+                    });
+
+                    manageTabs.push(menuItem);
+                    this.activeTab = index;
+                },
                 handleMenuEvent: function (key, keyPath) {
                     //this.$message('打开菜单。key:' + key + '；keyPath:' + keyPath);
                     console.log(key, keyPath);
                 },
-                removeTab: function (targetName) {
+                onTabClick: function(tab) {
+                    this.activeMenuItem = tab.name;
+                },
+                onTabRemove: function (targetName) {
                     var _this = this;
-                    var tabs = _this.editableTabs;
+                    var tabs = _this.manageTabs;
 
+                    var nextTab = null;
                     tabs.forEach(function (tab, index) {
                         if (tab.name === targetName) {
-                            var nextTab = tabs[index + 1] || tabs[index - 1];
+                            nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
                                 _this.activeTab = nextTab.name;
+                                _this.activeMenuItem = _this.activeTab;
                             }
                         }
                     });
+                    if (!nextTab) {
+                        _this.activeTab = '';
+                    }
 
-                    _this.editableTabs = tabs.where(function (tab) { return tab.name !== targetName }).toArray();
+                    _this.manageTabs = tabs.where(function (tab) { return tab.index !== targetName }).toArray();
                 }
             }
         });

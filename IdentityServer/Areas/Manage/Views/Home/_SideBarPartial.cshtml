@@ -2,6 +2,7 @@
     <el-menu ref="menu"
              class="my-el-menu"
              :default-active="defaultActive"
+             :unique-opened="uniqueOpened"
              @@select="onSelect"
              @@open="onOpen"
              @@close="onClose">
@@ -39,6 +40,10 @@
                 defaultActive: {
                     type: String,
                     default: ''
+                },
+                uniqueOpened: {
+                    type: Boolean,
+                    default:false
                 }
             },
             data: function() {
@@ -52,7 +57,7 @@
                     this.$refs.menu.close(index);
                 },
                 onSelect: function(index, indexPath) {
-                    this.$emit('open', index, indexPath);
+                    this.$emit('select', index, indexPath);
                 },
                 onOpen: function (index, indexPath) {
                     this.$emit('open', index, indexPath);

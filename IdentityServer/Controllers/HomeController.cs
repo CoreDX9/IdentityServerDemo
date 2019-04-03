@@ -28,7 +28,6 @@ namespace IdentityServer.Controllers
         public async Task<IActionResult> AboutAsync()
         {
             ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
