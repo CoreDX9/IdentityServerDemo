@@ -7,7 +7,7 @@ using IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using static IdentityServer.Extensions.JqGridSearchExtensions;
 using static System.Math;
 
@@ -17,12 +17,12 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Users
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly ApplicationIdentityDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            ApplicationIdentityDbContext dbContext)
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;

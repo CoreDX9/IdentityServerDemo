@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<key id="14317556-f0ea-4ca6-aa61-c25398192417" version="1">
+  <creationDate>2019-04-04T16:15:22.5146001+08:00</creationDate>
+  <activationDate>2019-04-04T16:15:22.5146001+08:00</activationDate>
+  <expirationDate>2019-07-03T16:15:22.5146001+08:00</expirationDate>
+  <encryption BlockSize="128" KeySize="256" FeedbackSize="128" Padding="PKCS7" Mode="CBC">
+    <masterKey>ONtDqUEj10I/4hp58Ijxqk9ggKdYv6cGnMdspEsscS4=</masterKey>
+    <iv>qFGLASZB7x3sLKx6e1oLrA==</iv>
+  </encryption>
+</key>

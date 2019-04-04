@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
+using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
 using X.PagedList;
 
@@ -10,9 +11,9 @@ namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class IndexModel : PageModelBase
     {
-        private readonly Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext context)
+        public IndexModel(ApplicationDbContext context)
         {
             _context = context;
         }

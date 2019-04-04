@@ -33,7 +33,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using Repository.RabbitMQ;
 using StackExchange.Redis;
 
@@ -132,7 +132,7 @@ namespace IdentityServer
             {
                 inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
                 services.AddEntityFrameworkInMemoryDatabase()
-                    .AddDbContext<ApplicationIdentityDbContext>(options =>
+                    .AddDbContext<ApplicationDbContext>(options =>
                     {
                         options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
                     });
@@ -154,7 +154,7 @@ namespace IdentityServer
                 //迁移程序集名
                 migrationsAssemblyName = "DbMigration";
 
-                services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                services.AddDbContext<ApplicationDbContext>(options =>
                 {
                     options.UseSqlServer(connectionString, b =>
                     {
@@ -195,7 +195,7 @@ namespace IdentityServer
                 })
                 .AddRoles<ApplicationRole>()
                 .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
-                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
                 //注入Identity隐私数据保护服务（启用隐私数据保护后必须注入，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
                 .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddDefaultTokenProviders();

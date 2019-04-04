@@ -47,7 +47,7 @@ namespace Domain.Identity
         public virtual List<ApplicationUserLogin> Logins { get; set; } = new List<ApplicationUserLogin>();
         public virtual List<ApplicationUserToken> Tokens { get; set; } = new List<ApplicationUserToken>();
         public virtual List<ApplicationUserRole> UserRoles { get; set; } = new List<ApplicationUserRole>();
-        public virtual List<ApplicationUserOrganizations> UserOrganizations { get; set; } = new List<ApplicationUserOrganizations>();
+        public virtual List<ApplicationUserOrganization> UserOrganizations { get; set; } = new List<ApplicationUserOrganization>();
         public virtual List<UserPermissionDeclaration> PermissionDeclarations { get; set; } = new List<UserPermissionDeclaration>();
 
         #endregion

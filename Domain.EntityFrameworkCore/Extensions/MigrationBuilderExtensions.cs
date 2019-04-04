@@ -32,7 +32,7 @@ with temp({columns}, Depth, Path, HasChildren) as
 	--初始查询（这里的 ParentId is null 在我的数据中是最底层的根节点）
 	select {columns},
 		0 as Depth,
-		'/' + cast(Id as nvarchar(4000)) as Path, --如果Id使用Guid类型，可能会导致层数太深时出问题（大概100层左右，超过4000字之后的字符串会被砍掉），Guid的字数太多了
+		'/' + cast(Id as nvarchar(max)) as Path, --如果Id使用Guid类型，可能会导致层数太深时出问题（大概100层左右，超过4000字之后的字符串会被砍掉,sqlserver 2005以后用 nvarchar(max)可以突破限制），Guid的字数太多了
 		HasChildren = (case when exists(select 1 from {tableName} where {tableName}.ParentId = root.id) then cast(1 as bit) else cast(0 as bit) end)
 	from {tableName} as root
 	where ParentId is null
@@ -41,7 +41,7 @@ with temp({columns}, Depth, Path, HasChildren) as
 	--递归条件
 	select {child.columns},
 		parent.Depth+1,
-		parent.Path + '/' + cast(child.Id as nvarchar(4000)),
+		parent.Path + '/' + cast(child.Id as nvarchar(max)),
 		HasChildren = (case when exists(select 1 from {tableName} where {tableName}.ParentId = child.id) then cast(1 as bit) else cast(0 as bit) end)
 	from {tableName} as child --3：这里的临时表和原始数据表都必须使用别名不然递归的时候不知道查询的是那个表的列
 	inner join
@@ -91,6 +91,7 @@ go";
         /// <param name="columns">视图列集合</param>
         public static MigrationBuilder CreateTreeEntityView(this MigrationBuilder migrationBuilder, string tableName, IEnumerable<string> columns)
         {
+            columns = columns.Select(c => $"[{c}]");
             var childColumns = columns.Select(c => $@"child.{c}");
             migrationBuilder.Sql(TreeEntityViewCreateSqlTemplate
                 .Replace("{tableName}", tableName)

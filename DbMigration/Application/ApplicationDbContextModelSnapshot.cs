@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 
-namespace DbMigration.Identity
+namespace DbMigration.Application
 {
-    [DbContext(typeof(ApplicationIdentityDbContext))]
-    [Migration("20190326074617_IdentityDbMigration_v2")]
-    partial class IdentityDbMigration_v2
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,7 +328,7 @@ namespace DbMigration.Identity
                     b.ToTable("UserLogins");
                 });
 
-            modelBuilder.Entity("Domain.Identity.ApplicationUserOrganizations", b =>
+            modelBuilder.Entity("Domain.Identity.ApplicationUserOrganization", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -385,7 +383,7 @@ namespace DbMigration.Identity
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ApplicationUserOrganizations");
+                    b.ToTable("AppUserOrganizations");
                 });
 
             modelBuilder.Entity("Domain.Identity.ApplicationUserRole", b =>
@@ -538,6 +536,123 @@ namespace DbMigration.Identity
                     b.HasIndex("ParentId");
 
                     b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("Domain.Management.Menu", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<DateTimeOffset>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("sysDateTimeOffset()");
+
+                    b.Property<string>("CreationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("Index");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
+
+                    b.Property<bool?>("IsEnable")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'True'");
+
+                    b.Property<DateTimeOffset>("LastModificationTime");
+
+                    b.Property<string>("LastModificationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<short>("Order");
+
+                    b.Property<long>("OrderNumber")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ParentId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("Remark");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreationUserId");
+
+                    b.HasIndex("LastModificationUserId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Menus");
+                });
+
+            modelBuilder.Entity("Domain.Management.MenuItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<DateTimeOffset>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("sysDateTimeOffset()");
+
+                    b.Property<string>("CreationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("Index");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
+
+                    b.Property<bool?>("IsEnable")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'True'");
+
+                    b.Property<DateTimeOffset>("LastModificationTime");
+
+                    b.Property<string>("LastModificationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("Link");
+
+                    b.Property<string>("MenuId")
+                        .IsRequired()
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<short>("Order");
+
+                    b.Property<long>("OrderNumber")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Remark");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreationUserId");
+
+                    b.HasIndex("LastModificationUserId");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("MenuItems");
                 });
 
             modelBuilder.Entity("Domain.Sample.Domain", b =>
@@ -1002,7 +1117,7 @@ namespace DbMigration.Identity
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Domain.Identity.ApplicationUserOrganizations", b =>
+            modelBuilder.Entity("Domain.Identity.ApplicationUserOrganization", b =>
                 {
                     b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
                         .WithMany()
@@ -1073,6 +1188,75 @@ namespace DbMigration.Identity
                     b.HasOne("Domain.Identity.Organization", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("Domain.Management.Menu", b =>
+                {
+                    b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
+                        .WithMany()
+                        .HasForeignKey("CreationUserId");
+
+                    b.HasOne("Domain.Identity.ApplicationUser", "LastModificationUser")
+                        .WithMany()
+                        .HasForeignKey("LastModificationUserId");
+
+                    b.HasOne("Domain.Management.Menu", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.OwnsOne("Domain.Management.Icon", "Icon", b1 =>
+                        {
+                            b1.Property<string>("MenuId")
+                                .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                            b1.Property<string>("Type");
+
+                            b1.Property<string>("Value");
+
+                            b1.HasKey("MenuId");
+
+                            b1.ToTable("Menus");
+
+                            b1.HasOne("Domain.Management.Menu")
+                                .WithOne("Icon")
+                                .HasForeignKey("Domain.Management.Icon", "MenuId")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Management.MenuItem", b =>
+                {
+                    b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
+                        .WithMany()
+                        .HasForeignKey("CreationUserId");
+
+                    b.HasOne("Domain.Identity.ApplicationUser", "LastModificationUser")
+                        .WithMany()
+                        .HasForeignKey("LastModificationUserId");
+
+                    b.HasOne("Domain.Management.Menu", "Menu")
+                        .WithMany("Items")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.OwnsOne("Domain.Management.Icon", "Icon", b1 =>
+                        {
+                            b1.Property<string>("MenuItemId")
+                                .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                            b1.Property<string>("Type");
+
+                            b1.Property<string>("Value");
+
+                            b1.HasKey("MenuItemId");
+
+                            b1.ToTable("MenuItems");
+
+                            b1.HasOne("Domain.Management.MenuItem")
+                                .WithOne("Icon")
+                                .HasForeignKey("Domain.Management.Icon", "MenuItemId")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("Domain.Sample.Domain", b =>

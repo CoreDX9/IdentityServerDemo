@@ -5,9 +5,9 @@ using EntityFrameworkCore.Extensions.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DbMigration.Identity
+namespace DbMigration.Application
 {
-    public partial class InitialIdentityDbMigration : Migration
+    public partial class InitialApplicationDbMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -218,7 +218,52 @@ namespace DbMigration.Identity
                 });
 
             migrationBuilder.CreateTable(
-                name: "Organization",
+                name: "Menus",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    OrderNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
+                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
+                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
+                    CreationUserId = table.Column<string>(nullable: true),
+                    LastModificationUserId = table.Column<string>(nullable: true),
+                    ParentId = table.Column<string>(nullable: true),
+                    Index = table.Column<string>(nullable: true),
+                    Icon_Type = table.Column<string>(nullable: true),
+                    Icon_Value = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Order = table.Column<short>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Menus_AppUsers_CreationUserId",
+                        column: x => x.CreationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Menus_AppUsers_LastModificationUserId",
+                        column: x => x.LastModificationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Menus_Menus_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Menus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Organizations",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -238,23 +283,23 @@ namespace DbMigration.Identity
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Organization", x => x.Id);
+                    table.PrimaryKey("PK_Organizations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Organization_AppUsers_CreationUserId",
+                        name: "FK_Organizations_AppUsers_CreationUserId",
                         column: x => x.CreationUserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Organization_AppUsers_LastModificationUserId",
+                        name: "FK_Organizations_AppUsers_LastModificationUserId",
                         column: x => x.LastModificationUserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Organization_Organization_ParentId",
+                        name: "FK_Organizations_Organizations_ParentId",
                         column: x => x.ParentId,
-                        principalTable: "Organization",
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -310,10 +355,10 @@ namespace DbMigration.Identity
                     LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
                     CreationUserId = table.Column<string>(nullable: true),
                     LastModificationUserId = table.Column<string>(nullable: true),
-                    MethodSignName = table.Column<string>(nullable: true),
+                    HandlerMethodSignature = table.Column<string>(nullable: true),
                     TypeFullName = table.Column<string>(nullable: true),
-                    FriendlyName = table.Column<string>(nullable: true),
-                    AdvanceAuthorizationRuleJson = table.Column<string>(nullable: true)
+                    IdentificationKey = table.Column<string>(nullable: true),
+                    AuthorizationRuleConfigJson = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -504,9 +549,9 @@ namespace DbMigration.Identity
                 name: "ComplexProperty",
                 columns: table => new
                 {
+                    DomainId = table.Column<string>(nullable: false),
                     C1 = table.Column<string>(nullable: true),
-                    C2 = table.Column<string>(nullable: true),
-                    DomainId = table.Column<string>(nullable: false)
+                    C2 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -515,6 +560,99 @@ namespace DbMigration.Identity
                         name: "FK_ComplexProperty_Domains_DomainId",
                         column: x => x.DomainId,
                         principalTable: "Domains",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuItems",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    OrderNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
+                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
+                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
+                    CreationUserId = table.Column<string>(nullable: true),
+                    LastModificationUserId = table.Column<string>(nullable: true),
+                    Index = table.Column<string>(nullable: true),
+                    Icon_Type = table.Column<string>(nullable: true),
+                    Icon_Value = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Link = table.Column<string>(nullable: true),
+                    Order = table.Column<short>(nullable: false),
+                    MenuId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MenuItems_AppUsers_CreationUserId",
+                        column: x => x.CreationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MenuItems_AppUsers_LastModificationUserId",
+                        column: x => x.LastModificationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MenuItems_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserOrganizations",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    OrderNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
+                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
+                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
+                    CreationUserId = table.Column<string>(nullable: true),
+                    LastModificationUserId = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false),
+                    OrganizationId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserOrganizations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppUserOrganizations_AppUsers_CreationUserId",
+                        column: x => x.CreationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AppUserOrganizations_AppUsers_LastModificationUserId",
+                        column: x => x.LastModificationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AppUserOrganizations_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppUserOrganizations_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -536,8 +674,7 @@ namespace DbMigration.Identity
                     LastModificationUserId = table.Column<string>(nullable: true),
                     PermissionValue = table.Column<short>(nullable: false),
                     PermissionDefinitionId = table.Column<string>(nullable: true),
-                    OrganizationId = table.Column<string>(nullable: true),
-                    ParentPermissionDeclarationId = table.Column<string>(nullable: true)
+                    OrganizationId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -555,15 +692,9 @@ namespace DbMigration.Identity
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_OrganizationPermissionDeclarations_Organization_OrganizationId",
+                        name: "FK_OrganizationPermissionDeclarations_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
-                        principalTable: "Organization",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_OrganizationPermissionDeclarations_OrganizationPermissionDeclarations_ParentPermissionDeclarationId",
-                        column: x => x.ParentPermissionDeclarationId,
-                        principalTable: "OrganizationPermissionDeclarations",
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -671,60 +802,12 @@ namespace DbMigration.Identity
                 });
 
             migrationBuilder.CreateTable(
-                name: "RequestHandlerPermissionDeclarations",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Remark = table.Column<string>(nullable: true),
-                    OrderNumber = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
-                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
-                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
-                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
-                    CreationUserId = table.Column<string>(nullable: true),
-                    LastModificationUserId = table.Column<string>(nullable: true),
-                    PermissionValue = table.Column<short>(nullable: false),
-                    PermissionDefinitionId = table.Column<string>(nullable: true),
-                    RuleId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestHandlerPermissionDeclarations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarations_AppUsers_CreationUserId",
-                        column: x => x.CreationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarations_AppUsers_LastModificationUserId",
-                        column: x => x.LastModificationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarations_PermissionDefinitions_PermissionDefinitionId",
-                        column: x => x.PermissionDefinitionId,
-                        principalTable: "PermissionDefinitions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarations_RequestAuthorizationRules_RuleId",
-                        column: x => x.RuleId,
-                        principalTable: "RequestAuthorizationRules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ComplexProperty2",
                 columns: table => new
                 {
+                    ComplexEntityPropertyDomainId = table.Column<string>(nullable: false),
                     C3 = table.Column<string>(nullable: true),
-                    C4 = table.Column<string>(nullable: true),
-                    ComplexEntityPropertyDomainId = table.Column<string>(nullable: false)
+                    C4 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -735,100 +818,6 @@ namespace DbMigration.Identity
                         principalTable: "ComplexProperty",
                         principalColumn: "DomainId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RequestHandlerPermissionDeclarationOrganizations",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Remark = table.Column<string>(nullable: true),
-                    OrderNumber = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
-                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
-                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
-                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
-                    CreationUserId = table.Column<string>(nullable: true),
-                    LastModificationUserId = table.Column<string>(nullable: true),
-                    OrganizationId = table.Column<string>(nullable: true),
-                    PermissionDeclarationId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestHandlerPermissionDeclarationOrganizations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationOrganizations_AppUsers_CreationUserId",
-                        column: x => x.CreationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationOrganizations_AppUsers_LastModificationUserId",
-                        column: x => x.LastModificationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationOrganizations_Organization_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organization",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationOrganizations_RequestHandlerPermissionDeclarations_PermissionDeclarationId",
-                        column: x => x.PermissionDeclarationId,
-                        principalTable: "RequestHandlerPermissionDeclarations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RequestHandlerPermissionDeclarationRoles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Remark = table.Column<string>(nullable: true),
-                    OrderNumber = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
-                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
-                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
-                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
-                    CreationUserId = table.Column<string>(nullable: true),
-                    LastModificationUserId = table.Column<string>(nullable: true),
-                    RoleId = table.Column<string>(nullable: true),
-                    PermissionDeclarationId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestHandlerPermissionDeclarationRoles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationRoles_AppUsers_CreationUserId",
-                        column: x => x.CreationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationRoles_AppUsers_LastModificationUserId",
-                        column: x => x.LastModificationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationRoles_RequestHandlerPermissionDeclarations_PermissionDeclarationId",
-                        column: x => x.PermissionDeclarationId,
-                        principalTable: "RequestHandlerPermissionDeclarations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestHandlerPermissionDeclarationRoles_AppRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AppRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -881,6 +870,26 @@ namespace DbMigration.Identity
             migrationBuilder.CreateIndex(
                 name: "IX_AppUserClaims_UserId",
                 table: "AppUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserOrganizations_CreationUserId",
+                table: "AppUserOrganizations",
+                column: "CreationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserOrganizations_LastModificationUserId",
+                table: "AppUserOrganizations",
+                column: "LastModificationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserOrganizations_OrganizationId",
+                table: "AppUserOrganizations",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppUserOrganizations_UserId",
+                table: "AppUserOrganizations",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -941,18 +950,33 @@ namespace DbMigration.Identity
                 column: "LastModificationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Organization_CreationUserId",
-                table: "Organization",
+                name: "IX_MenuItems_CreationUserId",
+                table: "MenuItems",
                 column: "CreationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Organization_LastModificationUserId",
-                table: "Organization",
+                name: "IX_MenuItems_LastModificationUserId",
+                table: "MenuItems",
                 column: "LastModificationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Organization_ParentId",
-                table: "Organization",
+                name: "IX_MenuItems_MenuId",
+                table: "MenuItems",
+                column: "MenuId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Menus_CreationUserId",
+                table: "Menus",
+                column: "CreationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Menus_LastModificationUserId",
+                table: "Menus",
+                column: "LastModificationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Menus_ParentId",
+                table: "Menus",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
@@ -971,14 +995,24 @@ namespace DbMigration.Identity
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrganizationPermissionDeclarations_ParentPermissionDeclarationId",
-                table: "OrganizationPermissionDeclarations",
-                column: "ParentPermissionDeclarationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrganizationPermissionDeclarations_PermissionDefinitionId",
                 table: "OrganizationPermissionDeclarations",
                 column: "PermissionDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Organizations_CreationUserId",
+                table: "Organizations",
+                column: "CreationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Organizations_LastModificationUserId",
+                table: "Organizations",
+                column: "LastModificationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Organizations_ParentId",
+                table: "Organizations",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PermissionDefinitions_CreationUserId",
@@ -999,66 +1033,6 @@ namespace DbMigration.Identity
                 name: "IX_RequestAuthorizationRules_LastModificationUserId",
                 table: "RequestAuthorizationRules",
                 column: "LastModificationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationOrganizations_CreationUserId",
-                table: "RequestHandlerPermissionDeclarationOrganizations",
-                column: "CreationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationOrganizations_LastModificationUserId",
-                table: "RequestHandlerPermissionDeclarationOrganizations",
-                column: "LastModificationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationOrganizations_OrganizationId",
-                table: "RequestHandlerPermissionDeclarationOrganizations",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationOrganizations_PermissionDeclarationId",
-                table: "RequestHandlerPermissionDeclarationOrganizations",
-                column: "PermissionDeclarationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationRoles_CreationUserId",
-                table: "RequestHandlerPermissionDeclarationRoles",
-                column: "CreationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationRoles_LastModificationUserId",
-                table: "RequestHandlerPermissionDeclarationRoles",
-                column: "LastModificationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationRoles_PermissionDeclarationId",
-                table: "RequestHandlerPermissionDeclarationRoles",
-                column: "PermissionDeclarationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarationRoles_RoleId",
-                table: "RequestHandlerPermissionDeclarationRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarations_CreationUserId",
-                table: "RequestHandlerPermissionDeclarations",
-                column: "CreationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarations_LastModificationUserId",
-                table: "RequestHandlerPermissionDeclarations",
-                column: "LastModificationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarations_PermissionDefinitionId",
-                table: "RequestHandlerPermissionDeclarations",
-                column: "PermissionDefinitionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestHandlerPermissionDeclarations_RuleId",
-                table: "RequestHandlerPermissionDeclarations",
-                column: "RuleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolePermissionDeclarations_CreationUserId",
@@ -1133,8 +1107,7 @@ namespace DbMigration.Identity
             //自动扫描迁移模型并创建树形实体视图
             migrationBuilder.CreateTreeEntityView(this,
                     AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
-                .CreateIdentityTreeEntityView(this,
-                    AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
+                .CreateIdentityTreeEntityView(this, AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
                 //从模型注解应用表和列说明
                 .ApplyDatabaseDescription(this);
         }
@@ -1143,13 +1116,18 @@ namespace DbMigration.Identity
         {
             //删除树形实体视图，这个没办法自动扫描
             migrationBuilder.DropTreeEntityView("AppRoles")
-                .DropTreeEntityView("TreeDomains");
+                .DropTreeEntityView("TreeDomains")
+                .DropTreeEntityView("Organizations")
+                .DropTreeEntityView("Menus"); 
 
             migrationBuilder.DropTable(
                 name: "AppRoleClaims");
 
             migrationBuilder.DropTable(
                 name: "AppUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AppUserOrganizations");
 
             migrationBuilder.DropTable(
                 name: "AppUserRoles");
@@ -1161,13 +1139,13 @@ namespace DbMigration.Identity
                 name: "ComplexProperty2");
 
             migrationBuilder.DropTable(
+                name: "MenuItems");
+
+            migrationBuilder.DropTable(
                 name: "OrganizationPermissionDeclarations");
 
             migrationBuilder.DropTable(
-                name: "RequestHandlerPermissionDeclarationOrganizations");
-
-            migrationBuilder.DropTable(
-                name: "RequestHandlerPermissionDeclarationRoles");
+                name: "RequestAuthorizationRules");
 
             migrationBuilder.DropTable(
                 name: "RolePermissionDeclarations");
@@ -1185,22 +1163,19 @@ namespace DbMigration.Identity
                 name: "ComplexProperty");
 
             migrationBuilder.DropTable(
-                name: "Organization");
+                name: "Menus");
 
             migrationBuilder.DropTable(
-                name: "RequestHandlerPermissionDeclarations");
+                name: "Organizations");
 
             migrationBuilder.DropTable(
                 name: "AppRoles");
 
             migrationBuilder.DropTable(
-                name: "Domains");
-
-            migrationBuilder.DropTable(
                 name: "PermissionDefinitions");
 
             migrationBuilder.DropTable(
-                name: "RequestAuthorizationRules");
+                name: "Domains");
 
             migrationBuilder.DropTable(
                 name: "AppUsers");

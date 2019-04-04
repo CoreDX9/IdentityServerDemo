@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
 
 namespace IdentityServer
@@ -88,7 +88,7 @@ namespace IdentityServer
 
                 #endregion
 
-                using (var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>())
+                using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
                 {
                     #region 检查数据库记录重复
 

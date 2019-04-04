@@ -5,7 +5,7 @@ using Domain.Identity;
 using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
 
 namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
@@ -14,12 +14,12 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<Domain.Identity.ApplicationRole> _roleManager;
-        private readonly ApplicationIdentityDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             RoleManager<Domain.Identity.ApplicationRole> roleManager,
-            ApplicationIdentityDbContext dbContext)
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Security;
 using IdentityServer.CustomServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
 
 namespace IdentityServer.Areas.Manage.Controllers
@@ -15,10 +15,10 @@ namespace IdentityServer.Areas.Manage.Controllers
     [Area("Manage")]
     public class RequestAuthorizationRulesController : Controller
     {
-        private readonly ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly IRequestHandlerInfo _requestHandlerInfo;
 
-        public RequestAuthorizationRulesController(ApplicationIdentityDbContext context, IRequestHandlerInfo requestHandlerInfo)
+        public RequestAuthorizationRulesController(ApplicationDbContext context, IRequestHandlerInfo requestHandlerInfo)
         {
             _context = context;
             _requestHandlerInfo = requestHandlerInfo;

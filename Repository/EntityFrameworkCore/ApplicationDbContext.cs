@@ -1,22 +1,23 @@
-﻿using Domain.Identity;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.Sample;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Domain.EntityFrameworkCore.Extensions;
+using Domain.Identity;
+using Domain.Management;
+using Domain.Sample;
 using Domain.Security;
 using EntityFrameworkCore.Extensions.Extensions;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Repository.RabbitMQ;
 
-namespace Repository.EntityFrameworkCore.Identity
+namespace Repository.EntityFrameworkCore
 {
     /// <summary>
     /// 基于Identity的数据上下文
     /// 实体历史记录不在Startup注册就不用
     /// </summary>
-    public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>, IEntityHistoryTrackable
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>, IEntityHistoryTrackable
     {
         private readonly IEntityHistoryRecorder _entityHistoryRecorder;
 
@@ -26,10 +27,13 @@ namespace Repository.EntityFrameworkCore.Identity
         public virtual DbSet<TreeDomain> TreeDomains { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<PermissionDefinition> PermissionDefinitions { get; set; }
+        public virtual DbSet<ApplicationUserOrganization> ApplicationUserOrganizations { get; set; }
         public virtual DbSet<UserPermissionDeclaration> UserPermissionDeclarations { get; set; }
         public virtual DbSet<RolePermissionDeclaration> RolePermissionDeclarations { get; set; }
         public virtual DbSet<OrganizationPermissionDeclaration> OrganizationPermissionDeclarations { get; set; }
         public virtual DbSet<RequestAuthorizationRule> RequestAuthorizationRules { get; set; }
+        public virtual DbSet<Menu> Menus { get; set; }
+        public virtual DbSet<MenuItem> MenuItems { get; set; }
 
         #endregion
 
@@ -41,23 +45,23 @@ namespace Repository.EntityFrameworkCore.Identity
         #endregion
 
         /// <summary>初始化新的实例</summary>
-        /// <param name="options">应用于<see cref="ApplicationIdentityDbContext" />的选项</param>
+        /// <param name="options">应用于<see cref="ApplicationDbContext" />的选项</param>
         /// <param name="entityHistoryRecorder">记录实体变更的记录器</param>
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options, IEntityHistoryRecorder entityHistoryRecorder)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEntityHistoryRecorder entityHistoryRecorder)
             : base(options)
         {
             _entityHistoryRecorder = entityHistoryRecorder;
         }
 
         /// <summary>初始化新的实例</summary>
-        /// <param name="options">应用于<see cref="ApplicationIdentityDbContext" />的选项</param>
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
+        /// <param name="options">应用于<see cref="ApplicationDbContext" />的选项</param>
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
         /// <summary>初始化新的实例</summary>
-        protected ApplicationIdentityDbContext()
+        protected ApplicationDbContext()
         {
         }
 

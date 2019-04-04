@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class DeleteModel : PageModelBase
     {
-        private readonly Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }

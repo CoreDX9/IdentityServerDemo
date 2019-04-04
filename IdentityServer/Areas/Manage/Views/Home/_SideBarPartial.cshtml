@@ -26,7 +26,7 @@
                 <span slot="title">{{gItem.title}}</span>
             </el-menu-item>
         </el-menu-item-group>
-        <sub-side-bar v-for="subMenu in menu.subMenus"
+        <sub-side-bar v-for="subMenu in menu.children"
                       :menu="subMenu"></sub-side-bar>
     </el-menu>
 </template>
@@ -98,7 +98,7 @@
                 <span slot="title">{{gItem.title}}</span>
             </el-menu-item>
         </el-menu-item-group>
-        <sub-side-bar v-for="subMenu in menu.subMenus"
+        <sub-side-bar v-for="subMenu in menu.children"
                       :menu="subMenu"></sub-side-bar>
     </el-submenu>
 </template>

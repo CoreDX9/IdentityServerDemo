@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domain.Security;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class OrganizationPermissionDeclarationController : Controller
     {
-        private readonly ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public OrganizationPermissionDeclarationController(ApplicationIdentityDbContext context)
+        public OrganizationPermissionDeclarationController(ApplicationDbContext context)
         {
             _context = context;
         }

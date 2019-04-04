@@ -9,15 +9,16 @@ using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class EditModel : PageModelBase
     {
-        private readonly Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
         private UserManager<ApplicationUser> _userManager;
 
-        public EditModel(Repository.EntityFrameworkCore.Identity.ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
+        public EditModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;

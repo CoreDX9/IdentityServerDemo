@@ -20,7 +20,7 @@ namespace Domain.Identity
 
         public virtual List<OrganizationPermissionDeclaration> PermissionDeclarations { get; set; } = new List<OrganizationPermissionDeclaration>();
 
-        public virtual List<ApplicationUserOrganizations> UserOrganizations { get; set; } =
-            new List<ApplicationUserOrganizations>();
+        public virtual List<ApplicationUserOrganization> UserOrganizations { get; set; } =
+            new List<ApplicationUserOrganization>();
     }
 }

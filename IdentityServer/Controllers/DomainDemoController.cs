@@ -9,16 +9,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using X.PagedList;
 
 namespace IdentityServer.Controllers
 {
     public class DomainDemoController : BaseController
     {
-        private readonly ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public DomainDemoController(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
+        public DomainDemoController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;

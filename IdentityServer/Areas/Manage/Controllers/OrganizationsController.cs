@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domain.Identity;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class OrganizationsController : Controller
     {
-        private readonly ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public OrganizationsController(ApplicationIdentityDbContext context)
+        public OrganizationsController(ApplicationDbContext context)
         {
             _context = context;
         }

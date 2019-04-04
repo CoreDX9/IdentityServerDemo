@@ -166,7 +166,7 @@
                             }
                         ],
                         groups: [],
-                        subMenus: [
+                        children: [
                             {
                                 index: 'sys',
                                 icon: {
@@ -182,29 +182,31 @@
                                         link: '/Manage/Localization'
                                     }
                                 ],
-                                groups: [
+                                children: [
                                     {
+                                        index: 'sys-acc',
                                         icon: null,
                                         title: '账户系统',
                                         items: [
                                             {
-                                                index: 'sys-user',
+                                                index: 'sys-acc-user',
                                                 icon: null,
                                                 title: '用户管理',
                                                 link: '/Manage/Users'
                                             }, {
-                                                index: 'sys-role',
+                                                index: 'sys-acc-role',
                                                 icon: null,
                                                 title: '角色管理',
                                                 link: '/'
                                             }, {
-                                                index: 'sys-org',
+                                                index: 'sys-acc-org',
                                                 icon: null,
                                                 title: '组织管理',
                                                 link: '/Manage/Organizations'
                                             }
                                         ]
                                     }, {
+                                        index: 'sys-perm',
                                         icon: null,
                                         title: '权限系统',
                                         items: [
@@ -236,24 +238,7 @@
                                             }
                                         ]
                                     }
-                                ],
-                                subMenus: [
-                                    {
-                                        index: 'sys1',
-                                        icon: {
-                                            type: 'css',
-                                            value: 'el-icon-location'
-                                        },
-                                        title: '系统管理1',
-                                        items: [
-                                            {
-                                                index: 'sys-trans1',
-                                                icon: null,
-                                                title: '本地化翻译管理1',
-                                                link: '/Manage/Localization'
-                                            }
-                                        ]
-                                    }]
+                                ]
                             }
                         ]
                     },
@@ -279,13 +264,13 @@
                         for (var i = 0; i < subMenus.length; i++) {
                             if (subMenus[i].items && subMenus[i].items.length > 0) enumItems(subMenus[i].items);
                             if (subMenus[i].groups && subMenus[i].groups.length > 0) enumGroups(subMenus[i].groups);
-                            if (subMenus[i].subMenus && subMenus[i].subMenus.length > 0) enumSubMenus(subMenus[i].subMenus);
+                            if (subMenus[i].children && subMenus[i].children.length > 0) enumSubMenus(subMenus[i].children);
                         }
                     };
 
                     if (menu.items && menu.items.length > 0) enumItems(menu.items);
                     if (menu.groups && menu.groups.length > 0)enumGroups(menu.groups);
-                    if (menu.subMenus && menu.subMenus.length > 0)enumSubMenus(menu.subMenus);
+                    if (menu.children && menu.children.length > 0) enumSubMenus(menu.children);
 
                     return menuDic;
                 }
@@ -300,7 +285,7 @@
                     var manageTabs = this.manageTabs;
 
                     for (var i = 0; i < manageTabs.length; i++) {
-                        if (manageTabs[i].name === index) {
+                        if (manageTabs[i].index === index) {
                             this.activeTab = index;
                             return;
                         }
@@ -326,10 +311,10 @@
 
                     var nextTab = null;
                     tabs.forEach(function (tab, index) {
-                        if (tab.name === targetName) {
+                        if (tab.index === targetName) {
                             nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
-                                _this.activeTab = nextTab.name;
+                                _this.activeTab = nextTab.index;
                                 _this.activeMenuItem = _this.activeTab;
                             }
                         }

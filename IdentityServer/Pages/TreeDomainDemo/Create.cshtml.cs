@@ -7,16 +7,16 @@ using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class CreateModel : PageModelBase
     {
-        private readonly ApplicationIdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CreateModel(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
+        public CreateModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;

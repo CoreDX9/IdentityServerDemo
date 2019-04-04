@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Repository.EntityFrameworkCore.Identity;
+using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
 
 namespace IdentityServer.Extensions
@@ -35,7 +35,7 @@ namespace IdentityServer.Extensions
 
             //基于数据库权限信息的授权判断
             var dbContext =
-                context.HttpContext.RequestServices.GetRequiredService<ApplicationIdentityDbContext>();
+                context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
 
             if (context.ActionDescriptor is ControllerActionDescriptor cad)
             {
@@ -73,7 +73,7 @@ namespace IdentityServer.Extensions
         }
 
         private bool Validate(RequestAuthorizationRule.AuthorizationRuleGroup ruleGroup,
-            ApplicationIdentityDbContext db, Guid userId)
+            ApplicationDbContext db, Guid userId)
         {
             //循环验证组中的每一条规则
             foreach (var rule in ruleGroup.Rules)

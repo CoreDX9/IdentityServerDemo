@@ -270,7 +270,7 @@ namespace Domain.EntityFrameworkCore.Extensions
             modelBuilder.Entity<ApplicationRole>(b => b.ToTable("AppRoles"));
             modelBuilder.Entity<ApplicationRoleClaim>(b => b.ToTable("AppRoleClaims"));
             modelBuilder.Entity<ApplicationUserRole>(b => b.ToTable("AppUserRoles"));
-            modelBuilder.Entity<ApplicationUserOrganizations>(b => b.ToTable("AppUserOrganizations"));
+            modelBuilder.Entity<ApplicationUserOrganization>(b => b.ToTable("AppUserOrganizations"));
 
             #endregion
 
