@@ -13,7 +13,7 @@ namespace Domain
     /// <typeparam name="TKey">主键类型（Guid主键存在string转换器的话可以在这里用string）</typeparam>
     /// <typeparam name="TEntityView">实体视图类型</typeparam>
     /// <typeparam name="TIdentityUserKey">IdentityUser主键类型</typeparam>
-    public abstract class DomainTreeEntityViewBase<TKey, TEntityView, TIdentityUserKey> : IEntity, ITree<TEntityView>,
+    public class DomainTreeEntityViewBase<TKey, TEntityView, TIdentityUserKey> : IEntity, ITree<TEntityView>,
         INotifyPropertyChanged, IPropertyChangeTrackable
         where TEntityView : DomainTreeEntityViewBase<TKey, TEntityView, TIdentityUserKey>
     {
@@ -91,7 +91,7 @@ namespace Domain
         private readonly BitArray _propertyChangeMask;
 
         /// <summary>
-        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase&lt;TKey, TIdentityUserKey&gt;" />的类在实例化时都会自动注册）
+        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase" />的类在实例化时都会自动注册）
         /// </summary>
         public static PropertyChangedEventHandler PublicPropertyChangedEventHandler { get; set; }
 

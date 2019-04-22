@@ -7,7 +7,7 @@ namespace Domain.Security
     /// <summary>
     /// 权限声明基类
     /// </summary>
-    public abstract class PermissionDeclarationBase : DomainEntityBase<Guid, Guid>
+    public abstract class PermissionDeclarationBase : DomainEntityBase
     {
         /// <summary>
         /// 权限值

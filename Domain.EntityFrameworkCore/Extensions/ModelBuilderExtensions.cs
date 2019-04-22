@@ -22,14 +22,6 @@ namespace Domain.EntityFrameworkCore.Extensions
         /// <returns>传入的模型构造器</returns>
         public static ModelBuilder ConfigEntitiesThatImplementedFromIDomainEntity(this ModelBuilder modelBuilder, DbContext dbContext)
         {
-            //遍历所有实现了IDomainEntity<>接口的DbSet<>的实体
-            //如果实体是通过配置类或反射方式进行配置的，此方式扫描不到
-            //此方式只能扫描到硬编码的类型
-            //var domains = dbContext.GetType().GetProperties()
-            //    .Where(pro => pro.PropertyType.CanBeReferencedBy(typeof(DbSet<>)))
-            //    .Select(pro => pro.PropertyType.GenericTypeArguments[0])
-            //    .Where(t => t.CanBeReferencedBy(typeof(IDomainEntity<>)));
-
             //循环配置模型通用部分，如有其它特殊配置，在下面循环之后自行增加配置
             //里面的int类型参数只是因为nameof表达式中的泛型类型必须是封闭类型，故而随便填一个int，不会影响属性名
             //IDomainEntity<>接口实现了IEntity接口
@@ -41,9 +33,9 @@ namespace Domain.EntityFrameworkCore.Extensions
                 {
                     //如果实体继承自DomainEntityBase<,>并且主键Id为Guid类型，则添加字符串转换器（用来兼容非sqlserver数据库，efcore2.1以上支持）
                     if (domain.IsDerivedFrom(typeof(DomainEntityBase<,>)) &&
-                        domain.GetProperty(nameof(DomainEntityBase<int, int>.Id))?.PropertyType == typeof(Guid))
+                        domain.GetProperty(nameof(DomainEntityBase.Id))?.PropertyType == typeof(Guid))
                     {
-                        b.Property(nameof(DomainEntityBase<int, int>.Id)).HasConversion(new GuidToStringConverter());
+                        b.Property(nameof(DomainEntityBase.Id)).HasConversion(new GuidToStringConverter());
                     }
 
                     //配置记录创建时间默认值，仅限sqlserver
@@ -116,10 +108,6 @@ namespace Domain.EntityFrameworkCore.Extensions
             var treeViews = modelBuilder.Model.GetEntityTypes()
                 .Where(en => en.IsQueryType && en.ClrType.IsDerivedFrom(typeof(DomainTreeEntityViewBase<,,>)))
                 .Select(en => en.ClrType);
-            //var treeViews = dbContext.GetType().GetProperties()
-            //    .Where(pro => pro.PropertyType.CanBeReferencedBy(typeof(DbQuery<>)))
-            //    .Select(pro => pro.PropertyType.GenericTypeArguments[0])
-            //    .Where(t => t.CanBeReferencedBy(typeof(DomainTreeEntityViewBase<,,>)));
 
             foreach (var view in treeViews)
             {
@@ -153,9 +141,11 @@ namespace Domain.EntityFrameworkCore.Extensions
             //domain.IsDeleted == false
             e1 = Expression.Equal(left, right);
 
-            // ((DomainEntityBase<,>)domain) => (domain.IsDeleted == false)
+            // ((IEntity)domain) => (domain.IsDeleted == false)
             // 这里的IEntity会在运行时反射为实体的实际类型，这些实体都实现了IEntity接口
             var filter = Expression.Lambda(e1, parameter);
+
+            #region 留待观察
 
             //domain.IsEnable
             //left = Expression.Property(parameter, domainType.GetProperty(nameof(IEntity.IsEnable)));
@@ -168,6 +158,8 @@ namespace Domain.EntityFrameworkCore.Extensions
 
             // ((IEntity)domain) => (domain.IsDeleted == false && domain.IsEnable == true)
             //var filter = Expression.Lambda(predicateBody, parameter);
+
+            #endregion
 
             return filter;
         }
@@ -306,10 +298,8 @@ namespace Domain.EntityFrameworkCore.Extensions
                 .ApplyConfiguration(new RolePermissionDeclarationConfig())
                 .ApplyConfiguration(new UserPermissionDeclarationConfig())
                 .ApplyConfiguration(new OrganizationPermissionDeclarationConfig())
-                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationConfig())
+                .ApplyConfiguration(new AuthorizationRuleConfig())
                 .ApplyConfiguration(new RequestAuthorizationRuleConfig());
-                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationRoleConfig())
-                //.ApplyConfiguration(new RequestHandlerPermissionDeclarationOrganizationConfig());
         }
     }
 }

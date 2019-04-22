@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Domain.Identity
 {
-    public class ApplicationUserOrganization : DomainEntityBase<Guid, Guid>
+    public class ApplicationUserOrganization : DomainEntityBase
     {
         public Guid UserId { get; set; }
 

@@ -5,13 +5,22 @@ using PropertyChanged;
 
 namespace Domain
 {
+    public class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid>
+        where TEntity : DomainTreeEntityBase<TEntity>
+    {
+        public DomainTreeEntityBase()
+        {
+            Id = Guid.NewGuid();
+        }
+    }
+
     /// <summary>
     /// 确定了实体操作人主键类型的树形领域实体基类
     /// </summary>
     /// <typeparam name="TKey">主键类型</typeparam>
     /// <typeparam name="TEntity">实体类型</typeparam>
     /// <typeparam name="TIdentityUserKey">实体类型</typeparam>
-    public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityUserKey> : DomainEntityBase<TKey, TIdentityUserKey>, IDomainTreeEntity<TKey, TEntity, TIdentityUserKey>
+    public class DomainTreeEntityBase<TKey, TEntity, TIdentityUserKey> : DomainEntityBase<TKey, TIdentityUserKey>, IDomainTreeEntity<TKey, TEntity, TIdentityUserKey>
         where TKey : struct, IEquatable<TKey>
         where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityUserKey>
         where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>

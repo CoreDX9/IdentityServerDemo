@@ -29,6 +29,10 @@
 
     <!--包含layui文件-->
     <_LayuiFiles Include="node_modules/layui-src/dist/**/*.*" />
+    <Compile Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
+    <Content Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
+    <EmbeddedResource Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
+    <None Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
     <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
     <DotnetPublishFiles Include="@(_LayuiFiles)">
       <DestinationRelativePath>wwwroot/lib/layui/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>

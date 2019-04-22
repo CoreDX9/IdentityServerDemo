@@ -42,21 +42,31 @@ namespace IdentityServer.Extensions
                 var key =
                     (cad.MethodInfo.GetCustomAttribute(typeof(RequestHandlerIdentificationAttribute)) as
                         RequestHandlerIdentificationAttribute)?.UniqueKey;
-                RequestAuthorizationRule.AuthorizationRuleGroup rule;
+                AuthorizationRule.AuthorizationRuleGroup ruleGroup;
                 if (!key.IsNullOrEmpty())
                 {
-                    rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.IdentificationKey == key)?.AuthorizationRuleConfig;
+                    ruleGroup = dbContext.RequestAuthorizationRules
+                        .AsNoTracking()
+                        .Include(r => r.AuthorizationRule)
+                        .SingleOrDefault(r => r.IdentificationKey == key)
+                        ?.AuthorizationRule
+                        .AuthorizationRuleConfig;
                 }
                 else
                 {
                     var sign = cad.MethodInfo.ToString();
                     var typeName = cad.MethodInfo.DeclaringType.FullName;
-                    rule = dbContext.RequestAuthorizationRules.SingleOrDefault(r => r.TypeFullName == typeName && r.HandlerMethodSignature == sign)?.AuthorizationRuleConfig;
+                    ruleGroup = dbContext.RequestAuthorizationRules
+                        .AsNoTracking()
+                        .Include(r => r.AuthorizationRule)
+                        .SingleOrDefault(r => r.TypeFullName == typeName && r.HandlerMethodSignature == sign)
+                        ?.AuthorizationRule
+                        .AuthorizationRuleConfig;
                 }
 
-                if (rule != null)
+                if (ruleGroup != null)
                 {
-                    var isValid = Validate(rule, dbContext, context.HttpContext.User?.Identity?.Name.IsNullOrEmpty() == true ? (Guid?)null : Guid.Parse(context.HttpContext.User.GetSubjectId()));
+                    var isValid = Validate(ruleGroup, dbContext, context.HttpContext.User?.Identity?.Name.IsNullOrEmpty() == true ? (Guid?)null : Guid.Parse(context.HttpContext.User.GetSubjectId()));
 
                     if (isValid)
                     {
@@ -72,7 +82,7 @@ namespace IdentityServer.Extensions
             await Task.CompletedTask;
         }
 
-        private bool Validate(RequestAuthorizationRule.AuthorizationRuleGroup ruleGroup,
+        private bool Validate(AuthorizationRule.AuthorizationRuleGroup ruleGroup,
             ApplicationDbContext db, Guid? userId)
         {
             //循环验证组中的每一条规则
@@ -84,41 +94,41 @@ namespace IdentityServer.Extensions
                 //如果没有指定权限来源，设置为任意来源
                 if (rule.Origins?.Any() == false)
                 {
-                    rule.Origins = new List<RequestAuthorizationRule.AuthorizationRule.PermissionOrigin>
+                    rule.Origins = new List<AuthorizationRule.Rule.PermissionOrigin>
                     {
-                        new RequestAuthorizationRule.AuthorizationRule.PermissionOrigin
+                        new AuthorizationRule.Rule.PermissionOrigin
                         {
-                            Type = RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.User
+                            Type = AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.User
                         },
-                        new RequestAuthorizationRule.AuthorizationRule.PermissionOrigin
+                        new AuthorizationRule.Rule.PermissionOrigin
                         {
-                            Type = RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role
+                            Type = AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Role
                         },
-                        new RequestAuthorizationRule.AuthorizationRule.PermissionOrigin
+                        new AuthorizationRule.Rule.PermissionOrigin
                         {
-                            Type = RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Organization
+                            Type = AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Organization
                         },
                     };
                 }
 
                 //循环在所有来源中查找匹配的权限
-                foreach (var origin in rule.Origins ?? new List<RequestAuthorizationRule.AuthorizationRule.PermissionOrigin>())
+                foreach (var origin in rule.Origins ?? new List<AuthorizationRule.Rule.PermissionOrigin>())
                 {
                     var originRuleTrue = false;//某个来源是否验证成功
                     ApplicationUser user;
                     switch (origin.Type)
                     {
-                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Anonymous:
+                        case AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Anonymous:
                             originRuleTrue = true;
                             break;
-                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Authentication:
+                        case AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Authentication:
                             if (userId == null)
                             {
                                 break;
                             }
                             originRuleTrue = true;
                             break;
-                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.User:
+                        case AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.User:
                             if (userId == null)
                             {
                                 break;
@@ -151,7 +161,7 @@ namespace IdentityServer.Extensions
                             }
 
                             break;
-                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role:
+                        case AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Role:
                             if (userId == null)
                             {
                                 break;
@@ -228,7 +238,7 @@ namespace IdentityServer.Extensions
                             }
 
                             break;
-                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType
+                        case AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType
                             .Organization:
                             if (userId == null)
                             {
@@ -308,14 +318,14 @@ namespace IdentityServer.Extensions
                 }
 
                 //如果该分组为任意规则成功并且有验证成功的，直接返回成功
-                if (ruleGroup.GroupOperate == RequestAuthorizationRule.AuthorizationRuleGroup.Operate.Any &&
+                if (ruleGroup.GroupOperate == AuthorizationRule.AuthorizationRuleGroup.Operate.Any &&
                     valid)
                 {
                     return true;
                 }
 
                 //如果该分组为所有规则成功并且有验证失败的，直接返回失败
-                if (ruleGroup.GroupOperate == RequestAuthorizationRule.AuthorizationRuleGroup.Operate.All &&
+                if (ruleGroup.GroupOperate == AuthorizationRule.AuthorizationRuleGroup.Operate.All &&
                     valid == false)
                 {
                     return false;
@@ -323,19 +333,19 @@ namespace IdentityServer.Extensions
             }
 
             //循环验证组中的每一个子分组
-            foreach (var @group in ruleGroup.Groups ?? new List<RequestAuthorizationRule.AuthorizationRuleGroup>())
+            foreach (var @group in ruleGroup.Groups ?? new List<AuthorizationRule.AuthorizationRuleGroup>())
             {
                 var valid = Validate(@group, db, userId);
 
                 //如果该分组为任意子分组成功并且有验证成功的，直接返回成功
-                if (ruleGroup.GroupOperate == RequestAuthorizationRule.AuthorizationRuleGroup.Operate.Any &&
+                if (ruleGroup.GroupOperate == AuthorizationRule.AuthorizationRuleGroup.Operate.Any &&
                     valid)
                 {
                     return true;
                 }
 
                 //如果该分组为所有子分组成功并且有验证失败的，直接返回失败
-                if (ruleGroup.GroupOperate == RequestAuthorizationRule.AuthorizationRuleGroup.Operate.All &&
+                if (ruleGroup.GroupOperate == AuthorizationRule.AuthorizationRuleGroup.Operate.All &&
                     valid == false)
                 {
                     return false;
@@ -343,7 +353,7 @@ namespace IdentityServer.Extensions
             }
 
             //如果该分组为所有规则和子分组成功并且到循环结束都没有因为验证失败而提前返回失败，说明所有验证都成功，返回成功
-            if (ruleGroup.GroupOperate == RequestAuthorizationRule.AuthorizationRuleGroup.Operate.All)
+            if (ruleGroup.GroupOperate == AuthorizationRule.AuthorizationRuleGroup.Operate.All)
             {
                 return true;
             }

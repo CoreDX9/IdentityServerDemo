@@ -5,7 +5,7 @@ using EntityFrameworkCore.Extensions.DataAnnotations;
 namespace Domain.Sample
 {
     [DbDescription("示例实体")]
-    public class Domain : DomainEntityBase<Guid, Guid>
+    public class Domain : DomainEntityBase
     {
         [Column("SC")]
         [DbDescription("示例列")]
@@ -40,7 +40,7 @@ namespace Domain.Sample
     }
 
     [DbDescription("示例树形实体")]
-    public class TreeDomain : DomainTreeEntityBase<Guid, TreeDomain, Guid>
+    public class TreeDomain : DomainTreeEntityBase<TreeDomain>
     {
         [DbDescription("示例列")]
         public virtual string SampleColumn { get; set; }

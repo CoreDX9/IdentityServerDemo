@@ -32,6 +32,7 @@ namespace Repository.EntityFrameworkCore
         public virtual DbSet<RolePermissionDeclaration> RolePermissionDeclarations { get; set; }
         public virtual DbSet<OrganizationPermissionDeclaration> OrganizationPermissionDeclarations { get; set; }
         public virtual DbSet<RequestAuthorizationRule> RequestAuthorizationRules { get; set; }
+        public virtual DbSet<AuthorizationRule> AuthorizationRules { get; set; }
         public virtual DbSet<Menu> Menus { get; set; }
         public virtual DbSet<MenuItem> MenuItems { get; set; }
 

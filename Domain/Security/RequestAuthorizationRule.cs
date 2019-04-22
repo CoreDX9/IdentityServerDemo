@@ -23,10 +23,7 @@ namespace Domain.Security
         public virtual string UniqueKey { get; }
     }
 
-    /// <summary>
-    /// 请求授权规则
-    /// </summary>
-    public class RequestAuthorizationRule : DomainEntityBase<Guid, Guid>
+    public class RequestAuthorizationRule : DomainEntityBase
     {
         /// <summary>
         /// 处理方法签名
@@ -47,6 +44,16 @@ namespace Domain.Security
         /// </summary>
         public string IdentificationKey { get; set; }
 
+        public virtual Guid? AuthorizationRuleId { get; set; }
+
+        public virtual AuthorizationRule AuthorizationRule { get; set; }
+    }
+
+    /// <summary>
+    /// 请求授权规则
+    /// </summary>
+    public class AuthorizationRule : DomainEntityBase
+    {
         /// <summary>
         /// 授权规则配置JSON，反序列化为AuthorizationRuleGroup类型
         /// </summary>
@@ -54,6 +61,8 @@ namespace Domain.Security
 
         private AuthorizationRuleGroup _authorizationRuleConfig;
         public AuthorizationRuleGroup AuthorizationRuleConfig => _authorizationRuleConfig ?? (_authorizationRuleConfig = JsonConvert.DeserializeObject<AuthorizationRuleGroup>(AuthorizationRuleConfigJson));
+
+        public virtual List<RequestAuthorizationRule> RequestAuthorizationRules { get; set; } = new List<RequestAuthorizationRule>();
 
         /// <summary>
         /// 授权规则组
@@ -72,7 +81,7 @@ namespace Domain.Security
             /// <summary>
             /// 规则集合
             /// </summary>
-            public List<AuthorizationRule> Rules { get; set; }
+            public List<Rule> Rules { get; set; }
             /// <summary>
             /// 内部分组集合
             /// </summary>
@@ -81,7 +90,7 @@ namespace Domain.Security
         /// <summary>
         /// 授权规则
         /// </summary>
-        public class AuthorizationRule
+        public class Rule
         {
             /// <summary>
             /// 权限来源
@@ -127,30 +136,5 @@ namespace Domain.Security
             public List<PermissionOrigin> Origins { get; set; }
 
         }
-
-        //public virtual List<RequestHandlerPermissionDeclaration> PermissionDeclarations { get; set; } = new List<RequestHandlerPermissionDeclaration>();
     }
-
-    //todo:回头看要不要删掉
-    //public class RequestHandlerPermissionDeclarationRole : DomainEntityBase<Guid, Guid>
-    //{
-    //    public Guid? RoleId { get; set; }
-
-    //    public virtual ApplicationRole Role { get; set; }
-
-    //    public Guid? PermissionDeclarationId { get; set; }
-
-    //    public virtual RequestHandlerPermissionDeclaration PermissionDeclaration { get; set; }
-    //}
-
-    //public class RequestHandlerPermissionDeclarationOrganization : DomainEntityBase<Guid, Guid>
-    //{
-    //    public Guid? OrganizationId { get; set; }
-
-    //    public virtual Organization Organization { get; set; }
-
-    //    public Guid? PermissionDeclarationId { get; set; }
-
-    //    public virtual RequestHandlerPermissionDeclaration PermissionDeclaration { get; set; }
-    //}
 }

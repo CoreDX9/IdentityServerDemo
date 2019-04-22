@@ -10,7 +10,7 @@ using Repository.EntityFrameworkCore;
 namespace DbMigration.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190411032325_InitialApplicationDbMigration")]
+    [Migration("20190422074954_InitialApplicationDbMigration")]
     partial class InitialApplicationDbMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -761,6 +761,54 @@ namespace DbMigration.Application
                     b.HasAnnotation("DbDescription", "示例树形实体");
                 });
 
+            modelBuilder.Entity("Domain.Security.AuthorizationRule", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("AuthorizationRuleConfigJson");
+
+                    b.Property<DateTimeOffset>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("sysDateTimeOffset()");
+
+                    b.Property<string>("CreationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'False'");
+
+                    b.Property<bool?>("IsEnable")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'True'");
+
+                    b.Property<DateTimeOffset>("LastModificationTime");
+
+                    b.Property<string>("LastModificationUserId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
+
+                    b.Property<long>("OrderNumber")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Remark");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreationUserId");
+
+                    b.HasIndex("LastModificationUserId");
+
+                    b.ToTable("AuthorizationRules");
+                });
+
             modelBuilder.Entity("Domain.Security.OrganizationPermissionDeclaration", b =>
                 {
                     b.Property<string>("Id")
@@ -877,7 +925,8 @@ namespace DbMigration.Application
                         .ValueGeneratedOnAdd()
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<string>("AuthorizationRuleConfigJson");
+                    b.Property<string>("AuthorizationRuleId")
+                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .ValueGeneratedOnAdd()
@@ -917,6 +966,8 @@ namespace DbMigration.Application
                     b.Property<string>("TypeFullName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorizationRuleId");
 
                     b.HasIndex("CreationUserId");
 
@@ -1329,6 +1380,17 @@ namespace DbMigration.Application
                         .HasForeignKey("ParentId");
                 });
 
+            modelBuilder.Entity("Domain.Security.AuthorizationRule", b =>
+                {
+                    b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
+                        .WithMany()
+                        .HasForeignKey("CreationUserId");
+
+                    b.HasOne("Domain.Identity.ApplicationUser", "LastModificationUser")
+                        .WithMany()
+                        .HasForeignKey("LastModificationUserId");
+                });
+
             modelBuilder.Entity("Domain.Security.OrganizationPermissionDeclaration", b =>
                 {
                     b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
@@ -1361,6 +1423,10 @@ namespace DbMigration.Application
 
             modelBuilder.Entity("Domain.Security.RequestAuthorizationRule", b =>
                 {
+                    b.HasOne("Domain.Security.AuthorizationRule", "AuthorizationRule")
+                        .WithMany("RequestAuthorizationRules")
+                        .HasForeignKey("AuthorizationRuleId");
+
                     b.HasOne("Domain.Identity.ApplicationUser", "CreationUser")
                         .WithMany()
                         .HasForeignKey("CreationUserId");

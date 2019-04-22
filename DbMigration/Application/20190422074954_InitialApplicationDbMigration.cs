@@ -184,6 +184,40 @@ namespace DbMigration.Application
                 });
 
             migrationBuilder.CreateTable(
+                name: "AuthorizationRules",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    OrderNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
+                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
+                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
+                    CreationUserId = table.Column<string>(nullable: true),
+                    LastModificationUserId = table.Column<string>(nullable: true),
+                    AuthorizationRuleConfigJson = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthorizationRules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuthorizationRules_AppUsers_CreationUserId",
+                        column: x => x.CreationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AuthorizationRules_AppUsers_LastModificationUserId",
+                        column: x => x.LastModificationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Domains",
                 columns: table => new
                 {
@@ -333,43 +367,6 @@ namespace DbMigration.Application
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PermissionDefinitions_AppUsers_LastModificationUserId",
-                        column: x => x.LastModificationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RequestAuthorizationRules",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Remark = table.Column<string>(nullable: true),
-                    OrderNumber = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
-                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
-                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
-                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
-                    CreationUserId = table.Column<string>(nullable: true),
-                    LastModificationUserId = table.Column<string>(nullable: true),
-                    HandlerMethodSignature = table.Column<string>(nullable: true),
-                    TypeFullName = table.Column<string>(nullable: true),
-                    IdentificationKey = table.Column<string>(nullable: true),
-                    AuthorizationRuleConfigJson = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestAuthorizationRules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RequestAuthorizationRules_AppUsers_CreationUserId",
-                        column: x => x.CreationUserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RequestAuthorizationRules_AppUsers_LastModificationUserId",
                         column: x => x.LastModificationUserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
@@ -542,6 +539,49 @@ namespace DbMigration.Application
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestAuthorizationRules",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
+                    OrderNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    IsEnable = table.Column<bool>(nullable: false, defaultValueSql: "'True'"),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValueSql: "'False'"),
+                    CreationTime = table.Column<DateTimeOffset>(nullable: false, defaultValueSql: "sysDateTimeOffset()"),
+                    LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
+                    CreationUserId = table.Column<string>(nullable: true),
+                    LastModificationUserId = table.Column<string>(nullable: true),
+                    HandlerMethodSignature = table.Column<string>(nullable: true),
+                    TypeFullName = table.Column<string>(nullable: true),
+                    IdentificationKey = table.Column<string>(nullable: true),
+                    AuthorizationRuleId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestAuthorizationRules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestAuthorizationRules_AuthorizationRules_AuthorizationRuleId",
+                        column: x => x.AuthorizationRuleId,
+                        principalTable: "AuthorizationRules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RequestAuthorizationRules_AppUsers_CreationUserId",
+                        column: x => x.CreationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RequestAuthorizationRules_AppUsers_LastModificationUserId",
+                        column: x => x.LastModificationUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -938,6 +978,16 @@ namespace DbMigration.Application
                 column: "LastModificationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuthorizationRules_CreationUserId",
+                table: "AuthorizationRules",
+                column: "CreationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuthorizationRules_LastModificationUserId",
+                table: "AuthorizationRules",
+                column: "LastModificationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Domains_CreationUserId",
                 table: "Domains",
                 column: "CreationUserId");
@@ -1021,6 +1071,11 @@ namespace DbMigration.Application
                 name: "IX_PermissionDefinitions_LastModificationUserId",
                 table: "PermissionDefinitions",
                 column: "LastModificationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestAuthorizationRules_AuthorizationRuleId",
+                table: "RequestAuthorizationRules",
+                column: "AuthorizationRuleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RequestAuthorizationRules_CreationUserId",
@@ -1165,6 +1220,9 @@ namespace DbMigration.Application
 
             migrationBuilder.DropTable(
                 name: "Organizations");
+
+            migrationBuilder.DropTable(
+                name: "AuthorizationRules");
 
             migrationBuilder.DropTable(
                 name: "AppRoles");

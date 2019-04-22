@@ -82,7 +82,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] RequestAuthorizationRule requestAuthorizationRule)
+        public async Task<IActionResult> Create([Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
         {
             if (ModelState.IsValid)
             {
@@ -115,7 +115,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] RequestAuthorizationRule requestAuthorizationRule)
+        public async Task<IActionResult> Edit(Guid id, [Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
         {
             if (id != requestAuthorizationRule.Id)
             {

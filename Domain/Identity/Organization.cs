@@ -6,7 +6,7 @@ using Domain.Security;
 
 namespace Domain.Identity
 {
-    public class Organization : DomainTreeEntityBase<Guid, Organization, Guid>
+    public class Organization : DomainTreeEntityBase<Organization>
     {
         /// <summary>
         /// 需要使用.Include(o => o.UserOrganizations).ThenInclude(uo => uo.User)预加载或启用延迟加载

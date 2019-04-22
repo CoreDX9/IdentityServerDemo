@@ -10,6 +10,13 @@ using Entity;
 
 namespace Domain
 {
+    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid>{
+        public DomainEntityBase()
+        {
+            Id = Guid.NewGuid();
+        }
+    }
+
     public class DomainEntityBase<TKey, TIdentityUserKey> : IDomainEntity<TIdentityUserKey>,
         INotifyPropertyChanged, IPropertyChangeTrackable
         where TKey : struct, IEquatable<TKey>
@@ -49,7 +56,7 @@ namespace Domain
         private readonly BitArray _propertyChangeMask;
 
         /// <summary>
-        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase&lt;TKey, TIdentityUserKey&gt;" />的类在实例化时都会自动注册）
+        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase" />的类在实例化时都会自动注册）
         /// </summary>
         public static PropertyChangedEventHandler PublicPropertyChangedEventHandler { get; set; }
 

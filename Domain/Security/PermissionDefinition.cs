@@ -15,7 +15,7 @@ namespace Domain.Security
     /// <summary>
     /// 权限定义
     /// </summary>
-    public class PermissionDefinition : DomainEntityBase<Guid, Guid>
+    public class PermissionDefinition : DomainEntityBase
     {
         /// <summary>
         /// 名称

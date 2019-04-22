@@ -1,7 +1,7 @@
 ﻿@using Domain.Security
 @using IdentityServer.CustomServices
 @using Newtonsoft.Json
-@model Domain.Security.RequestAuthorizationRule
+@model Domain.Security.AuthorizationRule
 @inject IRequestHandlerInfo RequestHandlerInfo
 @{
     ViewData["Title"] = "Create";
@@ -53,24 +53,24 @@
         <p>
             @{
                 //授权规则组（内部可以有子分组）
-                var j = new RequestAuthorizationRule.AuthorizationRuleGroup()
+                var j = new AuthorizationRule.AuthorizationRuleGroup()
                 {
                     //该分组内任意规则或子分组匹配成功即视为该分组匹配成功
-                    GroupOperate = RequestAuthorizationRule.AuthorizationRuleGroup.Operate.Any,
+                    GroupOperate = AuthorizationRule.AuthorizationRuleGroup.Operate.Any,
                     //规则列表
-                    Rules = new List<RequestAuthorizationRule.AuthorizationRule>()
+                    Rules = new List<AuthorizationRule.Rule>()
                     {
                         //规则1
-                        new RequestAuthorizationRule.AuthorizationRule()
+                        new AuthorizationRule.Rule()
                         {
                             //用户获得的权限的有效来源列表
-                            Origins = new List<RequestAuthorizationRule.AuthorizationRule.PermissionOrigin>()
+                            Origins = new List<AuthorizationRule.Rule.PermissionOrigin>()
                             {
                                 //权限来源1
-                                new RequestAuthorizationRule.AuthorizationRule.PermissionOrigin()
+                                new AuthorizationRule.Rule.PermissionOrigin()
                                 {
                                     //从用户所在角色获得权限（有角色列表的话表示用户只有从指定角色获得该权限才有效）
-                                    Type = RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role
+                                    Type = AuthorizationRule.Rule.PermissionOrigin.PermissionOriginType.Role
                                 }
                             },
                             //授权成功所需的权限Id
