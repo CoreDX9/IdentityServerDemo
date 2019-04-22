@@ -26,7 +26,7 @@ namespace IdentityServer.Extensions
             if (context.Filters.Any(f => f is AllowAnonymousFilter)) return;
 
             //否则没有用户名表示没有登录，返回登陆跳转
-            if (context.HttpContext?.User?.Identity?.Name == null)
+            if (context.HttpContext.User?.Identity?.Name.IsNullOrEmpty() == true)
             {
                 context.Result = new ChallengeResult();
                 await Task.CompletedTask;
@@ -56,7 +56,7 @@ namespace IdentityServer.Extensions
 
                 if (rule != null)
                 {
-                    var isValid = Validate(rule, dbContext, Guid.Parse(context.HttpContext.User.GetSubjectId()));
+                    var isValid = Validate(rule, dbContext, context.HttpContext.User?.Identity?.Name.IsNullOrEmpty() == true ? (Guid?)null : Guid.Parse(context.HttpContext.User.GetSubjectId()));
 
                     if (isValid)
                     {
@@ -73,7 +73,7 @@ namespace IdentityServer.Extensions
         }
 
         private bool Validate(RequestAuthorizationRule.AuthorizationRuleGroup ruleGroup,
-            ApplicationDbContext db, Guid userId)
+            ApplicationDbContext db, Guid? userId)
         {
             //循环验证组中的每一条规则
             foreach (var rule in ruleGroup.Rules)
@@ -108,7 +108,22 @@ namespace IdentityServer.Extensions
                     ApplicationUser user;
                     switch (origin.Type)
                     {
+                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Anonymous:
+                            originRuleTrue = true;
+                            break;
+                        case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Authentication:
+                            if (userId == null)
+                            {
+                                break;
+                            }
+                            originRuleTrue = true;
+                            break;
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.User:
+                            if (userId == null)
+                            {
+                                break;
+                            }
+
                             var upd = db.UserPermissionDeclarations.AsNoTracking().SingleOrDefault(o =>
                                 o.PermissionDefinitionId == rule.PermissionDefinitionId && o.UserId == userId);
 
@@ -137,6 +152,11 @@ namespace IdentityServer.Extensions
 
                             break;
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType.Role:
+                            if (userId == null)
+                            {
+                                break;
+                            }
+
                             user = db.Users.AsNoTracking()
                                 .Include(u => u.UserRoles)
                                 .ThenInclude(ur => ur.Role)
@@ -210,6 +230,11 @@ namespace IdentityServer.Extensions
                             break;
                         case RequestAuthorizationRule.AuthorizationRule.PermissionOrigin.PermissionOriginType
                             .Organization:
+                            if (userId == null)
+                            {
+                                break;
+                            }
+
                             user = db.Users.AsNoTracking()
                                 .Include(u => u.UserOrganizations)
                                 .ThenInclude(uo => uo.Organization)

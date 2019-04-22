@@ -172,6 +172,15 @@
     }
   },
   {
+    "outputFileName": "wwwroot/lib/qs/qs.js",
+    "inputFiles": [
+      "node_modules/qs/dist/qs.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
     "outputFileName": "wwwroot/lib/element-ui/index.js",
     "inputFiles": [
       "node_modules/element-ui/lib/index.js"

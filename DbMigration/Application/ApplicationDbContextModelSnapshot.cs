@@ -551,8 +551,6 @@ namespace DbMigration.Application
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<string>("Index");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("'False'");
@@ -607,8 +605,6 @@ namespace DbMigration.Application
 
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
-
-                    b.Property<string>("Index");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()

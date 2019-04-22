@@ -8,6 +8,7 @@ using Domain.Identity;
 using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using IdentityServer.CustomMiddlewares;
 using IdentityServer.CustomServices;
 using IdentityServer.Extensions;
 using IdentityServer.Hubs;
@@ -43,6 +44,7 @@ namespace IdentityServer
     {
         public IConfiguration Configuration { get; }
         public IHostingEnvironment Environment { get; }
+        public IServiceCollection Services { get; set; }
 
         public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
@@ -54,6 +56,7 @@ namespace IdentityServer
         // 异步控制器动作或Razor页面动作返回void可能导致从DI容器获取的efcore或者其他对象被释放，返回Task可以避免这个问题
         public void ConfigureServices(IServiceCollection services)
         {
+            Services = services;
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -429,6 +432,9 @@ namespace IdentityServer
                         .AllowAnyHeader();
                 }));
 
+            //注入反CSRF服务并配置请求头名称
+            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+
             //注入CSP（内容安全策略）服务
             services.AddCsp();
 
@@ -452,11 +458,31 @@ namespace IdentityServer
             {
                 services.AddDirectoryBrowser();
             }
+
+            //注入（工厂方式激活的）自定义中间件服务
+            services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            if (env.IsDevelopment())
+            {
+                app.Map("/allservices", builder => builder.Run(async context =>
+                {
+                    context.Response.ContentType = "text/html; charset=utf-8";
+                    await context.Response.WriteAsync($"<h1>所有服务{Services.Count}个</h1><table><thead><tr><th>类型</th><th>生命周期</th><th>Instance</th></tr></thead><tbody>");
+                    foreach (var svc in Services)
+                    {
+                        await context.Response.WriteAsync("<tr>");
+                        await context.Response.WriteAsync($"<td>{svc.ServiceType.FullName}</td>");
+                        await context.Response.WriteAsync($"<td>{svc.Lifetime}</td>");
+                        await context.Response.WriteAsync($"<td>{svc.ImplementationType?.FullName}</td>");
+                        await context.Response.WriteAsync("</tr>");
+                    }
+                    await context.Response.WriteAsync("</tbody></table>");
+                }));
+            }
             //添加文件日志
             loggerFactory.AddFile(Configuration.GetSection("FileLogging"));
 
@@ -687,6 +713,9 @@ namespace IdentityServer
             {
                 routes.MapHub<ChatHub>("/chatHub");
             });
+
+            //注册自定义中间件到管道
+            app.UseAntiforgeryTokenGenerateMiddleware();
 
             //注册MVC到管道
             app.UseMvc(routes =>

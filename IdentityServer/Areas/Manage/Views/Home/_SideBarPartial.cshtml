@@ -13,21 +13,24 @@
             <img v-if="item.icon && item.icon.type == 'img'" :src="item.icon.value" style="width: 24px" />
             <span slot="title">{{item.title}}</span>
         </el-menu-item>
-        <el-menu-item-group v-for="group in menu.groups">
+        <el-menu-item-group v-for="group in menu.groups"
+                            :key="group.title">
             <template slot="title">
                 <i v-if="group.icon && group.icon.type == 'css'" :class="group.icon.value"></i>
                 <img v-if="group.icon && group.icon.type == 'img'" :src="group.icon.value" style="width: 24px" />
                 <span slot="title">{{group.title}}</span>
             </template>
             <el-menu-item v-for="gItem in group.items"
-                          :index="gItem.index">
+                          :index="gItem.index"
+                          :key="gItem.index">
                 <i v-if="gItem.icon && gItem.icon.type == 'css'" :class="gItem.icon.value"></i>
                 <img v-if="gItem.icon && gItem.icon.type == 'img'" :src="gItem.icon.value" style="width: 24px" />
                 <span slot="title">{{gItem.title}}</span>
             </el-menu-item>
         </el-menu-item-group>
         <sub-side-bar v-for="subMenu in menu.children"
-                      :menu="subMenu"></sub-side-bar>
+                      :menu="subMenu"
+                      :key="subMenu.index"></sub-side-bar>
     </el-menu>
 </template>
 
@@ -84,7 +87,8 @@
             <img v-if="item.icon && item.icon.type == 'img'" :src="item.icon.value" style="width: 24px" />
             <span slot="title">{{item.title}}</span>
         </el-menu-item>
-        <el-menu-item-group v-for="group in menu.groups">
+        <el-menu-item-group v-for="group in menu.groups"
+                            :key="group.title">
             <template slot="title">
                 <i v-if="group.icon && group.icon.type == 'css'" :class="group.icon.value"></i>
                 <img v-if="group.icon && group.icon.type == 'img'" :src="group.icon.value" style="width: 24px" />
@@ -99,7 +103,8 @@
             </el-menu-item>
         </el-menu-item-group>
         <sub-side-bar v-for="subMenu in menu.children"
-                      :menu="subMenu"></sub-side-bar>
+                      :menu="subMenu"
+                      :key="subMenu.index"></sub-side-bar>
     </el-submenu>
 </template>
 

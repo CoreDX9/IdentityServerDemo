@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-
+//菜单类在输出到菜单视图前要转化成视图专用结构，去除多余数据，编辑中才用完整数据
 namespace Domain.Management
 {
     [Owned]
@@ -14,7 +14,6 @@ namespace Domain.Management
 
     public class MenuItem : DomainEntityBase<Guid, Guid>
     {
-        public string Index { get; set; }
         public Icon Icon { get; set; }
         public string Title { get; set; }
         public string Link { get; set; }
@@ -33,12 +32,11 @@ namespace Domain.Management
 
     public class Menu : DomainTreeEntityBase<Guid, Menu, Guid>
     {
-        public string Index { get; set; }
         public Icon Icon { get; set; }
         public string Title { get; set; }
         public short Order { get; set; }
 
-        public virtual List<MenuItem> Items { get; set; }
+        public virtual List<MenuItem> Items { get; set; } = new List<MenuItem>();
         //public List<Group> Groups { get; set; }
     }
 }

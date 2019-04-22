@@ -153,95 +153,7 @@
                 return {
                     activeTab: '',
                     activeMenuItem: null,
-                    menu: {
-                        items: [
-                            {
-                                index: 'main',
-                                icon: {
-                                    type: 'css', //css：class名；img：src属性值
-                                    value: 'el-icon-setting'
-                                },
-                                title: '主页',
-                                link: '/'
-                            }
-                        ],
-                        groups: [],
-                        children: [
-                            {
-                                index: 'sys',
-                                icon: {
-                                    type: 'css',
-                                    value: 'el-icon-location'
-                                },
-                                title: '系统管理',
-                                items: [
-                                    {
-                                        index: 'sys-trans',
-                                        icon: null,
-                                        title: '本地化翻译管理',
-                                        link: '/Manage/Localization'
-                                    }
-                                ],
-                                children: [
-                                    {
-                                        index: 'sys-acc',
-                                        icon: null,
-                                        title: '账户系统',
-                                        items: [
-                                            {
-                                                index: 'sys-acc-user',
-                                                icon: null,
-                                                title: '用户管理',
-                                                link: '/Manage/Users'
-                                            }, {
-                                                index: 'sys-acc-role',
-                                                icon: null,
-                                                title: '角色管理',
-                                                link: '/'
-                                            }, {
-                                                index: 'sys-acc-org',
-                                                icon: null,
-                                                title: '组织管理',
-                                                link: '/Manage/Organizations'
-                                            }
-                                        ]
-                                    }, {
-                                        index: 'sys-perm',
-                                        icon: null,
-                                        title: '权限系统',
-                                        items: [
-                                            {
-                                                index: 'sys-perm-def',
-                                                icon: null,
-                                                title: '权限定义管理',
-                                                link: '/Manage/PermissionDefinition'
-                                            }, {
-                                                index: 'sys-auth-rule',
-                                                icon: null,
-                                                title: '授权规则管理',
-                                                link: '/Manage/RequestAuthorizationRules'
-                                            }, {
-                                                index: 'sys-perm-dec-user',
-                                                icon: null,
-                                                title: '用户权限管理',
-                                                link: '/Manage/UserPermissionDeclaration'
-                                            }, {
-                                                index: 'sys-perm-dec-role',
-                                                icon: null,
-                                                title: '角色权限管理',
-                                                link: '/Manage/RolePermissionDeclaration'
-                                            }, {
-                                                index: 'sys-perm-dec-org',
-                                                icon: null,
-                                                title: '组织权限管理',
-                                                link: '/Manage/OrganizationPermissionDeclaration'
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
+                    menu:@Html.Raw(ViewBag.Menu),
                     manageTabs: []
                 };
             },
@@ -277,7 +189,7 @@
             },
             methods: {
                 refreshTab: function(refArr, item) {
-                    var tab = refArr.single(function (ref) { return ref.name === item.index });
+                    var tab = refArr.asEnumerable().single(function (ref) { return ref.name === item.index });
                     tab.$el.children[0].contentWindow.location.reload(true);
                 },
                 onMenuSelect: function(index, indexPath) {
@@ -291,7 +203,7 @@
                         }
                     }
 
-                    var menuItem = menuLinks.single(function(item) {
+                    var menuItem = menuLinks.asEnumerable().single(function(item) {
                         return item.index === index;
                     });
 

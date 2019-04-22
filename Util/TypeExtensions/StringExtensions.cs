@@ -48,7 +48,7 @@ namespace Util.TypeExtensions
 
             byte[] bytes = new byte[str.Length / 2];
 
-            for (int i = 0; i < str.Length / 2; i += 2)
+            for (int i = 0; i < str.Length; i += 2)
             {
                 bytes[i / 2] = Byte.Parse(str.Substring(i,2), NumberStyles.HexNumber);
             }

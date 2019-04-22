@@ -1,0 +1,180 @@
+﻿@(Layout = null)
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    
+    <partial name="_ElementUiStylesPartial" />
+    <partial name="_AvueStylesPartial" />
+    <partial name="_AnimateCssStylesPartial" />
+    <partial name="_SiteStylesPartial" />
+    
+    <style>
+        .avue-tree .el-input-group__append {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="vue-app">
+        <el-container>
+            <el-main>
+                <el-row>
+                    <el-col :span="8">
+                        <avue-tree :option="menu.option"
+                                   :data="menu.data"
+                                   @@node-click="nodeClick"
+                                   @@update="update"
+                                   @@save="save"
+                                   @@del="del"
+                                   v-model="menu.form">
+                        </avue-tree>
+                    </el-col>
+                    <el-col :span="16">
+                        <avue-crud :data="menuItems.data"
+                                   :option="menuItems.option"
+                                   v-model="menuItems.form"
+                                   @@row-save="onAddMenuItem"
+                                   @@row-update="onUpdateMenuItem">
+                            <template slot-scope="scope" slot="linkForm">
+                                <el-select v-model="menuItems.form.link" placeholder="请选择">
+                                    <el-option-group v-for="group in links"
+                                                     :key="group.key"
+                                                     :label="group.key">
+                                        <el-option v-for="item in group.links"
+                                                   :key="item"
+                                                   :label="item"
+                                                   :value="item">
+                                        </el-option>
+                                    </el-option-group>
+                                </el-select>
+                            </template>
+                        </avue-crud>
+                    </el-col>
+                </el-row>
+            </el-main>
+        </el-container>
+    </div>
+
+    <partial name="_LinqJsScriptsPartial" />
+    <partial name="_JQueryScriptsPartial" />
+    <partial name="_VueSubmitFormHelperWithAxiosAndQsScriptsPartial" />
+    <partial name="_ElementUiScriptsPartial" />
+    <partial name="_AvueScriptsPartial" />
+
+    <script>
+        var vueApp = new Vue({
+            el: '#vue-app',
+            created: function () {
+                var _this = this;
+
+                axios.get('/Manage/Menu/GetMenu')
+                    .then(function (response) {
+                        _this.menu.data.length = 0;
+                        _this.menu.data.push(response.data);
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+
+                axios.get('/Manage/Menu/GetLinks')
+                    .then(function (response) {
+                        _this.links = response.data;
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+            },
+            data: function () {
+                return {
+                    menu: {
+                        form: {},
+                        option: {
+                            nodeKey: 'id',
+                            props: {
+                                labelText: '标题',
+                                label: 'title',
+                                value: 'title',
+                                children: 'children'
+                            }
+                        },
+                        data: []
+                    },
+                    menuItems: {
+                        form: {},
+                        option: {
+                            title: '菜单项',
+                            page: false,
+                            align: 'center',
+                            menuAlign: 'center',
+                            column: [
+                                {
+                                    label: '标题',
+                                    prop: 'title',
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: "请输入标题",
+                                            trigger: "blur"
+                                        }
+                                    ]
+                                },
+                                {
+                                    label: '链接',
+                                    prop: 'link',
+                                    formsolt: true,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: "请选择链接",
+                                            trigger: "blur"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        data: []
+                    },
+                    links: []
+                };
+            },
+            methods: {
+                del(data, node, done) {
+                    this.$message.success('删除回调');
+                    done();
+                },
+                update(data, node, done) {
+                    this.$message.success('更新回调');
+                    done();
+                },
+                save(data, node, done) {
+                    this.$message.success('新增回调');
+                    this.form.id = new Date().getTime();
+                    this.form.value = new Date().getTime();
+                    this.form.children = [];
+                    done();
+                },
+                nodeClick(data) {
+                    this.menuItems.data = data.items;
+                },
+                onAddMenuItem: function (form, done) {
+                    done();
+                },
+                onUpdateMenuItem: function (form, index, done) {
+                    var data = this.menuItems.data;
+                    var submitFormHelper = this.$submitFormHelper;
+                    submitFormHelper.submitForm('/Manage/Menu/UpdateMenuItem', 'post', form)
+                        .then(function(response) {
+                            Vue.set(data, index, response.data);
+                            done();
+                        })
+                        .catch(function(error) {
+                            console.error(error);
+                        });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

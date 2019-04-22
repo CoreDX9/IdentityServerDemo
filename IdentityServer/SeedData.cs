@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using Domain.Identity;
+using Domain.Management;
 using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -85,6 +86,147 @@ namespace IdentityServer
                             throw;
                         }
                     }
+
+                    #region 初始化菜单数据
+
+                    {
+                        if (!context.Menus.Any())
+                        {
+                            Menu menu = new Menu
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "（根菜单）"
+                            };
+                            Menu menu2 = new Menu
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon {Type = "css", Value = "el-icon-setting"},
+                                Title = "系统管理"
+                            };
+                            Menu menu3 = new Menu
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "账户系统"
+                            };
+                            Menu menu4 = new Menu
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "权限系统"
+                            };
+                            menu.Children.Add(menu2);
+                            menu2.Children.Add(menu3);
+                            menu2.Children.Add(menu4);
+                            MenuItem i = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Title = "主页",
+                                Link = "/",
+                                Icon = new Icon {Type = "css", Value = "el-icon-setting"}
+                            };
+                            menu.Items.Add(i);
+                            MenuItem ii = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "本地化翻译管理",
+                                Link = "/Manage/Localization"
+                            };
+                            menu2.Items.Add(ii);
+                            MenuItem ii2 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Title = "菜单管理",
+                                Link = "/Manage/Menu",
+                                Icon = new Icon()
+                            };
+                            menu2.Items.Add(ii2);
+                            MenuItem i1 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "用户管理",
+                                Link = "/Manage/Users"
+                            };
+                            menu3.Items.Add(i1);
+                            MenuItem i2 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "角色管理",
+                                Link = "/"
+                            };
+                            menu3.Items.Add(i2);
+                            MenuItem i3 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "组织管理",
+                                Link = "/Manage/Organizations"
+                            };
+                            menu3.Items.Add(i3);
+                            MenuItem i4 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "权限定义管理",
+                                Link = "/Manage/PermissionDefinition"
+                            };
+                            menu4.Items.Add(i4);
+                            MenuItem i5 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "授权规则管理",
+                                Link = "/Manage/RequestAuthorizationRules"
+                            };
+                            menu4.Items.Add(i5);
+                            MenuItem i6 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "用户权限管理",
+                                Link = "/Manage/UserPermissionDeclaration"
+                            };
+                            menu4.Items.Add(i6);
+                            MenuItem i7 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "角色权限管理",
+                                Link = "/Manage/RolePermissionDeclaration"
+                            };
+                            menu4.Items.Add(i7);
+                            MenuItem i8 = new MenuItem
+                            {
+                                Id = Guid.NewGuid(),
+                                Icon = new Icon(),
+                                Title = "组织权限管理",
+                                Link = "/Manage/OrganizationPermissionDeclaration"
+                            };
+                            menu4.Items.Add(i8);
+
+                            context.Menus.Add(menu);
+                            var result = context.SaveChanges();
+
+                            if (result > 0)
+                            {
+                                Console.WriteLine("已创建初始菜单数据");
+                            }
+                            else
+                            {
+                                throw new Exception("创建初始菜单数据失败！");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("菜单数据已经存在");
+                        }
+                    }
+
+                    #endregion
 
                     var innKai = context.Organizations.AsNoTracking()
                         .SingleOrDefault(o => o.Name == "IdentityServerDemo委员会");

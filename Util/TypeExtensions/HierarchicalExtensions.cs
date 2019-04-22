@@ -507,5 +507,57 @@ namespace Util.TypeExtensions
                     throw new ArgumentOutOfRangeException(nameof(enumerateType), enumerateType, null);
             }
         }
+
+        /// <summary>
+        /// 设置节点的双亲和子节点引用
+        /// </summary>
+        /// <typeparam name="T">节点类型</typeparam>
+        /// <param name="root">根节点</param>
+        /// <param name="childrenSelector">子节点选择器</param>
+        /// <param name="clearChildrenBeforeSet">是否在设置子节点前清空子节点集合</param>
+        /// <param name="parentSetter">双亲节点设置器，第一个参数为待设置引用的节点，第二个参数为第一个参数的双亲节点</param>
+        /// <returns>原始根节点</returns>
+        public static T SetParentChildren<T>(this IHierarchical<T> root,
+            Func<T, ICollection<T>> childrenSelector, bool clearChildrenBeforeSet = false, Action<T, T> parentSetter = null)
+        {
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
+            foreach (var node in root.AsEnumerable())
+            {
+                parentSetter?.Invoke(node.Current, node.Parent != null ? node.Parent.Current : default(T));
+
+                var children = childrenSelector.Invoke(node.Current);
+                if (children == null) throw new InvalidOperationException("子节点集合为 null");
+
+                if(clearChildrenBeforeSet) children.Clear();
+
+                foreach (var child in node.Children)
+                {
+                    children.Add(child.Current);
+                }
+            }
+
+            return root.Current;
+        }
+
+        /// <summary>
+        /// 设置节点的双亲和子节点引用
+        /// </summary>
+        /// <typeparam name="T">节点类型</typeparam>
+        /// <param name="roots">根节点集合</param>
+        /// <param name="childrenSelector">子节点选择器</param>
+        /// <param name="clearChildrenBeforeSet">是否在设置子节点前清空子节点集合</param>
+        /// <param name="parentSetter">双亲节点设置器，第一个参数为待设置引用的节点，第二个参数为第一个参数的双亲节点</param>
+        /// <returns>原始根节点集合</returns>
+        public static IEnumerable<T> SetParentChildren<T>(this IEnumerable<IHierarchical<T>> roots,
+            Func<T, ICollection<T>> childrenSelector, bool clearChildrenBeforeSet = false, Action<T, T> parentSetter = null)
+        {
+            foreach (var root in roots)
+            {
+                root.SetParentChildren(childrenSelector, false, parentSetter);
+            }
+
+            return roots.Select(r => r.Current);
+        }
     }
 }

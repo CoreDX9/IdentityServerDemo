@@ -10,7 +10,7 @@ using Repository.EntityFrameworkCore;
 namespace DbMigration.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190404084912_InitialApplicationDbMigration")]
+    [Migration("20190411032325_InitialApplicationDbMigration")]
     partial class InitialApplicationDbMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -553,8 +553,6 @@ namespace DbMigration.Application
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
 
-                    b.Property<string>("Index");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("'False'");
@@ -609,8 +607,6 @@ namespace DbMigration.Application
 
                     b.Property<string>("CreationUserId")
                         .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 36)));
-
-                    b.Property<string>("Index");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()

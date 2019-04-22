@@ -95,14 +95,16 @@ namespace Domain.Security
                 {
                     User = 1,
                     Role = 2,
-                    Organization = 3
+                    Organization = 3,
+                    Anonymous = 200,
+                    Authentication = 201
                 }
                 /// <summary>
                 /// 来源类型
                 /// </summary>
                 public PermissionOriginType Type { get; set; }
                 /// <summary>
-                /// 值，用于指定权限来自指定的角色或组织，针对用户的无效，集合为空表不限制
+                /// 值，用于指定权限来自指定的角色或组织，针对用户、匿名、身份认证的无效，集合为空表不限制
                 /// 组织权限是收缩模型，下级组织不自动继承上级组织的权限，需要手动配置继承，且继承的权限不能超过上级组织
                 /// 设置后用户必须直接属于指定组织且指定组织直接拥有指定权限，为下级声明上级组织中没有的新权限是高度敏感操作
                 /// 角色权限是扩张模型，子角色会自动继承父角色的权限，除非重新声明相同权限覆盖继承的权限

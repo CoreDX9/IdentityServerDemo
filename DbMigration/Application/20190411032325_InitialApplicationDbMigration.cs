@@ -233,7 +233,6 @@ namespace DbMigration.Application
                     CreationUserId = table.Column<string>(nullable: true),
                     LastModificationUserId = table.Column<string>(nullable: true),
                     ParentId = table.Column<string>(nullable: true),
-                    Index = table.Column<string>(nullable: true),
                     Icon_Type = table.Column<string>(nullable: true),
                     Icon_Value = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
@@ -579,7 +578,6 @@ namespace DbMigration.Application
                     LastModificationTime = table.Column<DateTimeOffset>(nullable: false),
                     CreationUserId = table.Column<string>(nullable: true),
                     LastModificationUserId = table.Column<string>(nullable: true),
-                    Index = table.Column<string>(nullable: true),
                     Icon_Type = table.Column<string>(nullable: true),
                     Icon_Value = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
@@ -1118,7 +1116,7 @@ namespace DbMigration.Application
             migrationBuilder.DropTreeEntityView("AppRoles")
                 .DropTreeEntityView("TreeDomains")
                 .DropTreeEntityView("Organizations")
-                .DropTreeEntityView("Menus"); 
+                .DropTreeEntityView("Menus");
 
             migrationBuilder.DropTable(
                 name: "AppRoleClaims");

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Domain.Security;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,14 @@ namespace IdentityServer
     {
         public static void Main(string[] args)
         {
+            var mutex = new Mutex(true, "IdentityServerDemo",out var isUniqueInstanceOfApplication);
+            if (!isUniqueInstanceOfApplication)
+            {
+                Console.WriteLine("已经有一个服务实例正在运行。");
+                Console.WriteLine("按任意键退出……");
+                Console.ReadKey();
+                Environment.Exit(-2);
+            }
 #if !DEBUG
             //通过特殊手段运行应用可能导致工作目录与程序文件所在目录不一致，需要调整，否则配置文件和其他数据无法加载（仅限发布模式，调试模式修改工作目录也可能导致配置和其他数据无法加载）
             System.IO.Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
