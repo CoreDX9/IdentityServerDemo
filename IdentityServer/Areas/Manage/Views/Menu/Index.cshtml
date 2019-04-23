@@ -26,31 +26,68 @@
                     <el-col :span="8">
                         <avue-tree :option="menu.option"
                                    :data="menu.data"
-                                   @@node-click="nodeClick"
-                                   @@update="update"
-                                   @@save="save"
-                                   @@del="del"
+                                   @@node-click="onMenuNodeClick"
+                                   @@update="onUpdateMenu"
+                                   @@save="onAddMenu"
+                                   @@del="onDelMenu"
                                    v-model="menu.form">
                         </avue-tree>
                     </el-col>
                     <el-col :span="16">
-                        <avue-crud :data="menuItems.data"
+                        <avue-crud ref="menuItem"
+                                   :data="menuItems.pagedData"
                                    :option="menuItems.option"
                                    v-model="menuItems.form"
                                    @@row-save="onAddMenuItem"
-                                   @@row-update="onUpdateMenuItem">
+                                   @@row-update="onUpdateMenuItem"
+                                   @@row-del="onDelMenuItem"
+                                   :page="menuItems.page"
+                                   @@size-change="onMenuItemPageSizeChange"
+                                   @@current-change="onMenuItemPageCurrentChange">
+                            <template slot="menuLeft">
+                                <el-button type="primary"
+                                           size="small"
+                                           @@click="onMenuItemAddClick"
+                                           :disabled="!menuItems.selectedMenu">
+                                    <i class="el-icon-plus"></i><span>新 增</span>
+                                </el-button>
+                            </template>
+                            <template slot-scope="scope" slot="menu">
+                                <el-button type="primary"
+                                           size="small"
+                                           @@click="onMenuItemEditClick(scope.row, scope.index)">
+                                    <i class="el-icon-edit"></i><span>编 辑</span>
+                                </el-button>
+                                <el-button type="danger"
+                                           size="small"
+                                           @@click="onMenuItemDelClick(scope.row, scope.index)">
+                                    <i class="el-icon-delete"></i><span>删 除</span>
+                                </el-button>
+                            </template>
                             <template slot-scope="scope" slot="linkForm">
-                                <el-select v-model="menuItems.form.link" placeholder="请选择">
+                                <el-select v-loading="links.length === 0"
+                                           v-model="menuItems.form.link"
+                                           :disabled="menuItems.uneditable"
+                                           placeholder="请选择"
+                                           filterable>
                                     <el-option-group v-for="group in links"
                                                      :key="group.key"
                                                      :label="group.key">
-                                        <el-option v-for="item in group.links"
-                                                   :key="item"
+                                        <el-option v-for="(item, index) in group.links"
+                                                   :key="index"
                                                    :label="item"
                                                    :value="item">
                                         </el-option>
                                     </el-option-group>
                                 </el-select>
+                            </template>
+                            <template slot-scope="scope" slot="icon">
+                                <i v-if="scope.label && scope.label.type == 'css'" :class="scope.label.value"></i>
+                                <img v-if="scope.label && scope.label.type == 'img'" :src="scope.label.value" style="width: 24px"/>
+                            </template>
+                            <template slot-scope="scope" slot="iconForm">
+                                <el-input v-model="menuItems.form.icon.value"
+                                          :disabled="menuItems.uneditable"></el-input>
                             </template>
                         </avue-crud>
                     </el-col>
@@ -102,13 +139,24 @@
                         data: []
                     },
                     menuItems: {
+                        uneditable: false,
+                        selectedMenu: null,
                         form: {},
                         option: {
                             title: '菜单项',
                             page: false,
                             align: 'center',
                             menuAlign: 'center',
+                            addBtn: false,
+                            editBtn: false,
+                            delBtn:false,
                             column: [
+                                {
+                                    label: '菜单Id',
+                                    prop: 'menuId',
+                                    hide: true,
+                                    visdiplay: false
+                                },
                                 {
                                     label: '标题',
                                     prop: 'title',
@@ -131,47 +179,192 @@
                                             trigger: "blur"
                                         }
                                     ]
+                                },
+                                {
+                                    label: '图标',
+                                    prop: 'icon',
+                                    solt: true,
+                                    formsolt: true
+                                },
+                                {
+                                    label: '排序',
+                                    prop: 'order',
+                                    type:'number'
+                                },
+                                {
+                                    label: '备注',
+                                    prop: 'remark',
+                                    type: 'textarea',
+                                    span: 24
                                 }
                             ]
                         },
-                        data: []
+                        page: {
+                            //pageSizes: [10, 20, 30, 40],
+                            currentPage: 1,
+                            total: 0,
+                            pageSize: 10
+                        },
+                        data: [],
+                        pagedData:[]
                     },
                     links: []
                 };
             },
+            watch: {
+                'menuItems.data': {
+                    handler(newValue, oldValue) {
+                        this.menuItems.page.total = this.menuItems.data.length;
+                        this.onMenuItemPageCurrentChange(1);
+                    },
+                    deep: true,
+                    immediate: true
+                }
+            },
             methods: {
-                del(data, node, done) {
-                    this.$message.success('删除回调');
-                    done();
+                onMenuNodeClick: function (data) {
+                    this.menuItems.selectedMenu = data.id;
+                    this.menuItems.data = data.items;
                 },
-                update(data, node, done) {
-                    this.$message.success('更新回调');
-                    done();
-                },
-                save(data, node, done) {
+                onAddMenu: function (data, node, done) {
                     this.$message.success('新增回调');
                     this.form.id = new Date().getTime();
                     this.form.value = new Date().getTime();
                     this.form.children = [];
                     done();
                 },
-                nodeClick(data) {
-                    this.menuItems.data = data.items;
-                },
-                onAddMenuItem: function (form, done) {
+                onUpdateMenu: function (data, node, done) {
+                    this.$message.success('更新回调');
                     done();
                 },
+                onDelMenu: function (data, node, done) {
+                    this.$message.success('删除回调');
+                    done();
+                },
+                onMenuItemAddClick: function () {
+                    this.menuItems.uneditable = false;
+
+                    this.$refs.menuItem.rowAdd();
+                    this.menuItems.form.menuId = this.menuItems.selectedMenu;
+                    this.menuItems.form.icon = {
+                        type: 'css',
+                        value: ''
+                    };
+                },
+                onAddMenuItem: function (form, done) {
+                    this.menuItems.uneditable = true;
+
+                    var _this = this;
+                    var data = this.menuItems.data;
+                    var submitFormHelper = this.$submitFormHelper;
+                    submitFormHelper.submitForm('/Manage/Menu/AddMenuItem', 'post', form)
+                        .then(function(response) {
+                            data.push(response.data);
+                            done();
+                            _this.$notify({
+                                title: '成功',
+                                message: '增加成功',
+                                type: 'success'
+                            });
+                        })
+                        .catch(function(error) {
+                            done();
+                            _this.$notify.error({
+                                title: '失败',
+                                message: '增加失败'
+                            });
+                        });
+                },
+                onMenuItemEditClick: function (row, index) {
+                    this.menuItems.uneditable = false;
+
+                    this.$refs.menuItem.rowEdit(row, index);
+                },
                 onUpdateMenuItem: function (form, index, done) {
+                    this.menuItems.uneditable = true;
+
+                    var _this = this;
                     var data = this.menuItems.data;
                     var submitFormHelper = this.$submitFormHelper;
                     submitFormHelper.submitForm('/Manage/Menu/UpdateMenuItem', 'post', form)
                         .then(function(response) {
                             Vue.set(data, index, response.data);
                             done();
+                            _this.$notify({
+                                title: '成功',
+                                message: '编辑成功',
+                                type: 'success'
+                            });
                         })
-                        .catch(function(error) {
-                            console.error(error);
+                        .catch(function (error) {
+                            done();
+                            _this.$notify.error({
+                                title: '失败',
+                                message: '编辑失败'
+                            });
                         });
+                },
+                onMenuItemDelClick: function (handleDel) {
+                    this.$refs.menuItem.rowDel(handleDel);
+                },
+                onDelMenuItem: function (row, index) {
+                    var _this = this;
+                    var data = this.menuItems.data;
+                    var submitFormHelper = this.$submitFormHelper;
+                    this.$confirm('确定要删除这条记录吗?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        submitFormHelper.submitForm('/Manage/Menu/DelMenuItem', 'post', { id: row.id })
+                            .then(function (response) {
+                                if (response.data === true) {
+                                    data.splice(index, 1);
+                                    _this.$notify({
+                                        title: '成功',
+                                        message: '删除成功',
+                                        type: 'success'
+                                    });
+                                } else {
+                                    _this.$notify.error({
+                                        title: '失败',
+                                        message: '删除失败'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                _this.$notify.error({
+                                    title: '失败',
+                                    message: '删除失败'
+                                });
+                            });
+                        }).catch(() => {
+                        _this.$notify.info({
+                            title: '取消',
+                            message: '已取消删除'
+                        });         
+                    });
+                },
+                onMenuItemPageSizeChange(val) {
+                    this.menuItems.page.currentPage = 1;
+                    this.menuItems.page.pageSize = val;
+                    this.menuItems.page.total = this.menuItems.data.length;
+
+                    this.getPagedMenuItem();
+                },
+                onMenuItemPageCurrentChange(val) {
+                    this.menuItems.page.currentPage = val;
+
+                    this.getPagedMenuItem();
+                },
+                getPagedMenuItem() {
+                    var page = this.menuItems.page;
+                    this.menuItems.pagedData =
+                        this.menuItems.data
+                        .asEnumerable()
+                        .skip(page.pageSize * (page.currentPage - 1))
+                        .take(page.pageSize)
+                        .toArray();
                 }
             }
         });

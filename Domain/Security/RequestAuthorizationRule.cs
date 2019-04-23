@@ -54,6 +54,8 @@ namespace Domain.Security
     /// </summary>
     public class AuthorizationRule : DomainEntityBase
     {
+        public string Name { get; set; }
+
         /// <summary>
         /// 授权规则配置JSON，反序列化为AuthorizationRuleGroup类型
         /// </summary>
