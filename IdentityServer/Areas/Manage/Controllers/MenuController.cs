@@ -46,7 +46,13 @@ namespace IdentityServer.Areas.Manage.Controllers
             //使用以下方法可以在不调用.Include(m => m.Parent)生成复杂sql的情况下在内存中设置导航属性
             var menuRoot = menus.Single(m => m.ParentId == null);
             menuRoot = menuRoot.AsHierarchical(m => menus.Where(sm => sm.ParentId == m.Id))
-                .SetParentChildren(n => n.Children);
+                .SetParentChildren(
+                    n => n.Children
+                    , parentSetter: (m, mp) =>
+                    {
+                        m.Parent = mp;
+                        m.ParentId = mp?.Id;
+                    });
             return Json(menuRoot, new JsonSerializerSettings(){ReferenceLoopHandling = ReferenceLoopHandling.Ignore, ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
         }
 
