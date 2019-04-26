@@ -56,6 +56,7 @@ namespace IdentityServer.Areas.Manage.Controllers
             return View();
         }
 
+        [HttpPost, IgnoreAntiforgeryToken]
         public JsonResult GetAntiXsrfRequestToken()
         {
             var token = _antiforgery.GetAndStoreTokens(HttpContext);

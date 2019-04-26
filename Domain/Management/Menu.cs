@@ -14,7 +14,7 @@ namespace Domain.Management
 
     public class MenuItem : DomainEntityBase
     {
-        public Icon Icon { get; set; }
+        public Icon Icon { get; set; } = new Icon();
         public string Title { get; set; }
         public string Link { get; set; }
         public short Order { get; set; }
@@ -32,7 +32,7 @@ namespace Domain.Management
 
     public class Menu : DomainTreeEntityBase<Menu>
     {
-        public Icon Icon { get; set; }
+        public Icon Icon { get; set; } = new Icon();
         public string Title { get; set; }
         public short Order { get; set; }
 

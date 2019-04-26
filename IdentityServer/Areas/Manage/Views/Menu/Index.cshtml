@@ -54,13 +54,23 @@
                                     <el-container>
                                         <el-main>
                                             <el-row>
-                                                <el-col :span="12">
+                                                <el-col :span="8">
                                                     <span>标题：</span>
                                                     <el-tag type="info">
                                                         {{menuItems.selectedMenu.title}}
                                                     </el-tag>
                                                 </el-col>
-                                                <el-col :span="12">
+                                                <el-col :span="8">
+                                                    <template v-if="menuItems.selectedMenu.icon && menuItems.selectedMenu.icon.type && menuItems.selectedMenu.icon.type.length > 0">
+                                                        <span>图标：</span>
+                                                        <el-tag type="info">
+                                                            <i v-if="menuItems.selectedMenu.icon.type == 'css'" :class="menuItems.selectedMenu.icon.value"></i>
+                                                            <img v-if="menuItems.selectedMenu.icon.type == 'img'" :src="menuItems.selectedMenu.icon.value" style="width: 24px"/>
+                                                        </el-tag>
+                                                    </template>
+                                                    <p v-else> </p>
+                                                </el-col>
+                                                <el-col :span="8">
                                                     <span>排序：</span>
                                                     <el-tag type="info">
                                                         {{menuItems.selectedMenu.order}}
@@ -326,7 +336,7 @@
                     var _this = this;
 
                     var submitFormHelper = this.$submitFormHelper;
-                    submitFormHelper.submitForm('/Manage/Menu/AddMenu', 'post', this.menu.form)
+                    submitFormHelper.submitForm('/Manage/Menu/CreateMenu', 'post', this.menu.form)
                         .then(function (response) {
                             response.data.is_show = false;
                             data.children.push(response.data);
@@ -354,12 +364,7 @@
                     submitFormHelper.submitForm('/Manage/Menu/UpdateMenu', 'post', this.menu.form)
                         .then(function (response) {
                             response.data.is_show = false;
-                            for (var i = 0; i < data.children.length; i++) {
-                                if (data.children[i].id === response.data.id) {
-                                    data.children.splice(i, 1, response.data);
-                                    break;
-                                }
-                            }
+                            node.data = response.data;
                             _this.$refs.menu.hide();
                             _this.$notify({
                                 title: '成功',
@@ -381,7 +386,7 @@
                 onDelMenu: function (data, node, done) {
                     var _this = this;
                     var submitFormHelper = this.$submitFormHelper;
-                    submitFormHelper.submitForm('/Manage/Menu/DelMenu', 'post', { id: this.menu.form.id})
+                    submitFormHelper.submitForm('/Manage/Menu/DeleteMenu', 'post', { id: this.menu.form.id})
                         .then(function (response) {
                             if (response.data === true) {
                                 for (var i = 0; i < data.children.length; i++) {
@@ -425,7 +430,7 @@
                     var _this = this;
                     var data = this.menuItems.data;
                     var submitFormHelper = this.$submitFormHelper;
-                    submitFormHelper.submitForm('/Manage/Menu/AddMenuItem', 'post', form)
+                    submitFormHelper.submitForm('/Manage/Menu/CreateMenuItem', 'post', form)
                         .then(function(response) {
                             data.push(response.data);
                             done();
@@ -484,7 +489,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        submitFormHelper.submitForm('/Manage/Menu/DelMenuItem', 'post', { id: row.id })
+                        submitFormHelper.submitForm('/Manage/Menu/DeleteMenuItem', 'post', { id: row.id })
                             .then(function (response) {
                                 if (response.data === true) {
                                     data.splice(index, 1);
@@ -551,13 +556,6 @@
                     }
 
                     return menus;
-                },
-                removeChild: function(node) {
-                    for (var i = 0; i < node.children.length; i++) {
-                        if (node.children[i].id === '') {
-                            node.children.splice(i, 1);
-                        }
-                    }
                 }
             }
         });

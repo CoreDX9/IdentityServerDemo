@@ -17,11 +17,11 @@ namespace IdentityServer.CustomMiddlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context.Request.Headers["X-REQUEST-CSRF-TOKEN"].FirstOrDefault()?.Equals("true") == true)
+            if (context.Request.Headers["X-REQUEST-CSRF-TOKEN"].FirstOrDefault()?.Equals("true") == true && await antiforgery.IsRequestValidAsync(context))
             {
-                var token = antiforgery.GetAndStoreTokens(context);
-                context.Response.Headers.Add("X-RESPONSE-CSRF-TOKEN-NAME", token.HeaderName);
-                context.Response.Headers.Add("X-RESPONSE-CSRF-TOKEN-VALUE", token.RequestToken);
+                    var token = antiforgery.GetAndStoreTokens(context);
+                    context.Response.Headers.Add("X-RESPONSE-CSRF-TOKEN-NAME", token.HeaderName);
+                    context.Response.Headers.Add("X-RESPONSE-CSRF-TOKEN-VALUE", token.RequestToken);
             }
 
             await next(context);

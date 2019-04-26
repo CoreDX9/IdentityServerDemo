@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Domain.Management;
-using Domain.Security;
 using IdentityServer.CustomServices;
-using IdentityServer4.Extensions;
 using Newtonsoft.Json;
 using Repository.EntityFrameworkCore;
 using Util.TypeExtensions;
+using Z.EntityFramework.Plus;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
@@ -38,10 +36,10 @@ namespace IdentityServer.Areas.Manage.Controllers
         [ActionName("GetMenu")]
         public async Task<JsonResult> GetMenuAsync()
         {
-            var menus = _context.Menus
+            var menus = await _context.Menus
                 .AsNoTracking()
                 .Include(m => m.Items)
-                .ToList();
+                .ToListAsync();
 
             //使用以下方法可以在不调用.Include(m => m.Parent)生成复杂sql的情况下在内存中设置导航属性
             var menuRoot = menus.Single(m => m.ParentId == null);
@@ -225,7 +223,78 @@ namespace IdentityServer.Areas.Manage.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        public IActionResult CreateMenu(Menu menu)
+        {
+            _context.Menus.Add(menu);
+            var re = _context.SaveChanges();
+            if (re > 0)
+            {
+                return Json(menu);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult UpdateMenu(Menu menu)
+        {
+            _context.Menus.Update(menu);
+            var re = _context.SaveChanges();
+            if (re > 0)
+            {
+                return Json(menu);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteMenu(Guid? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var menu = _context.Menus.Include(m => m.Items).SingleOrDefault(m => m.Id == id);
+            if (menu == null)
+            {
+                return NotFound();
+            }
+
+            _context.MenuItems.RemoveRange(menu.Items);
+            _context.Menus.Remove(menu);
+            var re = _context.SaveChanges();
+            if (re > 0)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult CreateMenuItem(MenuItem menuItem)
+        {
+            _context.MenuItems.Add(menuItem);
+            var re = _context.SaveChanges();
+            if (re > 0)
+            {
+                return Json(menuItem);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
         public IActionResult UpdateMenuItem(MenuItem menuItem)
         {
             _context.MenuItems.Update(menuItem);
@@ -233,6 +302,32 @@ namespace IdentityServer.Areas.Manage.Controllers
             if (re > 0)
             {
                 return Json(menuItem);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteMenuItem(Guid? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var item = _context.MenuItems.Find(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            _context.MenuItems.Remove(item);
+            var re = _context.SaveChanges();
+            if (re > 0)
+            {
+                return Json(true);
             }
             else
             {

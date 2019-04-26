@@ -10,7 +10,7 @@
 
         var getAntiforgeryToken = function() {
             return new Promise(function(resolve, reject) {
-                axios.get('/Manage/Home/GetAntiXsrfRequestToken')
+                axios.post('/Manage/Home/GetAntiXsrfRequestToken')
                     .then(function (response) {
                         if (headerName !== response.data.headerName) {
                             headerName = response.data.headerName;

@@ -235,7 +235,7 @@
                         _this.activeTab = '';
                     }
 
-                    _this.manageTabs = tabs.where(function (tab) { return tab.index !== targetName }).toArray();
+                    _this.manageTabs = tabs.asEnumerable().where(function (tab) { return tab.index !== targetName }).toArray();
                 }
             }
         });

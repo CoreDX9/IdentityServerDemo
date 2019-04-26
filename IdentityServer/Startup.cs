@@ -245,6 +245,7 @@ namespace IdentityServer
                 {
                     //options.Filters.Add<MyAsyncPageFilter>();
                     //options.Filters.Add<MyAuthorizeAttribute>();
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());//自动对控制器的post，put，delete，patch请求进行保护
                 })
                 //注入FluentValidation服务
                 .AddFluentValidation(fv =>
