@@ -74,19 +74,23 @@
                         resolve(response);
                     })
                     .catch(function(error) {
-                        getAntiforgeryToken()
-                            .then(function() {
-                                submit(url, method, data)
-                                    .then(function(response) {
-                                        resolve(response);
-                                    })
-                                    .catch(function(errorIn) {
-                                        reject({ error, errorIn });
-                                    });
-                            })
-                            .catch(function(errorIn) {
-                                reject({ error, errorIn });
-                            });
+                        if (error.response.status === 400) {
+                            getAntiforgeryToken()
+                                .then(function() {
+                                    submit(url, method, data)
+                                        .then(function(response) {
+                                            resolve(response);
+                                        })
+                                        .catch(function(errorIn) {
+                                            reject({ error, errorIn });
+                                        });
+                                })
+                                .catch(function(errorIn) {
+                                    reject({ error, errorIn });
+                                });
+                        } else {
+                            reject(error);
+                        }
                     });
             });
         };

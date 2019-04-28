@@ -58,6 +58,18 @@ namespace Repository.EntityFrameworkCore
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEntityHistoryRecorder entityHistoryRecorder)
+            : base(options)
+        {
+            _entityHistoryRecorder = entityHistoryRecorder;
+        }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
+            : base(options)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         /// <summary>初始化新的实例</summary>
         /// <param name="options">应用于<see cref="ApplicationDbContext" />的选项</param>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

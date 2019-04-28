@@ -257,7 +257,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         {
             if (id == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var menu = _context.Menus.Include(m => m.Items).SingleOrDefault(m => m.Id == id);
@@ -314,7 +314,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         {
             if (id == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var item = _context.MenuItems.Find(id);
