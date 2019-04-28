@@ -7,6 +7,7 @@ using Domain.Management;
 using Domain.Sample;
 using Domain.Security;
 using EntityFrameworkCore.Extensions.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repository.RabbitMQ;
@@ -20,6 +21,7 @@ namespace Repository.EntityFrameworkCore
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>, IEntityHistoryTrackable
     {
         private readonly IEntityHistoryRecorder _entityHistoryRecorder;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #region DbSet
 
@@ -48,10 +50,12 @@ namespace Repository.EntityFrameworkCore
         /// <summary>初始化新的实例</summary>
         /// <param name="options">应用于<see cref="ApplicationDbContext" />的选项</param>
         /// <param name="entityHistoryRecorder">记录实体变更的记录器</param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEntityHistoryRecorder entityHistoryRecorder)
+        /// <param name="httpContextAccessor">Http上下文访问器</param>
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEntityHistoryRecorder entityHistoryRecorder, IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
             _entityHistoryRecorder = entityHistoryRecorder;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>初始化新的实例</summary>
@@ -163,6 +167,11 @@ namespace Repository.EntityFrameworkCore
         {
             this.SetSpecialPropertiesOfEntity();
 
+            if (_httpContextAccessor != null)
+            {
+                this.SetCreatorOrEditor(_httpContextAccessor.HttpContext);
+            }
+
             var changes = _entityHistoryRecorder?.DiscoveryChanges(this);
            
             if (isSoftDelete)
@@ -215,6 +224,11 @@ namespace Repository.EntityFrameworkCore
         public virtual Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken(), bool isSoftDelete = true)
         {
             this.SetSpecialPropertiesOfEntity();
+
+            if (_httpContextAccessor != null)
+            {
+                this.SetCreatorOrEditor(_httpContextAccessor.HttpContext);
+            }
 
             var changes = _entityHistoryRecorder?.DiscoveryChanges(this);
             

@@ -239,7 +239,8 @@ namespace IdentityServer
             services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
             //注入请求处理器信息获取服务
             services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
-
+            //注入Http上下文访问服务
+            services.AddHttpContextAccessor();
             //注入MVC相关服务
             services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注入获取任何已经注册到服务容器的服务
                 {

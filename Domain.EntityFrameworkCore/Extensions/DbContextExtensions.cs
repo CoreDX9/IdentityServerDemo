@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using Entity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Util.TypeExtensions;
 
 namespace Domain.EntityFrameworkCore.Extensions
 {
     public static class DbContextExtensions
     {
+        private static readonly EntityState[] States = { EntityState.Added, EntityState.Deleted, EntityState.Modified };
+
         public static void SetSpecialPropertiesOfEntity(this DbContext dbContext)
         {
-            var states = new[] { EntityState.Added, EntityState.Deleted, EntityState.Modified };
             var now = DateTimeOffset.Now;
-            foreach (var entry in dbContext.ChangeTracker.Entries().Where(e=>states.Contains(e.State)))
+            //在添加记录时设置创建时间并设置最后一次修改时间为创建时间、设置最后一次记录修改人为记录创建人
+            foreach (var entry in dbContext.ChangeTracker.Entries().Where(e=> States.Contains(e.State)))
             {
                 if (entry.State == EntityState.Added)
                 {
@@ -20,20 +27,6 @@ namespace Domain.EntityFrameworkCore.Extensions
                         p.Metadata.ClrType == typeof(DateTimeOffset)))
                     {
                         entry.Property(nameof(IEntity.CreationTime)).CurrentValue = now;
-                    }
-
-                    if (entry.Properties.Any(p =>
-                            p.Metadata.Name == nameof(IDomainEntity<int>.CreationUserId))
-                        && entry.Properties.Any(p =>
-                            p.Metadata.Name == nameof(IDomainEntity<int>.LastModificationUserId))
-                        && entry.Property(nameof(IDomainEntity<int>.LastModificationUserId)).Metadata.ClrType ==
-                        entry.Property(nameof(IDomainEntity<int>.CreationUserId)).Metadata.ClrType)
-                    {
-                        //entry.Property(nameof(IDomainEntity<int>.LastModificationUser)).CurrentValue =
-                        //    entry.Property(nameof(IDomainEntity<int>.CreationUser)).CurrentValue;
-
-                        entry.Property(nameof(IDomainEntity<int>.LastModificationUserId)).CurrentValue =
-                            entry.Property(nameof(IDomainEntity<int>.CreationUserId)).CurrentValue;
                     }
                 }
                 else
@@ -47,7 +40,6 @@ namespace Domain.EntityFrameworkCore.Extensions
                     if (entry.Properties.Any(p =>
                         p.Metadata.Name == nameof(IDomainEntity<int>.CreationUserId)))
                     {
-                        //entry.Property(nameof(IDomainEntity<int>.CreationUser)).IsModified = false;
                         entry.Property(nameof(IDomainEntity<int>.CreationUserId)).IsModified = false;
                     }
                 }
@@ -96,6 +88,81 @@ namespace Domain.EntityFrameworkCore.Extensions
                     entry.Property(nameof(IEntity.IsDeleted)).IsTemporary = false;
                 }
             }
+        }
+
+        public static void SetCreatorOrEditor(this DbContext dbContext, HttpContext httpContext)
+        {
+            foreach (var entry in dbContext.ChangeTracker.Entries().Where(e => States.Contains(e.State)))
+            {
+                var subjectId = GetSubjectId(httpContext.User.Identity);
+                var userId = ParseUserId(subjectId, entry);
+                //设置最后编辑用户Id
+                if (entry.Properties.Any(p =>
+                        p.Metadata.Name == nameof(IDomainEntity<int>.LastModificationUserId))
+                    && userId != null)
+                {
+                    entry.Property(nameof(IDomainEntity<int>.LastModificationUserId)).CurrentValue = userId;
+                    entry.Property(nameof(IDomainEntity<int>.LastModificationUserId)).IsModified = true;
+                    entry.Property(nameof(IDomainEntity<int>.LastModificationUserId)).IsTemporary = false;
+                }
+
+                //在增加时设置创建用户Id
+                if (entry.Properties.Any(p =>
+                        p.Metadata.Name == nameof(IDomainEntity<int>.CreationUserId)))
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        entry.Property(nameof(IDomainEntity<int>.CreationUserId)).CurrentValue = userId;
+                        entry.Property(nameof(IDomainEntity<int>.CreationUserId)).IsModified = true;
+                        entry.Property(nameof(IDomainEntity<int>.CreationUserId)).IsTemporary = false;
+                    }
+                    else
+                    {
+                        entry.Property(nameof(IDomainEntity<int>.CreationUserId)).IsModified = false;
+                    }
+                }
+            }
+
+            object ParseUserId(string id, EntityEntry entry)
+            {
+                if (id.IsNullOrEmpty())
+                {
+                    return null;
+                }
+
+                object userId;
+                if (entry.Property(nameof(IDomainEntity<int>.CreationUserId)).Metadata.ClrType == typeof(Guid))
+                {
+                    userId = new Guid(GetSubjectId(httpContext.User.Identity));
+                }
+                else if (entry.Property(nameof(IDomainEntity<int>.CreationUserId)).Metadata.ClrType == typeof(int))
+                {
+                    userId = int.Parse(id);
+                }
+                else if(entry.Property(nameof(IDomainEntity<int>.CreationUserId)).Metadata.ClrType == typeof(long))
+                {
+                    userId = long.Parse(id);
+                }
+                else if(entry.Property(nameof(IDomainEntity<int>.CreationUserId)).Metadata.ClrType == typeof(string))
+                {
+                    userId = id;
+                }
+                else
+                {
+                    return null;
+                }
+
+                return userId;
+            }
+        }
+
+        private static string GetSubjectId(IIdentity identity)
+        {
+            var id = identity as ClaimsIdentity;
+            var claim = id?.FindFirst("sub");
+
+            if (claim == null) throw new InvalidOperationException("sub claim is missing");
+            return claim.Value;
         }
     }
 }
