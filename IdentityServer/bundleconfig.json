@@ -31,12 +31,6 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/library/hierarchical/index.min.js",
-    "inputFiles": [
-      "wwwroot/library/hierarchical/index.js"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/lib/jquery/jquery.min.js",
     "inputFiles": [
       "bower_components/jquery/dist/jquery.min.js"
