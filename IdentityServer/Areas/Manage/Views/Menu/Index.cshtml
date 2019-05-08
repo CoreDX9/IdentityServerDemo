@@ -65,7 +65,7 @@
                                                         <span>图标：</span>
                                                         <el-tag type="info">
                                                             <i v-if="menuItems.selectedMenu.icon.type == 'css'" :class="menuItems.selectedMenu.icon.value"></i>
-                                                            <img v-if="menuItems.selectedMenu.icon.type == 'img'" :src="menuItems.selectedMenu.icon.value" style="width: 24px"/>
+                                                            <img v-if="menuItems.selectedMenu.icon.type == 'img'" :src="menuItems.selectedMenu.icon.value" style="width: 24px" />
                                                         </el-tag>
                                                     </template>
                                                     <p v-else> </p>
@@ -148,7 +148,7 @@
                                 </avue-crud>
                             </el-col>
                         </el-row>
-                        
+
                     </el-col>
                 </el-row>
             </el-main>
@@ -157,9 +157,13 @@
 
     <partial name="_LinqJsScriptsPartial" />
     <partial name="_JQueryScriptsPartial" />
-    <partial name="_VueSubmitFormHelperWithAxiosAndQsScriptsPartial" />
+    <partial name="_AxiosScriptsPartial" />
+    <partial name="_QsScriptsPartial" />
+    <partial name="_VueScriptsPartial" />
     <partial name="_ElementUiScriptsPartial" />
     <partial name="_AvueScriptsPartial" />
+    <partial name="_VueSubmitFormHelperScriptsPartial" />
+    <partial name="_HierarchicalScriptsPartial" />
 
     <script>
         var vueApp = new Vue({
@@ -182,7 +186,7 @@
                         console.error(error);
                     });
             },
-            mounted: function() {
+            mounted: function () {
                 this.$refs.menu.formOption.column.asEnumerable().single(m => m.prop === 'parentId').dicData = this.menu.data;
             },
             data: function () {
@@ -195,8 +199,8 @@
                             editBtn: false,
                             delBtn: false,
                             nodeKey: 'id',
-                            formOption:{
-                                labelWidth:100,
+                            formOption: {
+                                labelWidth: 100,
                                 column: [
                                     {
                                         label: 'Id',
@@ -212,7 +216,8 @@
                                         prop: 'parentId',
                                         type: 'tree',
                                         dicData: [],
-                                        props:{
+                                        visdiplay: false,
+                                        props: {
                                             label: 'title',
                                             value: 'id'
                                         },
@@ -250,7 +255,7 @@
                             menuAlign: 'center',
                             addBtn: false,
                             editBtn: false,
-                            delBtn:false,
+                            delBtn: false,
                             column: [
                                 {
                                     label: '菜单Id',
@@ -290,7 +295,7 @@
                                 {
                                     label: '排序',
                                     prop: 'order',
-                                    type:'number'
+                                    type: 'number'
                                 },
                                 {
                                     label: '备注',
@@ -307,7 +312,7 @@
                             pageSize: 10
                         },
                         data: [],
-                        pagedData:[]
+                        pagedData: []
                     },
                     links: []
                 };
@@ -329,17 +334,21 @@
                 },
                 onMenuAddClick: function (node, data) {
                     this.$refs.menu.append(node, data);
-                    setTimeout(() => this.menu.form.parentId = data.id, 100);
-                    
+                    setTimeout(() => this.menu.form.parentId = data.id, 0);
+
                 },
                 onAddMenu: function (data, node, done) {
                     var _this = this;
 
                     var submitFormHelper = this.$submitFormHelper;
+                    this.menu.form.items = [];
+                    this.menu.form.children = [];
                     submitFormHelper.submitForm('/Manage/Menu/CreateMenu', 'post', this.menu.form)
                         .then(function (response) {
                             response.data.is_show = false;
+                            response.data.path = data.path + '/' + response.data.id;
                             data.children.push(response.data);
+                            _this.menu.data = node.store.root.data;
                             _this.$refs.menu.hide();
                             _this.$notify({
                                 title: '成功',
@@ -361,10 +370,16 @@
                 onUpdateMenu: function (data, node, done) {
                     var _this = this;
                     var submitFormHelper = this.$submitFormHelper;
+                    this.menu.form.items = [];
+                    this.menu.form.children = [];
                     submitFormHelper.submitForm('/Manage/Menu/UpdateMenu', 'post', this.menu.form)
                         .then(function (response) {
                             response.data.is_show = false;
+                            response.data.path = data.path;
+                            response.data.items = data.items;
                             node.data = response.data;
+
+                            _this.menuItems.selectedMenu = node.data;
                             _this.$refs.menu.hide();
                             _this.$notify({
                                 title: '成功',
@@ -386,12 +401,13 @@
                 onDelMenu: function (data, node, done) {
                     var _this = this;
                     var submitFormHelper = this.$submitFormHelper;
-                    submitFormHelper.submitForm('/Manage/Menu/DeleteMenu', 'post', { id: this.menu.form.id})
+                    submitFormHelper.submitForm('/Manage/Menu/DeleteMenu', 'post', { id: this.menu.form.id })
                         .then(function (response) {
                             if (response.data === true) {
                                 for (var i = 0; i < data.children.length; i++) {
                                     if (data.children[i].id === this.menu.form.id) {
                                         data.children.splice(i, 1);
+                                        _this.menu.data = node.store.root.data;
                                         break;
                                     }
                                 }
@@ -431,7 +447,7 @@
                     var data = this.menuItems.data;
                     var submitFormHelper = this.$submitFormHelper;
                     submitFormHelper.submitForm('/Manage/Menu/CreateMenuItem', 'post', form)
-                        .then(function(response) {
+                        .then(function (response) {
                             data.push(response.data);
                             done();
                             _this.$notify({
@@ -440,7 +456,7 @@
                                 type: 'success'
                             });
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             done();
                             _this.$notify.error({
                                 title: '失败',
@@ -460,7 +476,7 @@
                     var data = this.menuItems.data;
                     var submitFormHelper = this.$submitFormHelper;
                     submitFormHelper.submitForm('/Manage/Menu/UpdateMenuItem', 'post', form)
-                        .then(function(response) {
+                        .then(function (response) {
                             Vue.set(data, index, response.data);
                             done();
                             _this.$notify({
@@ -511,11 +527,11 @@
                                     message: '删除失败'
                                 });
                             });
-                        }).catch(() => {
+                    }).catch(() => {
                         _this.$notify.info({
                             title: '取消',
                             message: '已取消删除'
-                        });         
+                        });
                     });
                 },
                 onMenuItemPageSizeChange: function (val) {
@@ -534,10 +550,10 @@
                     var page = this.menuItems.page;
                     this.menuItems.pagedData =
                         this.menuItems.data
-                        .asEnumerable()
-                        .skip(page.pageSize * (page.currentPage - 1))
-                        .take(page.pageSize)
-                        .toArray();
+                            .asEnumerable()
+                            .skip(page.pageSize * (page.currentPage - 1))
+                            .take(page.pageSize)
+                            .toArray();
                 },
                 getMenuPath: function (menu) {
                     var menus = [];

@@ -86,13 +86,10 @@ namespace Domain.EntityFrameworkCore.Extensions
                     entry.Property(nameof(IDomainEntity<int>.CreationUserId))?.Metadata.ClrType
                 );
                 //设置最后编辑用户Id
-                if (userId != null)
-                {
-                    propertyEntry = entry.Property(nameof(IDomainEntity<int>.LastModificationUserId));
-                    propertyEntry.CurrentValue = userId;
-                    propertyEntry.IsModified = true;
-                    propertyEntry.IsTemporary = false;
-                }
+                propertyEntry = entry.Property(nameof(IDomainEntity<int>.LastModificationUserId));
+                propertyEntry.CurrentValue = userId;
+                propertyEntry.IsModified = true;
+                propertyEntry.IsTemporary = false;
 
                 //在增加时设置创建用户Id
                 if (entry.State == EntityState.Added)
@@ -152,8 +149,7 @@ namespace Domain.EntityFrameworkCore.Extensions
             var id = identity as ClaimsIdentity;
             var claim = id?.FindFirst("sub");
 
-            if (claim == null) throw new InvalidOperationException("sub claim is missing");
-            return claim.Value;
+            return claim?.Value;
         }
     }
 }

@@ -503,6 +503,9 @@ namespace IdentityServer
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            //捕获异常用
+            app.UseExMiddleware();
+
             //检查到相应配置启用https跳转
             if (Configuration.GetValue("UseHttpsRedirection", false) &&
                 (Configuration.GetSection("RafHost").GetSection("Endpoints").GetSection("Https")

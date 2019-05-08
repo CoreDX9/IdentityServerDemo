@@ -21,7 +21,19 @@
   {
     "outputFileName": "wwwroot/library/parse-url/parse-url.min.js",
     "inputFiles": [
-      "wwwroot/library//parse-urlparse-url.js"
+      "wwwroot/library/parse-url/parse-url.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/library/vue-submit-form-helper/index.min.js",
+    "inputFiles": [
+      "wwwroot/library/vue-submit-form-helper/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/library/hierarchical/index.min.js",
+    "inputFiles": [
+      "wwwroot/library/hierarchical/index.js"
     ]
   },
   {
