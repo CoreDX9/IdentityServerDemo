@@ -160,7 +160,7 @@ namespace Util.TypeExtensions
                 }
             }
 
-            public IEnumerable<IHierarchical<T>> Siblings => Parent?.Children?.Where(node => node != this);
+            public IEnumerable<IHierarchical<T>> Siblings => Parent?.Children?.Where(node => node != this) ?? Array.Empty<IHierarchical<T>>();
 
             public int IndexOfSiblings
             {
@@ -221,6 +221,11 @@ namespace Util.TypeExtensions
                 }
 
                 return sbr.ToString();
+            }
+
+            public IHierarchical<T> ReBuild()
+            {
+                return new Hierarchical<T>(Current, _childSelector);
             }
 
             public override string ToString()
@@ -298,53 +303,37 @@ namespace Util.TypeExtensions
         public static IEnumerable<IHierarchical<T>> GetPathFromNode<T>(this IHierarchical<T> node,
             IHierarchical<T> from)
         {
-            if(node.Root != from.Root)
+            if (node.Root != from.Root)
                 throw new InvalidOperationException($"{nameof(node)} and {nameof(from)} are not at same tree.");
 
-            yield return from;
+            yield return from; //起点必然是需要的
 
-            if (node == from) yield break;
+            if (node == from) yield break; //如果终点就是起点，那么可以直接结束路径查找了
 
-            if (node.IsAncestorOf(from))
+            //只有终点和起点不存在双亲孩子关系时才需要执行内部代码，否则直接返回终点即可
+            if (!(node.Parent == from || node.Children.Any(n => n == from)))
             {
-                foreach (var ancestor in from.Ancestors)
+                var nearestCommonAncestor = node.GetNearestCommonAncestor(from);
+
+                //如果起点不是终点的祖先，需要先返回从起点的双亲到最近公共祖先
+                //（不包括最近公共祖先。最近公共祖先可能就是终点，返回的话会导致终点被返回两次。终点会在方法末尾统一返回）的路径
+                if (!from.IsAncestorOf(node))
+                    foreach (var ancestor in from.Ancestors)
+                        if (ancestor != nearestCommonAncestor)
+                            yield return ancestor;
+                        else
+                            break;
+
+                //如果最近公共祖先不是终点，返回从最近公共祖先到终点（不包括终点，原因不再赘述）的路径
+                if (nearestCommonAncestor != node)
                 {
-                    yield return ancestor;
-                    if (ancestor == node)
-                    {
-                        yield break;
-                    }
+                    var ancestorsOfNode = node.Ancestors.ToArray();
+                    for (int i = Array.IndexOf(ancestorsOfNode, nearestCommonAncestor); i >= 0; i--)
+                        yield return ancestorsOfNode[i];
                 }
             }
 
-            var ancestorsOfNode = node.Ancestors.ToArray();
-            if (node.IsDescendantOf(from))
-            {
-                for (int i = Array.IndexOf(ancestorsOfNode, from) - 1; i >= 0; i--)
-                {
-                    yield return ancestorsOfNode[i];
-                }
-
-                yield return node;
-                yield break;
-            }
-
-            var keyNode = ancestorsOfNode.Intersect(from.Ancestors).OrderByDescending(no => no.Level).First();
-            foreach (var ancestor in from.Ancestors)
-            {
-                yield return ancestor;
-                if (ancestor == keyNode)
-                {
-                    break;
-                }
-            }
-
-            for (int i = Array.IndexOf(ancestorsOfNode, keyNode) - 1; i >= 0; i--)
-            {
-                yield return ancestorsOfNode[i];
-            }
-
-            yield return node;
+            yield return node; //最后返回终点
         }
 
         /// <summary>

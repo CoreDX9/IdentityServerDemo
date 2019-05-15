@@ -78,6 +78,11 @@ namespace Util.Hierarchical
 
         public bool HasChild => throw new NotImplementedException();
 
+        public IHierarchical<T> ReBuild()
+        {
+            throw new NotImplementedException();
+        }
+
         public string ToString(Func<T, string> formatter, bool convertToSingleLine = false)
         {
             throw new NotImplementedException();

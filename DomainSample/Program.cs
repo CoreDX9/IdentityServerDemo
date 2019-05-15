@@ -115,7 +115,6 @@ namespace DomainSample
             var enst = end.ToString(tn => tn.Value, true);
 
             var path = start.GetPathToNode(end);
-
             var strPath = string.Join(" -> ", path.Select(p => p.Current.Value));
 
             Console.WriteLine("节点路径查找");

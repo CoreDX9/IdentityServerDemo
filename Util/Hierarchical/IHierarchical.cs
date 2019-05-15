@@ -85,6 +85,12 @@ namespace Util.Hierarchical
         bool HasChild { get; }
 
         /// <summary>
+        /// 以当前节点为根，相同的子节点选择条件重建一个IHierarchical对象
+        /// </summary>
+        /// <returns>重建对象的根</returns>
+        IHierarchical<T> ReBuild();
+
+        /// <summary>
         /// 以当前节点为根返回树形排版的结构字符串
         /// </summary>
         /// <param name="formatter">数据对象格式化器（内容要为一行，否则会影响排版）</param>
