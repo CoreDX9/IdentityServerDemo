@@ -1,0 +1,35 @@
+{
+  "name": "bootstrap-dropdown-hover",
+  "version": "4.2.0",
+  "homepage": "https://www.virtuosoft.eu/code/bootstrap-dropdown-hover/",
+  "authors": [
+    "István Ujj-Mészáros <styu007@gmail.com>"
+  ],
+  "description": "Open dropdown menus on mouse hover, the proper way.",
+  "main": "dist/jquery.bootstrap-dropdown-hover.js",
+  "dependencies": {
+    "jquery": "~1.11.0",
+    "bootstrap": ">=3.0.0"
+  },
+  "keywords": [
+    "bootstrap",
+    "dropdown",
+    "hover",
+    "ui"
+  ],
+  "license": "Apache-2.0",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/istvan-ujjmeszaros/bootstrap-dropdown-hover.git"
+  }
+}
