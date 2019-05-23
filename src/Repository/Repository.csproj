@@ -14,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
     <ProjectReference Include="..\Domain.EntityFrameworkCore\Domain.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\EntityFrameworkCore.Extensions\EntityFrameworkCore.Extensions.csproj" />
-    <ProjectReference Include="..\Util\Util.csproj" />
   </ItemGroup>
 
 </Project>

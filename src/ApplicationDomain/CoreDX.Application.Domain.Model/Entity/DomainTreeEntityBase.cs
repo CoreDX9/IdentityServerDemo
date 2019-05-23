@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using CoreDX.Application.Domain.Model.Entity.Core;
+using CoreDX.Application.Domain.Model.Entity.Identity;
 using PropertyChanged;
 
 namespace CoreDX.Application.Domain.Model.Entity
 {
-    public abstract class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid, Guid>
+    public abstract class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid>
         where TEntity : DomainTreeEntityBase<TEntity>
     {
         protected DomainTreeEntityBase()
@@ -20,14 +21,28 @@ namespace CoreDX.Application.Domain.Model.Entity
     /// </summary>
     /// <typeparam name="TKey">主键类型</typeparam>
     /// <typeparam name="TEntity">实体类型</typeparam>
-    /// <typeparam name="TIdentityUserKey">实体类型</typeparam>
-    /// <typeparam name="TIdentityRoleKey"></typeparam>
-    public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityUserKey, TIdentityRoleKey> : DomainEntityBase<TKey, TIdentityUserKey, TIdentityRoleKey>
+    /// <typeparam name="TIdentityKey">Identity主键类型</typeparam>
+    public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityKey> : DomainTreeEntityBase<TKey, TEntity>
+        , ICreatorRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+        , ILastModifierRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+        where TKey : struct, IEquatable<TKey>
+        where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityKey>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
+    {
+        #region IDomainEntity成员
+
+        public virtual TIdentityKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> Creator { get; set; }
+        public virtual TIdentityKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> LastModifier { get; set; }
+
+        #endregion
+    }
+
+    public abstract class DomainTreeEntityBase<TKey, TEntity> : DomainEntityBase<TKey>
         , IDomainTreeEntity<TKey, TEntity>
         where TKey : struct, IEquatable<TKey>
-        where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityUserKey, TIdentityRoleKey>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityRoleKey : struct, IEquatable<TIdentityRoleKey>
+        where TEntity : DomainTreeEntityBase<TKey, TEntity>
     {
         #region ITree成员
 

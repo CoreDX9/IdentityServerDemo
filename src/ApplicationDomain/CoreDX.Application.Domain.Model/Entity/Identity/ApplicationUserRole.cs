@@ -8,24 +8,22 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserRole : ApplicationUserRole<Guid, Guid, Guid>
+    public class ApplicationUserRole : ApplicationUserRole<Guid>
         , IStorageOrderRecordable
     {
         public virtual long InsertOrder { get; set; }
     }
 
-    public abstract class ApplicationUserRole<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> : IdentityUserRole<TIdentityUserKey, TIdentityRoleKey>
+    public abstract class ApplicationUserRole<TKey> : IdentityUserRole<TKey>
         , IDomainEntity
-        , ICreatorRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        , ILastModifierRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityRoleKey : struct, TIdentityUserKey, IEquatable<TIdentityRoleKey>
-        where TOrganizationKey : struct, IEquatable<TOrganizationKey>
+        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
+        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
+        where TKey : struct, IEquatable<TKey>
     {
         #region 导航属性
 
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> User { get; set; }
-        public virtual ApplicationRole<TIdentityRoleKey, TIdentityUserKey, TOrganizationKey> Role { get; set; }
+        public virtual ApplicationUser<TKey> User { get; set; }
+        public virtual ApplicationRole<TKey> Role { get; set; }
 
         #endregion
 
@@ -41,10 +39,10 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TIdentityUserKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> Creator { get; set; }
-        public virtual TIdentityUserKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> LastModifier { get; set; }
+        public virtual TKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TKey> LastModifier { get; set; }
 
         #endregion
 
@@ -192,20 +190,5 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         }
 
         #endregion
-    }
-
-    public class IdentityUserRole<TIdentityUserKey, TIdentityRoleKey> : IdentityUserRole<TIdentityUserKey>
-    where TIdentityUserKey : IEquatable<TIdentityUserKey>
-    where TIdentityRoleKey : TIdentityUserKey, IEquatable<TIdentityRoleKey>
-    {
-        /// <summary>
-        /// Gets or sets the primary key of the user that is linked to a role.
-        /// </summary>
-        public override TIdentityUserKey UserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the primary key of the role that is linked to the user.
-        /// </summary>
-        public override TIdentityUserKey RoleId { get; set; }
     }
 }

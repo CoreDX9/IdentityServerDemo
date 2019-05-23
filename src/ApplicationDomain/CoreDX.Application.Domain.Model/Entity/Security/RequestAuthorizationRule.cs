@@ -22,7 +22,10 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         public virtual string UniqueKey { get; }
     }
 
-    public class RequestAuthorizationRule : DomainEntityBase
+    public class RequestAuthorizationRule : RequestAuthorizationRule<Guid> {}
+
+    public class RequestAuthorizationRule<TKey> : DomainEntityBase<TKey, TKey>
+        where TKey : struct, IEquatable<TKey>
     {
         /// <summary>
         /// 处理方法签名
@@ -45,13 +48,16 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
 
         public virtual Guid? AuthorizationRuleId { get; set; }
 
-        public virtual AuthorizationRule AuthorizationRule { get; set; }
+        public virtual AuthorizationRule<TKey> AuthorizationRule { get; set; }
     }
+
+    public class AuthorizationRule : AuthorizationRule<Guid>{}
 
     /// <summary>
     /// 请求授权规则
     /// </summary>
-    public class AuthorizationRule : DomainEntityBase
+    public class AuthorizationRule<TKey> : DomainEntityBase<TKey, TKey>
+        where TKey : struct, IEquatable<TKey>
     {
         public string Name { get; set; }
 
@@ -63,7 +69,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         private AuthorizationRuleGroup _authorizationRuleConfig;
         public AuthorizationRuleGroup AuthorizationRuleConfig => _authorizationRuleConfig ?? (_authorizationRuleConfig = JsonConvert.DeserializeObject<AuthorizationRuleGroup>(AuthorizationRuleConfigJson));
 
-        public virtual List<RequestAuthorizationRule> RequestAuthorizationRules { get; set; } = new List<RequestAuthorizationRule>();
+        public virtual List<RequestAuthorizationRule<TKey>> RequestAuthorizationRules { get; set; } = new List<RequestAuthorizationRule<TKey>>();
 
         /// <summary>
         /// 授权规则组

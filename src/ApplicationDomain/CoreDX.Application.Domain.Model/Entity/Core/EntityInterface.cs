@@ -24,15 +24,15 @@ namespace CoreDX.Application.Domain.Model.Entity.Core
         /// <summary>
         /// 行版本，乐观并发锁
         /// </summary>
-        [Timestamp]
-        byte[] RowVersion { get; set; }
+        [ConcurrencyCheck]
+        string ConcurrencyStamp { get; set; }
     }
 
     public interface IStorageOrderRecordable
     {
         /// <summary>
-        /// 如果选用GUID作为主键类型
-        /// 应该在此列建立聚合索引避免随机的GUID导致数据库索引性能下降
+        /// 非自增顺序字段作为主键类型
+        /// 应该在此列建立聚集索引避免随机的字段值导致数据库索引性能下降
         /// 同时保存数据插入先后的信息
         /// </summary>
         long InsertOrder { get; set; }
@@ -54,21 +54,33 @@ namespace CoreDX.Application.Domain.Model.Entity.Core
         DateTimeOffset LastModificationTime { get; set; }
     }
 
-    public interface ICreatorRecordable<TIdentityUserKey, TIdentityUser>
-    where TIdentityUserKey : struct , IEquatable<TIdentityUserKey>
-    where TIdentityUser : IEntity<TIdentityUserKey>
+    public interface ICreatorRecordable<TIdentityKey, TIdentityUser>
+        where TIdentityKey : struct , IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
     {
-        TIdentityUserKey? CreatorId { get; set; }
+        /// <summary>
+        /// 创建人Id
+        /// </summary>
+        TIdentityKey? CreatorId { get; set; }
 
+        /// <summary>
+        /// 创建人
+        /// </summary>
         TIdentityUser Creator { get; set; }
     }
 
-    public interface ILastModifierRecordable<TIdentityUserKey, TIdentityUser>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityUser : IEntity<TIdentityUserKey>
+    public interface ILastModifierRecordable<TIdentityKey, TIdentityUser>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
     {
-        TIdentityUserKey? LastModifierId { get; set; }
+        /// <summary>
+        /// 上一次修改人Id
+        /// </summary>
+        TIdentityKey? LastModifierId { get; set; }
 
+        /// <summary>
+        /// 上一次修改人
+        /// </summary>
         TIdentityUser LastModifier { get; set; }
     }
 }

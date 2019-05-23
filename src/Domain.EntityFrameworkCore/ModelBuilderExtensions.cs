@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using CoreDX.Application.Domain.Model.Entity.Core;
+using CoreDX.Common.Util.TypeExtensions;
 using Domain.Identity;
 using Domain.Sample;
-using Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Domain.EntityFrameworkCore.EntityTypeConfigurations;
-using Util.TypeExtensions;
 
 namespace Domain.EntityFrameworkCore.Extensions
 {
@@ -135,7 +134,7 @@ namespace Domain.EntityFrameworkCore.Extensions
             Expression e1;//作为最后形成的表达式的载体,相当于 a=b
 
             //domain.IsDeleted
-            left = Expression.Property(parameter, domainType.GetProperty(nameof(IEntity.IsDeleted)));
+            left = Expression.Property(parameter, domainType.GetProperty(nameof(ILogicallyDeletable.IsDeleted)));
             //Constant方法设置属性对应的值，字面量表达式
             right = Expression.Constant(false);
             //domain.IsDeleted == false

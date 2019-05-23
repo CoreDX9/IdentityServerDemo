@@ -1,4 +1,5 @@
-﻿using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+﻿using System;
+using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 
 namespace CoreDX.Application.Domain.Model.Entity.Security
 {
@@ -14,7 +15,8 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
     /// <summary>
     /// 权限定义
     /// </summary>
-    public class PermissionDefinition : DomainEntityBase
+    public class PermissionDefinition<TKey> : DomainEntityBase<TKey, TKey>
+        where TKey : struct, IEquatable<TKey>
     {
         /// <summary>
         /// 名称
@@ -30,5 +32,12 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// 值类型
         /// </summary>
         public PermissionValueType ValueType { get; set; }
+    }
+
+    /// <summary>
+    /// 权限定义
+    /// </summary>
+    public class PermissionDefinition : PermissionDefinition<Guid>
+    {
     }
 }

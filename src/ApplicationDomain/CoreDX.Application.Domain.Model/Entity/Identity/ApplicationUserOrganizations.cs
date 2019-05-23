@@ -7,39 +7,41 @@ using CoreDX.Application.Domain.Model.Entity.Core;
 
 namespace CoreDX.Application.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserOrganization : ApplicationUserOrganization<Guid, Guid, Guid>
-    , IStorageOrderRecordable
+    public class ApplicationUserOrganization : ApplicationUserOrganization<Guid>
+        , IStorageOrderRecordable
     {
         public long InsertOrder { get; set; }
     }
 
-    public class ApplicationUserOrganization<TOrganizationKey, TIdentityUserKey, TIdentityRoleKey>
-        : IDomainEntity
-            , ICreatorRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-            , ILastModifierRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityRoleKey : struct, IEquatable<TIdentityRoleKey>
-        where TOrganizationKey : struct, IEquatable<TOrganizationKey>
+    public class ApplicationUserOrganization<TKey> : IDomainEntity
+        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
+        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
+        where TKey : struct, IEquatable<TKey>
     {
-        public TIdentityUserKey UserId { get; set; }
+        public TKey UserId { get; set; }
 
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> User { get; set; }
+        public virtual ApplicationUser<TKey> User { get; set; }
 
-        public virtual TOrganizationKey OrganizationId { get; set; }
+        public virtual TKey OrganizationId { get; set; }
 
-        public virtual Organization<TOrganizationKey, TIdentityUserKey, TIdentityRoleKey> Organization { get; set; }
+        public virtual Organization<TKey> Organization { get; set; }
+
+        #region IEntity成员
+
         public bool IsDeleted { get; set; }
         public bool? Active { get; set; } = true;
         public byte[] RowVersion { get; set; }
         public DateTimeOffset CreationTime { get; set; }
         public DateTimeOffset LastModificationTime { get; set; }
 
+        #endregion
+
         #region IDomainEntity成员
 
-        public virtual TIdentityUserKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> Creator { get; set; }
-        public virtual TIdentityUserKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> LastModifier { get; set; }
+        public virtual TKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TKey> LastModifier { get; set; }
 
         #endregion
 

@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore.Extensions\EntityFrameworkCore.Extensions.csproj" />
-    <ProjectReference Include="..\Entity\Entity.csproj" />
+    <ProjectReference Include="..\ApplicationDomain\CoreDX.Application.Domain.Model\CoreDX.Application.Domain.Model.csproj" />
+    <ProjectReference Include="..\Common\CoreDX.EntityFrameworkCore.Extensions\CoreDX.EntityFrameworkCore.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

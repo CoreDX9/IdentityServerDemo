@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CoreDX.Common.Util.TypeExtensions;
 using EntityFrameworkCore.Extensions.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Util.TypeExtensions;
 
 namespace EntityFrameworkCore.Extensions.Extensions
 {

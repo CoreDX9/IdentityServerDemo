@@ -4,44 +4,30 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using CoreDX.Application.Domain.Model.Entity.Core;
-using Microsoft.AspNetCore.Identity;
+using CoreDX.Application.Domain.Model.Entity.Identity;
 
-namespace CoreDX.Application.Domain.Model.Entity.Identity
+namespace CoreDX.Application.Domain.Model.Entity
 {
-    public class ApplicationUserLogin : ApplicationUserLogin<Guid>
-    {
-    }
-
-    public abstract class ApplicationUserLogin<TKey> : IdentityUserLogin<TKey>
-        , IDomainEntity
+    public abstract class ManyToManyReferenceEntityBase<TIdentityKey> : IDomainEntity
+        , IOptimisticConcurrencySupported
         , IStorageOrderRecordable
-        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
-        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
-        where TKey : struct, IEquatable<TKey>
+        , ICreatorRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+        , ILastModifierRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
-        #region 导航属性
-
-        public virtual ApplicationUser<TKey> User { get; set; }
-
-        #endregion
-
-        #region IEntity成员
-
-        public virtual long InsertOrder { get; set; }
-        public virtual byte[] RowVersion { get; set; }
-        public virtual bool? Active { get; set; } = true;
         public virtual bool IsDeleted { get; set; }
+        public virtual bool? Active { get; set; } = true;
+        public virtual string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
         public virtual DateTimeOffset LastModificationTime { get; set; } = DateTimeOffset.Now;
-
-        #endregion
+        public virtual long InsertOrder { get; set; }
 
         #region IDomainEntity成员
 
-        public virtual TKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TKey> Creator { get; set; }
-        public virtual TKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TKey> LastModifier { get; set; }
+        public virtual TIdentityKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> Creator { get; set; }
+        public virtual TIdentityKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> LastModifier { get; set; }
 
         #endregion
 
@@ -53,14 +39,14 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         private readonly BitArray _propertyChangeMask;
 
         /// <summary>
-        /// 全局属性变更通知事件处理器
+        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase" />的类在实例化时都会自动注册）
         /// </summary>
         public static PropertyChangedEventHandler PublicPropertyChangedEventHandler { get; set; }
 
         /// <summary>
         /// 初始化用于跟踪属性变更所需的属性信息
         /// </summary>
-        protected ApplicationUserLogin()
+        protected ManyToManyReferenceEntityBase()
         {
             //判断类型是否已经加入字典
             //将未加入的类型添加进去（一般为该类对象首次初始化时）

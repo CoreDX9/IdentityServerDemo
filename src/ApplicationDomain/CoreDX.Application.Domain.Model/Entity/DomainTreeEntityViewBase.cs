@@ -12,9 +12,9 @@ namespace CoreDX.Application.Domain.Model.Entity
     /// </summary>
     /// <typeparam name="TKey">主键类型（Guid主键存在string转换器的话可以在这里用string）</typeparam>
     /// <typeparam name="TEntityView">实体视图类型</typeparam>
-    /// <typeparam name="TIdentityUserKey">IdentityUser主键类型</typeparam>
-    public class DomainTreeEntityViewBase<TKey, TEntityView, TIdentityUserKey> : IDomainTreeEntity<TEntityView>
-        where TEntityView : DomainTreeEntityViewBase<TKey, TEntityView, TIdentityUserKey>
+    /// <typeparam name="TIdentityKey">IdentityUser主键类型</typeparam>
+    public class DomainTreeEntityViewBase<TKey, TEntityView, TIdentityKey> : IDomainTreeEntity<TEntityView>
+        where TEntityView : DomainTreeEntityViewBase<TKey, TEntityView, TIdentityKey>
     {
         #region IEntity成员
 
@@ -64,9 +64,9 @@ namespace CoreDX.Application.Domain.Model.Entity
 
         #region 模拟的IDomainEntity<,>成员
 
-        public virtual TIdentityUserKey CreationUserId { get; set; }
+        public virtual TIdentityKey CreationUserId { get; set; }
 
-        public virtual TIdentityUserKey LastModificationUserId { get; set; }
+        public virtual TIdentityKey LastModificationUserId { get; set; }
 
         #endregion
 

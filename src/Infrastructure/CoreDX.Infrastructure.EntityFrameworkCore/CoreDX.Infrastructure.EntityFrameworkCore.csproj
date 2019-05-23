@@ -5,11 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Application.Domain.Model\CoreDX.Application.Domain.Model.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Application.Domain.Model\CoreDX.Application.Domain.Model.csproj" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
   </ItemGroup>
 
 </Project>

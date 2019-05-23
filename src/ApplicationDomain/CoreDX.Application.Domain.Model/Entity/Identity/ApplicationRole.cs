@@ -16,7 +16,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
     //Method System.Nullable.Equals: type argument 'TEntity' violates the constraint of type parameter 'T'.
     //原因未知，只能放弃实现IDomainTreeEntity<TParentKey, TEntity, TIdentityUserKey>接口
     //先在基类实现IDomainEntity<TIdentityUserKey>接口，再在最终实体类实现ITree<T>接口
-    public class ApplicationRole : ApplicationRole<Guid, Guid, Guid>
+    public class ApplicationRole : ApplicationRole<Guid>
         , IStorageOrderRecordable
     {
         public ApplicationRole() => Id = Guid.NewGuid();
@@ -27,13 +27,11 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         public virtual long InsertOrder { get; set; }
     }
 
-    public abstract class ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> : IdentityRole<TKey>
-        , IDomainTreeEntity<TKey, ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey>>
-        , ICreatorRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TKey, TOrganizationKey>>
-        , ILastModifierRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TKey, TOrganizationKey>>
+    public abstract class ApplicationRole<TKey> : IdentityRole<TKey>
+        , IDomainTreeEntity<TKey, ApplicationRole<TKey>>
+        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
+        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
         where TKey : struct, IEquatable<TKey>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TOrganizationKey : struct, IEquatable<TOrganizationKey>
     {
         public string Description { get; set; }
 
@@ -41,15 +39,15 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         /// 需要使用.Include(r => r.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
         [NotMapped]
-        public virtual IEnumerable<ApplicationUser<TIdentityUserKey, TKey, TOrganizationKey>> Users => UserRoles?.Select(ur => ur.User);
+        public virtual IEnumerable<ApplicationUser<TKey>> Users => UserRoles?.Select(ur => ur.User);
 
         #region 导航属性
 
-        public virtual List<ApplicationUserRole<TIdentityUserKey, TKey, TOrganizationKey>> UserRoles { get; set; } = new List<ApplicationUserRole<TIdentityUserKey, TKey, TOrganizationKey>>();
+        public virtual List<ApplicationUserRole<TKey>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey>>();
 
-        public virtual List<ApplicationRoleClaim> RoleClaims { get; set; } = new List<ApplicationRoleClaim>();
+        public virtual List<ApplicationRoleClaim<TKey>> RoleClaims { get; set; } = new List<ApplicationRoleClaim<TKey>>();
 
-        public virtual List<RolePermissionDeclaration> PermissionDeclarations { get; set; } = new List<RolePermissionDeclaration>();
+        public virtual List<RolePermissionDeclaration<TKey>> PermissionDeclarations { get; set; } = new List<RolePermissionDeclaration<TKey>>();
 
         #endregion
 
@@ -73,18 +71,18 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TIdentityUserKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TKey, TOrganizationKey> Creator { get; set; }
-        public virtual TIdentityUserKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TKey, TOrganizationKey> LastModifier { get; set; }
+        public virtual TKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TKey> LastModifier { get; set; }
 
         #endregion
 
         #region ITree成员
 
-        public virtual ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> Parent { get; set; }
+        public virtual ApplicationRole<TKey> Parent { get; set; }
 
-        public virtual IList<ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey>> Children { get; set; }
+        public virtual IList<ApplicationRole<TKey>> Children { get; set; }
 
         [DoNotNotify, NotMapped]
         public virtual int Depth => Parent?.Depth + 1 ?? 0;
@@ -252,7 +250,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         public override bool Equals(object obj)
         {
-            var role = obj as ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey>;
+            var role = obj as ApplicationRole<TKey>;
             return role != null &&
                    EqualityComparer<TKey>.Default.Equals(Id, role.Id);
         }
@@ -262,12 +260,12 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
             return 2108858624 + EqualityComparer<TKey>.Default.GetHashCode(Id);
         }
 
-        public static bool operator ==(ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> role1, ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> role2)
+        public static bool operator ==(ApplicationRole<TKey> role1, ApplicationRole<TKey> role2)
         {
-            return EqualityComparer<ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey>>.Default.Equals(role1, role2);
+            return EqualityComparer<ApplicationRole<TKey>>.Default.Equals(role1, role2);
         }
 
-        public static bool operator !=(ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> role1, ApplicationRole<TKey, TIdentityUserKey, TOrganizationKey> role2)
+        public static bool operator !=(ApplicationRole<TKey> role1, ApplicationRole<TKey> role2)
         {
             return !(role1 == role2);
         }

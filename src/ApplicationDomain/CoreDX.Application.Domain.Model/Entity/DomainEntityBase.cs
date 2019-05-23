@@ -9,7 +9,7 @@ using CoreDX.Application.Domain.Model.Entity.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity
 {
-    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid, Guid, Guid>
+    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid>
     , IStorageOrderRecordable
     {
         protected DomainEntityBase()
@@ -20,35 +20,37 @@ namespace CoreDX.Application.Domain.Model.Entity
         public long InsertOrder { get; set; }
     }
 
-    public class DomainEntityBase<TKey, TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> : IDomainEntity<TKey>
-        , ICreatorRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        , ILastModifierRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
+    public abstract class DomainEntityBase<TKey, TIdentityKey> : DomainEntityBase<TKey>
+        , ICreatorRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+        , ILastModifierRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
         where TKey : struct, IEquatable<TKey>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityRoleKey : struct, IEquatable<TIdentityRoleKey>
-        where TOrganizationKey : struct, IEquatable<TOrganizationKey>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
+    {
+        #region IDomainEntity成员
+
+        public virtual TIdentityKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> Creator { get; set; }
+        public virtual TIdentityKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TIdentityKey> LastModifier { get; set; }
+
+        #endregion
+    }
+
+    public abstract class DomainEntityBase<TKey> : IDomainEntity<TKey>
+        , IOptimisticConcurrencySupported
+        where TKey : struct, IEquatable<TKey>
     {
         [Key]
         public virtual TKey Id { get; set; }
-
         public virtual string Remark { get; set; }
 
         #region IEntity成员
 
-        public virtual byte[] RowVersion { get; set; }
+        public virtual string ConcurrencyStamp { get; set; }
         public virtual bool? Active { get; set; }
         public virtual bool IsDeleted { get; set; }
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
         public virtual DateTimeOffset LastModificationTime { get; set; } = DateTimeOffset.Now;
-
-        #endregion
-
-        #region IDomainEntity成员
-
-        public virtual TIdentityUserKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> Creator { get; set; }
-        public virtual TIdentityUserKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> LastModifier { get; set; }
 
         #endregion
 

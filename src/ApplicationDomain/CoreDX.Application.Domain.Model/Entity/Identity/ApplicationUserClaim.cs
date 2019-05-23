@@ -8,20 +8,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserClaim : ApplicationUserClaim<Guid, Guid, Guid>
+    public class ApplicationUserClaim : ApplicationUserClaim<Guid>
     {}
 
-    public abstract class ApplicationUserClaim<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> : IdentityUserClaim<TIdentityUserKey>
+    public abstract class ApplicationUserClaim<TKey> : IdentityUserClaim<TKey>
         , IDomainEntity<int>
-        , ICreatorRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        , ILastModifierRecordable<TIdentityUserKey, ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey>>
-        where TIdentityUserKey : struct, IEquatable<TIdentityUserKey>
-        where TIdentityRoleKey : struct, IEquatable<TIdentityRoleKey>
-        where TOrganizationKey : struct, IEquatable<TOrganizationKey>
+        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
+        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
+        where TKey : struct, IEquatable<TKey>
     {
         #region 导航属性
 
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey> User { get; set; }
+        public virtual ApplicationUser<TKey> User { get; set; }
 
         #endregion
 
@@ -37,10 +35,10 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TIdentityUserKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> Creator { get; set; }
-        public virtual TIdentityUserKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityUserKey, TIdentityRoleKey, TOrganizationKey> LastModifier { get; set; }
+        public virtual TKey? CreatorId { get; set; }
+        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
+        public virtual ApplicationUser<TKey> LastModifier { get; set; }
 
         #endregion
 
