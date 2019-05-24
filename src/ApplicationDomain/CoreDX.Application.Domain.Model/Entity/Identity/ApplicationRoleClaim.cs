@@ -8,24 +8,27 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity.Identity
 {
-    public class ApplicationRoleClaim : ApplicationRoleClaim<Guid>
+    public class ApplicationRoleClaim : ApplicationRoleClaim<Guid, ApplicationUser, ApplicationRole>
     {}
 
-    public abstract class ApplicationRoleClaim<TKey> : IdentityRoleClaim<TKey>
+    public abstract class ApplicationRoleClaim<TKey, TIdentityUser, TIdentityRole> : IdentityRoleClaim<TKey>
         , IDomainEntity<int>
-        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
-        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
+        , ICreatorRecordable<TKey, TIdentityUser>
+        , ILastModifierRecordable<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
+        where TIdentityRole : IEntity<TKey>
     {
+        public override int Id { get; set; }
+
         #region 导航属性
 
-        public virtual ApplicationRole<TKey> Role { get; set; }
+        public virtual TIdentityRole Role { get; set; }
 
         #endregion
 
         #region IEntity成员
 
-        public virtual byte[] RowVersion { get; set; }
         public virtual bool? Active { get; set; } = true;
         public virtual bool IsDeleted { get; set; }
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
@@ -36,9 +39,9 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         #region IDomainEntity成员
 
         public virtual TKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TIdentityUser Creator { get; set; }
         public virtual TKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TKey> LastModifier { get; set; }
+        public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
 

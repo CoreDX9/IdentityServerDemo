@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Domain.Identity;
+using CoreDX.Application.Domain.Model.Entity;
+using CoreDX.Application.Domain.Model.Entity.Identity;
+using CoreDX.Common.Util.TypeExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Util.TypeExtensions;
 
-namespace Domain.EntityFrameworkCore.Extensions
+namespace CoreDX.Infrastructure.EntityFrameworkCore.Extensions
 {
     /// <summary>
     /// 数据迁移扩展

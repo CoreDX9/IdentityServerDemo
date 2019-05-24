@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using CoreDX.Application.Domain.Model.Entity.Core;
 using CoreDX.Application.Domain.Model.Entity.Identity;
+using Microsoft.AspNetCore.Identity;
 using PropertyChanged;
 
 namespace CoreDX.Application.Domain.Model.Entity
 {
-    public abstract class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid>
+    public abstract class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid, ApplicationUser>
         where TEntity : DomainTreeEntityBase<TEntity>
     {
         protected DomainTreeEntityBase()
@@ -22,19 +23,21 @@ namespace CoreDX.Application.Domain.Model.Entity
     /// <typeparam name="TKey">主键类型</typeparam>
     /// <typeparam name="TEntity">实体类型</typeparam>
     /// <typeparam name="TIdentityKey">Identity主键类型</typeparam>
-    public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityKey> : DomainTreeEntityBase<TKey, TEntity>
-        , ICreatorRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
-        , ILastModifierRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+    /// <typeparam name="TIdentityUser"></typeparam>
+    public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityKey, TIdentityUser> : DomainTreeEntityBase<TKey, TEntity>
+        , ICreatorRecordable<TIdentityKey, TIdentityUser>
+        , ILastModifierRecordable<TIdentityKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
-        where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityKey>
+        where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityKey, TIdentityUser>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
     {
         #region IDomainEntity成员
 
         public virtual TIdentityKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityKey> Creator { get; set; }
+        public virtual TIdentityUser Creator { get; set; }
         public virtual TIdentityKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityKey> LastModifier { get; set; }
+        public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
     }

@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CoreDX.Application.Domain.Model.Entity.Core;
 using CoreDX.Application.Domain.Model.Entity.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity
 {
-    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid>
+    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid, ApplicationUser>
     , IStorageOrderRecordable
     {
         protected DomainEntityBase()
@@ -20,18 +21,19 @@ namespace CoreDX.Application.Domain.Model.Entity
         public long InsertOrder { get; set; }
     }
 
-    public abstract class DomainEntityBase<TKey, TIdentityKey> : DomainEntityBase<TKey>
-        , ICreatorRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
-        , ILastModifierRecordable<TIdentityKey, ApplicationUser<TIdentityKey>>
+    public abstract class DomainEntityBase<TKey, TIdentityKey, TIdentityUser> : DomainEntityBase<TKey>
+        , ICreatorRecordable<TIdentityKey, TIdentityUser>
+        , ILastModifierRecordable<TIdentityKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
     {
         #region IDomainEntity成员
 
         public virtual TIdentityKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TIdentityKey> Creator { get; set; }
+        public virtual TIdentityUser Creator { get; set; }
         public virtual TIdentityKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TIdentityKey> LastModifier { get; set; }
+        public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
     }

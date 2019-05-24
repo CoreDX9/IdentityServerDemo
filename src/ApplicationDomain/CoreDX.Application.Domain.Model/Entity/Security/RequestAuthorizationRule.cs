@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CoreDX.Application.Domain.Model.Entity.Core;
+using CoreDX.Application.Domain.Model.Entity.Identity;
 using Newtonsoft.Json;
 
 namespace CoreDX.Application.Domain.Model.Entity.Security
@@ -22,10 +24,11 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         public virtual string UniqueKey { get; }
     }
 
-    public class RequestAuthorizationRule : RequestAuthorizationRule<Guid> {}
+    public class RequestAuthorizationRule : RequestAuthorizationRule<Guid, ApplicationUser> {}
 
-    public class RequestAuthorizationRule<TKey> : DomainEntityBase<TKey, TKey>
+    public class RequestAuthorizationRule<TKey, TIdentityUser> : DomainEntityBase<TKey, TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         /// <summary>
         /// 处理方法签名
@@ -48,16 +51,17 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
 
         public virtual Guid? AuthorizationRuleId { get; set; }
 
-        public virtual AuthorizationRule<TKey> AuthorizationRule { get; set; }
+        public virtual AuthorizationRule<TKey, TIdentityUser> AuthorizationRule { get; set; }
     }
 
-    public class AuthorizationRule : AuthorizationRule<Guid>{}
+    public class AuthorizationRule : AuthorizationRule<Guid, ApplicationUser>{}
 
     /// <summary>
     /// 请求授权规则
     /// </summary>
-    public class AuthorizationRule<TKey> : DomainEntityBase<TKey, TKey>
+    public class AuthorizationRule<TKey, TIdentityUser> : DomainEntityBase<TKey, TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         public string Name { get; set; }
 
@@ -69,7 +73,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         private AuthorizationRuleGroup _authorizationRuleConfig;
         public AuthorizationRuleGroup AuthorizationRuleConfig => _authorizationRuleConfig ?? (_authorizationRuleConfig = JsonConvert.DeserializeObject<AuthorizationRuleGroup>(AuthorizationRuleConfigJson));
 
-        public virtual List<RequestAuthorizationRule<TKey>> RequestAuthorizationRules { get; set; } = new List<RequestAuthorizationRule<TKey>>();
+        public virtual List<RequestAuthorizationRule<TKey, TIdentityUser>> RequestAuthorizationRules { get; set; } = new List<RequestAuthorizationRule<TKey, TIdentityUser>>();
 
         /// <summary>
         /// 授权规则组

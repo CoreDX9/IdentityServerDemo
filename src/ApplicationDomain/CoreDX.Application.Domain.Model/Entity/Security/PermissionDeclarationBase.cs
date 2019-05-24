@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreDX.Application.Domain.Model.Entity.Core;
 using CoreDX.Application.Domain.Model.Entity.Identity;
 
 namespace CoreDX.Application.Domain.Model.Entity.Security
@@ -6,8 +7,12 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
     /// <summary>
     /// 权限声明基类
     /// </summary>
-    public abstract class PermissionDeclarationBase<TKey> : DomainEntityBase<TKey, TKey>
-        where TKey : struct, IEquatable<TKey>
+    public abstract class PermissionDeclarationBase<TIdentityKey, TIdentityUser> : ManyToManyReferenceEntityBase<TIdentityKey, TIdentityUser>
+        , IOptimisticConcurrencySupported
+        , ILastModificationTimeRecordable
+        ,ILastModifierRecordable<TIdentityKey, TIdentityUser>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
     {
         /// <summary>
         /// 权限值
@@ -17,19 +22,26 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// <summary>
         /// 权限定义Id
         /// </summary>
-        public virtual TKey? PermissionDefinitionId { get; set; }
+        public virtual TIdentityKey? PermissionDefinitionId { get; set; }
 
         /// <summary>
         /// 权限定义
         /// </summary>
-        public virtual PermissionDefinition<TKey> PermissionDefinition { get; set; }
+        public virtual PermissionDefinition<TIdentityKey, TIdentityUser> PermissionDefinition { get; set; }
+
+        public string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
+        public DateTimeOffset LastModificationTime { get; set; } = DateTimeOffset.Now;
+        public TIdentityKey? LastModifierId { get; set; }
+        public TIdentityUser LastModifier { get; set; }
     }
 
     /// <summary>
     /// 角色权限声明
     /// </summary>
-    public class RolePermissionDeclaration<TKey> : PermissionDeclarationBase<TKey>
+    public abstract class RolePermissionDeclaration<TKey, TIdentityUser, TIdentityRole> : PermissionDeclarationBase<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
+        where TIdentityRole : IEntity<TKey>
     {
         /// <summary>
         /// 角色Id
@@ -39,14 +51,15 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// <summary>
         /// 角色
         /// </summary>
-        public virtual ApplicationRole<TKey> Role { get; set; }
+        public virtual TIdentityRole Role { get; set; }
     }
 
     /// <summary>
     /// 用户权限声明
     /// </summary>
-    public class UserPermissionDeclaration<TKey> : PermissionDeclarationBase<TKey>
+    public abstract class UserPermissionDeclaration<TKey, TIdentityUser> : PermissionDeclarationBase<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         /// <summary>
         /// 用户Id
@@ -56,14 +69,15 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// <summary>
         /// 用户
         /// </summary>
-        public virtual ApplicationUser<TKey> User { get; set; }
+        public virtual TIdentityUser User { get; set; }
     }
 
     /// <summary>
     /// 组织权限声明
     /// </summary>
-    public class OrganizationPermissionDeclaration<TKey> : PermissionDeclarationBase<TKey>
+    public abstract class OrganizationPermissionDeclaration<TKey, TIdentityUser> : PermissionDeclarationBase<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         /// <summary>
         /// 组织Id
@@ -73,6 +87,6 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// <summary>
         /// 组织
         /// </summary>
-        public virtual Organization<TKey> Organization { get; set; }
+        public virtual Organization<TKey, TIdentityUser> Organization { get; set; }
     }
 }

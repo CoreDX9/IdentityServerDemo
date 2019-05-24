@@ -18,13 +18,9 @@ namespace CoreDX.Application.Domain.Model.Entity
     {
         #region IEntity成员
 
-        public virtual byte[] RowVersion { get; set; }
-
         public virtual bool? Active { get; set; }
 
         public virtual bool IsDeleted { get; set; }
-
-        public virtual long OrderNumber { get; set; }
 
         public virtual DateTimeOffset CreationTime { get; set; }
 

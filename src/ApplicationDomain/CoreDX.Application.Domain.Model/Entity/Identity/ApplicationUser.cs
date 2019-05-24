@@ -23,7 +23,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
     /// <summary>
     /// 实际使用的用户类，添加自己的属性存储自定义信息
     /// </summary>
-    public class ApplicationUser : ApplicationUser<Guid>
+    public class ApplicationUser : ApplicationUser<Guid, ApplicationUser, ApplicationRole>
         , IStorageOrderRecordable
     {
         public ApplicationUser() => Id = Guid.NewGuid();
@@ -34,39 +34,43 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         public virtual long InsertOrder { get; set; }
     }
 
-    public abstract class ApplicationUser<TKey> : IdentityUser<TKey>
+    public abstract class ApplicationUser<TKey, TIdentityUser, TIdentityRole> : IdentityUser<TKey>
+        , IOptimisticConcurrencySupported
         , IDomainEntity<TKey>
-        , ICreatorRecordable<TKey, ApplicationUser<TKey>>
-        , ILastModifierRecordable<TKey, ApplicationUser<TKey>>
+        , ICreatorRecordable<TKey, TIdentityUser>
+        , ILastModifierRecordable<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
+        where TIdentityRole : IEntity<TKey>
     {
         /// <summary>
         /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
         [NotMapped]
-        public virtual IEnumerable<ApplicationRole<TKey>> Roles => UserRoles?.Select(ur => ur.Role);
+        public virtual IEnumerable<TIdentityRole> Roles => UserRoles?.Select(ur => ur.Role);
 
         /// <summary>
         /// 需要使用.Include(u => u.UserOrganizations).ThenInclude(uo => uo.Organization)预加载或启用延迟加载
         /// </summary>
         [NotMapped]
-        public virtual IEnumerable<Organization<TKey>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
+        public virtual IEnumerable<Organization<TKey, TIdentityUser>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
 
         #region 导航属性
 
-        public virtual List<ApplicationUserClaim<TKey>> Claims { get; set; } = new List<ApplicationUserClaim<TKey>>();
-        public virtual List<ApplicationUserLogin<TKey>> Logins { get; set; } = new List<ApplicationUserLogin<TKey>>();
-        public virtual List<ApplicationUserToken<TKey>> Tokens { get; set; } = new List<ApplicationUserToken<TKey>>();
-        public virtual List<ApplicationUserRole<TKey>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey>>();
-        public virtual List<ApplicationUserOrganization<TKey>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey>>();
-        public virtual List<UserPermissionDeclaration<TKey>> PermissionDeclarations { get; set; } = new List<UserPermissionDeclaration<TKey>>();
+        public virtual List<ApplicationUserClaim<TKey, TIdentityUser>> Claims { get; set; } = new List<ApplicationUserClaim<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserLogin<TKey, TIdentityUser>> Logins { get; set; } = new List<ApplicationUserLogin<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserToken<TKey, TIdentityUser>> Tokens { get; set; } = new List<ApplicationUserToken<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>>();
+        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey, TIdentityUser>>();
+        public virtual List<UserPermissionDeclaration<TKey, TIdentityUser>> PermissionDeclarations { get; set; } = new List<UserPermissionDeclaration<TKey, TIdentityUser>>();
 
         #endregion
 
         public override TKey Id { get; set; }
+        public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         #region IEntity成员
-        
+
         public virtual bool? Active { get; set; } = true;
         public virtual bool IsDeleted { get; set; }
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
@@ -77,9 +81,9 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         #region IDomainEntity成员
 
         public virtual TKey? CreatorId { get; set; }
-        public virtual ApplicationUser<TKey> Creator { get; set; }
+        public virtual TIdentityUser Creator { get; set; }
         public virtual TKey? LastModifierId { get; set; }
-        public virtual ApplicationUser<TKey> LastModifier { get; set; }
+        public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
 
