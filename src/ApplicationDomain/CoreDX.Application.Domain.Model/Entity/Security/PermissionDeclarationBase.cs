@@ -75,8 +75,9 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
     /// <summary>
     /// 组织权限声明
     /// </summary>
-    public abstract class OrganizationPermissionDeclaration<TKey, TIdentityUser> : PermissionDeclarationBase<TKey, TIdentityUser>
+    public abstract class OrganizationPermissionDeclaration<TKey, TOrganization, TIdentityUser> : PermissionDeclarationBase<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
         where TIdentityUser : IEntity<TKey>
     {
         /// <summary>
@@ -87,6 +88,6 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
         /// <summary>
         /// 组织
         /// </summary>
-        public virtual Organization<TKey, TIdentityUser> Organization { get; set; }
+        public virtual TOrganization Organization { get; set; }
     }
 }

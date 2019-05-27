@@ -11,13 +11,13 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
     public class ApplicationRoleClaim : ApplicationRoleClaim<Guid, ApplicationUser, ApplicationRole>
     {}
 
-    public abstract class ApplicationRoleClaim<TKey, TIdentityUser, TIdentityRole> : IdentityRoleClaim<TKey>
+    public abstract class ApplicationRoleClaim<TIdentityKey, TIdentityUser, TIdentityRole> : IdentityRoleClaim<TIdentityKey>
         , IDomainEntity<int>
-        , ICreatorRecordable<TKey, TIdentityUser>
-        , ILastModifierRecordable<TKey, TIdentityUser>
-        where TKey : struct, IEquatable<TKey>
-        where TIdentityUser : IEntity<TKey>
-        where TIdentityRole : IEntity<TKey>
+        , ICreatorRecordable<TIdentityKey, TIdentityUser>
+        , ILastModifierRecordable<TIdentityKey, TIdentityUser>
+        where TIdentityKey : struct, IEquatable<TIdentityKey>
+        where TIdentityUser : IEntity<TIdentityKey>
+        where TIdentityRole : IEntity<TIdentityKey>
     {
         public override int Id { get; set; }
 
@@ -38,9 +38,9 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TKey? CreatorId { get; set; }
+        public virtual TIdentityKey? CreatorId { get; set; }
         public virtual TIdentityUser Creator { get; set; }
-        public virtual TKey? LastModifierId { get; set; }
+        public virtual TIdentityKey? LastModifierId { get; set; }
         public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion

@@ -23,7 +23,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
     /// <summary>
     /// 实际使用的用户类，添加自己的属性存储自定义信息
     /// </summary>
-    public class ApplicationUser : ApplicationUser<Guid, ApplicationUser, ApplicationRole>
+    public class ApplicationUser : ApplicationUser<Guid, ApplicationUser, ApplicationRole, Organization>
         , IStorageOrderRecordable
     {
         public ApplicationUser() => Id = Guid.NewGuid();
@@ -34,7 +34,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         public virtual long InsertOrder { get; set; }
     }
 
-    public abstract class ApplicationUser<TKey, TIdentityUser, TIdentityRole> : IdentityUser<TKey>
+    public abstract class ApplicationUser<TKey, TIdentityUser, TIdentityRole, TOrganization> : IdentityUser<TKey>
         , IOptimisticConcurrencySupported
         , IDomainEntity<TKey>
         , ICreatorRecordable<TKey, TIdentityUser>
@@ -42,6 +42,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         where TKey : struct, IEquatable<TKey>
         where TIdentityUser : IEntity<TKey>
         where TIdentityRole : IEntity<TKey>
+        where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
     {
         /// <summary>
         /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
@@ -53,7 +54,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         /// 需要使用.Include(u => u.UserOrganizations).ThenInclude(uo => uo.Organization)预加载或启用延迟加载
         /// </summary>
         [NotMapped]
-        public virtual IEnumerable<Organization<TKey, TIdentityUser>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
+        public virtual IEnumerable<Organization<TKey, TOrganization, TIdentityUser>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
 
         #region 导航属性
 
@@ -61,7 +62,7 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
         public virtual List<ApplicationUserLogin<TKey, TIdentityUser>> Logins { get; set; } = new List<ApplicationUserLogin<TKey, TIdentityUser>>();
         public virtual List<ApplicationUserToken<TKey, TIdentityUser>> Tokens { get; set; } = new List<ApplicationUserToken<TKey, TIdentityUser>>();
         public virtual List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>>();
-        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>>();
         public virtual List<UserPermissionDeclaration<TKey, TIdentityUser>> PermissionDeclarations { get; set; } = new List<UserPermissionDeclaration<TKey, TIdentityUser>>();
 
         #endregion

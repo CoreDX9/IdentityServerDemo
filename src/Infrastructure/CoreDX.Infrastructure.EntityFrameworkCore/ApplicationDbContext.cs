@@ -10,7 +10,7 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore
 {
     public class ApplicationIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TOrganization, TPermissionDefinition, TUserOrganization, TUserPermissionDeclaration, TRolePermissionDeclaration, TOrganizationPermissionDeclaration, TRequestAuthorizationRule, TAuthorizationRule>
         : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TUser : ApplicationUser<TKey, TUser, TRole>
+        where TUser : ApplicationUser<TKey, TUser, TRole, TOrganization>
         where TRole : ApplicationRole<TKey, TUser, TRole>
         where TKey : struct, IEquatable<TKey>
         where TUserClaim : ApplicationUserClaim<TKey, TUser>
@@ -18,12 +18,12 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore
         where TUserLogin : ApplicationUserLogin<TKey, TUser>
         where TRoleClaim : ApplicationRoleClaim<TKey, TUser, TRole>
         where TUserToken : ApplicationUserToken<TKey, TUser>
-        where TOrganization : Organization<TKey, TUser>
+        where TOrganization : Organization<TKey, TOrganization, TUser>
         where TPermissionDefinition : PermissionDefinition<TKey, TUser>
-        where TUserOrganization : ApplicationUserOrganization<TKey, TUser>
+        where TUserOrganization : ApplicationUserOrganization<TKey, TUser, TOrganization>
         where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TUser>
         where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TUser, TRole>
-        where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TUser>
+        where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TOrganization, TUser>
         where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TUser>
         where TAuthorizationRule : AuthorizationRule<TKey, TUser>
     {
@@ -59,15 +59,27 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<TUser>().ConfigUser<TUser, TRole, TKey>();
+            builder.Entity<TUser>().ConfigUser<TUser, TRole, TOrganization, TKey>();
             builder.Entity<TRole>().ConfigRole<TUser, TRole, TKey>();
             builder.Entity<TPermissionDefinition>().ConfigPermissionDefinition<TPermissionDefinition, TUser, TKey>();
-            builder.Entity<TUserPermissionDeclaration>().ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TUser, TRole, TKey>();
+            builder.Entity<TUserPermissionDeclaration>().ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TUser, TRole, TOrganization, TKey>();
             builder.Entity<TRolePermissionDeclaration>().ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TUser, TRole, TKey>();
-            builder.Entity<TOrganizationPermissionDeclaration>().ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TUser, TKey>();
-            builder.Entity<TUserClaim>().ConfigUserClaim<TUserClaim, TUser, TRole, TKey>();
+            builder.Entity<TOrganizationPermissionDeclaration>().ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TOrganization, TUser, TKey>();
+            builder.Entity<TUserClaim>().ConfigUserClaim<TUserClaim, TUser, TRole, TOrganization, TKey>();
             builder.Entity<TUserRole>().ConfigUserRole<TUserRole, TUser, TRole, TKey>();
+            builder.Entity<TUserLogin>().ConfigTUserLogin<TUserLogin, TUser, TKey>();
+            builder.Entity<TRoleClaim>().ConfigRoleClaim<TRoleClaim, TUser, TRole, TKey>();
+            builder.Entity<TUserToken>().ConfigTUserToken<TUserToken, TUser, TKey>();
+            builder.Entity<TOrganization>().ConfigOrganization<TOrganization, TUser, TKey>();
 
+            builder.Entity<TRequestAuthorizationRule>()
+                .HasOne(e => e.Creator)
+                .WithMany()
+                .HasForeignKey(e => e.CreatorId);
+            builder.Entity<TRequestAuthorizationRule>()
+                .HasOne(e => e.LastModifier)
+                .WithMany()
+                .HasForeignKey(e => e.LastModifierId);
             builder.Entity<TRequestAuthorizationRule>()
                 .HasOne(r => r.AuthorizationRule)
                 .WithMany(a => (IEnumerable<TRequestAuthorizationRule>)a.RequestAuthorizationRules)
@@ -76,47 +88,11 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore
 
             builder.Entity<TAuthorizationRule>().ToTable("AuthorizationRules");
 
-            builder.Entity<TUserRole>()
+            builder.Entity<TAuthorizationRule>()
                 .HasOne(e => e.Creator)
                 .WithMany()
                 .HasForeignKey(e => e.CreatorId);
-            //builder.Entity<TUserRole>()
-            //    .HasOne(e => e.LastModifier)
-            //    .WithMany()
-            //    .HasForeignKey(e => e.LastModifierId); 
-
-            //builder.Entity<TUserLogin>()
-            //    .HasOne(e => e.Creator)
-            //    .WithMany()
-            //    .HasForeignKey(e => e.CreatorId);
-            //builder.Entity<TUserLogin>()
-            //    .HasOne(e => e.LastModifier)
-            //    .WithMany()
-            //    .HasForeignKey(e => e.LastModifierId);
-
-            builder.Entity<TRoleClaim>()
-                .HasOne(e => e.Creator)
-                .WithMany()
-                .HasForeignKey(e => e.CreatorId);
-            builder.Entity<TRoleClaim>()
-                .HasOne(e => e.LastModifier)
-                .WithMany()
-                .HasForeignKey(e => e.LastModifierId);
-
-            builder.Entity<TUserToken>()
-                .HasOne(e => e.Creator)
-                .WithMany()
-                .HasForeignKey(e => e.CreatorId);
-            //builder.Entity<TUserToken>()
-            //    .HasOne(e => e.LastModifier)
-            //    .WithMany()
-            //    .HasForeignKey(e => e.LastModifierId);
-
-            builder.Entity<TOrganization>()
-                .HasOne(e => e.Creator)
-                .WithMany()
-                .HasForeignKey(e => e.CreatorId);
-            builder.Entity<TOrganization>()
+            builder.Entity<TAuthorizationRule>()
                 .HasOne(e => e.LastModifier)
                 .WithMany()
                 .HasForeignKey(e => e.LastModifierId);
@@ -125,28 +101,6 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore
                 .HasOne(e => e.Creator)
                 .WithMany()
                 .HasForeignKey(e => e.CreatorId);
-            //builder.Entity<TUserOrganization>()
-            //    .HasOne(e => e.LastModifier)
-            //    .WithMany()
-            //    .HasForeignKey(e => e.LastModifierId);
-
-            builder.Entity<TRequestAuthorizationRule>()
-                .HasOne(e => e.Creator)
-                .WithMany()
-                .HasForeignKey(e => e.CreatorId);
-            builder.Entity<TRequestAuthorizationRule>()
-                .HasOne(e => e.LastModifier)
-                .WithMany()
-                .HasForeignKey(e => e.LastModifierId);
-
-            builder.Entity<TAuthorizationRule>()
-                .HasOne(e => e.Creator)
-                .WithMany()
-                .HasForeignKey(e => e.CreatorId);
-            builder.Entity<TAuthorizationRule>()
-                .HasOne(e => e.LastModifier)
-                .WithMany()
-                .HasForeignKey(e => e.LastModifierId);
         }
     }
 }

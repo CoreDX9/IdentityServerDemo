@@ -7,15 +7,16 @@ using CoreDX.Application.Domain.Model.Entity.Security;
 
 namespace CoreDX.Application.Domain.Model.Entity.Identity
 {
-    public class Organization : Organization<Guid, ApplicationUser>
+    public class Organization : Organization<Guid, Organization, ApplicationUser>
     , IStorageOrderRecordable
     {
         public long InsertOrder { get; set; }
     }
 
-    public abstract class Organization<TKey, TIdentityUser> : DomainTreeEntityBase<Organization<TKey, TIdentityUser>>
+    public abstract class Organization<TKey, TEntity, TIdentityUser> : DomainTreeEntityBase<TKey, TEntity, TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
         where TIdentityUser : IEntity<TKey>
+        where TEntity : Organization<TKey, TEntity, TIdentityUser>
     {
         /// <summary>
         /// 需要使用.Include(o => o.UserOrganizations).ThenInclude(uo => uo.User)预加载或启用延迟加载
@@ -27,9 +28,9 @@ namespace CoreDX.Application.Domain.Model.Entity.Identity
 
         public string Description { get; set; }
 
-        public virtual List<OrganizationPermissionDeclaration<TKey, TIdentityUser>> PermissionDeclarations { get; set; } = new List<OrganizationPermissionDeclaration<TKey, TIdentityUser>>();
+        public virtual List<OrganizationPermissionDeclaration<TKey, TEntity, TIdentityUser>> PermissionDeclarations { get; set; } = new List<OrganizationPermissionDeclaration<TKey, TEntity, TIdentityUser>>();
 
-        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser>> UserOrganizations { get; set; } =
-            new List<ApplicationUserOrganization<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser, TEntity>> UserOrganizations { get; set; } =
+            new List<ApplicationUserOrganization<TKey, TIdentityUser, TEntity>>();
     }
 }

@@ -16,5 +16,5 @@ namespace CoreDX.Application.Domain.Model.Entity.Security
     /// <summary>
     /// 组织权限声明
     /// </summary>
-    public class OrganizationPermissionDeclaration : OrganizationPermissionDeclaration<Guid, ApplicationUser> {}
+    public class OrganizationPermissionDeclaration : OrganizationPermissionDeclaration<Guid, Organization, ApplicationUser> {}
 }

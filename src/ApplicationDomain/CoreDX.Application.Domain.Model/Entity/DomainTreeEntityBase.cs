@@ -2,21 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using CoreDX.Application.Domain.Model.Entity.Core;
-using CoreDX.Application.Domain.Model.Entity.Identity;
-using Microsoft.AspNetCore.Identity;
 using PropertyChanged;
 
 namespace CoreDX.Application.Domain.Model.Entity
 {
-    public abstract class DomainTreeEntityBase<TEntity> : DomainTreeEntityBase<Guid, TEntity, Guid, ApplicationUser>
-        where TEntity : DomainTreeEntityBase<TEntity>
-    {
-        protected DomainTreeEntityBase()
-        {
-            Id = Guid.NewGuid();
-        }
-    }
-
     /// <summary>
     /// 确定了实体操作人主键类型的树形领域实体基类
     /// </summary>

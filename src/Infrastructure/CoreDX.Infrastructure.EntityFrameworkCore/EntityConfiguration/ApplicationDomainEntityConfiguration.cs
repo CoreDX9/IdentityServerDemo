@@ -21,10 +21,11 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
             builder.ToTable("PermissionDefinitions");
         }
 
-        public static void ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TIdentityUser, TIdentityRole, TKey>(
+        public static void ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TIdentityUser, TIdentityRole, TOrganization, TKey>(
             this EntityTypeBuilder<TUserPermissionDeclaration> builder)
             where TKey : struct, IEquatable<TKey>
-            where TIdentityUser : ApplicationUser<TKey, TIdentityUser, TIdentityRole>
+            where TIdentityUser : ApplicationUser<TKey, TIdentityUser, TIdentityRole, TOrganization>
+            where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
             where TIdentityRole : IEntity<TKey>
             where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TIdentityUser>
         {
@@ -59,11 +60,12 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
             builder.ToTable("RolePermissionDeclarations");
         }
 
-        public static void ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TIdentityUser, TKey>(
+        public static void ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TOrganization, TIdentityUser, TKey>(
             this EntityTypeBuilder<TOrganizationPermissionDeclaration> builder)
             where TKey : struct, IEquatable<TKey>
+            where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
             where TIdentityUser : class, IEntity<TKey>
-            where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TIdentityUser>
+            where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TOrganization, TIdentityUser>
         {
             builder.HasKey(e => new {e.OrganizationId, e.PermissionDefinitionId});
             builder.ConfigForIManyToManyReferenceEntity<TOrganizationPermissionDeclaration, TKey, TIdentityUser>();
@@ -77,11 +79,12 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
             builder.ToTable("OrganizationPermissionDeclarations");
         }
 
-        public static void ConfigUser<TUser, TRole, TKey>(
+        public static void ConfigUser<TUser, TRole, TOrganization, TKey>(
             this EntityTypeBuilder<TUser> builder)
             where TKey : struct, IEquatable<TKey>
             where TRole : class, IEntity<TKey>
-            where TUser : ApplicationUser<TKey, TUser, TRole>
+            where TOrganization : Organization<TKey, TOrganization, TUser>
+            where TUser : ApplicationUser<TKey, TUser, TRole, TOrganization>
         {
             builder.ConfigForIDomainEntity();
             builder.ConfigForIOptimisticConcurrencySupported();
@@ -117,7 +120,7 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
         public static void ConfigRole<TUser, TRole, TKey>(
             this EntityTypeBuilder<TRole> builder)
             where TKey : struct, IEquatable<TKey>
-            where TUser : ApplicationUser<TKey, TUser, TRole>
+            where TUser : class, IEntity<TKey>
             where TRole : ApplicationRole<TKey, TUser, TRole>
         {
             builder.ConfigForIDomainTreeEntity<TKey, TRole>();
@@ -137,12 +140,13 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
             builder.ToTable("AppRoles");
         }
 
-        public static void ConfigUserClaim<TUserClaim, TUser, TRole, TKey>(
+        public static void ConfigUserClaim<TUserClaim, TUser, TRole, TOrganization, TKey>(
             this EntityTypeBuilder<TUserClaim> builder)
             where TKey : struct, IEquatable<TKey>
             where TUserClaim : ApplicationUserClaim<TKey, TUser>
-            where TUser : ApplicationUser<TKey, TUser, TRole>
+            where TUser : ApplicationUser<TKey, TUser, TRole, TOrganization>
             where TRole : IEntity<TKey>
+            where TOrganization : Organization<TKey, TOrganization, TUser>
         {
             builder.ConfigForIDomainEntity();
             builder.ConfigForICreatorRecordable<TUserClaim, TUser, TKey>();
@@ -158,7 +162,6 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
             where TRole : class, IEntity<TKey>
         {
             builder.ConfigForIManyToManyReferenceEntity<TUserRole, TKey, TUser>();
-            builder.ConfigForICreatorRecordable<TUserRole, TUser, TKey>();
             builder.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId);
@@ -166,6 +169,59 @@ namespace CoreDX.Infrastructure.EntityFrameworkCore.EntityConfiguration
                 .WithMany()
                 .HasForeignKey(e => e.RoleId);
             builder.ToTable("AppUserRoles");
+        }
+
+        public static void ConfigTUserLogin<TUserLogin, TUser, TKey>(
+            this EntityTypeBuilder<TUserLogin> builder)
+        where TKey : struct, IEquatable<TKey>
+            where TUserLogin : ApplicationUserLogin<TKey, TUser>
+            where TUser : class, IEntity<TKey>
+        {
+            builder.ConfigForICreatorRecordable<TUserLogin, TUser, TKey>();
+            builder.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId);
+        }
+
+        public static void ConfigRoleClaim<TRoleClaim, TUser, TRole, TKey>(
+            this EntityTypeBuilder<TRoleClaim> builder)
+            where TKey : struct, IEquatable<TKey>
+            where TRoleClaim : ApplicationRoleClaim<TKey, TUser, TRole>
+            where TUser : class, IEntity<TKey>
+            where TRole : IEntity<TKey>
+        {
+            builder.ConfigForIDomainEntity();
+            builder.ConfigForICreatorRecordable<TRoleClaim, TUser, TKey>();
+            builder.ConfigForILastModifierRecordable<TRoleClaim, TUser, TKey>();
+            builder.ToTable("AppRoleClaims");
+        }
+
+        public static void ConfigTUserToken<TUserToken, TUser, TKey>(
+            this EntityTypeBuilder<TUserToken> builder)
+            where TKey : struct, IEquatable<TKey>
+            where TUserToken : ApplicationUserToken<TKey, TUser>
+            where TUser : class, IEntity<TKey>
+        {
+            builder.ConfigForICreatorRecordable<TUserToken, TUser, TKey>();
+            builder.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId);
+        }
+
+        public static void ConfigOrganization<TOrganization, TUser, TKey>(
+            this EntityTypeBuilder<TOrganization> builder)
+            where TOrganization : Organization<TKey, TOrganization, TUser>
+            where TKey : struct, IEquatable<TKey>
+            where TUser : class, IEntity<TKey>
+        {
+            builder.ConfigForDomainTreeEntityBase<TKey, TOrganization, TKey, TUser>();
+            builder.HasMany(e => e.PermissionDeclarations)
+                .WithOne(e => e.Organization)
+                .HasForeignKey(e => e.OrganizationId);
+            builder.HasMany(e => e.UserOrganizations)
+                .WithOne(e => e.Organization)
+                .HasForeignKey(e => e.OrganizationId);
+            builder.ToTable("Organizations");
         }
     }
 }
