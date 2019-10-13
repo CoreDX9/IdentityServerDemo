@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Domain.Identity;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityServer.Areas.Manage.Models.Users;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Domain.Identity;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityServer.Areas.Manage.Models.Users;
 
 namespace IdentityServer.Areas.Manage.Models.ModelMapProfiles

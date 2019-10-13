@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Domain.Management;
+﻿using AutoMapper;
 using IdentityServer.Areas.Manage.Models.Menus;
 
 namespace IdentityServer.Areas.Manage.Models.ModelMapProfiles

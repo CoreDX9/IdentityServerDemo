@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class CreateModel : PageModelBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CreateModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CreateModel(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -24,7 +23,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
 
         public IActionResult OnGet()
         {
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["Parent"] = new SelectList(_context.TreeDomains, "Id", "SampleColumn");
             return Page();
@@ -40,7 +39,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
                 return Page();
             }
             
-            TreeDomain.CreationUserId = new Guid(HttpContext.User.GetSubjectId());
+            TreeDomain.CreatorId = new Guid(HttpContext.User.GetSubjectId());
             TreeDomain.LastModificationUserId = new Guid(HttpContext.User.GetSubjectId());
             _context.TreeDomains.Add(TreeDomain);
 

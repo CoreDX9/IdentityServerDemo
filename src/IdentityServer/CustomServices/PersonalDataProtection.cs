@@ -7,7 +7,6 @@ using System.Text;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Util.TypeExtensions;
 
 namespace IdentityServer.CustomServices
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
-using Domain.Identity;
-using Domain.Management;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -10,7 +10,6 @@ using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Repository.EntityFrameworkCore;
 
 namespace IdentityServer
 {
@@ -71,7 +70,7 @@ namespace IdentityServer
                 }
 
                 {
-                    var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                    var context = scope.ServiceProvider.GetService<ApplicationIdentityDbContext>();
 
                     try
                     {

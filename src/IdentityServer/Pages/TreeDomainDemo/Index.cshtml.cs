@@ -1,19 +1,17 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
-using Repository.EntityFrameworkCore;
-using Util.TypeExtensions;
 using X.PagedList;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class IndexModel : PageModelBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
 
-        public IndexModel(ApplicationDbContext context)
+        public IndexModel(ApplicationIdentityDbContext context)
         {
             _context = context;
         }
@@ -47,7 +45,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
                 t.IsDeleted,
                 CreationTime = t.CreationTime.ToString("yyyy-MM-dd HH:mm:ss zzz"),
                 LastModificationTime = t.LastModificationTime.ToString("yyyy-MM-dd HH:mm:ss zzz"),
-                t.CreationUserId,
+                t.CreatorId,
                 t.LastModificationUserId,
                 EditLink = Url.Page("Edit",new{id = t.Id}),
                 DetailsLink = Url.Page("Details", new{id = t.Id}),
@@ -118,7 +116,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
                         {
                             d.SampleColumn,
                             d.CreationTime,
-                            d.CreationUserId,
+                            d.CreatorId,
                             d.HasChildren,
                             d.IsEnable,
                             d.LastModificationTime,

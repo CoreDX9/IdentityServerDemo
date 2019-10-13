@@ -1,25 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repository.EntityFrameworkCore;
-using Util.TypeExtensions;
 
 namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
 {
     public partial class IndexModel : PageModelBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<Domain.Identity.ApplicationRole> _roleManager;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly ApplicationIdentityDbContext _dbContext;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            RoleManager<Domain.Identity.ApplicationRole> roleManager,
-            ApplicationDbContext dbContext)
+            RoleManager<ApplicationRole> roleManager,
+            ApplicationIdentityDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -86,12 +86,11 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
                         {
                             r.Name,
                             r.CreationTime,
-                            r.CreationUserId,
-                            r.IsEnable,
+                            r.CreatorId,
+                            r.Active,
                             r.LastModificationTime,
                             r.LastModificationUserId,
-                            r.OrderNumber,
-                            r.RowVersion,
+                            r.ConcurrencyStamp,
                             //以下为JqGrid中必须的字段
                             r.Id, //记录的唯一标识，可在插件中配置为其它字段，但是必须能作为记录的唯一标识用，不能重复
                             r.ParentId, //上层节点唯一标识，可配置为其它字段

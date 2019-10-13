@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Security;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
-using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class PermissionDefinitionController : BaseController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
 
-        public PermissionDefinitionController(ApplicationDbContext context)
+        public PermissionDefinitionController(ApplicationIdentityDbContext context)
         {
             _context = context;
         }
@@ -52,7 +48,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/PermissionDefinition/Create
         public IActionResult Create()
         {
-            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id");
             //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -67,12 +63,12 @@ namespace IdentityServer.Areas.Manage.Controllers
             if (ModelState.IsValid)
             {
                 permissionDefinition.Id = Guid.NewGuid();
-                permissionDefinition.CreationUserId = Guid.Parse(User.GetSubjectId());
+                permissionDefinition.CreatorId = Guid.Parse(User.GetSubjectId());
                 _context.Add(permissionDefinition);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreatorId);
             //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }
@@ -90,7 +86,7 @@ namespace IdentityServer.Areas.Manage.Controllers
             {
                 return NotFound();
             }
-            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreatorId);
             //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }
@@ -127,7 +123,7 @@ namespace IdentityServer.Areas.Manage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreationUserId);
+            //ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.CreatorId);
             //ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", permissionDefinition.LastModificationUserId);
             return View(permissionDefinition);
         }

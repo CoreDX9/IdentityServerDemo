@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +48,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
                 var role = new ApplicationRole(Input.Name)
                 {
                     ParentId = Input.ParentId,
-                    CreationUserId = userId,
+                    CreatorId = userId,
                     LastModificationUserId = userId
                 };
 

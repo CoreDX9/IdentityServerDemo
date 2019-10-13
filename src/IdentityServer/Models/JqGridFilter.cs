@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
-using Util.TypeExtensions;
 
 namespace IdentityServer.Models
 {

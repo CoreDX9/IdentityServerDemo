@@ -9,7 +9,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;

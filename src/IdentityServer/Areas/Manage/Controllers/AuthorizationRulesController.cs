@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Security;
-using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class AuthorizationRulesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
 
-        public AuthorizationRulesController(ApplicationDbContext context)
+        public AuthorizationRulesController(ApplicationIdentityDbContext context)
         {
             _context = context;
         }
@@ -23,8 +21,8 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/AuthorizationRules
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.AuthorizationRules.Include(a => a.CreationUser).Include(a => a.LastModificationUser);
-            return View(await applicationDbContext.ToListAsync());
+            var ApplicationIdentityDbContext = _context.AuthorizationRules.Include(a => a.Creator).Include(a => a.LastModifier);
+            return View(await ApplicationIdentityDbContext.ToListAsync());
         }
 
         // GET: Manage/AuthorizationRules/Details/5
@@ -36,8 +34,8 @@ namespace IdentityServer.Areas.Manage.Controllers
             }
 
             var authorizationRule = await _context.AuthorizationRules
-                .Include(a => a.CreationUser)
-                .Include(a => a.LastModificationUser)
+                .Include(a => a.Creator)
+                .Include(a => a.LastModifier)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (authorizationRule == null)
             {
@@ -50,7 +48,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/AuthorizationRules/Create
         public IActionResult Create()
         {
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -60,7 +58,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule authorizationRule)
+        public async Task<IActionResult> Create([Bind("AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] AuthorizationRule authorizationRule)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +67,7 @@ namespace IdentityServer.Areas.Manage.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.LastModificationUserId);
             return View(authorizationRule);
         }
@@ -87,7 +85,7 @@ namespace IdentityServer.Areas.Manage.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.LastModificationUserId);
             return View(authorizationRule);
         }
@@ -97,7 +95,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule authorizationRule)
+        public async Task<IActionResult> Edit(Guid id, [Bind("AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] AuthorizationRule authorizationRule)
         {
             if (id != authorizationRule.Id)
             {
@@ -124,7 +122,7 @@ namespace IdentityServer.Areas.Manage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", authorizationRule.LastModificationUserId);
             return View(authorizationRule);
         }

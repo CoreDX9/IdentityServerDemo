@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Model.Entity.Sample;
 using IdentityServer.Extensions;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
@@ -9,16 +10,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Repository.EntityFrameworkCore;
-using X.PagedList;
 
 namespace IdentityServer.Controllers
 {
     public class DomainDemoController : BaseController
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public DomainDemoController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public DomainDemoController(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -65,7 +64,7 @@ namespace IdentityServer.Controllers
         // GET: DomainDemo/Create
         public IActionResult Create()
         {
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -75,19 +74,19 @@ namespace IdentityServer.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SampleColumn,Id,OrderNumber,RowVersion,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] Domain.Sample.Domain domain)
+        public async Task<IActionResult> Create([Bind("SampleColumn,Id,OrderNumber,RowVersion,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] Domain domain)
         {
             if (ModelState.IsValid)
             {
                 domain.Id = Guid.NewGuid();
-                domain.CreationUserId = new Guid(HttpContext.User.GetSubjectId());
+                domain.CreatorId = new Guid(HttpContext.User.GetSubjectId());
                 //导航属性的优先级高于显式外键属性，如果导航属性与外键属性冲突，以导航属性为准
                 //domain.CreationUser = await _userManager.FindByNameAsync("alice");
                 _context.Add(domain);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", domain.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.LastModificationUserId);
             return View(domain);
         }
@@ -105,7 +104,7 @@ namespace IdentityServer.Controllers
             {
                 return NotFoundView();
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", domain.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.LastModificationUserId);
             return View(domain);
         }
@@ -115,7 +114,7 @@ namespace IdentityServer.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("SampleColumn,Id,OrderNumber,RowVersion,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] Domain.Sample.Domain domain)
+        public async Task<IActionResult> Edit(Guid id, [Bind("SampleColumn,Id,OrderNumber,RowVersion,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] Domain domain)
         {
             if (id != domain.Id)
             {
@@ -143,7 +142,7 @@ namespace IdentityServer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", domain.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", domain.LastModificationUserId);
             return View(domain);
         }

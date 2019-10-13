@@ -2,23 +2,21 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.Security;
 using IdentityServer.CustomServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repository.EntityFrameworkCore;
-using Util.TypeExtensions;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class RequestAuthorizationRulesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private readonly IRequestHandlerInfo _requestHandlerInfo;
 
-        public RequestAuthorizationRulesController(ApplicationDbContext context, IRequestHandlerInfo requestHandlerInfo)
+        public RequestAuthorizationRulesController(ApplicationIdentityDbContext context, IRequestHandlerInfo requestHandlerInfo)
         {
             _context = context;
             _requestHandlerInfo = requestHandlerInfo;
@@ -82,7 +80,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
+        public async Task<IActionResult> Create([Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
         {
             if (ModelState.IsValid)
             {
@@ -115,7 +113,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
+        public async Task<IActionResult> Edit(Guid id, [Bind("HandlerMethodSignature,TypeFullName,IdentificationKey,AuthorizationRuleConfigJson,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] AuthorizationRule requestAuthorizationRule)
         {
             if (id != requestAuthorizationRule.Id)
             {

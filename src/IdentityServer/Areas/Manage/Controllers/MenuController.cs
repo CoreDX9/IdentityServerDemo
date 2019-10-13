@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Management;
 using IdentityServer.CustomServices;
 using Newtonsoft.Json;
-using Repository.EntityFrameworkCore;
-using Util.TypeExtensions;
-using Z.EntityFramework.Plus;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class MenuController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private readonly IRequestHandlerInfo _requestHandlerInfo;
 
 
-        public MenuController(ApplicationDbContext context, IRequestHandlerInfo requestHandlerInfo)
+        public MenuController(ApplicationIdentityDbContext context, IRequestHandlerInfo requestHandlerInfo)
         {
             _context = context;
             _requestHandlerInfo = requestHandlerInfo;
@@ -29,8 +26,8 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/Menu
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Menus.Include(m => m.Items).Include(m => m.CreationUser).Include(m => m.LastModificationUser).Include(m => m.Parent);
-            return View(await applicationDbContext.ToListAsync());
+            var ApplicationIdentityDbContext = _context.Menus.Include(m => m.Items).Include(m => m.CreationUser).Include(m => m.LastModificationUser).Include(m => m.Parent);
+            return View(await ApplicationIdentityDbContext.ToListAsync());
         }
 
         [ActionName("GetMenu")]
@@ -102,7 +99,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/Menu/Create
         public IActionResult Create()
         {
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["ParentId"] = new SelectList(_context.Menus, "Id", "Id");
             return View();
@@ -113,7 +110,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Index,Title,Order,ParentId,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] Menu menu)
+        public async Task<IActionResult> Create([Bind("Index,Title,Order,ParentId,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -122,7 +119,7 @@ namespace IdentityServer.Areas.Manage.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", menu.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.LastModificationUserId);
             ViewData["ParentId"] = new SelectList(_context.Menus, "Id", "Id", menu.ParentId);
             return View(menu);
@@ -141,7 +138,7 @@ namespace IdentityServer.Areas.Manage.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", menu.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.LastModificationUserId);
             ViewData["ParentId"] = new SelectList(_context.Menus, "Id", "Id", menu.ParentId);
             return View(menu);
@@ -152,7 +149,7 @@ namespace IdentityServer.Areas.Manage.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Index,Title,Order,ParentId,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreationUserId,LastModificationUserId")] Menu menu)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Index,Title,Order,ParentId,Id,Remark,OrderNumber,RowVersion,IsEnable,IsDeleted,CreationTime,LastModificationTime,CreatorId,LastModificationUserId")] Menu menu)
         {
             if (id != menu.Id)
             {
@@ -179,7 +176,7 @@ namespace IdentityServer.Areas.Manage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.CreationUserId);
+            ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "Id", menu.CreatorId);
             ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "Id", menu.LastModificationUserId);
             ViewData["ParentId"] = new SelectList(_context.Menus, "Id", "Id", menu.ParentId);
             return View(menu);

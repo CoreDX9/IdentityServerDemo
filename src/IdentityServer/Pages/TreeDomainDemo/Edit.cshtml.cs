@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Sample;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Repository.EntityFrameworkCore;
 
 namespace IdentityServer.Pages.TreeDomainDemo
 {
     public class EditModel : PageModelBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private UserManager<ApplicationUser> _userManager;
 
-        public EditModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public EditModel(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -43,7 +41,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
             {
                 return NotFoundView();
             }
-           ViewData["CreationUserId"] = new SelectList(_context.Users, "Id", "UserName");
+           ViewData["CreatorId"] = new SelectList(_context.Users, "Id", "UserName");
            ViewData["LastModificationUserId"] = new SelectList(_context.Users, "Id", "UserName");
            ViewData["ParentId"] = new SelectList(_context.TreeDomains, "Id", "SampleColumn");
             return Page();

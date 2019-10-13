@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Repository.EntityFrameworkCore;
 using static IdentityServer.Extensions.JqGridSearchExtensions;
 using static System.Math;
 
@@ -17,12 +17,12 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Users
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationIdentityDbContext _dbContext;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            ApplicationDbContext dbContext)
+            ApplicationIdentityDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -87,7 +87,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Users
                 usersQuery = usersQuery.Where(BuildWhere<ApplicationUser>(jqGridParameter.FilterObject, null));
             }
 
-            var users = usersQuery.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).OrderBy(u => u.OrderNumber)
+            var users = usersQuery.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).OrderBy(u => u.InsertOrder)
                 .Skip((jqGridParameter.Page - 1) * jqGridParameter.Rows).Take(jqGridParameter.Rows).ToList();
             var userCount = usersQuery.Count();
             var pageCount = Ceiling((double) userCount / jqGridParameter.Rows);
@@ -104,12 +104,12 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Users
                             u.EmailConfirmed,
                             u.PhoneNumberConfirmed,
                             u.CreationTime,
-                            u.CreationUserId,
-                            u.IsEnable,
+                            u.CreatorId,
+                            u.Active,
                             u.LastModificationTime,
-                            u.LastModificationUserId,
-                            u.OrderNumber,
-                            u.RowVersion,
+                            u.LastModifierId,
+                            u.InsertOrder,
+                            u.ConcurrencyStamp,
                             //以下为JqGrid中必须的字段
                             u.Id //记录的唯一标识，可在插件中配置为其它字段，但是必须能作为记录的唯一标识用，不能重复
                         }),

@@ -4,7 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using AutoMapper;
-using Domain.Identity;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity.Identity;
 using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -30,12 +31,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Repository.EntityFrameworkCore;
-using Repository.RabbitMQ;
 using StackExchange.Redis;
 
 namespace IdentityServer
@@ -43,10 +43,10 @@ namespace IdentityServer
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
         public IServiceCollection Services { get; set; }
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
             Environment = environment;
@@ -123,7 +123,7 @@ namespace IdentityServer
             if (Configuration.GetValue("UseEntityHistory", false))
             {
                 //注入实体历史记录服务，供ApplicationIdentityDbContext用
-                services.AddEntityHistoryRecorder(Configuration);
+                //services.AddEntityHistoryRecorder(Configuration);
             }
 
             var useInMemoryDatabase = Configuration.GetValue("UseInMemoryDatabase", false);
@@ -135,7 +135,7 @@ namespace IdentityServer
             {
                 inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
                 services.AddEntityFrameworkInMemoryDatabase()
-                    .AddDbContext<ApplicationDbContext>(options =>
+                    .AddDbContext<ApplicationIdentityDbContext>(options =>
                     {
                         options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
                     });
@@ -155,9 +155,9 @@ namespace IdentityServer
                 }
 
                 //迁移程序集名
-                migrationsAssemblyName = "DbMigration";
+                migrationsAssemblyName = "CoreDX.Application.DbMigration";
 
-                services.AddDbContext<ApplicationDbContext>(options =>
+                services.AddDbContext<ApplicationIdentityDbContext>(options =>
                 {
                     options.UseSqlServer(connectionString, b =>
                     {
@@ -198,7 +198,7 @@ namespace IdentityServer
                 })
                 .AddRoles<ApplicationRole>()
                 .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                 //注入Identity隐私数据保护服务（启用隐私数据保护后必须注入，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
                 .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddDefaultTokenProviders();
@@ -233,8 +233,8 @@ namespace IdentityServer
                     ServiceLifetime.Singleton);
             }
 
-            //注入修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）
-            services.AddSingleton<IStringLocalizerFactory, MySqlStringLocalizerFactory>();
+            //注入修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）（2.0.6开始此bug已修复）
+            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
             //注入基于Sql数据的本地化服务，需要先注入LocalizationModelContext
             services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
             //注入请求处理器信息获取服务
@@ -248,6 +248,10 @@ namespace IdentityServer
                     //options.Filters.Add<MyAuthorizeAttribute>();
                     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());//自动对控制器的post，put，delete，patch请求进行保护
                 })
+                //使用NewtonsoftJson替换微软内置的Json框架（Core 3.x开始）
+                .AddNewtonsoftJson()
+                //启用Razor视图的动态编译
+                .AddRazorRuntimeCompilation()
                 //注入FluentValidation服务
                 .AddFluentValidation(fv =>
                 {
@@ -259,7 +263,7 @@ namespace IdentityServer
                 //注入数据注解本地化服务
                 .AddDataAnnotationsLocalization()
                 //设定兼容性
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             //注入FluentValidation验证器
             services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
@@ -407,11 +411,6 @@ namespace IdentityServer
 
             //注入身份验证服务
             services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
-                    options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
-                })
                 .AddOpenIdConnect("oidc", "OpenID Connect", options =>
                 {
                     options.Authority = "https://demo.identityserver.io/";
@@ -466,7 +465,7 @@ namespace IdentityServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -704,6 +703,9 @@ namespace IdentityServer
             //注册静态文件到管道（wwwroot文件夹）
             app.UseStaticFiles();
 
+            //注册路由到管道
+            app.UseRouting();
+
             //注册Cookie策略到管道（GDPR）
             app.UseCookiePolicy();
 
@@ -713,26 +715,19 @@ namespace IdentityServer
             //注册IdentityServer4到管道
             app.UseIdentityServer();
 
-            //注册SignalR到管道
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ChatHub>("/chatHub");
-            });
-
             //注册自定义中间件到管道
             app.UseAntiforgeryTokenGenerateMiddleware();
 
-            //注册MVC到管道
-            app.UseMvc(routes =>
+            //注册终结点到管道（SignalR集线器和Mvc路由集中在这里配置）
+            app.UseEndpoints(endpoints =>
             {
-                routes
-                    .MapRoute(
-                        name: "area",
-                        template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-                    )
-                    .MapRoute(
-                        name: "default",
-                        template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chatHub");
+
+                endpoints.MapHealthChecks("/health");
+
+                endpoints.MapControllerRoute("area", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.CustomServices
 {
+    //反射读取配置信息调用方法
+    //解决基类方法未使用配置信息的bug（从2.0.6开始bug已修复）
     public class MySqlStringLocalizerFactory : SqlStringLocalizerFactory, IStringLocalizerFactory
     {
         public MySqlStringLocalizerFactory(LocalizationModelContext context, DevelopmentSetup developmentSetup,

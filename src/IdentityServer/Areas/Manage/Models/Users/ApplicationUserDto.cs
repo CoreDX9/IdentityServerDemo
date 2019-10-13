@@ -1,6 +1,4 @@
 ﻿using System;
-using Domain.Identity;
-using Util.Security;
 
 namespace IdentityServer.Areas.Manage.Models.Users
 {
@@ -16,7 +14,7 @@ namespace IdentityServer.Areas.Manage.Models.Users
         public bool EmailConfirmed { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
         public DateTimeOffset CreationTime { get; set; }
-        public DateTimeOffset CreationUserId { get; set; }
+        public DateTimeOffset CreatorId { get; set; }
         public bool IsEnable { get; set; }
         public DateTimeOffset LastModificationTime { get; set; }
         public Guid LastModificationUserId { get; set; }

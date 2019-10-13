@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using IdentityServer.Models;
 using Newtonsoft.Json;
-using Util.TypeExtensions;
 
 namespace IdentityServer.Extensions
 {

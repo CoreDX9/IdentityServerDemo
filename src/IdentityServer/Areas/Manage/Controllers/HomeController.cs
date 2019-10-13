@@ -1,23 +1,20 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
+using CoreDX.Application.EntityFrameworkCore;
 using IdentityServer.Areas.Manage.Models.Menus;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Repository.EntityFrameworkCore;
-using Util.TypeExtensions;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
     [Area("Manage")]
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationIdentityDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAntiforgery _antiforgery;
 
-        public HomeController(ApplicationDbContext context, IMapper mapper, IAntiforgery antiforgery)
+        public HomeController(ApplicationIdentityDbContext context, IMapper mapper, IAntiforgery antiforgery)
         {
             _context = context;
             _mapper = mapper;
