@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
+namespace CoreDX.EntityFrameworkCore.Extensions
 {
     public static class ModelBuilderExtensions
     {

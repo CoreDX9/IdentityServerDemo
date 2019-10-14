@@ -7,12 +7,12 @@ using PropertyChanged;
 namespace CoreDX.Domain.Model.Entity
 {
     /// <summary>
-    /// 确定了实体操作人主键类型的树形领域实体基类
+    /// 树形领域实体基类
     /// </summary>
     /// <typeparam name="TKey">主键类型</typeparam>
     /// <typeparam name="TEntity">实体类型</typeparam>
-    /// <typeparam name="TIdentityKey">Identity主键类型</typeparam>
-    /// <typeparam name="TIdentityUser">Identity实体类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
+    /// <typeparam name="TIdentityUser">身份实体类型</typeparam>
     public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityKey, TIdentityUser> : DomainTreeEntityBase<TKey, TEntity, TIdentityKey>
         , ICreatorRecordable<TIdentityKey, TIdentityUser>
         , ILastModifierRecordable<TIdentityKey, TIdentityUser>
@@ -29,6 +29,12 @@ namespace CoreDX.Domain.Model.Entity
         #endregion
     }
 
+    /// <summary>
+    /// 树形领域实体基类
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TEntity">实体类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
     public abstract class DomainTreeEntityBase<TKey, TEntity, TIdentityKey> : DomainTreeEntityBase<TKey, TEntity>
         , ICreatorRecordable<TIdentityKey>
         , ILastModifierRecordable<TIdentityKey>
@@ -40,6 +46,11 @@ namespace CoreDX.Domain.Model.Entity
         public virtual TIdentityKey? LastModifierId { get; set; }
     }
 
+    /// <summary>
+    /// 树形领域实体基类
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TEntity">实体类型</typeparam>
     public abstract class DomainTreeEntityBase<TKey, TEntity> : DomainEntityBase<TKey>
         , IDomainTreeEntity<TKey, TEntity>
         where TKey : struct, IEquatable<TKey>

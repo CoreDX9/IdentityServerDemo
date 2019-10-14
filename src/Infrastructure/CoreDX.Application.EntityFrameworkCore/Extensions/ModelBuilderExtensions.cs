@@ -1,5 +1,4 @@
 ﻿using System;
-using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Model.Entity;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,24 +7,6 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
 {
     public static class ModelBuilderExtensions
     {
-        public static PropertyBuilder<DateTimeOffset> ConfigForIStorageOrderRecordable<TEntity>(this EntityTypeBuilder<TEntity> builder)
-            where TEntity : class, IStorageOrderRecordable
-        {
-            if (!builder.Metadata.ClrType.IsDerivedFrom(typeof(IStorageOrderRecordable))
-                && builder.Property<long>(nameof(IStorageOrderRecordable.InsertOrder)).v
-                          p.SqlServer().ValueGenerationStrategy ==
-                          SqlServerValueGenerationStrategy.IdentityColumn))
-            {
-                var orderNumberMetadata = b.Property(nameof(IEntity.OrderNumber)).Metadata;
-                orderNumberMetadata.SqlServer().ValueGenerationStrategy =
-                    SqlServerValueGenerationStrategy.IdentityColumn;
-                orderNumberMetadata.ValueGenerated = ValueGenerated.OnAddOrUpdate;
-                //由数据库生成值并忽略变更，不然会导致ef报列插入更新异常
-                orderNumberMetadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
-            }
-            return builder.Property(e => e.InsertOrder).ValueGeneratedOnAdd();
-        }
-
         /// <summary>
         /// 配置实体创建时间仅在插入记录时写入数据库
         /// 避免意外在应用中被修改

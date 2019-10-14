@@ -117,8 +117,8 @@ go";
             foreach (var entityType in migration.TargetModel.GetEntityTypes().Where(entity =>
                 viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(IDomainTreeEntity<>))))
             {
-                migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
-                    entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
+                migrationBuilder.CreateTreeEntityView(entityType.GetTableName(),
+                    entityType.GetProperties().Select(pro => pro.GetColumnName()));
             }
 
             return migrationBuilder;

@@ -1,4 +1,4 @@
-﻿namespace CoreDX.EntityFrameworkCore.Extensions.Extensions.SqlServer
+﻿namespace CoreDX.EntityFrameworkCore.Extensions.SqlServer
 {
     /// <summary>
     /// 数据迁移扩展Sql模板

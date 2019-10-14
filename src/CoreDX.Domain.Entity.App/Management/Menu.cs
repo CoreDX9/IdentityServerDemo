@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using CoreDX.Domain.Model.Entity;
 
 //菜单类在输出到菜单视图前要转化成视图专用结构，去除多余数据，编辑中才用完整数据
-namespace CoreDX.Domain.Model.Entity.Management
+namespace CoreDX.Domain.Entity.App.Management
 {
     [Owned]
     public class Icon
@@ -12,14 +13,17 @@ namespace CoreDX.Domain.Model.Entity.Management
         public string Value { get; set; }
     }
 
-    public class MenuItem : DomainEntityBase<int, Guid>
+    public class MenuItem : MenuItem<int> { }
+
+    public abstract class MenuItem<TMenuId> : DomainEntityBase<int, int>
+      where TMenuId : struct, IEquatable<TMenuId>
     {
         public Icon Icon { get; set; } = new Icon();
         public string Title { get; set; }
         public string Link { get; set; }
         public short Order { get; set; }
 
-        public virtual Guid MenuId { get; set; }
+        public virtual TMenuId MenuId { get; set; }
         public virtual Menu Menu { get; set; }
     }
 
@@ -30,7 +34,7 @@ namespace CoreDX.Domain.Model.Entity.Management
     //    public List<Item> Items { get; set; }
     //}
 
-    public class Menu : DomainTreeEntityBase<int, Menu, Guid>
+    public class Menu : DomainTreeEntityBase<int, Menu, int>
     {
         public Icon Icon { get; set; } = new Icon();
         public string Title { get; set; }

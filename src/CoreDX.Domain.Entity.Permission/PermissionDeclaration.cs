@@ -1,7 +1,4 @@
-﻿using System;
-using CoreDX.Domain.Core.Entity;
-
-namespace CoreDX.Domain.Model.Entity.Security
+﻿namespace CoreDX.Domain.Entity.Permission
 {
     /// <summary>
     /// 角色权限声明

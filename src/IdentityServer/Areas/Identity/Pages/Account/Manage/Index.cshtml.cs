@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

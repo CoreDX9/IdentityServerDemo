@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
+using CoreDX.Common.Util.TypeExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using SecurityUtil = CoreDX.Common.Util.Security;
 
 namespace IdentityServer.CustomServices
 {
@@ -17,15 +19,15 @@ namespace IdentityServer.CustomServices
     {
         private readonly object _locker;
 
-        private readonly Dictionary<string, Util.Security.AesProtector> _protectors;
+        private readonly Dictionary<string, SecurityUtil.AesProtector> _protectors;
 
         private readonly DirectoryInfo _dirInfo;
 
-        public AesProtector(IHostingEnvironment environment)
+        public AesProtector(IWebHostEnvironment environment)
         {
             _locker = new object();
 
-            _protectors = new Dictionary<string, Util.Security.AesProtector>();
+            _protectors = new Dictionary<string, SecurityUtil.AesProtector>();
 
             _dirInfo = new DirectoryInfo($@"{environment.ContentRootPath}\App_Data\AesDataProtectionKey");
         }
@@ -68,7 +70,7 @@ namespace IdentityServer.CustomServices
                         {
                             XDocument xmlDoc = XDocument.Load(stream);
                             _protectors.Add(keyId,
-                                new Util.Security.AesProtector(xmlDoc.Element("key")?.Element("encryption")?.Element("masterKey")?.Value.ToBytesFromBase64String()
+                                new SecurityUtil.AesProtector(xmlDoc.Element("key")?.Element("encryption")?.Element("masterKey")?.Value.ToBytesFromBase64String()
                                     , xmlDoc.Element("key")?.Element("encryption")?.Element("iv")?.Value.ToBytesFromBase64String()
                                     , int.Parse(xmlDoc.Element("key")?.Element("encryption")?.Attribute("BlockSize")?.Value)
                                     , int.Parse(xmlDoc.Element("key")?.Element("encryption")?.Attribute("KeySize")?.Value)
@@ -161,7 +163,7 @@ namespace IdentityServer.CustomServices
                         encryption.SetAttributeValue("Padding", PaddingMode.PKCS7);
                         encryption.SetAttributeValue("Mode", CipherMode.CBC);
 
-                        Util.Security.AesProtector protector = new Util.Security.AesProtector();
+                        SecurityUtil.AesProtector protector = new SecurityUtil.AesProtector();
                         XElement masterKey = new XElement("masterKey");
                         masterKey.SetValue(protector.GenerateKey().ToBase64String());
 

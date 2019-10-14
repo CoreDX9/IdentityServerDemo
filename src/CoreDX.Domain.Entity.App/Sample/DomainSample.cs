@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoreDX.Domain.Model.Entity;
 using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 
-namespace CoreDX.Domain.Model.Entity.Sample
+namespace CoreDX.Domain.Entity.App.Sample
 {
     [DbDescription("示例实体")]
     public class Domain : DomainEntityBase<int, Guid>

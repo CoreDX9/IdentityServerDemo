@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Entity.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -115,11 +115,11 @@ go";
             if (viewAssembly == null)
                 throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
 
-            foreach (var entityType in migration.TargetModel.GetEntityTypes().Where(entity =>
+            foreach (var entityType in migration.TargetModel.GetEntityTypes().Where(entity => 
                 viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(IDomainTreeEntity<,>))))
             {
-                migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
-                    entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
+                migrationBuilder.CreateTreeEntityView(entityType.GetTableName(),
+                    entityType.GetProperties().Select(pro => pro.GetColumnName()));
             }
 
             return migrationBuilder;
@@ -144,8 +144,8 @@ go";
                 viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(ApplicationRole)));
             if (entityType != null)
             {
-                migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
-                    entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
+                migrationBuilder.CreateTreeEntityView(entityType.GetTableName(),
+                    entityType.GetProperties().Select(pro => pro.GetColumnName()));
             }
 
             return migrationBuilder;

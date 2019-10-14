@@ -2,92 +2,84 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using CoreDX.Domain.Core.Entity;
+using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
-namespace CoreDX.Domain.Model.Entity
+namespace CoreDX.Domain.Entity.Identity
 {
-    /// <summary>
-    /// 领域实体基类
-    /// </summary>
-    /// <typeparam name="TKey">主键类型</typeparam>
-    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
-    /// <typeparam name="TIdentityUser">身份类型</typeparam>
-    public abstract class DomainEntityBase<TKey, TIdentityKey, TIdentityUser> : DomainEntityBase<TKey, TIdentityKey>
-        , ICreatorRecordable<TIdentityKey, TIdentityUser>
-        , ILastModifierRecordable<TIdentityKey, TIdentityUser>
-        where TKey : struct, IEquatable<TKey>
-        where TIdentityKey : struct, IEquatable<TIdentityKey>
-        where TIdentityUser : IEntity<TIdentityKey>
+    [DbDescription("性别枚举")]
+    public enum Gender
     {
-        /// <summary>
-        /// 创建人
-        /// </summary>
-        public virtual TIdentityUser Creator { get; set; }
-
-        /// <summary>
-        /// 上次修改人
-        /// </summary>
-        public virtual TIdentityUser LastModifier { get; set; }
+        [DbDescription("男")]
+        Male = 1,
+        [DbDescription("女")]
+        Female = 2
     }
 
     /// <summary>
-    /// 领域实体基类
+    /// 实际使用的用户类，添加自己的属性存储自定义信息
     /// </summary>
-    /// <typeparam name="TKey">主键类型</typeparam>
-    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
-    public abstract class DomainEntityBase<TKey, TIdentityKey> : DomainEntityBase<TKey>
-        , ICreatorRecordable<TIdentityKey>
-        , ILastModifierRecordable<TIdentityKey>
-        where TKey : struct, IEquatable<TKey>
-        where TIdentityKey : struct, IEquatable<TIdentityKey>
+    public class ApplicationUser : ApplicationUser<int, ApplicationUser, ApplicationRole, Organization>
     {
-        /// <summary>
-        /// 创建人Id
-        /// </summary>
-        public virtual TIdentityKey? CreatorId { get; set; }
+        [DbDescription("性别")]
+        public virtual Gender? Sex { get; set; }
 
-        /// <summary>
-        /// 上次修改人Id
-        /// </summary>
-        public virtual TIdentityKey? LastModifierId { get; set; }
+        public virtual long InsertOrder { get; set; }
     }
 
-    /// <summary>
-    /// 领域实体基类
-    /// </summary>
-    /// <typeparam name="TKey">主键类型</typeparam>
-    public abstract class DomainEntityBase<TKey> : IDomainEntity<TKey>
+    public abstract class ApplicationUser<TKey, TIdentityUser, TIdentityRole, TOrganization> : IdentityUser<TKey>
         , IOptimisticConcurrencySupported
+        , IDomainEntity<TKey>
+        , ICreatorRecordable<TKey, TIdentityUser>
+        , ILastModifierRecordable<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
+        where TIdentityRole : IEntity<TKey>
+        where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
     {
-        [Key]
-        public virtual TKey Id { get; set; }
-        //public virtual string Remark { get; set; }
+        /// <summary>
+        /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
+        /// </summary>
+        [NotMapped]
+        public virtual IEnumerable<TIdentityRole> Roles => UserRoles?.Select(ur => ur.Role);
+
+        /// <summary>
+        /// 需要使用.Include(u => u.UserOrganizations).ThenInclude(uo => uo.Organization)预加载或启用延迟加载
+        /// </summary>
+        [NotMapped]
+        public virtual IEnumerable<Organization<TKey, TOrganization, TIdentityUser>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
+
+        #region 导航属性
+
+        public virtual List<ApplicationUserClaim<TKey, TIdentityUser>> Claims { get; set; } = new List<ApplicationUserClaim<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserLogin<TKey, TIdentityUser>> Logins { get; set; } = new List<ApplicationUserLogin<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserToken<TKey, TIdentityUser>> Tokens { get; set; } = new List<ApplicationUserToken<TKey, TIdentityUser>>();
+        public virtual List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>>();
+        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>>();
+
+        #endregion
+
+        public override TKey Id { get; set; }
+        public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         #region IEntity成员
 
-        /// <summary>
-        /// 并发标记
-        /// </summary>
-        public virtual string ConcurrencyStamp { get; set; }
-        //public virtual bool? Active { get; set; }
-
-        /// <summary>
-        /// 软删除标记
-        /// </summary>
+        public virtual bool? Active { get; set; } = true;
         public virtual bool IsDeleted { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
-
-        /// <summary>
-        /// 上次修改时间
-        /// </summary>
         public virtual DateTimeOffset LastModificationTime { get; set; } = DateTimeOffset.Now;
+
+        #endregion
+
+        #region IDomainEntity成员
+
+        public virtual TKey? CreatorId { get; set; }
+        public virtual TIdentityUser Creator { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
+        public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
 
@@ -99,14 +91,14 @@ namespace CoreDX.Domain.Model.Entity
         private readonly BitArray _propertyChangeMask;
 
         /// <summary>
-        /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase" />的类在实例化时都会自动注册）
+        /// 全局属性变更通知事件处理器
         /// </summary>
         public static PropertyChangedEventHandler PublicPropertyChangedEventHandler { get; set; }
 
         /// <summary>
         /// 初始化用于跟踪属性变更所需的属性信息
         /// </summary>
-        protected DomainEntityBase()
+        protected ApplicationUser()
         {
             //判断类型是否已经加入字典
             //将未加入的类型添加进去（一般为该类对象首次初始化时）

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
-using CoreDX.EntityFrameworkCore.Extensions.Extensions.SqlServer;
+using CoreDX.EntityFrameworkCore.Extensions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
+namespace CoreDX.EntityFrameworkCore.Extensions
 {
     /// <summary>
     /// 数据迁移扩展
@@ -102,9 +102,9 @@ namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
                 if (entityType.ClrType?.CustomAttributes.Any(
                         attr => attr.AttributeType == typeof(DbDescriptionAttribute)) == true)
                 {
-                    migrationBuilder.AddOrUpdateTableDescription(entityType.EntityType.Relational().TableName,
+                    migrationBuilder.AddOrUpdateTableDescription(entityType.EntityType.GetTableName(),
                         (entityType.ClrType.GetCustomAttribute(typeof(DbDescriptionAttribute)) as DbDescriptionAttribute
-                        )?.Description, entityType.EntityType.Relational().Schema.IsNullOrEmpty() ? defaultSchema : entityType.EntityType.Relational().Schema);
+                        )?.Description, entityType.EntityType.GetSchema().IsNullOrEmpty() ? defaultSchema : entityType.EntityType.GetSchema());
                 }
 
                 //添加列说明
@@ -147,12 +147,12 @@ namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
                                 $@"( {(enumTypeDbDescription.IsNullOrWhiteSpace() ? "" : $@"{enumTypeDbDescription}; ")}{string.Join("; ", descList)} )";
                         }
 
-                        migrationBuilder.AddOrUpdateColumnDescription(entityType.EntityType.Relational().TableName,
-                            property.Relational().ColumnName,
+                        migrationBuilder.AddOrUpdateColumnDescription(entityType.EntityType.GetTableName(),
+                            property.GetColumnName(),
                             $@"{(entityType.ClrType?.GetProperty(property.Name)
                                     ?.GetCustomAttribute(typeof(DbDescriptionAttribute)) as DbDescriptionAttribute)
                                 ?.Description}{(enumDbDescription.IsNullOrWhiteSpace() ? "" : $@" {enumDbDescription}")}"
-                            , entityType.EntityType.Relational().Schema.IsNullOrEmpty() ? defaultSchema : entityType.EntityType.Relational().Schema);
+                            , entityType.EntityType.GetSchema().IsNullOrEmpty() ? defaultSchema : entityType.EntityType.GetSchema());
                     }
                 }
             }
@@ -172,8 +172,8 @@ namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
             foreach (var entityType in migration.TargetModel.GetEntityTypes())
             {
                 //添加表说明
-                var tableName = entityType.Relational().TableName;
-                var schema = entityType.Relational().Schema;
+                var tableName = entityType.GetTableName();
+                var schema = entityType.GetSchema();
                 var tableDescriptionAnnotation = entityType.FindAnnotation(descriptionAnnotationName);
 
                 if (tableDescriptionAnnotation != null)
@@ -193,7 +193,7 @@ namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
                     {
                         migrationBuilder.AddOrUpdateColumnDescription(
                             tableName,
-                            property.Relational().ColumnName,
+                            property.GetColumnName(),
                             columnDescriptionAnnotation.Value.ToString(),
                             schema.IsNullOrEmpty() ? defaultSchema : schema);
                     }

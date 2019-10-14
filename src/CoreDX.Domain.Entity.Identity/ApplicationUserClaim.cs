@@ -6,24 +6,23 @@ using System.Linq;
 using CoreDX.Domain.Core.Entity;
 using Microsoft.AspNetCore.Identity;
 
-namespace CoreDX.Domain.Model.Entity.Identity
+namespace CoreDX.Domain.Entity.Identity
 {
-    public class ApplicationRoleClaim : ApplicationRoleClaim<int, ApplicationUser, ApplicationRole>
+    public class ApplicationUserClaim : ApplicationUserClaim<int, ApplicationUser>
     {}
 
-    public abstract class ApplicationRoleClaim<TIdentityKey, TIdentityUser, TIdentityRole> : IdentityRoleClaim<TIdentityKey>
+    public abstract class ApplicationUserClaim<TKey, TIdentityUser> : IdentityUserClaim<TKey>
         , IDomainEntity<int>
-        , ICreatorRecordable<TIdentityKey, TIdentityUser>
-        , ILastModifierRecordable<TIdentityKey, TIdentityUser>
-        where TIdentityKey : struct, IEquatable<TIdentityKey>
-        where TIdentityUser : IEntity<TIdentityKey>
-        where TIdentityRole : IEntity<TIdentityKey>
+        , ICreatorRecordable<TKey, TIdentityUser>
+        , ILastModifierRecordable<TKey, TIdentityUser>
+        where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         public override int Id { get; set; }
 
         #region 导航属性
 
-        public virtual TIdentityRole Role { get; set; }
+        public virtual TIdentityUser User { get; set; }
 
         #endregion
 
@@ -38,9 +37,9 @@ namespace CoreDX.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TIdentityKey? CreatorId { get; set; }
+        public virtual TKey? CreatorId { get; set; }
         public virtual TIdentityUser Creator { get; set; }
-        public virtual TIdentityKey? LastModifierId { get; set; }
+        public virtual TKey? LastModifierId { get; set; }
         public virtual TIdentityUser LastModifier { get; set; }
 
         #endregion
@@ -60,7 +59,7 @@ namespace CoreDX.Domain.Model.Entity.Identity
         /// <summary>
         /// 初始化用于跟踪属性变更所需的属性信息
         /// </summary>
-        protected ApplicationRoleClaim()
+        protected ApplicationUserClaim()
         {
             //判断类型是否已经加入字典
             //将未加入的类型添加进去（一般为该类对象首次初始化时）

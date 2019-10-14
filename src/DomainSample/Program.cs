@@ -1,9 +1,8 @@
-﻿using System;
+﻿using CoreDX.Domain.Model.Entity;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Domain;
-using Entity;
-using Util.TypeExtensions;
+using CoreDX.Common.Util.TypeExtensions;
 
 namespace DomainSample
 {
@@ -126,19 +125,19 @@ namespace DomainSample
             Console.WriteLine($"终点的子树：\r\n{enst}");
             Console.WriteLine("-------------------------------------------------------------");
 
-            var hi = p1.AsHierarchical();
+            var hi = p1.AsHierarchical(p => p.Children);
             var b = hi.Children?.First() == hi?.Children?.First();
 
-            foreach (var p in p1.AsEnumerable())
+            foreach (var p in hi.AsEnumerable())
             {
-                Console.WriteLine($@"person id:{p.Id} name:{p.Name} depth:{p.Depth} pId:{p.ParentId} children:{string.Join(',', p.Children.Select(x => x.Id))}");
+                Console.WriteLine($@"person id:{p.Current.Id} name:{p.Current.Name} depth:{p.Current.Depth} pId:{p.Current.ParentId} children:{string.Join(',', p.Children.Select(x => x.Current.Id))}");
             }
 
             Console.WriteLine("-------------------------------------------------------------");
 
-            foreach (var p in p1.AsEnumerable(EnumerateType.Bfs))
+            foreach (var p in hi.AsEnumerable(EnumerateType.Bfs))
             {
-                Console.WriteLine($@"person id:{p.Id} name:{p.Name} depth:{p.Depth} pId:{p.ParentId} children:{string.Join(',', p.Children.Select(x => x.Id))}");
+                Console.WriteLine($@"person id:{p.Current.Id} name:{p.Current.Name} depth:{p.Current.Depth} pId:{p.Current.ParentId} children:{string.Join(',', p.Children.Select(x => x.Current.Id))}");
             }
 
             Console.WriteLine();

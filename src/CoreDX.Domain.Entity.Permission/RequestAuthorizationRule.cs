@@ -1,10 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using CoreDX.Domain.Core.Entity;
+﻿using CoreDX.Domain.Model.Entity;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
-namespace CoreDX.Domain.Model.Entity.Security
+namespace CoreDX.Domain.Entity.Permission
 {
+    /// <summary>
+    /// 请求处理器识别特性，配合权限系统使用，整个系统中的名称不能重复,遗留代码引用太多，清理完后删除掉
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    public class RequestHandlerIdentificationAttribute : Attribute
+    {
+        /// <summary>
+        /// 初始化新的实例
+        /// </summary>
+        /// <param name="uniqueKey">名称</param>
+        public RequestHandlerIdentificationAttribute(string uniqueKey) => UniqueKey = uniqueKey;
+
+        /// <summary>
+        /// 唯一键
+        /// </summary>
+        public virtual string UniqueKey { get; }
+    }
+
     public class RequestAuthorizationRule : RequestAuthorizationRule<int, int>
     {
     }

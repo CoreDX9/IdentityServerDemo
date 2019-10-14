@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,12 @@ namespace IdentityServer.Areas.Manage.Controllers
         // GET: Manage/Organizations
         public async Task<IActionResult> Index()
         {
-            var applicationIdentityDbContext = _context.Organizations.Include(o => o.CreationUser).Include(o => o.LastModificationUser).Include(o => o.Parent);
+            var applicationIdentityDbContext = _context.Organizations.Include(o => o.Creator).Include(o => o.LastModifier).Include(o => o.Parent);
             return View(await applicationIdentityDbContext.ToListAsync());
         }
 
         // GET: Manage/Organizations/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -33,8 +34,8 @@ namespace IdentityServer.Areas.Manage.Controllers
             }
 
             var organization = await _context.Organizations
-                .Include(o => o.CreationUser)
-                .Include(o => o.LastModificationUser)
+                .Include(o => o.Creator)
+                .Include(o => o.LastModifier)
                 .Include(o => o.Parent)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (organization == null)

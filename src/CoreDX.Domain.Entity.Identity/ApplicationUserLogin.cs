@@ -2,18 +2,18 @@
 using CoreDX.Domain.Core.Entity;
 using Microsoft.AspNetCore.Identity;
 
-namespace CoreDX.Domain.Model.Entity.Identity
+namespace CoreDX.Domain.Entity.Identity
 {
-    public class ApplicationUserToken : ApplicationUserToken<int, ApplicationUser>
+    public class ApplicationUserLogin : ApplicationUserLogin<int, ApplicationUser>
     {
     }
 
-    public abstract class ApplicationUserToken<TIdentityKey, TIdentityUser> : IdentityUserToken<TIdentityKey>
+    public abstract class ApplicationUserLogin<TKey, TIdentityUser> : IdentityUserLogin<TKey>
         , IEntity
         , ICreationTimeRecordable
-        , ICreatorRecordable<TIdentityKey, TIdentityUser>
-        where TIdentityKey : struct, IEquatable<TIdentityKey>
-        where TIdentityUser : IEntity<TIdentityKey>
+        , ICreatorRecordable<TKey, TIdentityUser>
+        where TKey : struct, IEquatable<TKey>
+        where TIdentityUser : IEntity<TKey>
     {
         #region 导航属性
 
@@ -29,7 +29,7 @@ namespace CoreDX.Domain.Model.Entity.Identity
 
         #region IDomainEntity成员
 
-        public virtual TIdentityKey? CreatorId { get; set; }
+        public virtual TKey? CreatorId { get; set; }
         public virtual TIdentityUser Creator { get; set; }
 
         #endregion

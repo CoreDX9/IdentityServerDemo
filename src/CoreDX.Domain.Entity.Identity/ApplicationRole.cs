@@ -5,65 +5,58 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using PropertyChanged;
 
-namespace CoreDX.Domain.Model.Entity.Identity
+namespace CoreDX.Domain.Entity.Identity
 {
-    [DbDescription("性别枚举")]
-    public enum Gender
+    //实现IDomainTreeEntity<TParentKey, TEntity, TIdentityUserKey>接口后不知道为什么无法为CreationUserId
+    //和LastModificationUserId赋值，会报System.Security.VerificationException异常说
+    //Method System.Nullable.Equals: type argument 'TEntity' violates the constraint of type parameter 'T'.
+    //原因未知，只能放弃实现IDomainTreeEntity<TParentKey, TEntity, TIdentityUserKey>接口
+    //先在基类实现IDomainEntity<TIdentityUserKey>接口，再在最终实体类实现ITree<T>接口
+    public class ApplicationRole : ApplicationRole<int, ApplicationUser, ApplicationRole>
+        , IStorageOrderRecordable
     {
-        [DbDescription("男")]
-        Male = 1,
-        [DbDescription("女")]
-        Female = 2
-    }
-
-    /// <summary>
-    /// 实际使用的用户类，添加自己的属性存储自定义信息
-    /// </summary>
-    public class ApplicationUser : ApplicationUser<int, ApplicationUser, ApplicationRole, Organization>
-    {
-        [DbDescription("性别")]
-        public virtual Gender? Sex { get; set; }
+        public ApplicationRole() { }
+        public ApplicationRole(string roleName) => Name = roleName;
 
         public virtual long InsertOrder { get; set; }
     }
 
-    public abstract class ApplicationUser<TKey, TIdentityUser, TIdentityRole, TOrganization> : IdentityUser<TKey>
+    public abstract class ApplicationRole<TKey, TIdentityUser, TIdentityRole> : IdentityRole<TKey>
         , IOptimisticConcurrencySupported
-        , IDomainEntity<TKey>
+        , IDomainTreeEntity<TKey, TIdentityRole>
         , ICreatorRecordable<TKey, TIdentityUser>
         , ILastModifierRecordable<TKey, TIdentityUser>
         where TKey : struct, IEquatable<TKey>
         where TIdentityUser : IEntity<TKey>
-        where TIdentityRole : IEntity<TKey>
-        where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
+        where TIdentityRole : ApplicationRole<TKey, TIdentityUser, TIdentityRole>
     {
-        /// <summary>
-        /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
-        /// </summary>
-        [NotMapped]
-        public virtual IEnumerable<TIdentityRole> Roles => UserRoles?.Select(ur => ur.Role);
+        public string Description { get; set; }
 
         /// <summary>
-        /// 需要使用.Include(u => u.UserOrganizations).ThenInclude(uo => uo.Organization)预加载或启用延迟加载
+        /// 需要使用.Include(r => r.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
         [NotMapped]
-        public virtual IEnumerable<Organization<TKey, TOrganization, TIdentityUser>> Organizations => UserOrganizations?.Select(uo => uo.Organization);
+        public virtual IEnumerable<TIdentityUser> Users => UserRoles?.Select(ur => ur.User);
 
         #region 导航属性
 
-        public virtual List<ApplicationUserClaim<TKey, TIdentityUser>> Claims { get; set; } = new List<ApplicationUserClaim<TKey, TIdentityUser>>();
-        public virtual List<ApplicationUserLogin<TKey, TIdentityUser>> Logins { get; set; } = new List<ApplicationUserLogin<TKey, TIdentityUser>>();
-        public virtual List<ApplicationUserToken<TKey, TIdentityUser>> Tokens { get; set; } = new List<ApplicationUserToken<TKey, TIdentityUser>>();
         public virtual List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>> UserRoles { get; set; } = new List<ApplicationUserRole<TKey, TIdentityUser, TIdentityRole>>();
-        public virtual List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>> UserOrganizations { get; set; } = new List<ApplicationUserOrganization<TKey, TIdentityUser, TOrganization>>();
+
+        public virtual List<ApplicationRoleClaim<TKey, TIdentityUser, TIdentityRole>> RoleClaims { get; set; } = new List<ApplicationRoleClaim<TKey, TIdentityUser, TIdentityRole>>();
 
         #endregion
 
         public override TKey Id { get; set; }
         public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
+
+        #region IDomainTreeEntity成员
+
+        public virtual TKey? ParentId { get; set; }
+
+        #endregion
 
         #region IEntity成员
 
@@ -83,6 +76,29 @@ namespace CoreDX.Domain.Model.Entity.Identity
 
         #endregion
 
+        #region ITree成员
+
+        public virtual TIdentityRole Parent { get; set; }
+
+        public virtual IList<TIdentityRole> Children { get; set; }
+
+        [DoNotNotify, NotMapped]
+        public virtual int Depth => Parent?.Depth + 1 ?? 0;
+
+        [DoNotNotify, NotMapped]
+        public virtual bool IsRoot => Parent == null;
+
+        [DoNotNotify, NotMapped]
+        public virtual bool IsLeaf => Children?.Count == 0;
+
+        [DoNotNotify, NotMapped]
+        public virtual bool HasChildren => !IsLeaf;
+
+        [DoNotNotify, NotMapped]
+        public virtual string Path => Parent == null ? Id.ToString() : $@"{Parent.Path}/{Id}";
+
+        #endregion
+
         #region IPropertyChangeTrackable成员
 
         private static readonly object Locker = new object();
@@ -98,7 +114,7 @@ namespace CoreDX.Domain.Model.Entity.Identity
         /// <summary>
         /// 初始化用于跟踪属性变更所需的属性信息
         /// </summary>
-        protected ApplicationUser()
+        protected ApplicationRole()
         {
             //判断类型是否已经加入字典
             //将未加入的类型添加进去（一般为该类对象首次初始化时）
@@ -224,6 +240,32 @@ namespace CoreDX.Domain.Model.Entity.Identity
             {
                 _propertyChangeMask.SetAll(false);
             }
+        }
+
+        #endregion
+
+        #region 重写 Equals
+
+        public override bool Equals(object obj)
+        {
+            var role = obj as ApplicationRole<TKey, TIdentityUser, TIdentityRole>;
+            return role != null &&
+                   EqualityComparer<TKey>.Default.Equals(Id, role.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return 2108858624 + EqualityComparer<TKey>.Default.GetHashCode(Id);
+        }
+
+        public static bool operator ==(ApplicationRole<TKey, TIdentityUser, TIdentityRole> role1, ApplicationRole<TKey, TIdentityUser, TIdentityRole> role2)
+        {
+            return EqualityComparer<ApplicationRole<TKey, TIdentityUser, TIdentityRole>>.Default.Equals(role1, role2);
+        }
+
+        public static bool operator !=(ApplicationRole<TKey, TIdentityUser, TIdentityRole> role1, ApplicationRole<TKey, TIdentityUser, TIdentityRole> role2)
+        {
+            return !(role1 == role2);
         }
 
         #endregion

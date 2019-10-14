@@ -1,7 +1,7 @@
 ﻿using System;
 using CoreDX.Application.EntityFrameworkCore.EntityConfiguration;
-using CoreDX.Domain.Model.Entity.Security;
-using CoreDX.EntityFrameworkCore.Extensions.Extensions;
+using CoreDX.Domain.Entity.Permission;
+using CoreDX.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoreDX.Application.EntityFrameworkCore

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Common.Util.TypeExtensions;
-using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Entity.Identity;
 using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

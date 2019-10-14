@@ -1,4 +1,6 @@
-﻿namespace CoreDX.Domain.Model.Entity.Identity
+﻿using CoreDX.Domain.Model.Entity;
+
+namespace CoreDX.Domain.Entity.Identity
 {
     public class ApplicationRoleView : DomainTreeEntityViewBase<string, ApplicationRoleView, string>
     {

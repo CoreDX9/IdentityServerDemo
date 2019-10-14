@@ -1,13 +1,16 @@
 ﻿using System;
 using CoreDX.Application.EntityFrameworkCore.Extensions;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.Domain.Model.Entity.Identity;
-using CoreDX.Domain.Model.Entity.Security;
+using CoreDX.Domain.Entity.Identity;
+using CoreDX.Domain.Entity.Permission;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CoreDX.Application.EntityFrameworkCore.EntityConfiguration
 {
+    /// <summary>
+    /// 领域实体配置
+    /// </summary>
     public static class ApplicationDomainEntityConfiguration
     {
         public static void ConfigPermissionDefinition<TPermissionDefinition, TKey, TIdentityKey>(

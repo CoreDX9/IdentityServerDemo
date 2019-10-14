@@ -1,8 +1,9 @@
 ﻿using System;
 using CoreDX.Domain.Core.Entity;
+using CoreDX.Domain.Model.Entity;
 using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 
-namespace CoreDX.Domain.Model.Entity.Security
+namespace CoreDX.Domain.Entity.Permission
 {
     [DbDescription("权限值类型，物理存储都是数字")]
     public enum PermissionValueType : sbyte

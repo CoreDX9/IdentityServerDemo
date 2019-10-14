@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Model.Entity.Identity;
+using CoreDX.Domain.Model.Entity.Security;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;

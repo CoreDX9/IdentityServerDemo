@@ -2,7 +2,7 @@
 using CoreDX.Domain.Core.Entity;
 using Microsoft.AspNetCore.Identity;
 
-namespace CoreDX.Domain.Model.Entity.Identity
+namespace CoreDX.Domain.Entity.Identity
 {
     public class ApplicationUserRole : ApplicationUserRole<int, ApplicationUser, ApplicationRole>
         , IStorageOrderRecordable

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using CoreDX.Domain.Core.Entity;
+using CoreDX.Domain.Model.Entity;
 
-namespace CoreDX.Domain.Model.Entity.Identity
+namespace CoreDX.Domain.Entity.Identity
 {
     public class Organization : Organization<int, Organization, ApplicationUser>
     , IStorageOrderRecordable

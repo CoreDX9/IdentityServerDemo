@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoreDX.Application.EntityFrameworkCore;
-using CoreDX.Domain.Model.Entity.Security;
+using CoreDX.Domain.Entity.Permission;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

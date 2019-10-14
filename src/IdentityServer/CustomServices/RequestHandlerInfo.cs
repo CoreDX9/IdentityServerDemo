@@ -2,10 +2,11 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using CoreDX.Domain.Model.Entity.Security;
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.AspNetCore.Routing;
@@ -21,7 +22,7 @@ namespace IdentityServer.CustomServices
     public class RequestHandlerInfo : IRequestHandlerInfo
     {
         private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
-        private readonly IPageLoader _pageLoader;
+        private readonly PageLoader _pageLoader;
         private readonly LinkGenerator _linkGenerator;
         private readonly object _locker;
         private readonly object _locker2;
@@ -29,7 +30,7 @@ namespace IdentityServer.CustomServices
         private IEnumerable<AreaInfo> _areaInfosCache;
         private IDictionary<MethodInfo, string> _requestHandlerInfosCache;
 
-        public RequestHandlerInfo(IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IPageLoader pageLoader, LinkGenerator linkGenerator)
+        public RequestHandlerInfo(IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, PageLoader pageLoader, LinkGenerator linkGenerator)
         {
             _locker = new object();
             _locker2 = new object();

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Linq;
 using CoreDX.Application.EntityFrameworkCore.EntityConfiguration;
-using CoreDX.Common.Util.TypeExtensions;
-using CoreDX.Domain.Core.Entity;
-using CoreDX.Domain.Model.Entity.Identity;
-using CoreDX.EntityFrameworkCore.Extensions.Extensions;
+using CoreDX.Domain.Entity.Identity;
+using CoreDX.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace CoreDX.Application.EntityFrameworkCore
 {
