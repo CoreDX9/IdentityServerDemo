@@ -1,16 +1,36 @@
 ﻿using System;
+using System.Linq;
 using CoreDX.Application.EntityFrameworkCore.EntityConfiguration;
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Model.Entity.Identity;
-using CoreDX.Domain.Model.Entity.Security;
+using CoreDX.EntityFrameworkCore.Extensions.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace CoreDX.Application.EntityFrameworkCore
 {
-    public class ApplicationIdentityDbContext : ApplicationIdentityDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken, Organization, PermissionDefinition, ApplicationUserOrganization, UserPermissionDeclaration, RolePermissionDeclaration, OrganizationPermissionDeclaration, RequestAuthorizationRule, AuthorizationRule> { }
+    /// <summary>
+    /// 身份数据上下文
+    /// </summary>
+    public class ApplicationIdentityDbContext : ApplicationIdentityDbContext<ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken, Organization, ApplicationUserOrganization> { }
 
-
-    public class ApplicationIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TOrganization, TPermissionDefinition, TUserOrganization, TUserPermissionDeclaration, TRolePermissionDeclaration, TOrganizationPermissionDeclaration, TRequestAuthorizationRule, TAuthorizationRule>
+    /// <summary>
+    /// 身份数据上下文
+    /// </summary>
+    /// <typeparam name="TUser">用户</typeparam>
+    /// <typeparam name="TRole">角色</typeparam>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TUserClaim">用户宣称</typeparam>
+    /// <typeparam name="TUserRole">用户角色</typeparam>
+    /// <typeparam name="TUserLogin">用户登录数据</typeparam>
+    /// <typeparam name="TRoleClaim">角色宣称</typeparam>
+    /// <typeparam name="TUserToken">用户令牌</typeparam>
+    /// <typeparam name="TOrganization">组织</typeparam>
+    /// <typeparam name="TUserOrganization">用户组织</typeparam>
+    public class ApplicationIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim,
+            TUserToken, TOrganization, TUserOrganization>
         : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
         where TUser : ApplicationUser<TKey, TUser, TRole, TOrganization>
         where TRole : ApplicationRole<TKey, TUser, TRole>
@@ -21,29 +41,17 @@ namespace CoreDX.Application.EntityFrameworkCore
         where TRoleClaim : ApplicationRoleClaim<TKey, TUser, TRole>
         where TUserToken : ApplicationUserToken<TKey, TUser>
         where TOrganization : Organization<TKey, TOrganization, TUser>
-        where TPermissionDefinition : PermissionDefinition<TKey, TKey>
         where TUserOrganization : ApplicationUserOrganization<TKey, TUser, TOrganization>
-        where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TKey>
-        where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TKey>
-        where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TKey>
-        where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TKey>
-        where TAuthorizationRule : AuthorizationRule<TKey, TKey>
     {
 
         #region DbSet
 
         public virtual DbSet<TOrganization> Organizations { get; set; }
-        public virtual DbSet<TPermissionDefinition> PermissionDefinitions { get; set; }
         public virtual DbSet<TUserOrganization> UserOrganizations { get; set; }
-        public virtual DbSet<TUserPermissionDeclaration> UserPermissionDeclarations { get; set; }
-        public virtual DbSet<TRolePermissionDeclaration> RolePermissionDeclarations { get; set; }
-        public virtual DbSet<TOrganizationPermissionDeclaration> OrganizationPermissionDeclarations { get; set; }
-        public virtual DbSet<TRequestAuthorizationRule> RequestAuthorizationRules { get; set; }
-        public virtual DbSet<TAuthorizationRule> AuthorizationRules { get; set; }
 
         #endregion
 
-        #region DbQuery
+        #region DbQuery要改成ef core 3.x 的 Entity视图
 
         public virtual DbQuery<ApplicationRoleView> IdentityRoleView { get; set; }
 
@@ -51,11 +59,16 @@ namespace CoreDX.Application.EntityFrameworkCore
 
         /// <summary>初始化新的实例</summary>
         /// <param name="options">应用于ApplicationIdentityDbContext的选项</param>
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TOrganization, TPermissionDefinition, TUserOrganization, TUserPermissionDeclaration, TRolePermissionDeclaration, TOrganizationPermissionDeclaration, TRequestAuthorizationRule, TAuthorizationRule>> options)
+        public ApplicationIdentityDbContext(
+            DbContextOptions<ApplicationIdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin,
+                TRoleClaim, TUserToken, TOrganization, TUserOrganization>> options)
             : base(options)
-        {}
+        {
+        }
 
-        public ApplicationIdentityDbContext(){}
+        public ApplicationIdentityDbContext()
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -69,13 +82,9 @@ namespace CoreDX.Application.EntityFrameworkCore
             builder.Entity<TRoleClaim>().ConfigRoleClaim<TRoleClaim, TUser, TRole, TKey>();
             builder.Entity<TUserToken>().ConfigTUserToken<TUserToken, TUser, TKey>();
             builder.Entity<TOrganization>().ConfigOrganization<TOrganization, TUser, TKey>();
-            builder.Entity<TPermissionDefinition>().ConfigPermissionDefinition<TPermissionDefinition, TUser, TKey>();
             builder.Entity<TUserOrganization>().ConfigUserOrganization<TUserOrganization, TUser, TOrganization, TKey>();
-            builder.Entity<TUserPermissionDeclaration>().ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TUser, TRole, TOrganization, TKey>();
-            builder.Entity<TRolePermissionDeclaration>().ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TUser, TRole, TKey>();
-            builder.Entity<TOrganizationPermissionDeclaration>().ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TOrganization, TUser, TKey>();
-            builder.Entity<TRequestAuthorizationRule>().ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TUser, TKey>();
-            builder.Entity<TAuthorizationRule>().ConfigAuthorizationRule<TAuthorizationRule, TUser, TKey>();
+
+            builder.ConfigKeyGuidToStringConverter();
         }
     }
 }

@@ -5,16 +5,16 @@ using Newtonsoft.Json;
 
 namespace CoreDX.Domain.Model.Entity.Security
 {
-    public class RequestAuthorizationRule : RequestAuthorizationRule<Guid, Guid>
-        ,IStorageOrderRecordable
+    public class RequestAuthorizationRule : RequestAuthorizationRule<int, int>
     {
-        public virtual long InsertOrder { get; set; }
     }
 
     /// <summary>
     /// 请求授权规则
     /// </summary>
-    public class RequestAuthorizationRule<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
+    public abstract class RequestAuthorizationRule<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
@@ -37,21 +37,30 @@ namespace CoreDX.Domain.Model.Entity.Security
         /// </summary>
         public string IdentificationKey { get; set; }
 
-        public virtual Guid? AuthorizationRuleId { get; set; }
+        /// <summary>
+        /// 授权规则Id
+        /// </summary>
+        public virtual TKey? AuthorizationRuleId { get; set; }
 
+        /// <summary>
+        /// 授权规则
+        /// </summary>
         public virtual AuthorizationRule<TKey, TIdentityKey> AuthorizationRule { get; set; }
-    }
-
-    public class AuthorizationRule : AuthorizationRule<Guid, Guid>
-        , IStorageOrderRecordable
-    {
-        public virtual long InsertOrder { get; set; }
     }
 
     /// <summary>
     /// 授权规则
     /// </summary>
-    public class AuthorizationRule<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
+    public class AuthorizationRule : AuthorizationRule<int, int>
+    {
+    }
+
+    /// <summary>
+    /// 授权规则
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
+    public abstract class AuthorizationRule<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
@@ -72,24 +81,38 @@ namespace CoreDX.Domain.Model.Entity.Security
         /// </summary>
         public class AuthorizationRuleGroup
         {
+            /// <summary>
+            /// 操作
+            /// </summary>
             public enum Operate : byte
             {
+                /// <summary>
+                /// 任意
+                /// </summary>
                 Any = 1,
+
+                /// <summary>
+                /// 所有
+                /// </summary>
                 All = 2,
             }
+
             /// <summary>
             /// 组操作，表示组中任意一个规则或组还是所有规则和组通过视为本组授权通过
             /// </summary>
             public Operate GroupOperate { get; set; }
+
             /// <summary>
             /// 规则集合
             /// </summary>
             public List<Rule> Rules { get; set; }
+
             /// <summary>
             /// 内部分组集合
             /// </summary>
             public List<AuthorizationRuleGroup> Groups { get; set; }
         }
+
         /// <summary>
         /// 授权规则
         /// </summary>
@@ -111,10 +134,12 @@ namespace CoreDX.Domain.Model.Entity.Security
                     Anonymous = 200,
                     Authentication = 201
                 }
+
                 /// <summary>
                 /// 来源类型
                 /// </summary>
                 public PermissionOriginType Type { get; set; }
+
                 /// <summary>
                 /// 值，用于指定权限来自指定的角色或组织，针对用户、匿名、身份认证的无效，集合为空表不限制
                 /// 组织权限是收缩模型，下级组织不自动继承上级组织的权限，需要手动配置继承，且继承的权限不能超过上级组织
@@ -129,10 +154,12 @@ namespace CoreDX.Domain.Model.Entity.Security
             /// 权限定义Id
             /// </summary>
             public Guid PermissionDefinitionId { get; set; }
+
             /// <summary>
             /// 权限值
             /// </summary>
             public short Value { get; set; }
+
             /// <summary>
             /// 权限来源，只要其中一个来源能够匹配即可
             /// </summary>

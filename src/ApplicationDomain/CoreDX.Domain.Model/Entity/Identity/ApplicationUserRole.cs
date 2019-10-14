@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserRole : ApplicationUserRole<Guid, ApplicationUser, ApplicationRole>
+    public class ApplicationUserRole : ApplicationUserRole<int, ApplicationUser, ApplicationRole>
         , IStorageOrderRecordable
     {
         public virtual long InsertOrder { get; set; }

@@ -2,6 +2,10 @@
 
 namespace CoreDX.Domain.Core.Entity
 {
+    /// <summary>
+    /// 树形数据接口
+    /// </summary>
+    /// <typeparam name="T">节点数据类型</typeparam>
     public interface ITree<T>
     {
         /// <summary>

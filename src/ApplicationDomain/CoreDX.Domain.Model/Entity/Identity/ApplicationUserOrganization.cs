@@ -3,7 +3,7 @@ using CoreDX.Domain.Core.Entity;
 
 namespace CoreDX.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserOrganization : ApplicationUserOrganization<Guid, ApplicationUser, Organization>
+    public class ApplicationUserOrganization : ApplicationUserOrganization<int, ApplicationUser, Organization>
     {
     }
 

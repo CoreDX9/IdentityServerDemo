@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoreDX.Domain.Core.Entity
 {
+    /// <summary>
+    /// 软删除接口
+    /// </summary>
     public interface ILogicallyDeletable
     {
         /// <summary>
@@ -11,6 +14,9 @@ namespace CoreDX.Domain.Core.Entity
         bool IsDeleted { get; set; }
     }
 
+    /// <summary>
+    /// 活动状态标记接口
+    /// </summary>
     public interface IActiveControllable
     {
         /// <summary>
@@ -19,6 +25,9 @@ namespace CoreDX.Domain.Core.Entity
         bool? Active { get; set; }
     }
 
+    /// <summary>
+    /// 乐观并发接口
+    /// </summary>
     public interface IOptimisticConcurrencySupported
     {
         /// <summary>
@@ -28,6 +37,9 @@ namespace CoreDX.Domain.Core.Entity
         string ConcurrencyStamp { get; set; }
     }
 
+    /// <summary>
+    /// 插入顺序记录接口
+    /// </summary>
     public interface IStorageOrderRecordable
     {
         /// <summary>
@@ -38,6 +50,9 @@ namespace CoreDX.Domain.Core.Entity
         long InsertOrder { get; set; }
     }
 
+    /// <summary>
+    /// 创建时间记录接口
+    /// </summary>
     public interface ICreationTimeRecordable
     {
         /// <summary>
@@ -46,6 +61,9 @@ namespace CoreDX.Domain.Core.Entity
         DateTimeOffset CreationTime { get; set; }
     }
 
+    /// <summary>
+    /// 最后修改时间记录接口
+    /// </summary>
     public interface ILastModificationTimeRecordable
     {
         /// <summary>
@@ -54,6 +72,10 @@ namespace CoreDX.Domain.Core.Entity
         DateTimeOffset LastModificationTime { get; set; }
     }
 
+    /// <summary>
+    /// 创建人id记录接口
+    /// </summary>
+    /// <typeparam name="TIdentityKey">创建人主键类型</typeparam>
     public interface ICreatorRecordable<TIdentityKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
@@ -63,6 +85,11 @@ namespace CoreDX.Domain.Core.Entity
         TIdentityKey? CreatorId { get; set; }
     }
 
+    /// <summary>
+    /// 创建人记录接口
+    /// </summary>
+    /// <typeparam name="TIdentityKey">创建人主键类型</typeparam>
+    /// <typeparam name="TIdentityUser">创建人类型</typeparam>
     public interface ICreatorRecordable<TIdentityKey, TIdentityUser> : ICreatorRecordable<TIdentityKey>
         where TIdentityKey : struct , IEquatable<TIdentityKey>
         where TIdentityUser : IEntity<TIdentityKey>
@@ -73,6 +100,10 @@ namespace CoreDX.Domain.Core.Entity
         TIdentityUser Creator { get; set; }
     }
 
+    /// <summary>
+    /// 上次修改人id记录接口
+    /// </summary>
+    /// <typeparam name="TIdentityKey">上次修改人主键类型</typeparam>
     public interface ILastModifierRecordable<TIdentityKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
@@ -82,6 +113,11 @@ namespace CoreDX.Domain.Core.Entity
         TIdentityKey? LastModifierId { get; set; }
     }
 
+    /// <summary>
+    /// 上次修改人记录接口
+    /// </summary>
+    /// <typeparam name="TIdentityKey">上次修改人主键类型</typeparam>
+    /// <typeparam name="TIdentityUser">上次修改人类型</typeparam>
     public interface ILastModifierRecordable<TIdentityKey, TIdentityUser> : ILastModifierRecordable<TIdentityKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
         where TIdentityUser : IEntity<TIdentityKey>

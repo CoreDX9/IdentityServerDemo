@@ -22,11 +22,8 @@ namespace CoreDX.Domain.Model.Entity.Identity
     /// <summary>
     /// 实际使用的用户类，添加自己的属性存储自定义信息
     /// </summary>
-    public class ApplicationUser : ApplicationUser<Guid, ApplicationUser, ApplicationRole, Organization>
-        , IStorageOrderRecordable
+    public class ApplicationUser : ApplicationUser<int, ApplicationUser, ApplicationRole, Organization>
     {
-        public ApplicationUser() => Id = Guid.NewGuid();
-
         [DbDescription("性别")]
         public virtual Gender? Sex { get; set; }
 

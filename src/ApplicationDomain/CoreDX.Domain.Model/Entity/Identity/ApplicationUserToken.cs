@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserToken : ApplicationUserToken<Guid, ApplicationUser>
+    public class ApplicationUserToken : ApplicationUserToken<int, ApplicationUser>
     {
     }
 

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Domain.Identity;
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Core.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Util.TypeExtensions;
 
-namespace Domain.EntityFrameworkCore.Extensions
+namespace Domain.EntityFrameworkCore
 {
     /// <summary>
     /// 数据迁移扩展
@@ -115,7 +115,7 @@ go";
                 throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
 
             foreach (var entityType in migration.TargetModel.GetEntityTypes().Where(entity =>
-                viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(DomainTreeEntityBase<>))))
+                viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(IDomainTreeEntity<>))))
             {
                 migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
                     entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
@@ -133,22 +133,22 @@ go";
         /// <param name="migration">迁移类实例</param>
         /// <param name="viewAssembly">实体类所在程序集</param>
         /// <returns></returns>
-        public static MigrationBuilder CreateIdentityTreeEntityView(this MigrationBuilder migrationBuilder, Migration migration,
-            Assembly viewAssembly)
-        {
-            if (viewAssembly == null)
-                throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
+        //public static MigrationBuilder CreateIdentityTreeEntityView(this MigrationBuilder migrationBuilder, Migration migration,
+        //    Assembly viewAssembly)
+        //{
+        //    if (viewAssembly == null)
+        //        throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
 
-            var entityType = migration.TargetModel.GetEntityTypes().Single(entity =>
-                viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(ApplicationRole)));
-            if (entityType != null)
-            {
-                migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
-                    entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
-            }
+        //    var entityType = migration.TargetModel.GetEntityTypes().Single(entity =>
+        //        viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(ApplicationRole)));
+        //    if (entityType != null)
+        //    {
+        //        migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
+        //            entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
+        //    }
 
-            return migrationBuilder;
-        }
+        //    return migrationBuilder;
+        //}
 
         /// <summary>
         /// 删除树形实体视图

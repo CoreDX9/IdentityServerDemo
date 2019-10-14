@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.Domain.Model.Entity.Security;
 
 namespace CoreDX.Domain.Model.Entity.Identity
 {
-    public class Organization : Organization<Guid, Organization, ApplicationUser>
+    public class Organization : Organization<int, Organization, ApplicationUser>
     , IStorageOrderRecordable
     {
         public long InsertOrder { get; set; }

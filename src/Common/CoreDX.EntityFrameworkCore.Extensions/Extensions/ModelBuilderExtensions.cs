@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Core.Entity;
 using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
 {
@@ -175,6 +177,21 @@ namespace CoreDX.EntityFrameworkCore.Extensions.Extensions
                                 ?.Description}{(enumDbDescription.IsNullOrWhiteSpace() ? "" : $@" {enumDbDescription}")}");
                     }
                 }
+            }
+
+            return modelBuilder;
+        }
+
+        public static ModelBuilder ConfigKeyGuidToStringConverter(this ModelBuilder modelBuilder)
+        {
+            foreach (var domain in modelBuilder.Model.GetEntityTypes().Where(e =>
+                    !e.IsKeyless && !e.IsOwned() && e.ClrType.IsDerivedFrom(typeof(IEntity<Guid>)))
+                .Select(e => e.ClrType))
+            {
+                modelBuilder.Entity(domain, b =>
+                {
+                    b.Property<Guid>(nameof(IEntity<Guid>.Id)).HasConversion(new GuidToStringConverter());
+                });
             }
 
             return modelBuilder;

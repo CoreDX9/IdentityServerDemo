@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using CoreDX.Application.Domain.Model.Entity.Core;
 using CoreDX.Common.Util.TypeExtensions;
-using Domain.Identity;
-using Domain.Sample;
+using CoreDX.Domain.Core.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Domain.EntityFrameworkCore.Extensions
+namespace Domain.EntityFrameworkCore
 {
     public static class ModelBuilderExtensions
     {

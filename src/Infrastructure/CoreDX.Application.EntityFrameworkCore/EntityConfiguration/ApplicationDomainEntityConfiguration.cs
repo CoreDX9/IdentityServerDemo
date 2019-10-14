@@ -10,68 +10,52 @@ namespace CoreDX.Application.EntityFrameworkCore.EntityConfiguration
 {
     public static class ApplicationDomainEntityConfiguration
     {
-        public static void ConfigPermissionDefinition<TPermissionDefinition, TIdentityUser, TKey>(
+        public static void ConfigPermissionDefinition<TPermissionDefinition, TKey, TIdentityKey>(
             this EntityTypeBuilder<TPermissionDefinition> builder)
             where TKey : struct, IEquatable<TKey>
-            where TIdentityUser : class, IEntity<TKey>
-            where TPermissionDefinition : PermissionDefinition<TKey, TIdentityUser>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+            where TPermissionDefinition : PermissionDefinition<TKey, TIdentityKey>
         {
-            builder.ConfigForDomainEntityBase<TKey, TPermissionDefinition, TIdentityUser, TKey>();
+            builder.ConfigForDomainEntityBase<TKey, TPermissionDefinition>();
             builder.ToTable("PermissionDefinitions");
         }
 
-        public static void ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TIdentityUser, TIdentityRole, TOrganization, TKey>(
+        public static void ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TKey, TIdentityKey>(
             this EntityTypeBuilder<TUserPermissionDeclaration> builder)
             where TKey : struct, IEquatable<TKey>
-            where TIdentityUser : ApplicationUser<TKey, TIdentityUser, TIdentityRole, TOrganization>
-            where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
-            where TIdentityRole : IEntity<TKey>
-            where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TIdentityUser>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+            where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TIdentityKey>
         {
             builder.HasKey(e => new { e.UserId, e.PermissionDefinitionId });
-            builder.ConfigForIManyToManyReferenceEntity<TUserPermissionDeclaration, TKey, TIdentityUser>();
-            builder.ConfigForILastModifierRecordable<TUserPermissionDeclaration, TIdentityUser, TKey>();
-            builder.HasOne(up => up.User)
-                .WithMany()
-                .HasForeignKey(up => up.UserId);
+            builder.ConfigForIManyToManyReferenceEntity();
             builder.HasOne(e => e.PermissionDefinition)
                 .WithMany()
                 .HasForeignKey(e => e.PermissionDefinitionId);
             builder.ToTable("UserPermissionDeclarations");
         }
 
-        public static void ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TIdentityUser, TIdentityRole, TKey>(
+        public static void ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TKey, TIdentityKey>(
             this EntityTypeBuilder<TRolePermissionDeclaration> builder)
             where TKey : struct, IEquatable<TKey>
-            where TIdentityUser : class, IEntity<TKey>
-            where TIdentityRole : ApplicationRole<TKey, TIdentityUser, TIdentityRole>
-            where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TIdentityUser, TIdentityRole>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+            where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TIdentityKey>
         {
             builder.HasKey(e => new {e.RoleId, e.PermissionDefinitionId});
-            builder.ConfigForIManyToManyReferenceEntity<TRolePermissionDeclaration, TKey, TIdentityUser>();
-            builder.ConfigForILastModifierRecordable<TRolePermissionDeclaration, TIdentityUser, TKey>();
-            builder.HasOne(rp => rp.Role)
-                .WithMany()
-                .HasForeignKey(rp => rp.RoleId);
+            builder.ConfigForIManyToManyReferenceEntity();
             builder.HasOne(e => e.PermissionDefinition)
                 .WithMany()
                 .HasForeignKey(e => e.PermissionDefinitionId);
             builder.ToTable("RolePermissionDeclarations");
         }
 
-        public static void ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TOrganization, TIdentityUser, TKey>(
+        public static void ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TKey, TIdentityKey>(
             this EntityTypeBuilder<TOrganizationPermissionDeclaration> builder)
             where TKey : struct, IEquatable<TKey>
-            where TOrganization : Organization<TKey, TOrganization, TIdentityUser>
-            where TIdentityUser : class, IEntity<TKey>
-            where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TOrganization, TIdentityUser>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+            where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TIdentityKey>
         {
             builder.HasKey(e => new {e.OrganizationId, e.PermissionDefinitionId});
-            builder.ConfigForIManyToManyReferenceEntity<TOrganizationPermissionDeclaration, TKey, TIdentityUser>();
-            builder.ConfigForILastModifierRecordable<TOrganizationPermissionDeclaration, TIdentityUser, TKey>();
-            builder.HasOne(op => op.Organization)
-                .WithMany()
-                .HasForeignKey(op => op.OrganizationId);
+            builder.ConfigForIManyToManyReferenceEntity();
             builder.HasOne(e => e.PermissionDefinition)
                 .WithMany()
                 .HasForeignKey(e => e.PermissionDefinitionId);
@@ -222,13 +206,10 @@ namespace CoreDX.Application.EntityFrameworkCore.EntityConfiguration
             where TUser : class, IEntity<TKey>
         {
             builder.ConfigForDomainTreeEntityBase<TKey, TOrganization, TKey, TUser>();
-            builder.HasMany(e => e.PermissionDeclarations)
-                .WithOne(e => e.Organization)
-                .HasForeignKey(e => e.OrganizationId);
             builder.HasMany(e => e.UserOrganizations)
                 .WithOne(e => e.Organization)
                 .HasForeignKey(e => e.OrganizationId);
-            builder.ToTable("Organizations");
+            builder.ToTable("AppOrganizations");
         }
 
         public static void ConfigUserOrganization<TUserOrganization, TUser, TOrganization, TKey>(
@@ -248,26 +229,26 @@ namespace CoreDX.Application.EntityFrameworkCore.EntityConfiguration
             builder.ToTable("AppUserOrganizations");
         }
 
-        public static void ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TUser, TKey>(
+        public static void ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TKey, TIdentityKey>(
             this EntityTypeBuilder<TRequestAuthorizationRule> builder)
-            where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TUser>
             where TKey : struct, IEquatable<TKey>
-            where TUser : class, IEntity<TKey>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+            where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TIdentityKey>
         {
-            builder.ConfigForDomainEntityBase<TKey, TRequestAuthorizationRule, TUser, TKey>();
+            builder.ConfigForDomainEntityBase<TKey, TRequestAuthorizationRule, TIdentityKey>();
             builder.HasOne(e => e.AuthorizationRule)
                 .WithMany()
                 .HasForeignKey(e => e.AuthorizationRuleId);
             builder.ToTable("AppRequestAuthorizationRules");
         }
 
-        public static void ConfigAuthorizationRule<TAuthorizationRule, TUser, TKey>(
+        public static void ConfigAuthorizationRule<TAuthorizationRule, TKey, TIdentityKey>(
             this EntityTypeBuilder<TAuthorizationRule> builder)
-            where TAuthorizationRule : AuthorizationRule<TKey, TUser>
+            where TAuthorizationRule : AuthorizationRule<TKey, TIdentityKey>
             where TKey : struct, IEquatable<TKey>
-            where TUser : class, IEntity<TKey>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
         {
-            builder.ConfigForDomainEntityBase<TKey, TAuthorizationRule, TUser, TKey>();
+            builder.ConfigForDomainEntityBase<TKey, TAuthorizationRule, TIdentityKey>();
             builder.HasMany(e => e.RequestAuthorizationRules)
                 .WithOne()
                 .HasForeignKey(e => e.AuthorizationRuleId);

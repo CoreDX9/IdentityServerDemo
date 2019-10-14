@@ -9,7 +9,7 @@ using CoreDX.Domain.Model.Entity.Identity;
 
 namespace CoreDX.Domain.Model.Entity
 {
-    public abstract class DomainEntityBase : DomainEntityBase<Guid, Guid, ApplicationUser>
+    public abstract class DomainEntityBase : DomainEntityBase<Guid, int, ApplicationUser>
     , IStorageOrderRecordable
     {
         protected DomainEntityBase()
@@ -20,6 +20,12 @@ namespace CoreDX.Domain.Model.Entity
         public long InsertOrder { get; set; }
     }
 
+    /// <summary>
+    /// 领域实体基类
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
+    /// <typeparam name="TIdentityUser">身份类型</typeparam>
     public abstract class DomainEntityBase<TKey, TIdentityKey, TIdentityUser> : DomainEntityBase<TKey, TIdentityKey>
         , ICreatorRecordable<TIdentityKey, TIdentityUser>
         , ILastModifierRecordable<TIdentityKey, TIdentityUser>
@@ -27,34 +33,72 @@ namespace CoreDX.Domain.Model.Entity
         where TIdentityKey : struct, IEquatable<TIdentityKey>
         where TIdentityUser : IEntity<TIdentityKey>
     {
+        /// <summary>
+        /// 创建人
+        /// </summary>
         public virtual TIdentityUser Creator { get; set; }
+
+        /// <summary>
+        /// 上次修改人
+        /// </summary>
         public virtual TIdentityUser LastModifier { get; set; }
     }
 
+    /// <summary>
+    /// 领域实体基类
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
     public abstract class DomainEntityBase<TKey, TIdentityKey> : DomainEntityBase<TKey>
         , ICreatorRecordable<TIdentityKey>
         , ILastModifierRecordable<TIdentityKey>
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
+        /// <summary>
+        /// 创建人Id
+        /// </summary>
         public virtual TIdentityKey? CreatorId { get; set; }
+
+        /// <summary>
+        /// 上次修改人Id
+        /// </summary>
         public virtual TIdentityKey? LastModifierId { get; set; }
     }
 
+    /// <summary>
+    /// 领域实体基类
+    /// </summary>
+    /// <typeparam name="TKey">主键类型</typeparam>
     public abstract class DomainEntityBase<TKey> : IDomainEntity<TKey>
         , IOptimisticConcurrencySupported
         where TKey : struct, IEquatable<TKey>
     {
         [Key]
         public virtual TKey Id { get; set; }
-        public virtual string Remark { get; set; }
+        //public virtual string Remark { get; set; }
 
         #region IEntity成员
 
+        /// <summary>
+        /// 并发标记
+        /// </summary>
         public virtual string ConcurrencyStamp { get; set; }
-        public virtual bool? Active { get; set; }
+        //public virtual bool? Active { get; set; }
+
+        /// <summary>
+        /// 软删除标记
+        /// </summary>
         public virtual bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public virtual DateTimeOffset CreationTime { get; set; } = DateTimeOffset.Now;
+
+        /// <summary>
+        /// 上次修改时间
+        /// </summary>
         public virtual DateTimeOffset LastModificationTime { get; set; } = DateTimeOffset.Now;
 
         #endregion

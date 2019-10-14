@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Domain.Model.Entity.Identity
 {
-    public class ApplicationUserClaim : ApplicationUserClaim<Guid, ApplicationUser>
+    public class ApplicationUserClaim : ApplicationUserClaim<int, ApplicationUser>
     {}
 
     public abstract class ApplicationUserClaim<TKey, TIdentityUser> : IdentityUserClaim<TKey>

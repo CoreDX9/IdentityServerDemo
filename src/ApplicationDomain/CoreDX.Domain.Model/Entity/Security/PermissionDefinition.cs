@@ -16,16 +16,18 @@ namespace CoreDX.Domain.Model.Entity.Security
     /// <summary>
     /// 权限定义
     /// </summary>
-    public class PermissionDefinition : PermissionDefinition<Guid, Guid>
+    public class PermissionDefinition : PermissionDefinition<int, int>
         ,IStorageOrderRecordable
     {
         public virtual long InsertOrder { get; set; }
     }
 
     /// <summary>
-    /// 权限定义
+    /// 权限定义基类
     /// </summary>
-    public class PermissionDefinition<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
+    /// <typeparam name="TKey">主键类型</typeparam>
+    /// <typeparam name="TIdentityKey">身份主键类型</typeparam>
+    public abstract class PermissionDefinition<TKey, TIdentityKey> : DomainEntityBase<TKey, TIdentityKey>
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {

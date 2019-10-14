@@ -8,7 +8,7 @@ namespace CoreDX.Domain.Core.Entity
     /// </summary>
     public interface IDomainEntity : IEntity
         , ILogicallyDeletable
-        , IActiveControllable
+        //, IActiveControllable
         , ICreationTimeRecordable
         , ILastModificationTimeRecordable
         , INotifyPropertyChanged

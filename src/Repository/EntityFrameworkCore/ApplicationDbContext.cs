@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.EntityFrameworkCore.Extensions;
-using Domain.Identity;
-using Domain.Management;
-using Domain.Sample;
-using Domain.Security;
-using EntityFrameworkCore.Extensions.Extensions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Domain.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repository.RabbitMQ;
 

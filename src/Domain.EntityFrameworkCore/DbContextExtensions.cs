@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
-using Entity;
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Core.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Util.TypeExtensions;
 
-namespace Domain.EntityFrameworkCore.Extensions
+namespace Domain.EntityFrameworkCore
 {
     public static class DbContextExtensions
     {
@@ -18,43 +18,54 @@ namespace Domain.EntityFrameworkCore.Extensions
         {
             var now = DateTimeOffset.Now;
             PropertyEntry propertyEntry;
-            //在添加记录时设置创建时间并设置最后一次修改时间为创建时间、设置最后一次记录修改人为记录创建人
-            foreach (var entry in dbContext.ChangeTracker.Entries().Where(e =>
-                e.Metadata.ClrType.IsDerivedFrom(typeof(IEntity)) && States.Contains(e.State)))
+
+            foreach (var entry in dbContext.ChangeTracker.Entries().Where(e => States.Contains(e.State)))
             {
-                //在添加或修改实体时设置最后修改时间
-                propertyEntry = entry.Property(nameof(IEntity.LastModificationTime));
-                propertyEntry.CurrentValue = now;
-                propertyEntry.IsModified = true;
-
-                if (entry.State == EntityState.Added)
+                if (entry.Metadata.ClrType.IsDerivedFrom(typeof(ILastModificationTimeRecordable)))
                 {
-                    propertyEntry = entry.Property(nameof(IEntity.CreationTime));
+                    //在添加或修改实体时设置最后修改时间
+                    propertyEntry = entry.Property(nameof(ILastModificationTimeRecordable.LastModificationTime));
                     propertyEntry.CurrentValue = now;
-                }
-                else
-                {
-                    propertyEntry = entry.Property(nameof(IEntity.CreationTime));
-                    propertyEntry.IsModified = false;
+                    propertyEntry.IsModified = true;
                 }
 
-                //阻止在添加和修改实体时设置删除标记
-                //但可以恢复被标记为已删除的记录
-                if (entry.State != EntityState.Deleted
-                    && (bool) entry.Property(nameof(IEntity.IsDeleted)).CurrentValue == true)
+                if (entry.Metadata.ClrType.IsDerivedFrom(typeof(ICreationTimeRecordable)))
                 {
-                    propertyEntry = entry.Property(nameof(IEntity.IsDeleted));
-                    propertyEntry.CurrentValue = false;
-                    propertyEntry.IsModified = false;
+                    if (entry.State == EntityState.Added)
+                    {
+                        propertyEntry = entry.Property(nameof(ICreationTimeRecordable.CreationTime));
+                        propertyEntry.CurrentValue = now;
+                    }
+                    else
+                    {
+                        propertyEntry = entry.Property(nameof(ICreationTimeRecordable.CreationTime));
+                        propertyEntry.IsModified = false;
+                    }
                 }
 
-                //在启用、停用标记为null时认为不更改数据库值
-                //添加时除外，添加时为null保持IsModified = true激活数据库默认值的插入
-                if (entry.State != EntityState.Added
-                    && (bool?) entry.Property(nameof(IEntity.IsEnable)).CurrentValue == null)
+                if (entry.Metadata.ClrType.IsDerivedFrom(typeof(ILogicallyDeletable)))
                 {
-                    propertyEntry = entry.Property(nameof(IEntity.IsEnable));
-                    propertyEntry.IsModified = false;
+                    //阻止在添加和修改实体时设置删除标记
+                    //但可以恢复被标记为已删除的记录
+                    if (entry.State != EntityState.Deleted
+                        && (bool)entry.Property(nameof(ILogicallyDeletable.IsDeleted)).CurrentValue == true)
+                    {
+                        propertyEntry = entry.Property(nameof(ILogicallyDeletable.IsDeleted));
+                        propertyEntry.CurrentValue = false;
+                        propertyEntry.IsModified = false;
+                    }
+                }
+
+                if (entry.Metadata.ClrType.IsDerivedFrom(typeof(IActiveControllable)))
+                {
+                    //在启用、停用标记为null时认为不更改数据库值
+                    //添加时除外，添加时为null保持IsModified = true激活数据库默认值的插入
+                    if (entry.State != EntityState.Added
+                        && (bool?)entry.Property(nameof(IActiveControllable.Active)).CurrentValue == null)
+                    {
+                        propertyEntry = entry.Property(nameof(IActiveControllable.Active));
+                        propertyEntry.IsModified = false;
+                    }
                 }
             }
         }
@@ -62,13 +73,14 @@ namespace Domain.EntityFrameworkCore.Extensions
         public static void SetSoftDelete(this DbContext dbContext)
         {
             PropertyEntry propertyEntry;
+
             foreach (var entry in dbContext.ChangeTracker.Entries().Where(e =>
-                e.Metadata.ClrType.IsDerivedFrom(typeof(IEntity)) && e.State == EntityState.Deleted))
+                e.Metadata.ClrType.IsDerivedFrom(typeof(ILogicallyDeletable)) && e.State == EntityState.Deleted))
             {
                 //在删除实体时修改删除标记并设置实体为修改用于软删除
                 entry.State = EntityState.Modified;
 
-                propertyEntry = entry.Property(nameof(IEntity.IsDeleted));
+                propertyEntry = entry.Property(nameof(ILogicallyDeletable.IsDeleted));
                 propertyEntry.CurrentValue = true;
                 propertyEntry.IsModified = true;
                 propertyEntry.IsTemporary = false;
@@ -83,10 +95,10 @@ namespace Domain.EntityFrameworkCore.Extensions
             {
                 var subjectId = GetSubjectId(httpContext.User.Identity);
                 var userId = ParseUserId(subjectId,
-                    entry.Property(nameof(IDomainEntity<int>.CreationUserId))?.Metadata.ClrType
+                    entry.Property(nameof(ICreatorRecordable<int>.CreatorId))?.Metadata.ClrType
                 );
                 //设置最后编辑用户Id
-                propertyEntry = entry.Property(nameof(IDomainEntity<int>.LastModificationUserId));
+                propertyEntry = entry.Property(nameof(ILastModifierRecordable<int>.LastModifierId));
                 propertyEntry.CurrentValue = userId;
                 propertyEntry.IsModified = true;
                 propertyEntry.IsTemporary = false;
@@ -94,14 +106,14 @@ namespace Domain.EntityFrameworkCore.Extensions
                 //在增加时设置创建用户Id
                 if (entry.State == EntityState.Added)
                 {
-                    propertyEntry = entry.Property(nameof(IDomainEntity<int>.CreationUserId));
+                    propertyEntry = entry.Property(nameof(ICreatorRecordable<int>.CreatorId));
                     propertyEntry.CurrentValue = userId;
                     propertyEntry.IsModified = true;
                     propertyEntry.IsTemporary = false;
                 }
                 else
                 {
-                    propertyEntry = entry.Property(nameof(IDomainEntity<int>.CreationUserId));
+                    propertyEntry = entry.Property(nameof(ICreatorRecordable<int>.CreatorId));
                     propertyEntry.IsModified = false;
                 }
             }
