@@ -1,0 +1,60 @@
+﻿@using CoreDX.Domain.Entity.Identity
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" id="logoutForm" class="navbar-right">
+        <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+            </li>
+            <li class="nav-item">
+                <button type="submit" class="btn btn-link navbar-btn navbar-link nav-link text-dark"><localize>Logout</localize></button>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                    <localize>Language</localize>
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    @foreach (var culture in Context.RequestServices.GetService<IOptions<RequestLocalizationOptions>>().Value.SupportedCultures)
+                    {
+                    <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SetLanguage" asp-route-lang="@culture.Name"><localize>@culture.Name</localize></a></li>
+                    }
+                </ul>
+            </li>
+        </ul>
+    </form>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item dropdown">
+            <a  href="#" class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                <localize>Account</localize>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register"><localize>Register</localize></a></li>
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login"><localize>Login</localize></a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a href="#" class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
+                <localize>Language</localize>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+                @foreach (var culture in Context.RequestServices.GetService<IOptions<RequestLocalizationOptions>>().Value.SupportedCultures)
+                {
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SetLanguage" asp-route-lang="@culture.Name"><localize>@culture.Name</localize></a></li>
+                }
+            </ul>
+        </li>
+    </ul>
+}

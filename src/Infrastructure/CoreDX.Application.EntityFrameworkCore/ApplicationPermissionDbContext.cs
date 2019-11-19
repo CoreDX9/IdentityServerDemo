@@ -9,7 +9,14 @@ namespace CoreDX.Application.EntityFrameworkCore
     /// <summary>
     /// 权限数据上下文
     /// </summary>
-    public class ApplicationPermissionDbContext : ApplicationPermissionDbContext<int, int, PermissionDefinition, UserPermissionDeclaration, RolePermissionDeclaration, OrganizationPermissionDeclaration, RequestAuthorizationRule, AuthorizationRule> { }
+    public class ApplicationPermissionDbContext : ApplicationPermissionDbContext<int, int, PermissionDefinition, UserPermissionDeclaration, RolePermissionDeclaration, OrganizationPermissionDeclaration, RequestAuthorizationRule, AuthorizationRule>
+    {
+        public ApplicationPermissionDbContext(DbContextOptions<ApplicationPermissionDbContext> options)
+            : base(options)
+        { }
+
+        public ApplicationPermissionDbContext() { }
+    }
 
     /// <summary>
     /// 权限数据上下文
@@ -27,13 +34,12 @@ namespace CoreDX.Application.EntityFrameworkCore
         where TKey : struct, IEquatable<TKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
         where TPermissionDefinition : PermissionDefinition<TKey, TIdentityKey>
-        where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TIdentityKey>
-        where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TIdentityKey>
-        where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TIdentityKey>
-        where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TIdentityKey>
-        where TAuthorizationRule : AuthorizationRule<TKey, TIdentityKey>
+        where TUserPermissionDeclaration : UserPermissionDeclaration<TKey, TIdentityKey, TPermissionDefinition>
+        where TRolePermissionDeclaration : RolePermissionDeclaration<TKey, TIdentityKey, TPermissionDefinition>
+        where TOrganizationPermissionDeclaration : OrganizationPermissionDeclaration<TKey, TIdentityKey, TPermissionDefinition>
+        where TRequestAuthorizationRule : RequestAuthorizationRule<TKey, TIdentityKey, TAuthorizationRule, TRequestAuthorizationRule>
+        where TAuthorizationRule : AuthorizationRule<TKey, TIdentityKey, TRequestAuthorizationRule, TAuthorizationRule>
     {
-
         #region DbSet
 
         public virtual DbSet<TPermissionDefinition> PermissionDefinitions { get; set; }
@@ -47,7 +53,7 @@ namespace CoreDX.Application.EntityFrameworkCore
 
         /// <summary>初始化新的实例</summary>
         /// <param name="options">应用于ApplicationIdentityDbContext的选项</param>
-        public ApplicationPermissionDbContext(DbContextOptions<ApplicationPermissionDbContext<TKey, TIdentityKey, TPermissionDefinition, TUserPermissionDeclaration, TRolePermissionDeclaration, TOrganizationPermissionDeclaration, TRequestAuthorizationRule, TAuthorizationRule>> options)
+        public ApplicationPermissionDbContext(DbContextOptions options)
             : base(options)
         {}
 
@@ -58,13 +64,14 @@ namespace CoreDX.Application.EntityFrameworkCore
             base.OnModelCreating(builder);
 
             builder.Entity<TPermissionDefinition>().ConfigPermissionDefinition<TPermissionDefinition, TKey, TIdentityKey>();
-            builder.Entity<TUserPermissionDeclaration>().ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TKey, TIdentityKey>();
-            builder.Entity<TRolePermissionDeclaration>().ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TKey, TIdentityKey>();
-            builder.Entity<TOrganizationPermissionDeclaration>().ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TKey, TIdentityKey>();
-            builder.Entity<TRequestAuthorizationRule>().ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TKey, TIdentityKey>();
-            builder.Entity<TAuthorizationRule>().ConfigAuthorizationRule<TAuthorizationRule, TKey, TIdentityKey>();
+            builder.Entity<TUserPermissionDeclaration>().ConfigUserPermissionDeclaration<TUserPermissionDeclaration, TKey, TIdentityKey, TPermissionDefinition>();
+            builder.Entity<TRolePermissionDeclaration>().ConfigRolePermissionDeclaration<TRolePermissionDeclaration, TKey, TIdentityKey, TPermissionDefinition>();
+            builder.Entity<TOrganizationPermissionDeclaration>().ConfigOrganizationPermissionDeclaration<TOrganizationPermissionDeclaration, TKey, TIdentityKey, TPermissionDefinition>();
+            builder.Entity<TRequestAuthorizationRule>().ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TKey, TIdentityKey, TAuthorizationRule>();
+            builder.Entity<TAuthorizationRule>().ConfigAuthorizationRule<TAuthorizationRule, TKey, TIdentityKey, TRequestAuthorizationRule>();
 
-            builder.ConfigKeyGuidToStringConverter();
+            builder.ConfigDatabaseDescription2();
+            //builder.ConfigPropertiesGuidToStringConverter();
         }
     }
 }

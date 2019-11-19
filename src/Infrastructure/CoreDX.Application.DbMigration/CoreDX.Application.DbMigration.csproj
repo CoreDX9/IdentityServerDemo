@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
-    <AssemblyName>CoreDX.Application.Domain.DbMigration</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,12 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CoreDX.EntityFrameworkCore.Extensions\CoreDX.EntityFrameworkCore.Extensions.csproj" />
     <ProjectReference Include="..\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Application\LocalizationDb\" />
-    <Folder Include="IdentityServer\ConfigurationDb\" />
-    <Folder Include="IdentityServer\PersistedGrantDb\" />
   </ItemGroup>
 
 </Project>

@@ -182,6 +182,74 @@ namespace CoreDX.EntityFrameworkCore.Extensions
             return modelBuilder;
         }
 
+        /// <summary>
+        /// 配置数据库表和列说明2（使用 EF Core 3的新增 API SetComment()配置，估计可以免除在迁移中手动调用执行sql的麻烦，等待测试效果）
+        /// </summary>
+        /// <param name="modelBuilder">模型构造器</param>
+        /// <returns>模型构造器</returns>
+        public static ModelBuilder ConfigDatabaseDescription2(this ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                //添加表说明
+                if (entityType.FindAnnotation(DbDescriptionAnnotationName) == null && entityType.ClrType?.CustomAttributes.Any(
+                        attr => attr.AttributeType == typeof(DbDescriptionAttribute)) == true)
+                {
+                    entityType.SetComment((entityType.ClrType.GetCustomAttribute(typeof(DbDescriptionAttribute)) as DbDescriptionAttribute)?.Description);
+                }
+
+                //添加列说明
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.FindAnnotation(DbDescriptionAnnotationName) == null && property.PropertyInfo?.CustomAttributes
+                            .Any(attr => attr.AttributeType == typeof(DbDescriptionAttribute)) == true)
+                    {
+                        var propertyInfo = property.PropertyInfo;
+                        var propertyType = propertyInfo?.PropertyType;
+                        //如果该列的实体属性是枚举类型，把枚举的说明追加到列说明
+                        var enumDbDescription = string.Empty;
+                        if (propertyType.IsEnum
+                            || (propertyType.IsDerivedFrom(typeof(Nullable<>)) && propertyType.GenericTypeArguments[0].IsEnum))
+                        {
+                            var @enum = propertyType.IsDerivedFrom(typeof(Nullable<>))
+                                ? propertyType.GenericTypeArguments[0]
+                                : propertyType;
+
+                            var descList = new List<string>();
+                            foreach (var field in @enum?.GetFields() ?? new FieldInfo[0])
+                            {
+                                if (!field.IsSpecialName)
+                                {
+                                    var desc = (field.GetCustomAttributes(typeof(DbDescriptionAttribute), false)
+                                        .FirstOrDefault() as DbDescriptionAttribute)?.Description;
+                                    descList.Add(
+                                        $@"{field.GetRawConstantValue()} : {(desc.IsNullOrWhiteSpace() ? field.Name : desc)}");
+                                }
+                            }
+
+                            var isFlags = @enum?.GetCustomAttribute(typeof(FlagsAttribute)) != null;
+                            var enumTypeDbDescription =
+                                (@enum?.GetCustomAttributes(typeof(DbDescriptionAttribute), false).FirstOrDefault() as
+                                    DbDescriptionAttribute)?.Description;
+                            enumTypeDbDescription += enumDbDescription + (isFlags ? " [是标志位枚举]" : string.Empty);
+                            enumDbDescription =
+                                $@"( {(enumTypeDbDescription.IsNullOrWhiteSpace() ? "" : $@"{enumTypeDbDescription}; ")}{string.Join("; ", descList)} )";
+                        }
+
+                        property.SetComment($@"{(propertyInfo.GetCustomAttribute(typeof(DbDescriptionAttribute)) as DbDescriptionAttribute)
+                                ?.Description}{(enumDbDescription.IsNullOrWhiteSpace() ? "" : $@" {enumDbDescription}")}");
+                    }
+                }
+            }
+
+            return modelBuilder;
+        }
+
+        /// <summary>
+        /// 配置主键Guid转字符串转换器（为不支持存储Guid的数据库使用）
+        /// </summary>
+        /// <param name="modelBuilder">模型构造器</param>
+        /// <returns>模型构造器</returns>
         public static ModelBuilder ConfigKeyGuidToStringConverter(this ModelBuilder modelBuilder)
         {
             foreach (var domain in modelBuilder.Model.GetEntityTypes().Where(e =>
@@ -191,6 +259,30 @@ namespace CoreDX.EntityFrameworkCore.Extensions
                 modelBuilder.Entity(domain, b =>
                 {
                     b.Property<Guid>(nameof(IEntity<Guid>.Id)).HasConversion(new GuidToStringConverter());
+                });
+            }
+
+            return modelBuilder;
+        }
+
+        /// <summary>
+        /// 配置模型中所有Guid属性的Guid转字符串转换器（为不支持存储Guid的数据库使用）
+        /// </summary>
+        /// <param name="modelBuilder">模型构造器</param>
+        /// <returns>模型构造器</returns>
+        public static ModelBuilder ConfigPropertiesGuidToStringConverter(this ModelBuilder modelBuilder)
+        {
+            foreach (var domain in modelBuilder.Model.GetEntityTypes().Select(e => e.ClrType))
+            {
+                modelBuilder.Entity(domain, b =>
+                {
+                    foreach(var property in b.Metadata.GetProperties())
+                    {
+                        if(property.ClrType == typeof(Guid))
+                        {
+                            property.SetValueConverter(new GuidToStringConverter());
+                        }
+                    }
                 });
             }
 

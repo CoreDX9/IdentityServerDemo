@@ -2,37 +2,35 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "src\IdentityServer\IdentityServer.csproj", "{71B2352D-8722-4ECE-B54A-73D4DCDA1CD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "src\DemoApp\IdentityServer\IdentityServer.csproj", "{71B2352D-8722-4ECE-B54A-73D4DCDA1CD1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "src\Client\Client.csproj", "{8F8BD32B-E258-4EB3-B68F-35A36650E709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "src\DemoApp\Client\Client.csproj", "{8F8BD32B-E258-4EB3-B68F-35A36650E709}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JavascriptClient", "src\JavascriptClient\JavascriptClient.csproj", "{66E27500-B805-4D2D-9651-C52971F75CB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JavascriptClient", "src\DemoApp\JavascriptClient\JavascriptClient.csproj", "{66E27500-B805-4D2D-9651-C52971F75CB4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResourceOwnerClient", "src\ResourceOwnerClient\ResourceOwnerClient.csproj", "{0D68A675-AEE4-452B-B9B8-9EE6A86C7FBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResourceOwnerClient", "src\DemoApp\Infrastructure\ResourceOwnerClient\ResourceOwnerClient.csproj", "{0D68A675-AEE4-452B-B9B8-9EE6A86C7FBB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "src\WebAPI\WebAPI.csproj", "{ED4AD10B-F534-4FF8-B6B9-4B279105E6F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "src\DemoApp\WebAPI\WebAPI.csproj", "{ED4AD10B-F534-4FF8-B6B9-4B279105E6F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "src\WebClient\WebClient.csproj", "{889D5F43-8201-496D-8782-D6F86C8B23E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "src\DemoApp\WebClient\WebClient.csproj", "{889D5F43-8201-496D-8782-D6F86C8B23E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{ED739766-2880-48C7-B0FC-8FB4F77B7918}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "src\Repository\Repository.csproj", "{852504EA-E74E-4C70-9891-B56AF50C6CAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "src\Data\Repository\Repository.csproj", "{852504EA-E74E-4C70-9891-B56AF50C6CAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainSample", "src\DomainSample\DomainSample.csproj", "{DD9DD8BC-FBBD-40FC-A4BB-B48679F73F03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainSample", "src\DemoApp\DomainSample\DomainSample.csproj", "{DD9DD8BC-FBBD-40FC-A4BB-B48679F73F03}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Common.Util", "src\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj", "{825FDFD2-8BE1-4CDD-86D1-EF65F734CF77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.EntityFrameworkCore", "src\Domain.EntityFrameworkCore\Domain.EntityFrameworkCore.csproj", "{388C3474-9930-4A06-8667-6D169D8F87FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.EntityFrameworkCore", "src\Data\Domain.EntityFrameworkCore\Domain.EntityFrameworkCore.csproj", "{388C3474-9930-4A06-8667-6D169D8F87FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "src\WebApplication1\WebApplication1.csproj", "{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityHistoryMQReceive", "src\Data\RabbitMQReceive\EntityHistoryMQReceive.csproj", "{1C983BEA-0D75-4455-BF48-253899147E69}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityHistoryMQReceive", "src\RabbitMQReceive\EntityHistoryMQReceive.csproj", "{1C983BEA-0D75-4455-BF48-253899147E69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Logging.File", "src\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Logging.File", "src\Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpScriptDemo", "src\CSharpScriptDemo\CSharpScriptDemo.csproj", "{ED2A7D11-8350-4B19-A3B0-23273727339E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpScriptDemo", "src\DemoApp\CSharpScriptDemo\CSharpScriptDemo.csproj", "{ED2A7D11-8350-4B19-A3B0-23273727339E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B6A62D81-BB03-4D59-834F-7D4916B97094}"
 EndProject
@@ -52,13 +50,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Application.EntityFrameworkCore", "src\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj", "{F95E7870-79D3-499F-B903-480B1DA5B1A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Entity.Identity", "src\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj", "{6A45976B-69F3-43C6-89B2-70CBCBCDE369}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Entity.Identity", "src\ApplicationDomain\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj", "{6A45976B-69F3-43C6-89B2-70CBCBCDE369}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Entity.Permission", "src\CoreDX.Domain.Entity.Permission\CoreDX.Domain.Entity.Permission.csproj", "{E1D8A08A-4FEA-4FCB-B4F8-10F48CF8AA48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Entity.Permission", "src\ApplicationDomain\CoreDX.Domain.Entity.Permission\CoreDX.Domain.Entity.Permission.csproj", "{E1D8A08A-4FEA-4FCB-B4F8-10F48CF8AA48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DemoApp", "DemoApp", "{8A609C05-0214-4187-B7EF-B1CADA8CF2E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Domain.Entity.App", "src\CoreDX.Domain.Entity.App\CoreDX.Domain.Entity.App.csproj", "{EBAF54F9-5E83-40CB-B221-53220FE04810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Entity.App", "src\ApplicationDomain\CoreDX.Domain.Entity.App\CoreDX.Domain.Entity.App.csproj", "{EBAF54F9-5E83-40CB-B221-53220FE04810}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Application.EntityFrameworkCore.SqlServer", "src\Infrastructure\CoreDX.Application.EntityFrameworkCore.SqlServer\CoreDX.Application.EntityFrameworkCore.SqlServer.csproj", "{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,10 +106,6 @@ Global
 		{388C3474-9930-4A06-8667-6D169D8F87FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{388C3474-9930-4A06-8667-6D169D8F87FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{388C3474-9930-4A06-8667-6D169D8F87FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -158,6 +154,10 @@ Global
 		{EBAF54F9-5E83-40CB-B221-53220FE04810}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBAF54F9-5E83-40CB-B221-53220FE04810}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBAF54F9-5E83-40CB-B221-53220FE04810}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,7 +175,6 @@ Global
 		{2C4660CF-D7D0-44E7-8998-DA5DF3575E6D} = {B6A62D81-BB03-4D59-834F-7D4916B97094}
 		{825FDFD2-8BE1-4CDD-86D1-EF65F734CF77} = {2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}
 		{388C3474-9930-4A06-8667-6D169D8F87FD} = {ED739766-2880-48C7-B0FC-8FB4F77B7918}
-		{231AAA88-BC2A-465E-AAC9-AE238C1B3BCA} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
 		{1C983BEA-0D75-4455-BF48-253899147E69} = {ED739766-2880-48C7-B0FC-8FB4F77B7918}
 		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
 		{ED2A7D11-8350-4B19-A3B0-23273727339E} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
@@ -191,6 +190,7 @@ Global
 		{E1D8A08A-4FEA-4FCB-B4F8-10F48CF8AA48} = {27AAF7D4-CC18-49AF-91CD-E38478A03F5E}
 		{8A609C05-0214-4187-B7EF-B1CADA8CF2E0} = {B6A62D81-BB03-4D59-834F-7D4916B97094}
 		{EBAF54F9-5E83-40CB-B221-53220FE04810} = {27AAF7D4-CC18-49AF-91CD-E38478A03F5E}
+		{3E94F9F3-27FE-4320-A5CC-9A8DA7AAACCB} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {981D0405-3008-4145-B708-5F559C811D64}

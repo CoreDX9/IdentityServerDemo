@@ -5,10 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EntityConfiguration\ApplicationDomainEntityConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.App\CoreDX.Domain.Entity.App.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Permission\CoreDX.Domain.Entity.Permission.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
-    <ProjectReference Include="..\..\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
-    <ProjectReference Include="..\..\CoreDX.Domain.Entity.Permission\CoreDX.Domain.Entity.Permission.csproj" />
   </ItemGroup>
 
   <ItemGroup>

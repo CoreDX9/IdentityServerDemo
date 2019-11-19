@@ -64,7 +64,6 @@ namespace CoreDX.Domain.Model.Entity
     {
         [Key]
         public virtual TKey Id { get; set; }
-        //public virtual string Remark { get; set; }
 
         #region IEntity成员
 
@@ -72,7 +71,6 @@ namespace CoreDX.Domain.Model.Entity
         /// 并发标记
         /// </summary>
         public virtual string ConcurrencyStamp { get; set; }
-        //public virtual bool? Active { get; set; }
 
         /// <summary>
         /// 软删除标记

@@ -82,7 +82,7 @@ namespace CoreDX.EntityFrameworkCore.Extensions
         }
 
         /// <summary>
-        /// 自动扫描迁移模型并添加表和列说明
+        /// 自动扫描迁移模型并添加表和列说明（不推荐使用）
         /// </summary>
         /// <param name="migrationBuilder">迁移构造器</param>
         /// <param name="migration">迁移类实例</param>

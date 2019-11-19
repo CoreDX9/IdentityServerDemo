@@ -1,0 +1,49 @@
+﻿using CoreDX.Domain.Entity.App.Management;
+using CoreDX.EntityFrameworkCore.Extensions;
+using Microsoft.EntityFrameworkCore;
+using CoreDX.Domain.Entity.App.Sample;
+
+namespace CoreDX.Application.EntityFrameworkCore
+{
+    /// <summary>
+    /// 应用数据上下文
+    /// </summary>
+    public class ApplicationDbContext : DbContext
+    {
+
+        #region DbSet
+
+        public virtual DbSet<Menu> Menus { get; set; }
+        public virtual DbSet<MenuItem> MenuItems { get; set; }
+        public virtual DbSet<Domain.Entity.App.Sample.Domain> Domains { get; set; }
+        public virtual DbSet<TreeDomain> TreeDomains { get; set; }
+
+        #endregion
+
+        #region DbSet(Views)
+
+        public virtual DbSet<TreeDomainView> TreeDomainViews { get; set; }
+
+        #endregion
+
+        /// <summary>初始化新的实例</summary>
+        /// <param name="options">应用于ApplicationIdentityDbContext的选项</param>
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {}
+
+        public ApplicationDbContext(){}
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Menu>(e => e.OwnsOne(oe => oe.MenuIcon));
+            builder.Entity<MenuItem>(e => e.OwnsOne(oe => oe.MenuItemIcon));
+            builder.Entity<Domain.Entity.App.Sample.Domain>(e => e.OwnsOne(oe => oe.ComplexProperty).OwnsOne(oe => oe.ComplexProperty2));
+
+            builder.ConfigDatabaseDescription2();
+            //builder.ConfigPropertiesGuidToStringConverter();
+        }
+    }
+}
