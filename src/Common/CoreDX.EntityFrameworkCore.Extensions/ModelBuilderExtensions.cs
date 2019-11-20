@@ -183,7 +183,8 @@ namespace CoreDX.EntityFrameworkCore.Extensions
         }
 
         /// <summary>
-        /// 配置数据库表和列说明2（使用 EF Core 3的新增 API SetComment()配置，估计可以免除在迁移中手动调用执行sql的麻烦，等待测试效果）
+        /// 配置数据库表和列说明2（使用 EF Core 3的新增 API SetComment()配置，估计可以免除在迁移中手动调用执行sql的麻烦，等待测试效果
+        /// 结果证明并没有卵用。 3.0.1 。还会导致迁移工具bug）
         /// </summary>
         /// <param name="modelBuilder">模型构造器</param>
         /// <returns>模型构造器</returns>

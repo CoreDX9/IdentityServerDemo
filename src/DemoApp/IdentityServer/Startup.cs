@@ -194,7 +194,17 @@ namespace IdentityServer
                     });
                 });
             }
-            
+
+            ////测试用，本想直接用正式数据，结果迁移工具bug。。。
+            //services.AddDbContext<TestDbContext>(options =>
+            //{
+            //    options.UseSqlServer(connectionString, b =>
+            //    {
+            //        b.MigrationsAssembly(migrationsAssemblyName);
+            //        b.EnableRetryOnFailure(3);
+            //    });
+            //});
+
             //注入Identity服务（使用EF存储，在EF上下文之后注入）
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
@@ -487,6 +497,8 @@ namespace IdentityServer
                 services.AddDirectoryBrowser();
             }
 
+            services.AddHealthChecks();
+
             //注入（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
         }
@@ -740,6 +752,8 @@ namespace IdentityServer
 
             //注册IdentityServer4到管道
             app.UseIdentityServer();
+            //新版IdentityServer4要自己调用；
+            app.UseAuthorization();
 
             //注册自定义中间件到管道
             app.UseAntiforgeryTokenGenerateMiddleware();

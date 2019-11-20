@@ -60,7 +60,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
             var roles = _dbContext.IdentityRoleView.ToList();
 
             //找出所有树根
-            var roots = roles.Where(d => string.IsNullOrEmpty(d.ParentId));
+            var roots = roles.Where(d => d.ParentId == null);
 
             //填充第一棵树
             var sortedRoles = roots.First()
@@ -87,7 +87,6 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
                             r.Name,
                             r.CreationTime,
                             r.CreatorId,
-                            r.Active,
                             r.LastModificationTime,
                             r.ConcurrencyStamp,
                             //以下为JqGrid中必须的字段

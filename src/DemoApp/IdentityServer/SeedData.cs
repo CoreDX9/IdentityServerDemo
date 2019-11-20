@@ -70,6 +70,12 @@ namespace IdentityServer
                     EnsureSeedData(context);
                 }
 
+                //测试预定义Domain基类能不能用，正式数据迁移工具bug无法生成代码
+                //var testContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+                //testContext.Database.Migrate();
+
+                #region 先跳过初始化，等ef迁移工具修复bug，事实证明是SetComent()的锅 3.0.1
+
                 {
                     var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
@@ -217,11 +223,25 @@ namespace IdentityServer
                 {
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
 
+                    try
+                    {
+                        context.Database.Migrate();
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message !=
+                            "Relational-specific methods can only be used when the context is using a relational database provider."
+                        )
+                        {
+                            throw;
+                        }
+                    }
+
                     var innKai = context.Organizations.AsNoTracking()
                         .SingleOrDefault(o => o.Name == "IdentityServerDemo委员会");
                     if (innKai == null)
                     {
-                        innKai = new Organization{Name = "IdentityServerDemo委员会" };
+                        innKai = new Organization { Name = "IdentityServerDemo委员会" };
                         context.Organizations.Add(innKai);
                         var result = context.SaveChanges();
                         if (result != 1)
@@ -239,7 +259,7 @@ namespace IdentityServer
                         .SingleOrDefault(o => o.Name == "字幕组");
                     if (zimuzu == null)
                     {
-                        zimuzu = new Organization {Name = "字幕组", Parent = innKai};
+                        zimuzu = new Organization { Name = "字幕组", Parent = innKai };
                         context.Organizations.Add(zimuzu);
                         var result = context.SaveChanges();
                         if (result != 1)
@@ -257,7 +277,7 @@ namespace IdentityServer
                         .SingleOrDefault(o => o.Name == "汉化组");
                     if (hanhuazu == null)
                     {
-                        hanhuazu = new Organization {Name = "汉化组", Parent = innKai };
+                        hanhuazu = new Organization { Name = "汉化组", Parent = innKai };
                         context.Organizations.Add(hanhuazu);
                         var result = context.SaveChanges();
                         if (result != 1)
@@ -363,7 +383,7 @@ namespace IdentityServer
                         var rel = context.SaveChanges();
                         if (rel != 1)
                         {
-                            throw new Exception("用户 alice 加入组织 “字幕组” 失败！");
+                            //throw new Exception("用户 alice 加入组织 “字幕组” 失败！");
                         }
                         Console.WriteLine("用户：alice 已加入组织 “字幕组”");
                     }
@@ -414,7 +434,7 @@ namespace IdentityServer
                         var rel = context.SaveChanges();
                         if (rel != 1)
                         {
-                            throw new Exception("用户 bob 加入组织 “汉化组” 失败！");
+                            //throw new Exception("用户 bob 加入组织 “汉化组” 失败！");
                         }
                         Console.WriteLine("用户：bob 已加入组织 “汉化组”");
                     }
@@ -465,7 +485,7 @@ namespace IdentityServer
                         var rel = context.SaveChanges();
                         if (rel != 1)
                         {
-                            throw new Exception("用户 coredx 加入组织 “IdentityServerDemo委员会” 失败！");
+                            //throw new Exception("用户 coredx 加入组织 “IdentityServerDemo委员会” 失败！");
                         }
                         Console.WriteLine("用户：coredx 已加入组织 “IdentityServerDemo委员会”");
                     }
@@ -474,6 +494,8 @@ namespace IdentityServer
                         Console.WriteLine("用户：coredx 已经存在");
                     }
                 }
+
+                #endregion
             }
 
             Console.WriteLine("Identity数据库初始化完成");

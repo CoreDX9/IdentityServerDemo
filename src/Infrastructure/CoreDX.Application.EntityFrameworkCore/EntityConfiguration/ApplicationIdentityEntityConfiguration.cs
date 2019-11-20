@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CoreDX.Application.EntityFrameworkCore.Extensions;
 using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Entity.Identity;
-using CoreDX.Domain.Entity.Permission;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -194,10 +193,10 @@ namespace CoreDX.Application.EntityFrameworkCore.EntityConfiguration
         public static void ConfigRoleView<ApplicationRoleView>(this EntityTypeBuilder<ApplicationRoleView> builder)
             where ApplicationRoleView : Domain.Entity.Identity.ApplicationRoleView
         {
-            builder.HasOne(e => e.Parent)
-                .WithMany(e => (IEnumerable<ApplicationRoleView>)e.Children)
-                .HasForeignKey(e => e.ParentId);
-            builder.ToView("view_tree_AppRole");
+            //builder.HasOne(e => e.Parent)
+            //    .WithMany(e => (IEnumerable<ApplicationRoleView>)e.Children)
+            //    .HasForeignKey(e => e.ParentId);
+            builder.ToView("view_tree_AppRoles");
         }
     }
 }

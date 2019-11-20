@@ -103,7 +103,7 @@ namespace CoreDX.Application.EntityFrameworkCore
 
             builder.Entity<ApplicationRoleView>().ConfigRoleView();
 
-            builder.ConfigDatabaseDescription2();
+            builder.ConfigDatabaseDescription();
             //builder.ConfigPropertiesGuidToStringConverter();
         }
     }

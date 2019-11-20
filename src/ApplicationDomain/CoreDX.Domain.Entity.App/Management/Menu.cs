@@ -50,4 +50,13 @@ namespace CoreDX.Domain.Entity.App.Management
         public virtual List<MenuItem> Items { get; set; } = new List<MenuItem>();
         //public List<Group> Groups { get; set; }
     }
+
+    public class MenuView : DomainTreeEntityViewBase<int, MenuView, int>
+    {
+        public string MenuIcon_Type { get; set; }
+        public string MenuIcon_Value { get; set; }
+        //public MenuIcon MenuIcon { get; set; } = new MenuIcon();
+        public string Title { get; set; }
+        public short Order { get; set; }
+    }
 }

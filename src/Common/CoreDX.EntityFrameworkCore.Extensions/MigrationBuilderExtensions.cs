@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Core.Entity;
 using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 using CoreDX.EntityFrameworkCore.Extensions.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CoreDX.EntityFrameworkCore.Extensions
@@ -199,6 +201,80 @@ namespace CoreDX.EntityFrameworkCore.Extensions
                     }
                 }
             }
+
+            return migrationBuilder;
+        }
+
+        /// <summary>
+        /// 创建树形实体视图
+        /// </summary>
+        /// <param name="migrationBuilder">迁移构造器</param>
+        /// <param name="tableName">视图对应的表名</param>
+        /// <param name="columns">视图列集合</param>
+        public static MigrationBuilder CreateTreeEntityView(this MigrationBuilder migrationBuilder, string tableName, IEnumerable<string> columns)
+        {
+            columns = columns.Select(c => $"[{c}]");
+            var childColumns = columns.Select(c => $@"child.{c}");
+            migrationBuilder.Sql(MigrationSqlTemplate.TreeEntityViewCreateSqlTemplate
+                .Replace("{tableName}", tableName)
+                .Replace("{columns}", string.Join(", ", columns))
+                .Replace("{child.columns}", string.Join(", ", childColumns))
+            );
+
+            return migrationBuilder;
+        }
+
+        /// <summary>
+        /// 自动扫描迁移模型并创建树形实体视图
+        /// </summary>
+        /// <param name="migrationBuilder">迁移构造器</param>
+        /// <param name="migration">迁移类实例</param>
+        /// <param name="viewAssembly">实体类所在程序集</param>
+        public static MigrationBuilder CreateTreeEntityView(this MigrationBuilder migrationBuilder, IEnumerable<IEntityType> entities)
+        {
+            foreach (var entityType in entities.Where(x => x.FindAnnotation("IsTreeEntity") != null))
+            {
+                migrationBuilder.CreateTreeEntityView(entityType.GetTableName(),
+                    entityType.GetProperties().Select(pro => pro.GetColumnName()));
+            }
+
+            return migrationBuilder;
+        }
+
+        /// <summary>
+        /// 创建Identity实体树形实体视图
+        /// （Identity必须从Microsoft.AspNetCore.Identity的类型继承
+        /// 无法用DomainTreeEntityBase&lt;,,&gt;类型类扫描
+        /// </summary>
+        /// <param name="migrationBuilder">迁移构造器</param>
+        /// <param name="migration">迁移类实例</param>
+        /// <param name="viewAssembly">实体类所在程序集</param>
+        /// <returns></returns>
+        //public static MigrationBuilder CreateIdentityTreeEntityView(this MigrationBuilder migrationBuilder, Migration migration,
+        //    Assembly viewAssembly)
+        //{
+        //    if (viewAssembly == null)
+        //        throw new NullReferenceException($"{nameof(viewAssembly)} cannot be null.");
+
+        //    var entityType = migration.TargetModel.GetEntityTypes().Single(entity =>
+        //        viewAssembly.GetType(entity.Name).IsDerivedFrom(typeof(ApplicationRole)));
+        //    if (entityType != null)
+        //    {
+        //        migrationBuilder.CreateTreeEntityView(entityType.Relational().TableName,
+        //            entityType.GetProperties().Select(pro => pro.Relational().ColumnName));
+        //    }
+
+        //    return migrationBuilder;
+        //}
+
+        /// <summary>
+        /// 删除树形实体视图
+        /// </summary>
+        /// <param name="migrationBuilder">迁移构造器</param>
+        /// <param name="tableName">视图对应的表名</param>
+        public static MigrationBuilder DropTreeEntityView(this MigrationBuilder migrationBuilder, string tableName)
+        {
+            migrationBuilder.Sql(MigrationSqlTemplate.TreeEntityViewDropSqlTemplate.Replace("{tableName}", tableName));
 
             return migrationBuilder;
         }

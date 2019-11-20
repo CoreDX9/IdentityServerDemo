@@ -2,7 +2,7 @@
 
 namespace CoreDX.Domain.Entity.Identity
 {
-    public class ApplicationRoleView : DomainTreeEntityViewBase<string, ApplicationRoleView, string>
+    public class ApplicationRoleView : DomainTreeEntityViewBase<int, ApplicationRoleView, int>
     {
         /// <summary>Gets or sets the name for this role.</summary>
         public string Name { get; set; }

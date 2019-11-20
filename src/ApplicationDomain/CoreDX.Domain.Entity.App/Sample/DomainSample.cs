@@ -4,7 +4,7 @@ using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
 
 namespace CoreDX.Domain.Entity.App.Sample
 {
-    //[DbDescription("示例实体")]
+    [DbDescription("示例实体")]
     public class Domain : DomainEntityBase<int, int>
     {
         [Column("SC")]
@@ -15,7 +15,7 @@ namespace CoreDX.Domain.Entity.App.Sample
         public virtual ComplexEntityProperty ComplexProperty { get; set; }
     }
 
-    //[DbDescription("示例复杂实体属性类（分表存储时会成为表说明，内部属性存储到主表时没有作用）")]
+    [DbDescription("示例复杂实体属性类（分表存储时会成为表说明，内部属性存储到主表时没有作用）")]
     //[Owned]//加入此特性会导致对Microsoft.EntityFrameworkCore的依赖，可以在OnModelCreating中进行配置
     public class ComplexEntityProperty
     {
@@ -29,7 +29,7 @@ namespace CoreDX.Domain.Entity.App.Sample
         public virtual ComplexEntityProperty2 ComplexProperty2 { get; set; }
     }
 
-    //[DbDescription("示例复杂实体属性类2（分表存储时会成为表说明，内部属性存储到主表时没有作用，上级表（ComplexEntityProperty的属性所在的表）分表存储时内部属性存储到上级表时会覆盖上级表的表说明）")]
+    [DbDescription("示例复杂实体属性类2（分表存储时会成为表说明，内部属性存储到主表时没有作用，上级表（ComplexEntityProperty的属性所在的表）分表存储时内部属性存储到上级表时会覆盖上级表的表说明）")]
     public class ComplexEntityProperty2
     {
         [DbDescription("示例复杂实体属性列3")]
@@ -46,7 +46,7 @@ namespace CoreDX.Domain.Entity.App.Sample
         public virtual string SampleColumn { get; set; }
     }
 
-    public class TreeDomainView : DomainTreeEntityViewBase<string, TreeDomainView, string>
+    public class TreeDomainView : DomainTreeEntityViewBase<int, TreeDomainView, int>
     {
         public virtual string SampleColumn { get; set; }
     }

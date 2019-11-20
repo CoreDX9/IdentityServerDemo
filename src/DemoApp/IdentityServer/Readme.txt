@@ -19,11 +19,8 @@ Add-Migration InitialIdentityServerConfigurationDbMigration -Context Configurati
 Add-Migration InitialLocalizationDbMigration -Context LocalizationModelContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application/LocalizationDb
 
             //自动扫描迁移模型并创建树形实体视图
-            migrationBuilder.CreateTreeEntityView(this,
-                    AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
-				.CreateIdentityTreeEntityView(this, AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName.Contains("Domain")))
-                //从模型注解应用表和列说明
-                .ApplyDatabaseDescription(this);
+			migrationBuilder.ApplyDatabaseDescription(this);
+            migrationBuilder.CreateTreeEntityView(TargetModel.GetEntityTypes());
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -34,3 +31,4 @@ Add-Migration InitialLocalizationDbMigration -Context LocalizationModelContext -
 				.DropTreeEntityView("Organizations")
 				.DropTreeEntityView("Menus");
 
+				Add-Migration InitialTestDbMigration -Context TestDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Test

@@ -70,7 +70,7 @@ namespace CoreDX.Application.EntityFrameworkCore
             builder.Entity<TRequestAuthorizationRule>().ConfigRequestAuthorizationRule<TRequestAuthorizationRule, TKey, TIdentityKey, TAuthorizationRule>();
             builder.Entity<TAuthorizationRule>().ConfigAuthorizationRule<TAuthorizationRule, TKey, TIdentityKey, TRequestAuthorizationRule>();
 
-            builder.ConfigDatabaseDescription2();
+            builder.ConfigDatabaseDescription();
             //builder.ConfigPropertiesGuidToStringConverter();
         }
     }

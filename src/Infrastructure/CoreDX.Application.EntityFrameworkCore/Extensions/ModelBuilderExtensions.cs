@@ -17,7 +17,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
         public static PropertyBuilder<DateTimeOffset> ConfigForICreationTime<TEntity>(this EntityTypeBuilder<TEntity> builder)
             where TEntity : class, ICreationTimeRecordable
         {
-            return builder.Property(e => e.CreationTime).ValueGeneratedOnAdd();
+            return builder.Property(e => e.CreationTime);//.ValueGeneratedOnAdd();
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
         public static PropertyBuilder<DateTimeOffset> ConfigForILastModificationTime<TEntity>(this EntityTypeBuilder<TEntity> builder)
             where TEntity : class, ILastModificationTimeRecordable
         {
-            return builder.Property(e => e.LastModificationTime).ValueGeneratedOnAddOrUpdate();
+            return builder.Property(e => e.LastModificationTime);//.ValueGeneratedOnAddOrUpdate();
         }
 
         /// <summary>
@@ -281,6 +281,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
             where TKey : struct, IEquatable<TKey>
             where TEntity : class, IDomainTreeEntity<TKey, TEntity>
         {
+            builder.HasAnnotation("IsTreeEntity", "");
             return builder.HasOne(e => e.Parent)
                 .WithMany(pe => pe.Children)
                 .HasForeignKey(e => e.ParentId);
@@ -324,6 +325,25 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
 
         /// <summary>
         /// 配置树形领域实体
+        /// 包括创建时间、上次修改时间、软删除过滤器、乐观并发检查、自关联导航属性和外键
+        /// </summary>
+        /// <typeparam name="TKey">主键类型</typeparam>
+        /// <typeparam name="TEntity">树形实体类型</typeparam>
+        ///   <typeparam name="TIdentityKey">身份实体主键类型</typeparam>
+        /// <param name="builder">实体类型构造器</param>
+        /// <returns>实体类型构造器</returns>
+        public static EntityTypeBuilder<TEntity> ConfigForDomainTreeEntityBase<TKey, TEntity, TIdentityKey>(this EntityTypeBuilder<TEntity> builder)
+            where TKey : struct, IEquatable<TKey>
+            where TEntity : DomainTreeEntityBase<TKey, TEntity>
+            where TIdentityKey : struct, IEquatable<TIdentityKey>
+        {
+            builder.ConfigForDomainTreeEntityBase< TKey, TEntity>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// 配置树形领域实体
         /// 包括创建时间、上次修改时间、软删除过滤器、乐观并发检查、自关联导航属性和外键、
         /// 创建人导航属性和外键、上次修改人导航属性和外键
         /// </summary>
@@ -339,7 +359,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
             where TIdentityUser : class, IEntity<TIdentityKey>
             where TIdentityKey : struct, IEquatable<TIdentityKey>
         {
-            builder.ConfigForDomainTreeEntityBase<TKey, TEntity>();
+            builder.ConfigForDomainTreeEntityBase<TKey, TEntity, TIdentityKey>();
             builder.ConfigForICreatorRecordable<TEntity, TIdentityUser, TIdentityKey>();
             builder.ConfigForILastModifierRecordable<TEntity, TIdentityUser, TIdentityKey>();
 

@@ -88,7 +88,7 @@ namespace IdentityServer.Pages.TreeDomainDemo
             //如果存在超过1个根节点，数据是森林而不是一颗树
 
             //找出所有树根
-            var roots = data.Where(d => string.IsNullOrEmpty(d.ParentId));
+            var roots = data.Where(d => d.ParentId == null);
 
             //填充第一棵树
             var sortedData = roots.FirstOrDefault()

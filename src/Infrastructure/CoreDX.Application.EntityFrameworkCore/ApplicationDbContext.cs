@@ -2,6 +2,7 @@
 using CoreDX.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using CoreDX.Domain.Entity.App.Sample;
+using CoreDX.Application.EntityFrameworkCore.Extensions;
 
 namespace CoreDX.Application.EntityFrameworkCore
 {
@@ -23,7 +24,7 @@ namespace CoreDX.Application.EntityFrameworkCore
         #region DbSet(Views)
 
         public virtual DbSet<TreeDomainView> TreeDomainViews { get; set; }
-
+        public virtual DbSet<MenuView> MenuViews { get; set; }
         #endregion
 
         /// <summary>初始化新的实例</summary>
@@ -38,11 +39,34 @@ namespace CoreDX.Application.EntityFrameworkCore
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Menu>(e => e.OwnsOne(oe => oe.MenuIcon));
+            builder.Entity<Menu>(b =>
+                {
+                    b.ConfigForDomainTreeEntityBase<int, Menu, int>();
+                    b.OwnsOne(oe => oe.MenuIcon);
+                });
+            builder.Entity<MenuView>(b =>
+            {
+                b.HasOne(e => e.Parent)
+                    .WithMany(e => e.Children)
+                    .HasForeignKey(e => e.ParentId);
+                //b.OwnsOne(oe => oe.MenuIcon);
+                b.ToView($"view_tree_Menus");
+            });
             builder.Entity<MenuItem>(e => e.OwnsOne(oe => oe.MenuItemIcon));
             builder.Entity<Domain.Entity.App.Sample.Domain>(e => e.OwnsOne(oe => oe.ComplexProperty).OwnsOne(oe => oe.ComplexProperty2));
+            builder.Entity<TreeDomain>(b =>
+                {
+                    b.ConfigForDomainTreeEntityBase<int, TreeDomain, int>();
+                });
+            builder.Entity<TreeDomainView>(b =>
+                {
+                    b.HasOne(e => e.Parent)
+                        .WithMany(e => e.Children)
+                        .HasForeignKey(e => e.ParentId);
+                    b.ToView($"view_treeTreeDomains");
+                });
 
-            builder.ConfigDatabaseDescription2();
+            builder.ConfigDatabaseDescription();
             //builder.ConfigPropertiesGuidToStringConverter();
         }
     }
