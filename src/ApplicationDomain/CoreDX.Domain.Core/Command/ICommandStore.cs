@@ -5,8 +5,15 @@ namespace CoreDX.Domain.Core.Command
 {
     public interface ICommandStore
     {
-        TResult Save<TResult>(ICommand command);
+        void Save(ICommand command);
 
-        Task<TResult> SaveAsync<TResult>(ICommand command, CancellationToken cancellationToken);
+        Task SaveAsync(ICommand command, CancellationToken cancellationToken);
+    }
+
+    public interface ICommandStore<TResult> : ICommandStore
+    {
+        new TResult Save(ICommand command);
+
+        new Task<TResult> SaveAsync(ICommand command, CancellationToken cancellationToken);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using WebClient.Models;
 using CoreDX.Common.Util.TypeExtensions;
+using IdentityModel.Client;
 
 namespace WebClient.Controllers
 {

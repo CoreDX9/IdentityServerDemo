@@ -11,8 +11,7 @@
     "jquery-validation-unobtrusive": "v3.2.11",
     "metisMenu": "v3.0.3",
     "jquery-slimscroll": "slimScroll#v1.3.8",
-    "Waves": "waves#v0.7.6",
-    "Sortable": "sortablejs#1.6.0"
+    "Waves": "waves#v0.7.6"
   },
   "resolutions": {
     "jquery": "3.3.1",

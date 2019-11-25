@@ -43,6 +43,10 @@
         .el-scrollbar .el-scrollbar__wrap {
             overflow-x: hidden;
         }
+        /*.my-el-menu{
+            min-width: 100%;
+            max-width: fit-content;
+        }*/
 
         .my-el-menu .el-menu-item {
             height: auto;
@@ -57,11 +61,24 @@
             word-wrap: break-word;
         }
 
+        /*.my-el-menu .el-submenu__icon-arrow.el-icon-arrow-down{
+            position: unset;
+        }*/
+
         i.el-icon-refresh:hover {
             transition: all .3s cubic-bezier(.645,.045,.355,1);
             background-color: #C0C4CC;
             color: #FFF;
             border-radius: 50%;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: salmon;
+        }
+
+        .sortable-drag {
+            background-color: dimgrey;
         }
     </style>
 </head>
@@ -75,8 +92,8 @@
                     </el-col>
                 </el-row>
             </el-header>
-            <el-container>
-                <el-aside style="width: 201px; border-right: 1px solid #778899">
+            <el-container class="fill-height">
+                <el-aside class="fill-height" style="width: 201px; border-right: 1px solid #778899">
                     <el-scrollbar class="fill-height"
                                   :native="false"
                                   :noresize="false">
@@ -84,9 +101,10 @@
                             <el-col>
                                 <side-bar :menu="menu"
                                           :default-active="activeMenuItem"
-                                          @@open="handleMenuEvent"
+                                          @@open="onMenuOpen"
                                           @@close="handleMenuEvent"
-                                          @@select="onMenuSelect"></side-bar>
+                                          @@select="onMenuSelect"
+                                          ref="sideBar"></side-bar>
                             </el-col>
                         </el-row>
                     </el-scrollbar>
@@ -100,7 +118,8 @@
                                          closable
                                          @@tab-click="onTabClick"
                                          @@tab-remove="onTabRemove"
-                                         v-model="activeTab">
+                                         v-model="activeTab"
+                                         ref="tab">
                                     <el-tab-pane style="height: 100%"
                                                  ref="manageTab"
                                                  :lazy="true"
@@ -139,6 +158,7 @@
     <partial name="_ElementUiScriptsPartial" />
     <partial name="_AvueScriptsPartial" />
     <partial name="_SideBarPartial" />
+    <partial name="_SortablejsScriptsPartial" />
 
     <script>
         Vue.prototype.$ = $; //挂载JQuery到Vue原型链
@@ -146,16 +166,20 @@
 
         var vueApp = new Vue({
             el: '#vue-app',
-            mounted: function() {
-                //setTimeout(() => this.activeMenuItem = 'sys-user', 1500);
-            },
             data: function () {
                 return {
                     activeTab: '',
                     activeMenuItem: null,
                     menu:@Html.Raw(ViewBag.Menu),
-                    manageTabs: []
+                    manageTabs: [],
+                    sortableTabs: null
                 };
+            },
+            mounted: function () {
+                //初始化拖拽控件，让选项卡页可以调整排序，vnode与html元素顺序会产生差异，但在这里无关紧要
+                this.sortableTabs = new Sortable(
+                    this.$refs.tab.$refs.nav.$el.children[0].children[0]
+                    , { animation: 150, ghostClass: "sortable-ghost", selectedClass : "sortable-ghost" , dragClass  : "sortable-drag" });
             },
             computed: {
                 menuLinks: function() {
@@ -210,12 +234,25 @@
                     manageTabs.push(menuItem);
                     this.activeTab = index;
                 },
+                onMenuOpen: function (index, indexPath) {
+                    var a = this;
+                },
                 handleMenuEvent: function (key, keyPath) {
                     //this.$message('打开菜单。key:' + key + '；keyPath:' + keyPath);
                     console.log(key, keyPath);
                 },
-                onTabClick: function(tab) {
+                onTabClick: function (tab) {
                     this.activeMenuItem = tab.name;
+                    //渲染完成后绑定延时操作。由于菜单可能处在关闭状态，要等展开动画完成才能开始滚动元素
+                    this.$nextTick(function () {
+                        setTimeout(
+                            function () {
+                                this.$refs.sideBar.$refs.menu.items.asEnumerable().single(function (item) { return item.value.active; }).value.$el.scrollIntoView({ behavior: "smooth" });
+                            }.bind(this), 500);
+                    }
+
+
+                    );
                 },
                 onTabRemove: function (targetName) {
                     var _this = this;

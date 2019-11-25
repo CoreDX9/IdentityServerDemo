@@ -8,34 +8,19 @@ using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Model.Command
 {
-    public class MediatRCommandHandler : ICommandHandler, IRequestHandler<MediatRCommand>
+    public abstract class MediatRCommandHandler<TCommand, TResult> : ICommandHandler<TCommand, TResult>, IRequestHandler<TCommand, TResult>
+    where TCommand : MediatRCommand<TResult>
     {
-        public Task<Unit> Handle(MediatRCommand request, CancellationToken cancellationToken = default)
-        {
-            return (Task<Unit>)Handle((ICommand)request, cancellationToken);
-        }
+        public abstract Task<TResult> Handle(TCommand command, CancellationToken cancellationToken = default);
 
-        public Task Handle(ICommand command, CancellationToken cancellationToken = default)
+        Task ICommandHandler<TCommand>.Handle(TCommand command, CancellationToken cancellationToken)
         {
-            return Task.FromResult(default(Unit));
+            return Handle(command, cancellationToken);
         }
     }
 
-    public class MediatRCommandHandler<TResult> : ICommandHandler<TResult>, IRequestHandler<MediatRCommand<TResult>, TResult>
+    public abstract class MediatRCommandHandler<TCommand> : MediatRCommandHandler<TCommand, Unit>
+        where TCommand : MediatRCommand
     {
-        public Task<TResult> Handle(ICommand<TResult> command, CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(default(TResult));
-        }
-
-        public Task Handle(ICommand command, CancellationToken cancellationToken = default)
-        {
-            return Handle((ICommand<TResult>)command, cancellationToken);
-        }
-
-        public Task<TResult> Handle(MediatRCommand<TResult> request, CancellationToken cancellationToken = default)
-        {
-            return Handle((ICommand<TResult>)request, cancellationToken);
-        }
     }
 }

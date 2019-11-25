@@ -1,147 +1,218 @@
-﻿@{
-    ViewData["Title"] = "Index";
-}
-@section Styles {
-    <partial name="_JqGridStylesPartial" />
-    <partial name="_LayuiStylesPartial" />
-}
+﻿@(Layout = null)
+<!DOCTYPE html>
 
-<div class="row">
-    <div class="col-md-12">
-        <button type="button" id="create-user">添加用户</button>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+
+    <partial name="_ElementUiStylesPartial" />
+    <partial name="_AvueStylesPartial" />
+    <partial name="_AnimateCssStylesPartial" />
+    <partial name="_SiteStylesPartial" />
+
+    <style></style>
+</head>
+<body>
+    <div id="vue-app">
+        <el-container>
+            <el-main>
+                <el-row>
+                    <el-col :span="24">
+                        <avue-crud ref="userTable"
+                                   :data="userTable.pagedData"
+                                   :option="userTable.option"
+                                   :table-loading="userTable.loading"
+                                   v-model="userTable.form"
+                                   @@refresh-change="refresh"
+                                   @@filter-change="onUserFilterChange"
+                                   @@row-save="onAddUser"
+                                   @@row-update="onUpdateUser"
+                                   @@row-del="onDelUser"
+                                   :page="userTable.page"
+                                   @*@@on-load="onUserLoad"*@
+                                   @@size-change="onUserPageSizeChange"
+                                   @@current-change="onUserPageCurrentChange">
+                            <template slot-scope="scope" slot="menuLeft">
+                                <el-button v-if="userTable.option.myAddBtn"
+                                           type="primary"
+                                           icon="el-icon-plus"
+                                           size="small"
+                                           plain
+                                           @@click.stop="onAddUserBtnClick()">新增</el-button>
+                            </template>
+                        </avue-crud>
+                    </el-col>
+                </el-row>
+            </el-main>
+        </el-container>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <table id="jqGrid"></table>
-        <div id="jqGridPager"></div>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_JqGridScriptsPartial" />
-    <partial name="_LayuiScriptsPartial" />
-    
-    <script>
-        layui.use(['layer'],
-            function() {
-                var layer = layui.layer;
-
-                $('#create-user').click(function() {
-                    layer.open({
-                        type: 2, 
-                        content: '@Url.Action("Create")', //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-                        area: ['500px', '420px'],
-                        maxmin: true
-                    }); 
-                });
-            });
-    </script>
+    <partial name="_LinqJsScriptsPartial" />
+    <partial name="_JQueryScriptsPartial" />
+    <partial name="_AxiosScriptsPartial" />
+    <partial name="_QsScriptsPartial" />
+    <partial name="_VueScriptsPartial" />
+    <partial name="_ElementUiScriptsPartial" />
+    <partial name="_AvueScriptsPartial" />
+    <partial name="_VueSubmitFormHelperScriptsPartial" />
 
     <script>
-        var grid = $("#jqGrid");
-
-        $(document).ready(function () {
-
-            $.jgrid.defaults.responsive = true;
-            $.jgrid.defaults.styleUI = 'Bootstrap';
-            $.jgrid.defaults.whdth = 847;
-
-            grid.jqGrid({
-                url: '/Manage/Users/UserList',
-                datatype: 'json',
-                mtype: "GET",
-                colModel: [
-                    { label: 'Id', name: 'id', index: 'id', sorttype: 'text', hidden: true, key: true },
-                    { label: '用户名', name: 'userName', index: 'userName', sorttype: 'text' },
-                    {
-                        label: '性别',
-                        name: 'sex',
-                        index: 'sex',
-                        sorttype: 'number',
-                        //cellvalue - 当前cell的值
-                        //options - 该cell的options设置，包括{rowId, colModel,pos,gid}
-                        //rowObject - 当前cell所在row的值，如{ id=1, name="name1", price=123.1, ...}
-                        formatter: function (cellvalue, options, rowObject) {
-                            return cellvalue == null ? '未知' : cellvalue == 1 ? '男' : '女';
+        var vueApp = new Vue({
+            el: '#vue-app', //挂载到的标签
+            // Vue实例的data属性，可以是单纯的对象，也可以是返回对象的无参函数
+            data: function () {
+                return {
+                    userTable: {
+                        loading: false, //是否开启表格载入动画
+                        pagedData: [],
+                        option: {
+                            title: '用户列表',
+                            menuType:'text', //行右侧操作菜单类型
+                            page: true, //是否启用分页
+                            filterBtn:true, //是否启用过滤器
+                            align: 'center', //表格对齐方式
+                            menuAlign: 'center', //菜单栏对齐方式
+                            border: false, //是否显示表格边框
+                            showHeader:true, //是否显示表格的表头
+                            stripe: true, //是否显示表格的斑马条纹
+                            index: false, //是否显示行序号
+                            //indexLabel: '序号',
+                            size: 'medium', //控件大小
+                            selection: false, //行复选框
+                            addBtn: false, //关闭内置添加按钮，内置按钮没有回调函数，不能在点击按钮时执行自定义代码
+                            myAddBtn: true, //自定义添加按钮显示控制
+                            column:[
+                                {
+                                    label: '姓名',
+                                    prop: 'name'
+                                },
+                                {
+                                    label: '性别',
+                                    prop: 'sex'
+                                }, {
+                                    label: "日期",
+                                    prop: "date",
+                                    type: "date",
+                                    format: "yyyy-MM-dd hh:mm:ss",
+                                    valueFormat: "yyyy-MM-dd hh:mm:ss",
+                                }
+                            ]
                         },
-                        //stype: "select",
-                        //searchoptions: { value: "1:男;2:女" }
-                    },
-                    { label: 'E-mail', name: 'email', index: 'email', sorttype: 'text' },
-                    {
-                        label: '已验证E-mail',
-                        name: 'emailConfirmed',
-                        index: 'emailConfirmed',
-                        sorttype: 'text',
-                        formatter: 'checkbox'
-                    },
-                    { label: '手机号', name: 'phoneNumber', index: 'phoneNumber', sorttype: 'text' },
-                    {
-                        label: '已验证手机号',
-                        name: 'phoneNumberConfirmed',
-                        index: 'phoneNumberConfirmed',
-                        sorttype: 'text',
-                        formatter: 'checkbox'
-                    },
-                    {
-                        label: '已启用',
-                        name: 'isEnable',
-                        index: 'isEnable',
-                        sorttype: 'text',
-                        align: "center",
-                        formatter: 'checkbox'
-                    },
-                    { label: '创建人', name: 'CreatorId', index: 'CreatorId', sorttype: 'text', align: "center" },
-                    { label: '创建时间', name: 'creationTime', index: 'creationTime', sorttype: 'date', align: "center" },
-                    {
-                        label: '上次修改人',
-                        name: 'lastModificationUserId',
-                        index: 'lastModificationUserId',
-                        sorttype: 'text',
-                        align: "center"
-                    },
-                    {
-                        label: '上次修改时间',
-                        name: 'lastModificationTime',
-                        index: 'lastModificationTime',
-                        sorttype: 'date',
-                        align: "center"
-                    },
-                    { label: '序号', name: 'orderNumber', index: 'orderNumber', sorttype: 'number' }
-                ],
-                height: 200,
-                altRows: true,
-                width: 847,
-                multiSort: true,
-                //loadonce: true,
-                sortname: 'sampleColumn',
-                multiselect: true,
-                //menubar: true,
-                viewrecords: true,
-                //colMenu: true,
-                rownumbers: true,
-                sortable: true,
-                grouping: true,
-                //page: 1,
-                rowNum: 10,
-                caption: "用户列表",
-                pager: "#jqGridPager"
-            });
-            grid.navGrid('#jqGridPager',
-                {
-                    search: true, // show search button on the toolbar
-                    add: false,
-                    edit: false,
-                    del: false,
-                    refresh: true
+                        form: {},
+                        page: {
+                            pageSizes: [10, 20, 50, 100],
+                            currentPage: 1,
+                            total: 0,
+                            pageSize: 10
+                        },
+                    }
+                };
+            },
+            //生命周期钩子
+            //组件实例化之前
+            beforeCreate: function () {
+
+            },
+            //组件实例化完毕，但页面还未显示
+            created: function () {
+                var _this = this;
+                axios.get('/Manage/Users/List')
+                    .then(function (response) {
+                        _this.userTable.pagedData.length = 0;
+                        _this.userTable.pagedData = response.data.rows;
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+            },
+            //组件挂载前，页面仍未展示，但虚拟Dom已经配置
+             beforeMount: function(){
+                 
+            },
+             //组件挂在后，此方法执行后，页面显示
+             mounted: function(){
+
+            },
+             //组件更新前，页面仍未更新，但虚拟Dom已经配置，每次发生数据变更都会触发
+             beforeUpdate: function(){
+
+            },
+             //组件更新，此方法执行后，页面显示
+             updated: function(){
+
+            },
+             //组件销毁前
+             beforeDestroy: function(){
+
+            },
+             //组件销毁后
+             destroyed: function(){
+
+             },
+             //生命周期钩子完
+
+             //监视器，检测到指定对象发生改变时执行处理函数
+            //watch: {
+            //    'data.a': {
+            //        handler(newValue, oldValue) {
+
+            //        },
+            //        deep: true,
+            //        immediate: true
+            //    },
+            //    'dataB': {
+            //        handler(newValue, oldValue) {
+
+            //        },
+            //        deep: true,
+            //        immediate: true
+            //    },
+            //},
+
+             //计算属性，由其他基础数据计算后得出的临时数据，基础数据发生变更后会自动触发重新计算
+            //computed: {
+            //    // 计算属性的 getter，名字自己取，用的时候对上
+            //    reversedMessage: function () {
+            //        // `this` 指向 vm 实例
+            //        return this.message.split('').reverse().join('')
+            //    },
+            //    reversedMessage2: function () {
+            //        // `this` 指向 vm 实例
+            //        return this.message.split('').reverse().join('')
+            //    },
+            //},
+
+            methods: {
+                onUserRefresh: function (val) {
+
                 },
-                {}, // edit options
-                {}, // add options
-                {}, // delete options
-                { multipleSearch: true, multipleGroup: true, showQuery: true } // search options - define multiple search
-            );
+                onUserFilterChange: function (filter) {
+
+                },
+                onAddUserBtnClick() {
+                    this.$refs.userTable.rowAdd();
+                },
+                onAddUser: function (form, done, enableEdit) {
+
+                },
+                onUpdateUser: function (form, index, done, enableEdit) {
+
+                },
+                onDelUser:function (form, index) {
+
+                },
+                //onUserLoad: function (page) {
+
+                //},
+                onUserPageSizeChange:function (val) {
+
+                },
+                onUserPageCurrentChange:function (val) {
+
+                },
+            }
         });
     </script>
-}
-
+</body>
+</html>

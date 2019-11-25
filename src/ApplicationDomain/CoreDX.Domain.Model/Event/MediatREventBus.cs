@@ -16,14 +16,38 @@ namespace CoreDX.Domain.Model.Event
             this.eventStore = eventStore;
         }
 
-        public TResult PublishEvent<TResult>(IEvent @event, CancellationToken cancellationToken)
+        public void PublishEvent(IEvent @event)
         {
-            return PublishEventAsync<TResult>(@event, cancellationToken).Result;
+            PublishEventAsync(@event).Wait();
         }
 
-        public Task<TResult> PublishEventAsync<TResult>(IEvent @event, CancellationToken cancellationToken)
+        public Task PublishEventAsync(IEvent @event, CancellationToken cancellationToken = default)
         {
-            eventStore?.SaveAsync<byte>(@event, cancellationToken);
+            eventStore?.SaveAsync(@event, cancellationToken);
+            mediator.Publish(@event, cancellationToken);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class MediatREventBus<TResult> : MediatREventBus, IEventBus<TResult>
+    {
+        private readonly IMediator mediator;
+        private readonly IEventStore eventStore;
+
+        public MediatREventBus(IMediator mediator, IEventStore eventStore)
+            : base(mediator, eventStore)
+        {
+        }
+
+        TResult IEventBus<TResult>.PublishEvent(IEvent @event)
+        {
+            PublishEventAsync(@event).Wait();
+            return default;
+        }
+
+        Task<TResult> IEventBus<TResult>.PublishEventAsync(IEvent @event, CancellationToken cancellationToken)
+        {
+            eventStore?.SaveAsync(@event, cancellationToken);
             mediator.Publish(@event, cancellationToken);
             return Task.FromResult(default(TResult));
         }

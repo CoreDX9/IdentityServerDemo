@@ -6,12 +6,26 @@ namespace CoreDX.Domain.Model.Event
 {
     public class InProcessEventStore : IEventStore
     {
-        public TResult Save<TResult>(IEvent @event, CancellationToken cancellationToken)
+        public void Save(IEvent @event)
         {
-            return SaveAsync<TResult>(@event, cancellationToken).Result;
+            SaveAsync(@event).Wait();
         }
 
-        public Task<TResult> SaveAsync<TResult>(IEvent @event, CancellationToken cancellationToken)
+        public Task SaveAsync(IEvent @event, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+    }
+
+    public class InProcessEventStore<TResult> : InProcessEventStore, IEventStore<TResult>
+    {
+        TResult IEventStore<TResult>.Save(IEvent @event)
+        {
+            SaveAsync(@event);
+            return default;
+        }
+
+        Task<TResult> IEventStore<TResult>.SaveAsync(IEvent @event, CancellationToken cancellationToken)
         {
             return Task.FromResult(default(TResult));
         }

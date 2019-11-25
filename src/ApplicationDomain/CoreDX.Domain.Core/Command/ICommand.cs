@@ -3,7 +3,7 @@ using System;
 
 namespace CoreDX.Domain.Core.Command
 {
-    public interface ICommand<TResult> : ICommand
+    public interface ICommand<out TResult> : ICommand
     {
     }
 

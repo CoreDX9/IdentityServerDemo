@@ -283,9 +283,9 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/lib/Sortable/Sortable.min.js",
+    "outputFileName": "wwwroot/lib/sortablejs/Sortable.min.js",
     "inputFiles": [
-      "bower_components/Sortable/Sortable.min.js"
+      "node_modules/sortablejs/Sortable.min.js"
     ],
     "minify": {
       "enabled": false

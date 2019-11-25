@@ -3,10 +3,15 @@ using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Core.Command
 {
-    public interface ICommandBus
+    public interface ICommandBus<in TCommand>
+        where TCommand : ICommand
     {
-        Task SendCommandAsync(ICommand command, CancellationToken cancellationToken);
+        Task SendCommandAsync(TCommand command, CancellationToken cancellationToken);
+    }
 
-        Task<TResult> SendCommandAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken);
+    public interface ICommandBus<in TCommand, TResult> : ICommandBus<TCommand>
+        where TCommand : ICommand<TResult>
+    {
+        new Task<TResult> SendCommandAsync(TCommand command, CancellationToken cancellationToken);
     }
 }

@@ -5,9 +5,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using AutoMapper;
 using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Core.Command;
+using CoreDX.Domain.Core.Event;
 using CoreDX.Domain.Entity.Identity;
+using CoreDX.Domain.Model.Command;
+using CoreDX.Domain.Model.Event;
 using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -18,6 +23,7 @@ using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Localization.SqlLocalizer.DbStringLocalizer;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
@@ -41,6 +47,9 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 
 #endregion
+
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Model.Repository;
 
 namespace IdentityServer
 {
@@ -499,6 +508,16 @@ namespace IdentityServer
 
             services.AddHealthChecks();
 
+            services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
+            services.AddScoped(typeof(ICommandBus<,>), typeof(MediatRCommandBus<,>));
+            services.AddScoped(typeof(ICommandStore), typeof(InProcessCommandStore));
+            services.AddScoped(typeof(IEventBus), typeof(MediatREventBus));
+            services.AddScoped(typeof(IEventBus<>), typeof(MediatREventBus<>));
+            services.AddScoped(typeof(IEventStore), typeof(InProcessEventStore));
+            services.AddScoped(typeof(IEFCoreRepository<,>), typeof(EFCoreRepository<,>));
+            services.AddScoped(typeof(IEFCoreRepository<,,>), typeof(EFCoreRepository<,,>));
+            services.AddMediatR(typeof(CoreDX.Domain.Service.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
+
             //注入（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
         }
@@ -761,6 +780,8 @@ namespace IdentityServer
             //注册终结点到管道（SignalR集线器和Mvc路由集中在这里配置）
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/.well-known/acme-challenge/oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88", context => 
+                    context.Response.WriteAsync("oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88.MH3xs1jYDVTn05jfUtv4-utqDcgZnd4adWIrVgwTujg"));
                 endpoints.MapHub<ChatHub>("/chatHub");
 
                 endpoints.MapHealthChecks("/health");

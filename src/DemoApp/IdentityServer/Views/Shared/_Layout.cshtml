@@ -35,7 +35,7 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div id="navbarSupportedContent" class="navbar-collapse collapse flex-row-reverse">
+                <div id="navbarSupportedContent" class="navbar-collapse collapse flex-row-reverse"  style="overflow-y:auto; max-height:200px">
                     <partial name="_LoginPartial" />
                     <ul class="nav navbar-nav flex-fill">
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><localize>Home</localize></a></li>
@@ -115,6 +115,15 @@
                 navBlur();
                 containerBlur();
                 footerBlur();
+                if ($(window).width() < 757) {
+                    $('#navbarSupportedContent').css('max-height', $(window).height() - 60 + 'px').css('overflow-y', 'auto');
+                    $('.nav-item.dropdown .dropdown-menu').css('max-height', '').css('overflow-y', '');
+                }
+                else {
+                    $('#navbarSupportedContent').css('max-height', 'auto').css('overflow-y', '');
+                    $('.nav-item.dropdown .dropdown-menu').css('max-height', '250px').css('overflow-y', 'auto');
+                }
+
             });
 
             $('body > div.container-fluid.body-content').eq(0).resize(function () {

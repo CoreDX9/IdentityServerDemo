@@ -6,7 +6,8 @@ using MediatR;
 
 namespace CoreDX.Domain.Model.Command
 {
-    public class MediatRCommandBus : ICommandBus
+    public class MediatRCommandBus<TCommand, TResult> : ICommandBus<TCommand, TResult>
+        where TCommand : MediatRCommand<TResult>
     {
         private readonly IMediator mediator;
         private readonly ICommandStore commandStore;
@@ -17,17 +18,23 @@ namespace CoreDX.Domain.Model.Command
             this.commandStore = commandStore;
         }
 
-        public Task SendCommandAsync(ICommand command, CancellationToken cancellationToken = default)
+        public virtual Task<TResult> SendCommandAsync(TCommand command, CancellationToken cancellationToken = default)
         {
-            var _command = command as MediatRCommand ?? throw new Exception($"{nameof(command)}没有继承自MediatRCommand。");
-            return SendCommandAsync(_command, cancellationToken);
+            commandStore?.SaveAsync(command, cancellationToken);
+            return mediator.Send(command, cancellationToken);
         }
 
-        public Task<T> SendCommandAsync<T>(ICommand<T> command, CancellationToken cancellationToken = default)
+        Task ICommandBus<TCommand>.SendCommandAsync(TCommand command, CancellationToken cancellationToken)
         {
-            var _command = command as MediatRCommand<T> ?? throw new Exception($"{nameof(command)}没有继承自MediatRCommand<T>。");
-            commandStore?.SaveAsync<byte>(command, cancellationToken);
-            return mediator.Send(_command, cancellationToken);
+            return SendCommandAsync(command, cancellationToken);
+        }
+    }
+
+    public class MediatRCommandBus<TCommand> : MediatRCommandBus<MediatRCommand<Unit>, Unit>
+        where TCommand : MediatRCommand<Unit>
+    {
+        public MediatRCommandBus(IMediator mediator, ICommandStore commandStore) : base(mediator, commandStore)
+        {
         }
     }
 }

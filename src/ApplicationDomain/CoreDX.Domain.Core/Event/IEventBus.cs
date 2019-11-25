@@ -5,8 +5,15 @@ namespace CoreDX.Domain.Core.Event
 {
     public interface IEventBus
     {
-        TResult PublishEvent<TResult>(IEvent @event, CancellationToken cancellationToken);
+        void PublishEvent(IEvent @event);
 
-        Task<TResult> PublishEventAsync<TResult>(IEvent @event, CancellationToken cancellationToken);
+        Task PublishEventAsync(IEvent @event, CancellationToken cancellationToken);
+    }
+
+    public interface IEventBus<TResult> : IEventBus
+    {
+        new TResult PublishEvent(IEvent @event);
+
+        new Task<TResult> PublishEventAsync(IEvent @event, CancellationToken cancellationToken);
     }
 }

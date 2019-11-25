@@ -52,6 +52,7 @@
     <None Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
     <None Remove="Areas\Manage\Views\RolePermissionDeclaration\**" />
     <None Remove="Areas\Manage\Views\UserPermissionDeclaration\**" />
+    <Compile Remove="Areas\Manage\Controllers\ListUserCommand.cs" />
     <Compile Remove="Extensions\MyAuthorize.cs" />
     <Content Remove="Areas\Manage\Views\AuthorizationRules\Index-old.cshtml" />
     <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
@@ -78,6 +79,7 @@
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="3.0.0" />
     <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.6.0" />
     <PackageReference Include="Localization.SqlLocalizer" Version="2.0.6" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
@@ -110,6 +112,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Service\CoreDX.Domain.Service.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />

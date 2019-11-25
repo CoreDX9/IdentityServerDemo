@@ -4,16 +4,26 @@ using CoreDX.Domain.Core.Command;
 
 namespace CoreDX.Domain.Model.Command
 {
-    public class InProcessCommandStore : ICommandStore
+    public class InProcessCommandStore : ICommandStore<bool>
     {
-        public TResult Save<TResult>(ICommand command)
+        public bool Save(ICommand command)
         {
-            return SaveAsync<TResult>(command).Result;
+            return SaveAsync(command).Result;
         }
 
-        public Task<TResult> SaveAsync<TResult>(ICommand command, CancellationToken cancellationToken = default)
+        public Task<bool> SaveAsync(ICommand command, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(default(TResult));
+            return Task.FromResult(true);
+        }
+
+        void ICommandStore.Save(ICommand command)
+        {
+            Save(command);
+        }
+
+        Task ICommandStore.SaveAsync(ICommand command, CancellationToken cancellationToken)
+        {
+            return SaveAsync(command, cancellationToken);
         }
     }
 }

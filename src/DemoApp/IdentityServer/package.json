@@ -5,6 +5,7 @@
   "devDependencies": {
     "qrcode_js": "1.0.0",
     "select2": "4.0.5",
+    "sortablejs": "1.10.1",
     "@microsoft/signalr": "3.0.0",
     "jquery.qrcode": "1.0.3",
     "animate.css": "3.7.2",

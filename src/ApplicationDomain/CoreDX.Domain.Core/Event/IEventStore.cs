@@ -5,8 +5,15 @@ namespace CoreDX.Domain.Core.Event
 {
     public interface IEventStore
     {
-        TResult Save<TResult>(IEvent @event, CancellationToken cancellationToken);
+        void Save(IEvent @event);
 
-        Task<TResult> SaveAsync<TResult>(IEvent @event, CancellationToken cancellationToken);
+        Task SaveAsync(IEvent @event, CancellationToken cancellationToken = default);
+    }
+
+    public interface IEventStore<TResult> : IEventStore
+    {
+        new TResult Save(IEvent @event);
+
+        new Task<TResult> SaveAsync(IEvent @event, CancellationToken cancellationToken = default);
     }
 }

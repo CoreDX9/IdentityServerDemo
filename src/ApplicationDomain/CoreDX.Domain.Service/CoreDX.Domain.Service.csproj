@@ -5,7 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CoreDX.Domain.Core\CoreDX.Domain.Core.csproj" />
+    <PackageReference Include="X.PagedList" Version="7.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
+    <ProjectReference Include="..\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
   </ItemGroup>
 
 </Project>

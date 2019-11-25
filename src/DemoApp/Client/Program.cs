@@ -5,11 +5,18 @@ using IdentityModel.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Client
 {
+    interface Inter<T, TT>
+    {
+
+    }
+
+    class Cin<T,TT> : Inter<T, TT> { }
     public class Program
     {
         public static async Task Main(string[] args)
@@ -17,8 +24,15 @@ namespace Client
             //获取Http客户端工厂服务
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
+            serviceCollection.AddTransient(typeof(IList<>), typeof(List<>));
+            serviceCollection.AddTransient(typeof(Inter<,>), typeof(Cin<,>));
+            serviceCollection.AddTransient(typeof(IDictionary<,>), typeof(Dictionary<,>));
             var services = serviceCollection.BuildServiceProvider();
             var clientFactory = services.GetService<IHttpClientFactory>();
+
+            var l = services.GetService<IList<int>>();
+            //var d = services.GetService<IDictionary<int, int>>();
+            var cc = services.GetService<Inter<int, int>>();
 
             Console.WriteLine("ClientCredentials模式演示");
             // discover endpoints from metadata

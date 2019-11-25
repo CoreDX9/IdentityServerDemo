@@ -167,27 +167,6 @@
     <script>
         var vueApp = new Vue({
             el: '#vue-app',
-            created: function () {
-                var _this = this;
-
-                axios.get('/Manage/Menu/GetMenu')
-                    .then(function (response) {
-                        _this.menu.data.length = 0;
-                        _this.menu.data.push(response.data);
-                    }).catch(function (error) {
-                        console.error(error);
-                    });
-
-                axios.get('/Manage/Menu/GetLinks')
-                    .then(function (response) {
-                        _this.links = response.data;
-                    }).catch(function (error) {
-                        console.error(error);
-                    });
-            },
-            mounted: function () {
-                this.$refs.menu.formOption.column.asEnumerable().single(m => m.prop === 'parentId').dicData = this.menu.data;
-            },
             data: function () {
                 return {
                     menu: {
@@ -316,6 +295,28 @@
                     links: []
                 };
             },
+            created: function () {
+                var _this = this;
+
+                axios.get('/Manage/Menu/GetMenu')
+                    .then(function (response) {
+                        _this.menu.data.length = 0;
+                        _this.menu.data.push(response.data);
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+
+                axios.get('/Manage/Menu/GetLinks')
+                    .then(function (response) {
+                        _this.links = response.data;
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+            },
+            mounted: function () {
+                this.$refs.menu.formOption.column.asEnumerable().single(m => m.prop === 'parentId').dicData = this.menu.data;
+            },
+
             watch: {
                 'menuItems.data': {
                     handler(newValue, oldValue) {
@@ -326,6 +327,7 @@
                     immediate: true
                 }
             },
+
             methods: {
                 onMenuNodeClick: function (data) {
                     this.menuItems.selectedMenu = data;

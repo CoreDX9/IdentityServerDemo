@@ -6,7 +6,7 @@ namespace IdentityServer.Areas.Manage.Models.Users
 {
     public class ApplicationUserDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string UserName { get; set; }
         public Gender? Gender { get; set; }
         public string Email { get; set; }
@@ -16,11 +16,8 @@ namespace IdentityServer.Areas.Manage.Models.Users
         public bool EmailConfirmed { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
         public DateTimeOffset CreationTime { get; set; }
-        public DateTimeOffset CreatorId { get; set; }
-        public bool IsEnable { get; set; }
+        public int CreatorId { get; set; }
         public DateTimeOffset LastModificationTime { get; set; }
-        public Guid LastModificationUserId { get; set; }
-        public long OrderNumber { get; set; }
-        public byte[] RowVersion { get; set; }
+        public int LastModificationUserId { get; set; }
     }
 }

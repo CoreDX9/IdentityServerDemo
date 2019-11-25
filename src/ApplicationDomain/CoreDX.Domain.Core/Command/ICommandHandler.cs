@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Core.Command
 {
-    public interface ICommandHandler
+    public interface ICommandHandler<in TCommand>
+        where TCommand : ICommand
     {
-        Task Handle(ICommand command, CancellationToken cancellationToken);
+        Task Handle(TCommand command, CancellationToken cancellationToken);
     }
 
-    public interface ICommandHandler<TResult> : ICommandHandler
+    public interface ICommandHandler<in TCommand, TResult> : ICommandHandler<TCommand>
+        where TCommand : ICommand<TResult>
     {
-        Task<TResult> Handle(ICommand<TResult> command, CancellationToken cancellationToken);
+        new Task<TResult> Handle(TCommand command, CancellationToken cancellationToken);
     }
 }

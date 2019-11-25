@@ -8,16 +8,17 @@ using CoreDX.Domain.Core.Event;
 
 namespace CoreDX.Domain.Model.Event
 {
-    public class MediatREventHandler : IEventHandler, INotificationHandler<MediatREvent>
+    public class MediatREventHandler<TEvent> : IEventHandler<TEvent>, INotificationHandler<TEvent>
+        where TEvent : MediatREvent
     {
-        public Task Handle(MediatREvent notification, CancellationToken cancellationToken = default)
-        {
-            return Handle((IEvent)notification, cancellationToken);
-        }
-
-        public Task Handle(IEvent @event, CancellationToken cancellationToken = default)
+        public Task Handle(TEvent @event, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        public Task Handle(MediatREvent notification, CancellationToken cancellationToken)
+        {
+            return Handle((TEvent)notification, cancellationToken);
         }
     }
 }

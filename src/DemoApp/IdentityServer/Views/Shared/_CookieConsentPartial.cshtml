@@ -8,28 +8,22 @@
 
 @if (showBanner)
 {
-    <nav id="cookieConsent" class="navbar navbar-default navbar-fixed-top" role="alert" style="background-color: lightgray">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#cookieConsent .navbar-collapse">
-                    <span class="sr-only">Toggle cookie consent banner</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <span class="navbar-brand"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></span>
-            </div>
-            <div class="collapse navbar-collapse">
-                <p class="navbar-text">
-                    Use this space to summarize your privacy and cookie use policy.
-                </p>
-                <div class="navbar-right">
-                    <a asp-controller="Home" asp-action="Privacy" class="btn btn-info navbar-btn">Learn More</a>
-                    <button type="button" class="btn btn-default navbar-btn" data-cookie-string="@cookieString">Accept</button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div id="cookieConsent" role="alert" style="background-color: lightgray">
+        @*<div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#cookieConsent .navbar-collapse">
+                <span class="sr-only">Toggle cookie consent banner</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span class="navbar-brand"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></span>
+        </div>*@
+        <p class="navbar-text">
+            同意使用cookie记录信息。
+        </p>
+        <a asp-controller="Home" asp-action="Privacy" class="btn btn-info navbar-btn">Learn More</a>
+        <button type="button" class="btn btn-default" data-cookie-string="@cookieString">Accept</button>
+    </div>
     <script>
         (function() {
             document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click",
@@ -39,7 +33,11 @@
                     document.cookie = "cookietest=1; expires=" + dt.toGMTString();
                     var cookiesEnabled = document.cookie.indexOf("cookietest=") !== -1;
                     if (cookiesEnabled) {
-                        document.cookie = el.target.dataset.cookieString;
+                        var btn = el.target;
+                        while (btn.tagName !== 'BUTTON') {
+                            btn = btn.parentNode;
+                        }
+                        document.cookie = btn.dataset.cookieString;
                     } else {
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", '/Home/ConsentCookie');
@@ -49,7 +47,8 @@
                         };
                         xhr.send();
                     }
-                    document.querySelector("#cookieConsent").classList.add("hidden");
+                    var node = document.getElementById("cookieConsent")
+                    node.parentNode.removeChild(node);
                 },
                 false);
         })();

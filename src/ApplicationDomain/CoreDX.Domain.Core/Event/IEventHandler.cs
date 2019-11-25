@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Core.Event
 {
-    public interface IEventHandler
+    public interface IEventHandler<in TEvent>
+        where TEvent : IEvent
     {
-        Task Handle(IEvent @event, CancellationToken cancellationToken);
+        Task Handle(TEvent @event, CancellationToken cancellationToken);
     }
 }
