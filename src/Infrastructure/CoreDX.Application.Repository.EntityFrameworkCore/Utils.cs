@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CoreDX.Domain.Model.Repository
+namespace CoreDX.Application.Repository.EntityFrameworkCore
 {
     public static class EntityEntryExtensions
     {

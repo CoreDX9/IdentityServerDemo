@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CoreDX.Domain.Core.Command;
 using CoreDX.Domain.Entity.Identity;
-using CoreDX.Domain.Service.UserManage;
 using IdentityServer.Areas.Manage.Models.Users;
 using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 using CoreDX.Common.Util.QueryHelper;
+using CoreDX.Application.Command.UserManage;
 
 namespace IdentityServer.Areas.Manage.Controllers
 {
@@ -36,35 +35,18 @@ namespace IdentityServer.Areas.Manage.Controllers
         [ActionName("List")]
         public async Task<IActionResult> ListAsync()
         {
-            try
-            {
-                var cmd = new ListUserCommand(1, 10, new QueryFilter());
-                var users = await _commandBus.SendCommandAsync(cmd, default);
-                var usersQuery = _userManager.Users.AsNoTracking();
-                //if (jqGridParameter._search == "true")
-                //{
-                //    usersQuery = usersQuery.Where(BuildWhere<ApplicationUser>(jqGridParameter.FilterObject, null));
-                //}
+            var cmd = new ListUserCommand(new PageInfo(1, 10), new QueryFilter());
+            var users = await _commandBus.SendCommandAsync(cmd, default);
 
-                //var users = usersQuery
-                //    .Include(u => u.UserRoles)
-                //    .ThenInclude(ur => ur.Role)
-                //    .ToPagedList(jqGridParameter.Page, jqGridParameter.Rows);
-
-                return new JsonResult(
-                    new
-                    {
-                        rows = users.Select(u => _mapper.Map<ApplicationUserDto>(u)),
-                        total = users.PageCount, //总页数
+            return new JsonResult(
+                new
+                {
+                    rows = users.Select(u => _mapper.Map<ApplicationUserDto>(u)),
+                    total = users.PageCount, //总页数
                     page = users.PageNumber, //当前页码
                     records = users.TotalItemCount //总记录数
                 }
-                );
-            }
-            catch(System.Exception e)
-            {
-                throw e;
-            }
+            );
         }
 
         [HttpGet]

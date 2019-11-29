@@ -112,10 +112,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Service\CoreDX.Domain.Service.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj" />
   </ItemGroup>
 

@@ -35,6 +35,15 @@ namespace CoreDX.Domain.Entity.Identity
         where TRoleClaim : ApplicationRoleClaim<TKey, TIdentityUser, TIdentityRole>
         where TIdentityRole : ApplicationRole<TKey, TIdentityUser, TIdentityRole, TUserRole, TRoleClaim>
     {
+        #region 重写基类属性使属性变更通知事件生效
+
+        public override TKey Id { get => base.Id; set => base.Id = value; }
+        public override string ConcurrencyStamp { get => base.ConcurrencyStamp; set => base.ConcurrencyStamp = value; }
+        public override string Name { get => base.Name; set => base.Name = value; }
+        public override string NormalizedName { get => base.NormalizedName; set => base.NormalizedName = value; }
+
+        #endregion
+
         public string Description { get; set; }
 
         /// <summary>

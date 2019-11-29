@@ -45,11 +45,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using CoreDX.Domain.Model.Repository;
+using CoreDX.Application.Repository.EntityFrameworkCore;
 
 #endregion
-
-using CoreDX.Common.Util.TypeExtensions;
-using CoreDX.Domain.Model.Repository;
 
 namespace IdentityServer
 {
@@ -508,6 +507,8 @@ namespace IdentityServer
 
             services.AddHealthChecks();
 
+            #region DDD+CQRS+EDA 相关服务
+
             services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
             services.AddScoped(typeof(ICommandBus<,>), typeof(MediatRCommandBus<,>));
             services.AddScoped(typeof(ICommandStore), typeof(InProcessCommandStore));
@@ -516,7 +517,9 @@ namespace IdentityServer
             services.AddScoped(typeof(IEventStore), typeof(InProcessEventStore));
             services.AddScoped(typeof(IEFCoreRepository<,>), typeof(EFCoreRepository<,>));
             services.AddScoped(typeof(IEFCoreRepository<,,>), typeof(EFCoreRepository<,,>));
-            services.AddMediatR(typeof(CoreDX.Domain.Service.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(CoreDX.Application.Command.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
+
+            #endregion
 
             //注入（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();

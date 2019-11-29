@@ -1,7 +1,31 @@
 ﻿"use strict";
 
 $(document).ready(function() {
-    var hubConnection = new window.signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+    var hubConnection = new window.signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .withAutomaticReconnect({
+            nextRetryDelayInMilliseconds: retryContext => {
+                //retryContext.previousRetryCount
+                //retryContext.elapsedMilliseconds
+                if (retryContext.previousRetryCount <= 3) {
+                    var sen = 5;
+                    if (retryContext.previousRetryCount === 0) {
+                        $('#connState').text('连接中断，将在' + sen + '秒后重连……');
+                    }
+                    else {
+                        $('#connState').text('第' + retryContext.previousRetryCount + '次重新连接失败，将在' + sen + '秒后重试……');
+                    }
+                    console.error(retryContext.retryReason);
+                    return sen * 1000;
+                } else {
+                    $('#connState').text('已' + retryContext.previousRetryCount + '次重新连接失败，请检查网络状况。点击上线按钮重新连接');
+                    console.error(retryContext.retryReason);
+                    return null;
+                }
+            }
+        })
+        .configureLogging(window.signalR.LogLevel.Information)
+        .build();
 
     hubConnection.on("ReceiveMessage",
         function(user, message) {
@@ -78,30 +102,21 @@ $(document).ready(function() {
             }
         });
 
-    $('#connState').text('正在连接……');
-    hubConnection.start()
-        .then(function () {
-            $('#connState').text('已连接');
-            console.log('连接成功');
-        })
-        .catch(function (err) {
-            $('#connState').text('连接失败，稍后重试……');
-            console.log(err);
-            setTimeout(function() {
-                    reConnect(hubConnection);
-                },
-                5000);
-        });
+    connect(hubConnection);
+
+    hubConnection.onreconnecting((error) => {
+        $('#connState').text('正在重新连接……');
+    });
+
+    hubConnection.onreconnected((connectionId) => {
+        $('#connState').text('已连接');
+    });
 
     hubConnection.onclose(function (err) {
         $('#connState').text('连接已关闭');
         console.log('连接已关闭');
         if (err) {
-            $('#connState').text('发生错误，连接已关闭，稍后重试……');
             console.log(err);
-            setTimeout(function() {
-                reConnect(hubConnection);
-            }, 5000);
         }
     });
 
@@ -123,14 +138,14 @@ $(document).ready(function() {
     document.getElementById("send").addEventListener("click", sendEvent);
 
     $('#offline').click(function () {
-        if (hubConnection.connection.connectionState !== 2 /*Disconnected*/) {
+        if (hubConnection.connection.connectionState !== window.signalR.HubConnectionState.Disconnected) {
             hubConnection.stop();
         }
     });
 
     $('#online').click(function () {
-        if (hubConnection.connection.connectionState === 2) {
-            reConnect(hubConnection);
+        if (hubConnection.connection.connectionState === window.signalR.HubConnectionState.Disconnected) {
+            connect(hubConnection);
         }
     });
 
@@ -160,25 +175,17 @@ $(document).ready(function() {
     chatBoardResize();
 });
 
-function reConnect(hubConnection) {
-    var reConnectWithTimes = function(hubConnection, count) {
-        $('#connState').text('正在重新连接……');
-        hubConnection.start()
-            .then(function() {
-                $('#connState').text('已连接');
-                console.log('连接成功');
-            })
-            .catch(function(error) {
-                console.log(error);
-                if (count < 5) {
-                    $('#connState').text('连接失败，稍后重试……');
-                    setTimeout(reConnectWithTimes, 5000, hubConnection, ++count);
-                } else {
-                    $('#connState').text('连接失败，已重试' + count + '次，点击上线按钮重新连接');
-                }
-            });
-    };
-    reConnectWithTimes(hubConnection, 1);
+function connect(hubConnection) {
+    $('#connState').text('正在连接……');
+    hubConnection.start()
+        .then(function () {
+            $('#connState').text('已连接');
+            console.log('连接成功');
+        })
+        .catch(function (err) {
+            $('#connState').text('连接失败，请检查网络状况');
+            console.log(err);
+        });
 }
 
 function chatContentResize(jq) {

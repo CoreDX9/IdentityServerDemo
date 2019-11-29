@@ -18,6 +18,15 @@ namespace CoreDX.Domain.Entity.Identity
         where TIdentityKey : struct, IEquatable<TIdentityKey>
         where TIdentityUser : IEntity<TIdentityKey>
     {
+        #region 重写基类属性使属性变更通知事件生效
+
+        public override string ClaimType { get => base.ClaimType; set => base.ClaimType = value; }
+        public override string ClaimValue { get => base.ClaimValue; set => base.ClaimValue = value; }
+        public override int Id { get => base.Id; set => base.Id = value; }
+        public override TIdentityKey UserId { get => base.UserId; set => base.UserId = value; }
+
+        #endregion
+
         #region 导航属性
 
         public virtual TIdentityUser User { get; set; }

@@ -62,6 +62,37 @@ namespace CoreDX.Domain.Model.Entity
         , IOptimisticConcurrencySupported
         where TKey : struct, IEquatable<TKey>
     {
+        /// <summary>
+        /// 初始化用于跟踪属性变更所需的属性信息
+        /// </summary>
+        protected DomainEntityBase()
+        {
+            //判断类型是否已经加入字典
+            //将未加入的类型添加进去（一般为该类对象首次初始化时）
+            var type = this.GetType();
+            if (!PropertyNamesDictionary.ContainsKey(type))
+            {
+                lock (Locker)
+                {
+                    if (!PropertyNamesDictionary.ContainsKey(type))
+                    {
+                        PropertyNamesDictionary.Add(type, type.GetProperties()
+                            .OrderBy(property => property.Name)
+                            .Select(property => property.Name).ToArray());
+                    }
+                }
+            }
+
+            //初始化属性变更掩码
+            _propertyChangeMask = new BitArray(PropertyNamesDictionary[type].Length, false);
+
+            //注册全局属性变更事件处理器
+            if (PublicPropertyChangedEventHandler != null)
+            {
+                PropertyChanged += PublicPropertyChangedEventHandler;
+            }
+        }
+
         [Key]
         public virtual TKey Id { get; set; }
 
@@ -100,37 +131,6 @@ namespace CoreDX.Domain.Model.Entity
         /// 全局属性变更通知事件处理器（所有继承自<see cref="DomainEntityBase" />的类在实例化时都会自动注册）
         /// </summary>
         public static PropertyChangedEventHandler PublicPropertyChangedEventHandler { get; set; }
-
-        /// <summary>
-        /// 初始化用于跟踪属性变更所需的属性信息
-        /// </summary>
-        protected DomainEntityBase()
-        {
-            //判断类型是否已经加入字典
-            //将未加入的类型添加进去（一般为该类对象首次初始化时）
-            var type = this.GetType();
-            if (!PropertyNamesDictionary.ContainsKey(type))
-            {
-                lock (Locker)
-                {
-                    if (!PropertyNamesDictionary.ContainsKey(type))
-                    {
-                        PropertyNamesDictionary.Add(type, type.GetProperties()
-                            .OrderBy(property => property.Name)
-                            .Select(property => property.Name).ToArray());
-                    }
-                }
-            }
-
-            //初始化属性变更掩码
-            _propertyChangeMask = new BitArray(PropertyNamesDictionary[type].Length, false);
-
-            //注册全局属性变更事件处理器
-            if (PublicPropertyChangedEventHandler != null)
-            {
-                PropertyChanged += PublicPropertyChangedEventHandler;
-            }
-        }
 
         /// <summary>
         /// 属性变更事件

@@ -1,9 +1,33 @@
-﻿using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using CoreDX.Common.Util.TypeExtensions;
 
 namespace CoreDX.Common.Util.QueryHelper
 {
+    public enum FilterRuleGroupOprator : byte
+    {
+        AndAlso = 1,
+        OrElse = 2
+    }
+
+    public enum FilterRuleOprator : byte
+    {
+        Equal = 1,
+        NotEqual = 2,
+        LessThan = 3,
+        LessThanOrEqual = 4,
+        GreaterThan = 5,
+        GreaterThanOrEqual = 6,
+        StringStartsWith = 7,
+        StringNotStartsWith = 8,
+        StringEndsWith = 9,
+        StringNotEndsWith = 10,
+        StringContains = 11,
+        StringNotContains = 12,
+        Include = 13,
+        NotInclude = 14,
+        IsNull = 15,
+        IsNotNull = 16,
+    }
     public class QueryFilter
     {
         /// <summary>
@@ -51,7 +75,7 @@ namespace CoreDX.Common.Util.QueryHelper
         /// <summary>
         /// 条件组合方式：and、or
         /// </summary>
-        public string GroupOp { get; set; }
+        public FilterRuleGroupOprator GroupOprator { get; set; }
         /// <summary>
         /// 搜索条件集合
         /// </summary>
@@ -78,7 +102,7 @@ namespace CoreDX.Common.Util.QueryHelper
         /// <summary>
         /// 搜索操作
         /// </summary>
-        public string Op { get; set; }
+        public FilterRuleOprator Oprator { get; set; }
         /// <summary>
         /// 搜索关键字
         /// </summary>

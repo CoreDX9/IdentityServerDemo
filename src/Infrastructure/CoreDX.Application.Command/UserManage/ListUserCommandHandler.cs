@@ -2,16 +2,12 @@
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Model.Command;
 using CoreDX.Domain.Model.Repository;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using X.PagedList;
-using CoreDX.Common.Util.TypeExtensions;
 
-namespace CoreDX.Domain.Service.UserManage
+namespace CoreDX.Application.Command.UserManage
 {
     public class ListUserCommandHandler : MediatRCommandHandler<ListUserCommand, IPagedList<ApplicationUser>>
     {
@@ -27,7 +23,7 @@ namespace CoreDX.Domain.Service.UserManage
             return repository.Set
                 //.Where(command.QueryFilter.FilterObject.BuildWhere<ApplicationUser>())
                 .OrderBy(x => x.Id)//这里到时候换成生成的
-                .ToPagedListAsync(command.PageNumber, command.PageSize);
+                .ToPagedListAsync(command.PageInfo.PageNumber, command.PageInfo.PageSize);
         }
     }
 }

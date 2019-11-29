@@ -1,0 +1,190 @@
+﻿<template id="search-rule-group">
+    <el-card class="box-card search-menu">
+        <div slot="header" class="clearfix">
+            <el-form-item label="条件连接方式：">
+                <el-col :span="20">
+                    <el-select v-model="model.groupOprator" placeholder="请选择">
+                        <el-option v-for="option in groupOpratorDic"
+                                   :key="option.value"
+                                   :label="option.label"
+                                   :value="option.value">
+                        </el-option>
+                    </el-select>
+                    <el-button type="primary"
+                               @@click="addRule(model)">添加条件</el-button>
+                    <el-button type="primary"
+                               @@click="addRuleGroup(model)">添加条件组</el-button>
+                </el-col>
+                <el-col :span="2">
+                    <el-button v-if="parentModel != null"
+                               type="danger"
+                               @@click="removeRuleGroup(parentModel, model)">删除</el-button>
+                </el-col>
+            </el-form-item>
+        </div>
+        <el-form-item v-for="(rule, index) in model.rules"
+                      :key="index"
+                      :label="'条件' + (index + 1)">
+            <el-col :span="7">
+                <el-select v-model="rule.field" placeholder="要搜索的列">
+                    <el-option v-for="col in option"
+                               :key="col.value"
+                               :label="col.label"
+                               :value="col.prop">
+                    </el-option>
+                </el-select>
+                <el-select v-model="rule.oprator" placeholder="条件">
+                    <el-option v-for="option in ruleOpratorDic"
+                               :key="option.value"
+                               :label="option.label"
+                               :value="option.value">
+                    </el-option>
+                </el-select>
+            </el-col>
+            <el-col :span="10">
+                <el-input v-model="rule.data" placeholder="要搜索的值"></el-input>
+            </el-col>
+            <el-col :span="1">
+                <el-button type="danger"
+                           @@click="removeRule(model, rule)">删除</el-button>
+            </el-col>
+        </el-form-item>
+        <search-rule-group v-for="(subModel, index) in model.groups"
+                           :key="index"
+                           :model="subModel"
+                           :parent-model="model"
+                           :option="option"></search-rule-group>
+    </el-card>
+</template>
+
+<script>
+    Vue.component('SearchRuleGroup',
+        {
+            name: 'SearchRuleGroup',
+            props: {
+                parentModel: null,
+                model: {},
+                option: {}
+            },
+            data: function () {
+                return {
+                    groupOpratorDic: [{
+                        label: '并且',
+                        value: 1
+                    }, {
+                        label: '或者',
+                        value: 2
+                    }],
+                    ruleOpratorDic: [{
+                        label: '等于',
+                        value: 1
+                    }, {
+                        label: '不等于',
+                        value: 2
+                    }, {
+                        label: '小于',
+                        value: 3
+                    }, {
+                        label: '小于等于',
+                        value: 4
+                    }, {
+                        label: '大于',
+                        value: 5
+                    }, {
+                        label: '大于等于',
+                        value: 6
+                    }, {
+                        label: '开头是',
+                        value: 7
+                    }, {
+                        label: '开头不是',
+                        value: 8
+                    }, {
+                        label: '结尾是',
+                        value: 9
+                    }, {
+                        label: '结尾不是',
+                        value: 10
+                    }, {
+                        label: '包含',
+                        value: 11
+                    }, {
+                        label: '不包含',
+                        value: 12
+                    }, {
+                        label: '包括',
+                        value: 13
+                    }, {
+                        label: '不包括',
+                        value: 14
+                    }, {
+                        label: '为空',
+                        value: 15
+                    }, {
+                        label: '不为空',
+                        value: 16
+                    }],
+                }
+            },
+            methods: {
+                addRule: function (group) {
+                    group.rules.push({
+                        field: null,
+                        oprator: null,
+                        data: null
+                    });
+                },
+                removeRule: function (group, rule) {
+                    var index = group.rules.indexOf(rule)
+                    if (index !== -1) {
+                        group.rules.splice(index, 1)
+                    }
+                },
+                addRuleGroup: function (group) {
+                    group.groups.push({
+                            groupOprator: null,
+                            rules: [{
+                                field: null,
+                                oprator: null,
+                                data: null
+                            }],
+                            groups: []
+                        });
+                },
+                removeRuleGroup: function (parentGroup, group) {
+                    if (parentGroup != null) {
+                        var index = parentGroup.groups.indexOf(group)
+                        if (index !== -1) {
+                            parentGroup.groups.splice(index, 1)
+                        }
+                    }
+                },
+            },
+            template: document.getElementById('search-rule-group').innerHTML
+        });
+</script>
+
+<template id="search-menu">
+    <el-form :model="form">
+        <search-rule-group :model="form"
+                           :parent-model="null"
+                           :option="option"></search-rule-group>
+    </el-form>
+</template>
+
+<script>
+    Vue.component('SearchMenu',
+        {
+            name: 'SearchMenu',
+            props: {
+                option: {},
+                form: {},
+            },
+            data: function () {
+                return {}
+            },
+            methods: {
+            },
+            template: document.getElementById('search-menu').innerHTML
+        });
+</script>

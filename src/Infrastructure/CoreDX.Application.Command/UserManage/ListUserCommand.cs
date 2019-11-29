@@ -4,18 +4,15 @@ using CoreDX.Domain.Model.Command;
 using System;
 using X.PagedList;
 
-namespace CoreDX.Domain.Service.UserManage
+namespace CoreDX.Application.Command.UserManage
 {
     public class ListUserCommand : MediatRCommand<IPagedList<ApplicationUser>>
     {
-        public int PageNumber { get; }
-        public int PageSize { get; }
+        public PageInfo PageInfo { get; }
         public QueryFilter QueryFilter { get; }
-        public ListUserCommand(int pageNumber, int pageSize, QueryFilter queryFilter)
-            : base()
+        public ListUserCommand(PageInfo pageInfo, QueryFilter queryFilter)
         {
-            PageNumber = pageNumber;
-            PageSize = pageSize;
+            PageInfo = pageInfo;
             QueryFilter = queryFilter;
         }
     }

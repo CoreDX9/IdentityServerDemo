@@ -114,7 +114,7 @@
   {
     "outputFileName": "wwwroot/lib/signalr/signalr.min.js",
     "inputFiles": [
-      "node_modules/@aspnet/signalr/dist/browser/signalr.min.js"
+      "node_modules/@microsoft/signalr/dist/browser/signalr.min.js"
     ],
     "minify": {
       "enabled": false

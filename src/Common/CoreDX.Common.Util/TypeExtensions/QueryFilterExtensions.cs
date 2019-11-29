@@ -62,28 +62,28 @@ namespace CoreDX.Common.Util.TypeExtensions
             }
 
             var expression = expressions[0];
-            switch (group.GroupOp)
+            switch (group.GroupOprator)
             {
-                case "AND":
+                case FilterRuleGroupOprator.AndAlso:
                     foreach (var exp in expressions.Skip(1))
                     {
                         expression = Expression.AndAlso(expression, exp);
                     }
                     break;
-                case "OR":
+                case FilterRuleGroupOprator.OrElse:
                     foreach (var exp in expressions.Skip(1))
                     {
                         expression = Expression.OrElse(expression, exp);
                     }
                     break;
                 default:
-                    throw new InvalidOperationException($"不支持创建{group.GroupOp}类型的逻辑运算表达式");
+                    throw new InvalidOperationException($"不支持创建{group.GroupOprator}类型的逻辑运算表达式");
             }
 
             return expression;
         }
 
-        private static readonly string[] SpecialRuleOps = { "in", "ni", "nu", "nn" };
+        private static readonly FilterRuleOprator[] SpecialRuleOps = { FilterRuleOprator.Include, FilterRuleOprator.NotInclude, FilterRuleOprator.IsNull, FilterRuleOprator.IsNotNull };
 
         /// <summary>
         /// 构造条件表达式
@@ -130,7 +130,7 @@ namespace CoreDX.Common.Util.TypeExtensions
             }
 
             //根据属性类型创建要比较的常量值表达式（也就是r）
-            if (!specialRuleOps.Contains(rule.Op))
+            if (!specialRuleOps.Contains(rule.Oprator))
             {
                 switch (pt)
                 {
@@ -225,27 +225,27 @@ namespace CoreDX.Common.Util.TypeExtensions
                 r = Expression.Convert(r, gt);
             }
 
-            switch (rule.Op)
+            switch (rule.Oprator)
             {
-                case "eq": //等于
+                case FilterRuleOprator.Equal: //等于
                     e = Expression.Equal(l, r);
                     break;
-                case "ne": //不等于
+                case FilterRuleOprator.NotEqual: //不等于
                     e = Expression.NotEqual(l, r);
                     break;
-                case "lt": //小于
+                case FilterRuleOprator.LessThan: //小于
                     e = Expression.LessThan(l, r);
                     break;
-                case "le": //小于等于
+                case FilterRuleOprator.LessThanOrEqual: //小于等于
                     e = Expression.LessThanOrEqual(l, r);
                     break;
-                case "gt": //大于
+                case FilterRuleOprator.GreaterThan: //大于
                     e = Expression.GreaterThan(l, r);
                     break;
-                case "ge": //大于等于
+                case FilterRuleOprator.GreaterThanOrEqual: //大于等于
                     e = Expression.GreaterThanOrEqual(l, r);
                     break;
-                case "bw": //开头是（字符串）
+                case FilterRuleOprator.StringStartsWith: //开头是（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Call(l, pt.GetMethod(nameof(string.StartsWith), new[] { typeof(string) }), r);
@@ -256,7 +256,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "bn": //开头不是（字符串）
+                case FilterRuleOprator.StringNotStartsWith: //开头不是（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.StartsWith), new[] { typeof(string) }), r));
@@ -267,7 +267,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "ew": //结尾是（字符串）
+                case FilterRuleOprator.StringEndsWith: //结尾是（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Call(l, pt.GetMethod(nameof(string.EndsWith), new[] { typeof(string) }), r);
@@ -278,7 +278,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "en": //结尾不是（字符串）
+                case FilterRuleOprator.StringNotEndsWith: //结尾不是（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.EndsWith), new[] { typeof(string) }), r));
@@ -289,7 +289,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "cn": //包含（字符串）
+                case FilterRuleOprator.StringContains: //包含（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Call(l, pt.GetMethod(nameof(string.Contains), new[] { typeof(string) }), r);
@@ -300,7 +300,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "nc": //不包含（字符串）
+                case FilterRuleOprator.StringNotContains: //不包含（字符串）
                     if (pt == typeof(string))
                     {
                         e = Expression.Not(Expression.Call(l, pt.GetMethod(nameof(string.Contains), new[] { typeof(string) }), r));
@@ -311,24 +311,24 @@ namespace CoreDX.Common.Util.TypeExtensions
                     }
 
                     break;
-                case "in": //属于（是候选值列表之一）
+                case FilterRuleOprator.Include: //属于（是候选值列表之一）
                     e = BuildContainsExpression(rule, l, pt);
                     break;
-                case "ni": //不属于（不是候选值列表之一）
+                case FilterRuleOprator.NotInclude: //不属于（不是候选值列表之一）
                     e = Expression.Not(BuildContainsExpression(rule, l, pt));
                     break;
-                case "nu": //为空
+                case FilterRuleOprator.IsNull: //为空
                     r = Expression.Constant(null);
                     e = Expression.Equal(l, r);
                     break;
-                case "nn": //不为空
+                case FilterRuleOprator.IsNotNull: //不为空
                     r = Expression.Constant(null);
                     e = Expression.Not(Expression.Equal(l, r));
                     break;
-                case "bt": //区间
-                    throw new NotImplementedException($"尚未实现创建{rule.Op}类型的比较表达式");
+                //case "bt": //区间
+                //    throw new NotImplementedException($"尚未实现创建{rule.Oprator}类型的比较表达式");
                 default:
-                    throw new InvalidOperationException($"不支持创建{rule.Op}类型的比较表达式");
+                    throw new InvalidOperationException($"不支持创建{rule.Oprator}类型的比较表达式");
             }
 
             return e;
@@ -438,7 +438,7 @@ namespace CoreDX.Common.Util.TypeExtensions
 
             return e;
 
-            MethodCallExpression CallContains<T>(Expression pa, string[] jArray, Func<string, T> selector, MethodInfo genericMethod, Type type)
+            static MethodCallExpression CallContains<T>(Expression pa, string[] jArray, Func<string, T> selector, MethodInfo genericMethod, Type type)
             {
                 var data = jArray.Select(selector).ToArray().AsQueryable();
                 var method = genericMethod.MakeGenericMethod(type);

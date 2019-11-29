@@ -45,6 +45,26 @@ namespace CoreDX.Domain.Entity.Identity
         where TUserOrganization : ApplicationUserOrganization<TKey, TIdentityUser, TOrganization, TUserOrganization>
         where TOrganization : Organization<TKey, TOrganization, TIdentityUser, TUserOrganization>
     {
+        #region 重写基类属性使属性变更通知事件生效
+
+        public override TKey Id { get => base.Id; set => base.Id = value; }
+        public override string ConcurrencyStamp { get => base.ConcurrencyStamp; set => base.ConcurrencyStamp = value; }
+        public override int AccessFailedCount { get => base.AccessFailedCount; set => base.AccessFailedCount = value; }
+        public override string Email { get => base.Email; set => base.Email = value; }
+        public override bool EmailConfirmed { get => base.EmailConfirmed; set => base.EmailConfirmed = value; }
+        public override bool LockoutEnabled { get => base.LockoutEnabled; set => base.LockoutEnabled = value; }
+        public override DateTimeOffset? LockoutEnd { get => base.LockoutEnd; set => base.LockoutEnd = value; }
+        public override string NormalizedEmail { get => base.NormalizedEmail; set => base.NormalizedEmail = value; }
+        public override string NormalizedUserName { get => base.NormalizedUserName; set => base.NormalizedUserName = value; }
+        public override string PasswordHash { get => base.PasswordHash; set => base.PasswordHash = value; }
+        public override string PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
+        public override bool PhoneNumberConfirmed { get => base.PhoneNumberConfirmed; set => base.PhoneNumberConfirmed = value; }
+        public override string SecurityStamp { get => base.SecurityStamp; set => base.SecurityStamp = value; }
+        public override bool TwoFactorEnabled { get => base.TwoFactorEnabled; set => base.TwoFactorEnabled = value; }
+        public override string UserName { get => base.UserName; set => base.UserName = value; }
+
+        #endregion
+
         /// <summary>
         /// 需要使用.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)预加载或启用延迟加载
         /// </summary>
@@ -66,9 +86,6 @@ namespace CoreDX.Domain.Entity.Identity
         public virtual List<TUserOrganization> UserOrganizations { get; set; } = new List<TUserOrganization>();
 
         #endregion
-
-        public override TKey Id { get; set; }
-        public override string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
 
         #region IEntity成员
 

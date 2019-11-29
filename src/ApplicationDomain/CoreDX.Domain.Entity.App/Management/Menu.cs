@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using CoreDX.Domain.Model.Entity;
 
@@ -25,6 +24,7 @@ namespace CoreDX.Domain.Entity.App.Management
     public abstract class MenuItem<TMenuId> : DomainEntityBase<int, int>
       where TMenuId : struct, IEquatable<TMenuId>
     {
+        //public MenuItem() : base(){}
         public MenuItemIcon MenuItemIcon { get; set; } = new MenuItemIcon();
         public string Title { get; set; }
         public string Link { get; set; }

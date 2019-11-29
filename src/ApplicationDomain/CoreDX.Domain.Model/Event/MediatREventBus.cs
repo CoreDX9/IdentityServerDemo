@@ -7,8 +7,8 @@ namespace CoreDX.Domain.Model.Event
 {
     public class MediatREventBus : IEventBus
     {
-        private readonly IMediator mediator;
-        private readonly IEventStore eventStore;
+        protected readonly IMediator mediator;
+        protected readonly IEventStore eventStore;
 
         public MediatREventBus(IMediator mediator, IEventStore eventStore)
         {
@@ -31,9 +31,6 @@ namespace CoreDX.Domain.Model.Event
 
     public class MediatREventBus<TResult> : MediatREventBus, IEventBus<TResult>
     {
-        private readonly IMediator mediator;
-        private readonly IEventStore eventStore;
-
         public MediatREventBus(IMediator mediator, IEventStore eventStore)
             : base(mediator, eventStore)
         {

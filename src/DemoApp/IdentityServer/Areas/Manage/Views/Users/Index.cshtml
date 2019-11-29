@@ -12,7 +12,11 @@
     <partial name="_AnimateCssStylesPartial" />
     <partial name="_SiteStylesPartial" />
 
-    <style></style>
+    <style>
+        .search-menu .el-card__header{
+            padding-bottom: 0px;
+        }
+    </style>
 </head>
 <body>
     <div id="vue-app">
@@ -25,13 +29,12 @@
                                    :option="userTable.option"
                                    :table-loading="userTable.loading"
                                    v-model="userTable.form"
-                                   @@refresh-change="refresh"
+                                   @@refresh-change="onUserRefresh"
                                    @@filter-change="onUserFilterChange"
                                    @@row-save="onAddUser"
                                    @@row-update="onUpdateUser"
                                    @@row-del="onDelUser"
                                    :page="userTable.page"
-                                   @*@@on-load="onUserLoad"*@
                                    @@size-change="onUserPageSizeChange"
                                    @@current-change="onUserPageCurrentChange">
                             <template slot-scope="scope" slot="menuLeft">
@@ -49,6 +52,11 @@
         </el-container>
     </div>
 
+    <div id="vue-app3">
+        <search-menu :form="form"
+                     :option="column"></search-menu>
+    </div>
+
     <partial name="_LinqJsScriptsPartial" />
     <partial name="_JQueryScriptsPartial" />
     <partial name="_AxiosScriptsPartial" />
@@ -57,6 +65,7 @@
     <partial name="_ElementUiScriptsPartial" />
     <partial name="_AvueScriptsPartial" />
     <partial name="_VueSubmitFormHelperScriptsPartial" />
+    <partial name="_SearchMenuPartial" />
 
     <script>
         var vueApp = new Vue({
@@ -69,13 +78,13 @@
                         pagedData: [],
                         option: {
                             title: '用户列表',
-                            menuType:'text', //行右侧操作菜单类型
+                            menuType: 'text', //行右侧操作菜单类型
                             page: true, //是否启用分页
-                            filterBtn:true, //是否启用过滤器
+                            filterBtn: false, //是否启用过滤器
                             align: 'center', //表格对齐方式
                             menuAlign: 'center', //菜单栏对齐方式
                             border: false, //是否显示表格边框
-                            showHeader:true, //是否显示表格的表头
+                            showHeader: true, //是否显示表格的表头
                             stripe: true, //是否显示表格的斑马条纹
                             index: false, //是否显示行序号
                             //indexLabel: '序号',
@@ -83,30 +92,117 @@
                             selection: false, //行复选框
                             addBtn: false, //关闭内置添加按钮，内置按钮没有回调函数，不能在点击按钮时执行自定义代码
                             myAddBtn: true, //自定义添加按钮显示控制
-                            column:[
+                            column: [
                                 {
-                                    label: '姓名',
-                                    prop: 'name'
+                                    label: '用户名',
+                                    prop: 'userName',
+                                    editDisplay: true,
+                                    editDisabled: true,
+                                    searchType: 'text',
+                                },
+                                {
+                                    label: 'uid',
+                                    prop: 'id',
+                                    addDisplay: false,
+                                    editDisplay: true,
+                                    editDisabled: true,
+                                    searchType: 'number',
+                                },
+                                {
+                                    label: 'E-mail',
+                                    prop: 'email',
+                                    editDisplay: true,
+                                    editDisabled: true,
+                                    searchType: 'text',
+                                },
+                                {
+                                    label: '邮箱确认',
+                                    prop: 'emailConfirmed',
+                                    type: 'switch',
+                                    addDisplay: false,
+                                    editDisplay: false,
+                                    editDisabled: true,
+                                    searchType: 'text',
+                                },
+                                {
+                                    label: '启用账号',
+                                    prop: 'active',
+                                    type: 'switch'
                                 },
                                 {
                                     label: '性别',
-                                    prop: 'sex'
-                                }, {
-                                    label: "日期",
-                                    prop: "date",
-                                    type: "date",
+                                    prop: 'gender',
+                                    type: 'select',
+                                    dicData: [
+                                        {
+                                            label: '男',
+                                            value: 1
+                                        },
+                                        {
+                                            label: '女',
+                                            value: 2
+                                        },
+                                        {
+                                            label: '未知',
+                                            value: null
+                                        }
+                                    ]
+                                },
+                                {
+                                    label: '暴力登录保护',
+                                    prop: 'lockoutEnabled',
+                                    type: 'switch'
+                                },
+                                {
+                                    label: '保护期限',
+                                    prop: 'lockoutEnd',
+                                    type: "datetime",
                                     format: "yyyy-MM-dd hh:mm:ss",
                                     valueFormat: "yyyy-MM-dd hh:mm:ss",
+                                    addDisplay: false,
+                                    editDisplay: false,
+                                    editDisabled: true,
+                                },
+                                {
+                                    label: '电话号码',
+                                    prop: 'phoneNumber',
+                                },
+                                {
+                                    label: '电话号码确认',
+                                    prop: 'phoneNumberConfirmed',
+                                    type: 'switch',
+                                    addDisplay: false,
+                                    editDisplay: false,
+                                    editDisabled: true,
+                                },
+                                {
+                                    label: '两步验证登录',
+                                    prop: 'twoFactorEnabled',
+                                    type: 'switch',
+                                    addDisplay: false,
+                                    editDisplay: false,
+                                    editDisabled: true,
+                                },
+                                {
+                                    label: "注册时间",
+                                    prop: "creationTime",
+                                    type: "datetime",
+                                    format: "yyyy-MM-dd hh:mm:ss",
+                                    valueFormat: "yyyy-MM-dd hh:mm:ss",
+                                    addDisplay: false,
+                                    editDisplay: false,
+                                    editDisabled: true,
                                 }
                             ]
                         },
                         form: {},
                         page: {
-                            pageSizes: [10, 20, 50, 100],
+                            pageSizes: [2, 10, 20, 50, 100],
                             currentPage: 1,
                             total: 0,
-                            pageSize: 10
+                            pageSize: 2
                         },
+                        filter: {}
                     }
                 };
             },
@@ -117,60 +213,44 @@
             },
             //组件实例化完毕，但页面还未显示
             created: function () {
-                var _this = this;
-                axios.get('/Manage/Users/List')
-                    .then(function (response) {
-                        _this.userTable.pagedData.length = 0;
-                        _this.userTable.pagedData = response.data.rows;
-                    }).catch(function (error) {
-                        console.error(error);
-                    });
             },
             //组件挂载前，页面仍未展示，但虚拟Dom已经配置
-             beforeMount: function(){
-                 
+            beforeMount: function () {
             },
-             //组件挂在后，此方法执行后，页面显示
-             mounted: function(){
-
+            //组件挂在后，此方法执行后，页面显示
+            mounted: function () {
+                this.fetchUserList(null);
             },
-             //组件更新前，页面仍未更新，但虚拟Dom已经配置，每次发生数据变更都会触发
-             beforeUpdate: function(){
-
-            },
-             //组件更新，此方法执行后，页面显示
-             updated: function(){
+            //组件更新前，页面仍未更新，但虚拟Dom已经配置，每次发生数据变更都会触发
+            beforeUpdate: function () {
 
             },
-             //组件销毁前
-             beforeDestroy: function(){
+            //组件更新，此方法执行后，页面显示
+            updated: function () {
 
             },
-             //组件销毁后
-             destroyed: function(){
+            //组件销毁前
+            beforeDestroy: function () {
 
-             },
-             //生命周期钩子完
+            },
+            //组件销毁后
+            destroyed: function () {
 
-             //监视器，检测到指定对象发生改变时执行处理函数
-            //watch: {
-            //    'data.a': {
-            //        handler(newValue, oldValue) {
+            },
+            //生命周期钩子完
 
-            //        },
-            //        deep: true,
-            //        immediate: true
-            //    },
-            //    'dataB': {
-            //        handler(newValue, oldValue) {
+            //监视器，检测到指定对象发生改变时执行处理函数
+            watch: {
+                'userTable.filter': {
+                    handler(newValue, oldValue) {
+                        this.fetchUserList();
+                    },
+                    deep: true,
+                    immediate: false
+                },
+            },
 
-            //        },
-            //        deep: true,
-            //        immediate: true
-            //    },
-            //},
-
-             //计算属性，由其他基础数据计算后得出的临时数据，基础数据发生变更后会自动触发重新计算
+            //计算属性，由其他基础数据计算后得出的临时数据，基础数据发生变更后会自动触发重新计算
             //computed: {
             //    // 计算属性的 getter，名字自己取，用的时候对上
             //    reversedMessage: function () {
@@ -185,10 +265,10 @@
 
             methods: {
                 onUserRefresh: function (val) {
-
+                    this.fetchUserList();
                 },
                 onUserFilterChange: function (filter) {
-
+                    this.userTable.filter = filter;
                 },
                 onAddUserBtnClick() {
                     this.$refs.userTable.rowAdd();
@@ -199,19 +279,164 @@
                 onUpdateUser: function (form, index, done, enableEdit) {
 
                 },
-                onDelUser:function (form, index) {
+                onDelUser: function (form, index) {
 
                 },
-                //onUserLoad: function (page) {
-
-                //},
-                onUserPageSizeChange:function (val) {
-
+                onUserPageSizeChange: function (val) {
+                    this.userTable.page.pageSize = val;
+                    this.fetchUserList();
                 },
-                onUserPageCurrentChange:function (val) {
-
+                onUserPageCurrentChange: function (val) {
+                    this.userTable.page.currentPage = val;
+                    this.fetchUserList();
                 },
+                fetchUserList: function () {
+                    var _this = this;
+                    var page = {
+                        pageNumber: _this.userTable.page.currentPage,
+                        pageSize: _this.userTable.page.pageSize,
+                    }
+                    var filter = _this.userTable.filters;
+                    var queryStr = Qs.stringify({ page, filter }, { allowDots: true, arrayFormat: 'indices' });
+                    axios.get('/Manage/Users/List' + '?' + queryStr).then(function (response) {
+                        _this.userTable.pagedData = response.data.rows;
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+                }
             }
+        });
+
+        var vueApp3 = new Vue({
+            el: '#vue-app3',
+            data: function () {
+                return {
+                    form: {
+                        groupOprator: null,
+                        rules: [{
+                            field: null,
+                            oprator: null,
+                            data: null
+                        }, {
+                            field: null,
+                            oprator: null,
+                            data: null
+                        }],
+                        groups: [{
+                            groupOprator: null,
+                            rules: [{
+                                field: null,
+                                oprator: null,
+                                data: null
+                            }, {
+                                field: null,
+                                oprator: null,
+                                data: null
+                            }],
+                            groups: []
+                        }]
+                    },
+                    column: [
+                        {
+                            label: '用户名',
+                            prop: 'userName',
+                            editDisplay: true,
+                            editDisabled: true,
+                            fixed: true
+                        },
+                        {
+                            label: 'uid',
+                            prop: 'id',
+                            addDisplay: false,
+                            editDisplay: true,
+                            editDisabled: true,
+                        },
+                        {
+                            label: 'E-mail',
+                            prop: 'email',
+                            editDisplay: true,
+                            editDisabled: true,
+                        },
+                        {
+                            label: '邮箱确认',
+                            prop: 'emailConfirmed',
+                            type: 'switch',
+                            addDisplay: false,
+                            editDisplay: false,
+                            editDisabled: true,
+                        },
+                        {
+                            label: '启用账号',
+                            prop: 'active',
+                            type: 'switch'
+                        },
+                        {
+                            label: '性别',
+                            prop: 'gender',
+                            type: 'select',
+                            dicData: [
+                                {
+                                    label: '男',
+                                    value: 1
+                                },
+                                {
+                                    label: '女',
+                                    value: 2
+                                },
+                                {
+                                    label: '保密',
+                                    value: null
+                                }
+                            ]
+                        },
+                        {
+                            label: '暴力登录保护',
+                            prop: 'lockoutEnabled',
+                            type: 'switch'
+                        },
+                        {
+                            label: '保护期限',
+                            prop: 'lockoutEnd',
+                            type: "date",
+                            format: "yyyy-MM-dd hh:mm:ss",
+                            valueFormat: "yyyy-MM-dd hh:mm:ss",
+                            addDisplay: false,
+                            editDisplay: false,
+                            editDisabled: true,
+                        },
+                        {
+                            label: '电话号码',
+                            prop: 'phoneNumber',
+                        },
+                        {
+                            label: '电话号码确认',
+                            prop: 'phoneNumberConfirmed',
+                            type: 'switch',
+                            addDisplay: false,
+                            editDisplay: false,
+                            editDisabled: true,
+                        },
+                        {
+                            label: '两步验证登录',
+                            prop: 'twoFactorEnabled',
+                            type: 'switch',
+                            addDisplay: false,
+                            editDisplay: false,
+                            editDisabled: true,
+                        },
+                        {
+                            label: "注册时间",
+                            prop: "creationTime",
+                            type: "date",
+                            format: "yyyy-MM-dd hh:mm:ss",
+                            valueFormat: "yyyy-MM-dd hh:mm:ss",
+                            addDisplay: false,
+                            editDisplay: false,
+                            editDisabled: true,
+                        }
+                    ]
+                };
+            },
         });
     </script>
 </body>

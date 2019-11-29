@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="X.PagedList" Version="7.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
+    <ProjectReference Include="..\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

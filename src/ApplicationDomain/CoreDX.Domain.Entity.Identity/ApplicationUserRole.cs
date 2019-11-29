@@ -16,6 +16,13 @@ namespace CoreDX.Domain.Entity.Identity
         where TIdentityUser : IEntity<TIdentityKey>
         where TIdentityRole : IEntity<TIdentityKey>
     {
+        #region 重写基类属性使属性变更通知事件生效
+
+        public override TIdentityKey UserId { get => base.UserId; set => base.UserId = value; }
+        public override TIdentityKey RoleId { get => base.RoleId; set => base.RoleId = value; }
+
+        #endregion
+
         #region 导航属性
 
         public virtual TIdentityUser User { get; set; }

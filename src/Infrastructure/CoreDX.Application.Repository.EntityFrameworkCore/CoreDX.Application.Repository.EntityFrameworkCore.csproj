@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Core\CoreDX.Domain.Core.csproj" />
-    <ProjectReference Include="..\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
   </ItemGroup>
 
 </Project>

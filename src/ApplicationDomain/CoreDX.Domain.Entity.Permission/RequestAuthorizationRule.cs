@@ -1,6 +1,6 @@
 ﻿using CoreDX.Domain.Model.Entity;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json;
 using System.Collections.Generic;
 
 namespace CoreDX.Domain.Entity.Permission
@@ -94,7 +94,7 @@ namespace CoreDX.Domain.Entity.Permission
         public string AuthorizationRuleConfigJson { get; set; }
 
         private AuthorizationRuleGroup _authorizationRuleConfig;
-        public AuthorizationRuleGroup AuthorizationRuleConfig => _authorizationRuleConfig ?? (_authorizationRuleConfig = JsonConvert.DeserializeObject<AuthorizationRuleGroup>(AuthorizationRuleConfigJson));
+        public AuthorizationRuleGroup AuthorizationRuleConfig => _authorizationRuleConfig ?? (_authorizationRuleConfig = JsonSerializer.Deserialize<AuthorizationRuleGroup>(AuthorizationRuleConfigJson));
 
         public virtual List<TRequestAuthorizationRule> RequestAuthorizationRules { get; set; } = new List<TRequestAuthorizationRule>();
 
