@@ -16,7 +16,7 @@
                                @@click="addRuleGroup(model)">添加条件组</el-button>
                 </el-col>
                 <el-col :span="2">
-                    <el-button v-if="parentModel != null"
+                    <el-button v-if="parentModel != null && parentModel.rules.length + parentModel.groups.length > 1"
                                type="danger"
                                @@click="removeRuleGroup(parentModel, model)">删除</el-button>
                 </el-col>
@@ -34,7 +34,7 @@
                     </el-option>
                 </el-select>
                 <el-select v-model="rule.oprator" placeholder="条件">
-                    <el-option v-for="option in ruleOpratorDic"
+                    <el-option v-for="option in getruleOpratorDic(rule.field)"
                                :key="option.value"
                                :label="option.label"
                                :value="option.value">
@@ -42,10 +42,36 @@
                 </el-select>
             </el-col>
             <el-col :span="10">
-                <el-input v-model="rule.data" placeholder="要搜索的值"></el-input>
+                <template v-if="(rule.field !== null && rule.field.length > 0) && (rule.oprator && rule.oprator !== 15 && rule.oprator !== 16)">
+                    <el-select v-if="(rule.oprator === 1 || rule.oprator === 2 || rule.oprator === 13 || rule.oprator === 14) && ((getSearchType(rule.field) === 'select' && getDicData(rule.field)) || getSearchType(rule.field) === 'switch')"
+                               :clearable="!(rule.oprator === 13 || rule.oprator === 14)"
+                               :multiple="rule.oprator === 13 || rule.oprator === 14"
+                               :filterable="getSearchType(rule.field) === 'number'"
+                               :allow-create="getSearchType(rule.field) === 'number'"
+                               v-model="rule.data"
+                               placeholder="请选择">
+                        <template v-if="getSearchType(rule.field) === 'select'">
+                            <el-option v-for="option in getDicData(rule.field)"
+                                       :key="option.value"
+                                       :label="option.label"
+                                       :value="option.value">
+                            </el-option>
+                        </template>
+                        <template v-if="getSearchType(rule.field) === 'switch'">
+                            <el-option v-for="option in [{label: '是', value: true}, {label: '否', value: false}]"
+                                       :key="option.value"
+                                       :label="option.label"
+                                       :value="option.value">
+                            </el-option>
+                        </template>
+                    </el-select>
+                    <el-input-number v-if="getSearchType(rule.field) === 'number'" v-model="rule.data" placeholder="要搜索的值"></el-input-number>
+                    <el-input v-if="getSearchType(rule.field) === 'text'" v-model="rule.data" placeholder="要搜索的值"></el-input>
+                </template>
             </el-col>
             <el-col :span="1">
-                <el-button type="danger"
+                <el-button v-if="model.rules.length + model.groups.length > 1"
+                           type="danger"
                            @@click="removeRule(model, rule)">删除</el-button>
             </el-col>
         </el-form-item>
@@ -64,7 +90,7 @@
             props: {
                 parentModel: null,
                 model: {},
-                option: {}
+                option: []
             },
             data: function () {
                 return {
@@ -77,56 +103,92 @@
                     }],
                     ruleOpratorDic: [{
                         label: '等于',
-                        value: 1
+                        value: 1,
+                        supportedSearchType:['all']
                     }, {
                         label: '不等于',
-                        value: 2
+                        value: 2,
+                        supportedSearchType:['all']
                     }, {
                         label: '小于',
-                        value: 3
+                        value: 3,
+                        supportedSearchType:['number']
                     }, {
                         label: '小于等于',
-                        value: 4
+                        value: 4,
+                        supportedSearchType:['number']
                     }, {
                         label: '大于',
-                        value: 5
+                        value: 5,
+                        supportedSearchType:['number']
                     }, {
                         label: '大于等于',
-                        value: 6
+                        value: 6,
+                        supportedSearchType:['number']
                     }, {
                         label: '开头是',
-                        value: 7
+                        value: 7,
+                        supportedSearchType:['text']
                     }, {
                         label: '开头不是',
-                        value: 8
+                        value: 8,
+                        supportedSearchType:['text']
                     }, {
                         label: '结尾是',
-                        value: 9
+                        value: 9,
+                        supportedSearchType:['text']
                     }, {
                         label: '结尾不是',
-                        value: 10
+                        value: 10,
+                        supportedSearchType:['text']
                     }, {
                         label: '包含',
-                        value: 11
+                        value: 11,
+                        supportedSearchType:['text']
                     }, {
                         label: '不包含',
-                        value: 12
+                        value: 12,
+                        supportedSearchType:['text']
                     }, {
                         label: '包括',
-                        value: 13
+                        value: 13,
+                        supportedSearchType:['number', 'select']
                     }, {
                         label: '不包括',
-                        value: 14
+                        value: 14,
+                        supportedSearchType:['number', 'select']
                     }, {
                         label: '为空',
-                        value: 15
+                        value: 15,
+                        supportedSearchType:['all']
                     }, {
                         label: '不为空',
-                        value: 16
+                        value: 16,
+                        supportedSearchType:['all']
                     }],
                 }
             },
             methods: {
+                getField: function (fieldName) {
+                    for (var field of this.option) {
+                        if (field.prop === fieldName) return field;
+                    }
+                    return null;
+                },
+                getSearchType: function (fieldName) {
+                    var field = this.getField(fieldName);
+                    if (field) return field.searchType || field.type || 'text';
+                    else return 'text';
+                },
+                getruleOpratorDic: function (fieldName) {
+                    var searchType = this.getSearchType(fieldName)
+                    return this.ruleOpratorDic.asEnumerable().where(x => {
+                        for (i of x.supportedSearchType) {
+                            if (i === 'all' || i === searchType) return true;
+                        }
+                        return false;
+                    }).toArray();
+                },
                 addRule: function (group) {
                     group.rules.push({
                         field: null,
@@ -159,6 +221,10 @@
                         }
                     }
                 },
+                getDicData: function (fieldName) {
+                    var field = this.getField(fieldName);
+                    return field.dicData;
+                },
             },
             template: document.getElementById('search-rule-group').innerHTML
         });
@@ -177,7 +243,7 @@
         {
             name: 'SearchMenu',
             props: {
-                option: {},
+                option: [],
                 form: {},
             },
             data: function () {

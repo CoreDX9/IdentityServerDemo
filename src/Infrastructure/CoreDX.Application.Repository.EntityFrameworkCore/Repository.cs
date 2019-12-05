@@ -274,11 +274,17 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore
                     ,typeof(char)
                     ,typeof(string)
                     ,typeof(bool)
+                    ,typeof(DateTime)
+                    ,typeof(DateTimeOffset)
+                    //,typeof(Enum)
                     ,typeof(Guid)};
 
-                return type.IsDerivedFrom(typeof(Nullable<>))
-                    ? primitiveTypes.Contains(Nullable.GetUnderlyingType(type))
-                    : primitiveTypes.Contains(type);
+                var tmp =
+                    type.IsDerivedFrom(typeof(Nullable<>))
+                    ? Nullable.GetUnderlyingType(type)
+                    : type;
+
+                return tmp.IsEnum || primitiveTypes.Contains(tmp);
             }
         }
 
