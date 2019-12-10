@@ -734,7 +734,7 @@ namespace IdentityServer
                 app.UseStaticFiles(devStaticFileOptions);
             }
 
-            //注册开发环境的npm和bower资源
+            //注册开发环境的npm资源
             if (Environment.IsDevelopment())
             {
                 var npmContentTypeProvider = new FileExtensionContentTypeProvider();
@@ -747,17 +747,6 @@ namespace IdentityServer
                 };
 
                 app.UseStaticFiles(npmStaticFileOptions);
-
-                var bowerContentTypeProvider = new FileExtensionContentTypeProvider();
-                var bowerStaticFileOptions = new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Environment.ContentRootPath + "/bower_components"),
-                    RequestPath = "/bower",
-                    ServeUnknownFileTypes = false,
-                    ContentTypeProvider = bowerContentTypeProvider
-                };
-                
-                app.UseStaticFiles(bowerStaticFileOptions);
             }
 
             //注册静态文件到管道（wwwroot文件夹）

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DockerTargetOS>Windows</DockerTargetOS>
     <UserSecretsId>a8df754f-1b52-4a2e-ac66-ee03f1465195</UserSecretsId>
+    <LangVersion>8.0</LangVersion>
     <!--<RazorCompileOnBuild>false</RazorCompileOnBuild>
     <RazorCompileOnPublish>false</RazorCompileOnPublish>-->
   </PropertyGroup>
@@ -17,7 +18,7 @@
     </DotnetPublishFiles>
 
     <!--包含bootstrap文件-->
-    <_BootstrapFiles Include="bower_components/bootstrap/dist/**/*.*" />
+    <_BootstrapFiles Include="node_modules/bootstrap/dist/**/*.*" />
     <DotnetPublishFiles Include="@(_BootstrapFiles)">
       <DestinationRelativePath>wwwroot/lib/bootstrap/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
@@ -73,11 +74,10 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="BundlerMinifier.Core" Version="3.2.435" />
-    <PackageReference Include="FluentEmail.Razor" Version="2.7.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.0" />
-    <PackageReference Include="IdentityServer4" Version="3.0.2" />
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.0.2" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="3.0.2" />
+    <PackageReference Include="IdentityServer4" Version="3.1.0-preview.1.4" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.1.0-preview.1.4" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="3.1.0-preview.1.4" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="3.0.0" />
     <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.6.0" />
     <PackageReference Include="Localization.SqlLocalizer" Version="2.0.6" />
@@ -107,7 +107,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.24" />
@@ -120,7 +119,5 @@
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj" />
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="http://json.schemastore.org/bower" /></VisualStudio></ProjectExtensions>
 
 </Project>

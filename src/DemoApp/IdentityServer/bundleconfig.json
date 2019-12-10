@@ -33,7 +33,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery/jquery.min.js",
     "inputFiles": [
-      "bower_components/jquery/dist/jquery.min.js"
+      "node_modules/jquery/dist/jquery.min.js"
     ],
     "minify": {
       "enabled": false
@@ -42,7 +42,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery-validation/jquery.validate.min.js",
     "inputFiles": [
-      "bower_components/jquery-validation/dist/jquery.validate.min.js"
+      "node_modules/jquery-validation/dist/jquery.validate.min.js"
     ],
     "minify": {
       "enabled": false
@@ -51,7 +51,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery-validation/additional-methods.min.js",
     "inputFiles": [
-      "bower_components/jquery-validation/dist/additional-methods.min.js"
+      "node_modules/jquery-validation/dist/additional-methods.min.js"
     ],
     "minify": {
       "enabled": false
@@ -60,7 +60,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery-validation/localization/messages_zh.min.js",
     "inputFiles": [
-      "bower_components/jquery-validation/dist/localization/messages_zh.min.js"
+      "node_modules/jquery-validation/dist/localization/messages_zh.min.js"
     ],
     "minify": {
       "enabled": false
@@ -69,7 +69,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
     "inputFiles": [
-      "bower_components/jquery-validation-unobtrusive/src/jquery.validate.unobtrusive.js"
+      "node_modules/jquery-validation-unobtrusive/src/jquery.validate.unobtrusive.js"
     ]
   },
   {
@@ -123,7 +123,7 @@
   {
     "outputFileName": "wwwroot/lib/bootstrap-dropdown-hover/jquery.bootstrap-dropdown-hover.min.js",
     "inputFiles": [
-      "bower_components/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"
+      "node_modules/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"
     ],
     "minify": {
       "enabled": false
@@ -141,13 +141,13 @@
   {
     "outputFileName": "wwwroot/lib/jqGrid/css/ui.jqgrid-bootstrap.min.css",
     "inputFiles": [
-      "bower_components/jqGrid/css/ui.jqgrid-bootstrap.css"
+      "node_modules/jqGrid/css/ui.jqgrid-bootstrap.css"
     ]
   },
   {
     "outputFileName": "wwwroot/lib/jqGrid/js/jquery.jqGrid.min.js",
     "inputFiles": [
-      "bower_components/jqGrid/js/jquery.jqGrid.min.js"
+      "node_modules/jqGrid/js/jquery.jqGrid.min.js"
     ],
     "minify": {
       "enabled": false
@@ -156,7 +156,7 @@
   {
     "outputFileName": "wwwroot/lib/jqGrid/js/i18n/grid.locale-cn.min.js",
     "inputFiles": [
-      "bower_components/jqGrid/js/i18n/grid.locale-cn.js"
+      "node_modules/jqGrid/js/i18n/grid.locale-cn.js"
     ]
   },
   {
@@ -225,25 +225,7 @@
   {
     "outputFileName": "wwwroot/lib/jquery-slimscroll/jquery.slimscroll.min.js",
     "inputFiles": [
-      "bower_components/jquery-slimscroll/jquery.slimscroll.min.js"
-    ],
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFileName": "wwwroot/lib/Waves/waves.min.js",
-    "inputFiles": [
-      "bower_components/Waves/dist/waves.min.js"
-    ],
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFileName": "wwwroot/lib/Waves/waves.min.css",
-    "inputFiles": [
-      "bower_components/Waves/dist/waves.min.css"
+      "node_modules/jquery-slimscroll/jquery.slimscroll.min.js"
     ],
     "minify": {
       "enabled": false
