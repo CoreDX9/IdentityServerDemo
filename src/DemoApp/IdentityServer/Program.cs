@@ -67,6 +67,11 @@ namespace IdentityServer
             return host;
         }
 
+        public static IHostBuilder CreateHostBuilderP(string[] args)
+        {
+            return CreateHostBuilder(args);
+        }
+
 #if !DEBUG
         /// <summary>
         /// 配置Kestrel
