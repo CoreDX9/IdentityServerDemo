@@ -16,7 +16,7 @@ namespace IdentityServer
 {
     public class SeedData
     {
-        public static void EnsureSeedData(IServiceProvider serviceProvider)
+        public static async System.Threading.Tasks.Task EnsureSeedDataAsync(IServiceProvider serviceProvider)
         {
             Console.WriteLine("正在初始化Identity数据库...");
 
@@ -292,11 +292,11 @@ namespace IdentityServer
                     }
 
                     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-                    var admin = roleMgr.FindByNameAsync("admin").Result;
+                    var admin = await roleMgr.FindByNameAsync("admin");
                     if (admin == null)
                     {
                         admin = new ApplicationRole("admin");
-                        var result = roleMgr.CreateAsync(admin).Result;
+                        var result = await roleMgr.CreateAsync(admin);
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
@@ -308,11 +308,11 @@ namespace IdentityServer
                         Console.WriteLine("角色：admin 已经存在");
                     }
 
-                    var user = roleMgr.FindByNameAsync("user").Result;
+                    var user = await roleMgr.FindByNameAsync("user");
                     if (user == null)
                     {
                         user = new ApplicationRole("user");
-                        var result = roleMgr.CreateAsync(user).Result;
+                        var result = await roleMgr.CreateAsync(user);
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
@@ -324,12 +324,12 @@ namespace IdentityServer
                         Console.WriteLine("角色：user 已经存在");
                     }
 
-                    var vip = roleMgr.FindByNameAsync("vip").Result;
+                    var vip = await roleMgr.FindByNameAsync("vip");
                     if (vip == null)
                     {
                         vip = new ApplicationRole("vip");
                         vip.Parent = user;
-                        var result = roleMgr.CreateAsync(vip).Result;
+                        var result = await roleMgr.CreateAsync(vip);
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
@@ -342,7 +342,7 @@ namespace IdentityServer
                     }
 
                     var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var alice = userMgr.FindByNameAsync("alice").Result;
+                    var alice = await userMgr.FindByNameAsync("alice");
                     if (alice == null)
                     {
                         alice = new ApplicationUser()
@@ -350,13 +350,13 @@ namespace IdentityServer
                             UserName = "alice",
                             Email = "AliceSmith@email.com"
                         };
-                        var result = userMgr.CreateAsync(alice, "Pass123$").Result;
+                        var result = await userMgr.CreateAsync(alice, "Pass123$");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(alice, new Claim[]{
+                        result = await userMgr.AddClaimsAsync(alice, new Claim[]{
                             new Claim(JwtClaimTypes.Name, "Alice Smith"),
                             new Claim(JwtClaimTypes.GivenName, "Alice"),
                             new Claim(JwtClaimTypes.FamilyName, "Smith"),
@@ -364,14 +364,14 @@ namespace IdentityServer
                             new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
                             new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
                             new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json)
-                        }).Result;
+                        });
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
                         Console.WriteLine("已创建用户：alice；初始密码为：Pass123$");
 
-                        result = userMgr.AddToRoleAsync(alice, "vip").Result;
+                        result = await userMgr.AddToRoleAsync(alice, "vip");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
@@ -392,7 +392,7 @@ namespace IdentityServer
                         Console.WriteLine("用户：alice 已经存在");
                     }
 
-                    var bob = userMgr.FindByNameAsync("bob").Result;
+                    var bob = await userMgr.FindByNameAsync("bob");
                     if (bob == null)
                     {
                         bob = new ApplicationUser()
@@ -400,13 +400,13 @@ namespace IdentityServer
                             UserName = "bob",
                             Email = "BobSmith@email.com"
                         };
-                        var result = userMgr.CreateAsync(bob, "Pass123$").Result;
+                        var result = await userMgr.CreateAsync(bob, "Pass123$");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(bob, new Claim[]{
+                        result = await userMgr.AddClaimsAsync(bob, new Claim[]{
                         new Claim(JwtClaimTypes.Name, "Bob Smith"),
                         new Claim(JwtClaimTypes.GivenName, "Bob"),
                         new Claim(JwtClaimTypes.FamilyName, "Smith"),
@@ -415,14 +415,14 @@ namespace IdentityServer
                         new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
                         new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
                         new Claim("location", "somewhere")
-                    }).Result;
+                    });
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
                         Console.WriteLine("已创建用户：bob；初始密码为：Pass123$");
 
-                        result = userMgr.AddToRoleAsync(bob, "user").Result;
+                        result = await userMgr.AddToRoleAsync(bob, "user");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
@@ -443,7 +443,7 @@ namespace IdentityServer
                         Console.WriteLine("用户：bob 已经存在");
                     }
 
-                    var coredx = userMgr.FindByNameAsync("coredx").Result;
+                    var coredx = await userMgr.FindByNameAsync("coredx");
                     if (coredx == null)
                     {
                         coredx = new ApplicationUser()
@@ -451,13 +451,13 @@ namespace IdentityServer
                             UserName = "coredx",
                             Email = "coredx@email.com"
                         };
-                        var result = userMgr.CreateAsync(coredx, "Pass123$").Result;
+                        var result = await userMgr.CreateAsync(coredx, "Pass123$");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
 
-                        result = userMgr.AddClaimsAsync(bob, new Claim[]{
+                        result = await userMgr.AddClaimsAsync(bob, new Claim[]{
                             new Claim(JwtClaimTypes.Name, "coredx"),
                             new Claim(JwtClaimTypes.GivenName, "coredx"),
                             new Claim(JwtClaimTypes.FamilyName, "coredx"),
@@ -466,14 +466,14 @@ namespace IdentityServer
                             new Claim(JwtClaimTypes.WebSite, "http://coredx.com"),
                             new Claim(JwtClaimTypes.Address, @"{ 'street_address': '(づ｡◕ᴗᴗ◕｡)づ', 'locality': 'Kunming', 'postal_code': 650000, 'country': 'China' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
                             new Claim("location", "!!!∑(ﾟДﾟノ)ノ")
-                        }).Result;
+                        });
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);
                         }
                         Console.WriteLine("已创建用户：coredx；初始密码为：Pass123$");
 
-                        result = userMgr.AddToRoleAsync(coredx, "admin").Result;
+                        result = await userMgr.AddToRoleAsync(coredx, "admin");
                         if (!result.Succeeded)
                         {
                             throw new Exception(result.Errors.First().Description);

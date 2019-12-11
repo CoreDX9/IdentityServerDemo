@@ -64,7 +64,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Application.Reposito
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Application.Command", "src\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj", "{58066945-E4ED-4834-9ACA-5E27F85D9C2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdTest", "src\DemoApp\IdTest\IdTest.csproj", "{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdTest", "src\DemoApp\IdTest\IdTest.csproj", "{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServerGui", "src\DemoApp\IdentityServerGui\IdentityServerGui.csproj", "{FEEE4E1B-001B-470E-8C90-76F1A3DCD518}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,6 +178,10 @@ Global
 		{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEEE4E1B-001B-470E-8C90-76F1A3DCD518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEEE4E1B-001B-470E-8C90-76F1A3DCD518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEEE4E1B-001B-470E-8C90-76F1A3DCD518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEEE4E1B-001B-470E-8C90-76F1A3DCD518}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -212,6 +218,7 @@ Global
 		{C336774A-A9D6-4752-BFA7-6F63FBB168B4} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
 		{58066945-E4ED-4834-9ACA-5E27F85D9C2C} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
 		{7CAF29AC-4EBA-421C-9CB6-3979ABC99A0E} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
+		{FEEE4E1B-001B-470E-8C90-76F1A3DCD518} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {981D0405-3008-4145-B708-5F559C811D64}

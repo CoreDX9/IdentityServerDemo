@@ -48,7 +48,7 @@ namespace IdentityServer
             #endregion
 
             var host = CreateHostBuilder(args).Build();
-            SeedData.EnsureSeedData(host.Services);//初始化数据库
+            await SeedData.EnsureSeedDataAsync(host.Services);//初始化数据库
             await host.RunAsync();
         }
 
