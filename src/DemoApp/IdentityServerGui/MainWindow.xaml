@@ -5,7 +5,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IdentityServerGui"
-        mc:Ignorable="d"
         Title="{ Binding Settings.AppName}" Height="320" Width="480" MinHeight="192" MinWidth="256"
         Closing="MyMainWindow_Closing" Closed="MyMainWindow_Closed">
     <Grid>
