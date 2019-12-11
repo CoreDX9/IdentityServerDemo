@@ -117,6 +117,8 @@ namespace IdentityServerGui
             txbHostState.Text = "正在停止网站";
             MyData.CanStopHost = false;
             await StopHostAsync();
+            Host?.Dispose();
+            Host = null;
             txbHostState.Text = "网站未运行（已停止）";
         }
 
