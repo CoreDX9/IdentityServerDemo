@@ -45,9 +45,7 @@ namespace IdentityServerGui
             services.AddTransient(service =>
             {
                 var host = Program.CreateHostBuilderP(Environment.GetCommandLineArgs())
-                //.UseContentRoot(typeof(Program).Assembly.Location)
                 .Build();
-                //SeedData.EnsureSeedDataAsync(host.Services);//初始化数据库，在这里调用不知道为什么会卡死在RoleManage<TRole>.FindByNameAsync(string).Result上
                 return host;
             });
             }
