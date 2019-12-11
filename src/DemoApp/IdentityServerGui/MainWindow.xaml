@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:IdentityServerGui"
         mc:Ignorable="d"
         Title="{ Binding Settings.AppName}" Height="320" Width="480" MinHeight="192" MinWidth="256"
-        Closing="MyMainWindow_ClosingAsync" Closed="MyMainWindow_Closed">
+        Closing="MyMainWindow_Closing" Closed="MyMainWindow_Closed">
     <Grid>
         <Button x:Name="btnStartWebHost" Content="启动网站" Margin="10,10,0,0" HorizontalAlignment="Left" Width="52" Height="19" VerticalAlignment="Top" Click="btnStartWebHost_ClickAsync" IsEnabled="{Binding CanStartHost}"/>
         <Button x:Name="btnStopWebHost" Content="停止网站" Margin="0,10,10,0" HorizontalAlignment="Right" Width="52" Height="19" VerticalAlignment="Top" Click="btnStopWebHost_ClickAsync" IsEnabled="{Binding CanStopHost}"/>

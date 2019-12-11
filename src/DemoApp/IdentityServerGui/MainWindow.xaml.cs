@@ -122,13 +122,12 @@ namespace IdentityServerGui
             txbHostState.Text = "网站未运行（已停止）";
         }
 
-        private async void MyMainWindow_ClosingAsync(object sender, CancelEventArgs e)
+        private void MyMainWindow_Closing(object sender, CancelEventArgs e)
         {
-            txbHostState.Text = "正在停止网站";
             if (MyData.CanStopHost)
             {
-                await StopHostAsync();
-                txbHostState.Text = "网站未运行（已停止）";
+                MessageBox.Show(this, "请先停止网站！");
+                e.Cancel = true;
             }
         }
 
