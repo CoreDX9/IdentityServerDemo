@@ -139,7 +139,7 @@ namespace IdentityServerGui
 
                 Hide();
                 tbiNotify.Visibility = Visibility.Visible;
-                tbiNotify.ShowBalloonTip(MyData.Settings.AppName, $"{MyData.HostState}。如要关闭应用请先停止网站。双击通知图标显示主窗口。", tbiNotify.Icon);
+                tbiNotify.ShowBalloonTip(MyData.Settings.AppName, $"{MyData.HostState}。如要关闭应用请先停止网站。双击通知图标显示主窗口。", tbiNotify.Icon, true);
             }
         }
 
