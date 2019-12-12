@@ -54,7 +54,10 @@ namespace IdentityServerGui
                 using var _ = Host;
                 using var stopTask = Host?.StopAsync();
 
-                await stopTask;
+                if(stopTask != null)
+                {
+                    await stopTask;
+                }
             }
             finally
             {
