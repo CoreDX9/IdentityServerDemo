@@ -4,7 +4,20 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Icons\app.ico" />
+    <None Remove="Icons\Error.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\app.ico">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Resource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.0.5">
@@ -19,7 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\NotifyIconWpf\NotifyIconWpf.csproj" />
     <ProjectReference Include="..\IdentityServer\IdentityServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\Error.ico" />
   </ItemGroup>
 
   <ItemGroup>

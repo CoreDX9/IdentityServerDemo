@@ -54,7 +54,7 @@ namespace IdentityServerGui
         {
             MessageBox.Show("捕获到未处理异常：" + e.Exception.Message);
             e.Handled = true;
-            Environment.Exit(-1);
+            Shutdown(-1);
         }
     }
 }

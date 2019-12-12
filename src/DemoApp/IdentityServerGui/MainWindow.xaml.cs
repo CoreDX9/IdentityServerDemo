@@ -17,6 +17,7 @@ using IdentityServer;
 using Microsoft.Extensions.Hosting;
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using IdentityServerGui.Commands;
 
 namespace IdentityServerGui
 {
@@ -26,13 +27,14 @@ namespace IdentityServerGui
     public partial class MainWindow : Window
     {
         private IHost Host { get; set; }
-        private Task HostTask { get; set; }
+        //private Task HostTask { get; set; }
 
         public class Data : INotifyPropertyChanged
         {
             public AppSettings Settings { get; set; }
             public bool CanStartHost { get; set; }
             public bool CanStopHost { get; set; }
+            public string HostState { get; set; }
 
             public event PropertyChangedEventHandler PropertyChanged;
         }
@@ -41,25 +43,30 @@ namespace IdentityServerGui
 
         private void UpdateHostState()
         {
-            MyData.CanStartHost = HostTask == null;
-            MyData.CanStopHost = HostTask != null;
+            MyData.CanStartHost = Host == null;
+            MyData.CanStopHost = Host != null;
         }
 
-        private async Task StopHostAsync()
+        private async Task TryStopHostAsync()
         {
-            using (Host)
-            using (var stopTask = Host.StopAsync())
+            try
             {
+                using var _ = Host;
+                using var stopTask = Host?.StopAsync();
+
                 await stopTask;
-                HostTask = null;
             }
-            UpdateHostState();
+            finally
+            {
+                Host = null;
+                UpdateHostState();
+            }
+
         }
 
         public MainWindow(IOptions<AppSettings> settings)
         {
             InitializeComponent();
-            txbHostState.Text = "网站未运行";
 
             Console.SetOut(new TextBoxWriter(this, txtConsoleOut));
 
@@ -67,42 +74,37 @@ namespace IdentityServerGui
             {
                 Settings = settings.Value,
                 CanStartHost = true,
-                CanStopHost = false
+                CanStopHost = false,
+                HostState = "网站未运行"
             };
-            MyMainWindow.DataContext = MyData;
+            winMainWindow.DataContext = MyData;
+
+            tbiNotify.DoubleClickCommand = new ShowMainWindowCommand(this, tbiNotify);
+            tbiNotify.DoubleClickCommandParameter = null;
         }
 
         private async void btnStartWebHost_ClickAsync(object sender, RoutedEventArgs e)
         {
             MyData.CanStartHost = false;
-            txbHostState.Text = "正在启动网站";
+            MyData.HostState = "正在启动网站";
             txtConsoleOut.Clear();
 
             await Task.Run(async () => {
-                Host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
+                var host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
 
                 try
                 {
-                    await SeedData.EnsureSeedDataAsync(Host.Services);
-                    HostTask = Host.StartAsync();
-                    await HostTask;
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        txbHostState.Text = "网站运行中";
-                    }, System.Windows.Threading.DispatcherPriority.Normal);
+                    await SeedData.EnsureSeedDataAsync(host.Services);
+                    await host.StartAsync();
+                    Host = host;
+                    MyData.HostState = "网站运行中";
                 }
                 catch(Exception e)
                 {
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        txbHostState.Text = "正在停止网站";
-                    }, System.Windows.Threading.DispatcherPriority.Normal);
-                    HostTask?.Dispose();
-                    HostTask = null;
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        txbHostState.Text = "网站未运行（启动失败）";
-                    }, System.Windows.Threading.DispatcherPriority.Normal);
+                    MyData.HostState = "正在停止网站";
+                    host?.Dispose();
+                    await TryStopHostAsync();
+                    MyData.HostState = "网站未运行（启动失败）";
                     MessageBox.Show("启动网站时发生错误：" + e.Message);
                 }
                 finally
@@ -114,26 +116,29 @@ namespace IdentityServerGui
 
         private async void btnStopWebHost_ClickAsync(object sender, RoutedEventArgs e)
         {
-            txbHostState.Text = "正在停止网站";
+            MyData.HostState = "正在停止网站";
             MyData.CanStopHost = false;
-            await StopHostAsync();
-            Host?.Dispose();
-            Host = null;
-            txbHostState.Text = "网站未运行（已停止）";
+            await TryStopHostAsync();
+            MyData.HostState = "网站未运行（已停止）";
+
+            UpdateHostState();
         }
 
         private void MyMainWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (MyData.CanStopHost)
+            if (MyData.CanStopHost || !MyData.CanStartHost)
             {
-                MessageBox.Show(this, "请先停止网站！");
                 e.Cancel = true;
+
+                Hide();
+                tbiNotify.Visibility = Visibility.Visible;
+                tbiNotify.ShowBalloonTip(MyData.Settings.AppName, $"{MyData.HostState}。如要关闭应用请先停止网站。双击通知图标显示主窗口。", tbiNotify.Icon);
             }
         }
 
         private void MyMainWindow_Closed(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            Application.Current.Shutdown(0);
         }
     }
 }

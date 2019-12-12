@@ -5,6 +5,7 @@
     <DockerTargetOS>Windows</DockerTargetOS>
     <UserSecretsId>a8df754f-1b52-4a2e-ac66-ee03f1465195</UserSecretsId>
     <LangVersion>8.0</LangVersion>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <!--<RazorCompileOnBuild>false</RazorCompileOnBuild>
     <RazorCompileOnPublish>false</RazorCompileOnPublish>-->
   </PropertyGroup>
