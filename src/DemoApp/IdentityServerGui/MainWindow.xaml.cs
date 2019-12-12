@@ -59,6 +59,10 @@ namespace IdentityServerGui
                     await stopTask;
                 }
             }
+            catch(OperationCanceledException e)
+            {
+                //SignalR有连接的时候停止网站会报这个错，不知道为什么，不管。。。
+            }
             finally
             {
                 Host = null;
