@@ -43,7 +43,7 @@ namespace IdentityServerGui
         public override Task WriteLineAsync(string value)
         {
             Window.Dispatcher.InvokeAsync(() => {
-                TextBox.AppendText(value);
+                TextBox.AppendText(value + Environment.NewLine);
                 TextBox.ScrollToEnd();
             }, System.Windows.Threading.DispatcherPriority.Normal);
             return Task.CompletedTask;
