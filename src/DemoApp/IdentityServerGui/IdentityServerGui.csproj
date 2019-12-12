@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <None Remove="Icons\app.ico" />
-    <None Remove="Icons\Error.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,10 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\NotifyIconWpf\NotifyIconWpf.csproj" />
     <ProjectReference Include="..\IdentityServer\IdentityServer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Icons\Error.ico" />
   </ItemGroup>
 
   <ItemGroup>

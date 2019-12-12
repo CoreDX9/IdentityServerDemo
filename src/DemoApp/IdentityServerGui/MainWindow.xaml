@@ -15,6 +15,6 @@
         <Button x:Name="btnStopWebHost" Content="停止网站" Margin="0,10,10,0" HorizontalAlignment="Right" Width="52" Height="19" VerticalAlignment="Top" Click="btnStopWebHost_ClickAsync" IsEnabled="{Binding CanStopHost}"/>
         <TextBox x:Name="txtConsoleOut" Margin="10,34,10,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBlock x:Name="txbHostState" Text="{Binding HostState}" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <tb:TaskbarIcon x:Name="tbiNotify" IconSource="/Icons/Error.ico" Visibility="Hidden" ToolTipText="{Binding HostState}" />
+        <tb:TaskbarIcon x:Name="tbiNotify" IconSource="/Icons/app.ico" Visibility="Hidden" ToolTipText="{Binding HostState}" />
     </Grid>
 </Window>
