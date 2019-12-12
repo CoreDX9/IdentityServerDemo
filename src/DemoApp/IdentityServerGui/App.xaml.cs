@@ -11,6 +11,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+#if !DEBUG
+using System.Diagnostics;
+#endif
+
 namespace IdentityServerGui
 {
     /// <summary>
@@ -23,6 +27,13 @@ namespace IdentityServerGui
 
         protected override void OnStartup(StartupEventArgs e)
         {
+#if !DEBUG
+            //通过特殊手段运行应用可能导致工作目录与程序文件所在目录不一致，需要调整，否则配置文件和其他数据无法加载（仅限发布模式，调试模式修改工作目录也可能导致配置和其他数据无法加载）
+            var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+            var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+            Directory.SetCurrentDirectory(pathToContentRoot);
+#endif
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("guiAppsettings.json", optional: false, reloadOnChange: true);
