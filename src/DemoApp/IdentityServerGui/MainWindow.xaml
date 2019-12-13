@@ -8,13 +8,60 @@
         mc:Ignorable="d"
         Icon="/Icons/app.ico"
         
-        Title="{ Binding Settings.AppName}" Height="320" Width="480" MinHeight="192" MinWidth="256"
+        Title="{ Binding Settings.AppName}" Height="322" Width="480" MinHeight="192" MinWidth="256"
         Closing="MyMainWindow_Closing" Closed="MyMainWindow_Closed">
     <Grid>
         <Button x:Name="btnStartWebHost" Content="启动网站" Margin="10,10,0,0" HorizontalAlignment="Left" Width="52" Height="19" VerticalAlignment="Top" Click="btnStartWebHost_ClickAsync" IsEnabled="{Binding CanStartHost}"/>
         <Button x:Name="btnStopWebHost" Content="停止网站" Margin="0,10,10,0" HorizontalAlignment="Right" Width="52" Height="19" VerticalAlignment="Top" Click="btnStopWebHost_ClickAsync" IsEnabled="{Binding CanStopHost}"/>
-        <TextBox x:Name="txtConsoleOut" Margin="10,34,10,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
+        <TextBox x:Name="txtConsoleOut" Margin="10,34,10,24" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True"/>
         <TextBlock x:Name="txbHostState" Text="{Binding HostState}" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <tb:TaskbarIcon x:Name="tbiNotify" IconSource="/Icons/app.ico" Visibility="Hidden" ToolTipText="{Binding HostState}" />
+        <StatusBar VerticalAlignment="Bottom" Height="19">
+            <StatusBarItem>
+                <TextBlock Text="CPU: "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding CpuCounter, StringFormat={}{0:F1}}"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="%"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="  |  "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="内存: "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding RamCounter, StringFormat= {}{0:N2}}"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text=" MB"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="  |  "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="系统发送: "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding NetSend, StringFormat={}{0:N2}}"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Kbps"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="  |  "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="系统接收: "></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding NetRecv, StringFormat= {}{0:N2}}"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text=" Kbps"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

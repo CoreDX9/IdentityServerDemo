@@ -53,6 +53,7 @@ namespace IdentityServerGui
         {
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
             services.AddTransient<MainWindow>();
+            services.AddTransient<PerformanceMonitor>();
             services.AddTransient(service =>
             {
                 var host = Program.CreateHostBuilderP(Environment.GetCommandLineArgs())

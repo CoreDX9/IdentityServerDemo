@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServerGui.Commands;
+using System.Runtime.InteropServices;
 
 namespace IdentityServerGui
 {
@@ -26,8 +27,31 @@ namespace IdentityServerGui
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region 内存回收
+        [DllImport("kernel32.dll", EntryPoint = "SetProcessWorkingSetSize")]
+        private static extern int SetProcessWorkingSetSize(IntPtr process, int minSize, int maxSize);
+        /// <summary>
+        /// 释放内存
+        /// </summary>
+        private static void ClearMemory()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+            }
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            ClearMemory();
+        }
+
+        #endregion
+
         private IHost Host { get; set; }
-        //private Task HostTask { get; set; }
+        private PerformanceMonitor PerformanceMonitor { get; set; }
 
         public class Data : INotifyPropertyChanged
         {
@@ -35,6 +59,10 @@ namespace IdentityServerGui
             public bool CanStartHost { get; set; }
             public bool CanStopHost { get; set; }
             public string HostState { get; set; }
+            public float CpuCounter { get; set; }
+            public float RamCounter { get; set; }
+            public float NetSend { get; set; }
+            public float NetRecv { get; set; }
 
             public event PropertyChangedEventHandler PropertyChanged;
         }
@@ -71,9 +99,11 @@ namespace IdentityServerGui
 
         }
 
-        public MainWindow(IOptions<AppSettings> settings)
+        public MainWindow(IOptions<AppSettings> settings, PerformanceMonitor performanceMonitor)
         {
             InitializeComponent();
+
+            PerformanceMonitor = performanceMonitor;
 
             Console.SetOut(new TextBoxWriter(this, txtConsoleOut));
 
@@ -85,6 +115,7 @@ namespace IdentityServerGui
                 HostState = "网站未运行"
             };
             winMainWindow.DataContext = MyData;
+            PerformanceMonitor.Start(MyData);
 
             tbiNotify.DoubleClickCommand = new ShowMainWindowCommand(this, tbiNotify);
             tbiNotify.DoubleClickCommandParameter = null;
@@ -113,6 +144,8 @@ namespace IdentityServerGui
                     await TryStopHostAsync();
                     MyData.HostState = "网站未运行（启动失败）";
                     MessageBox.Show("启动网站时发生错误：" + e.Message);
+
+                    ClearMemory();
                 }
                 finally
                 {
@@ -129,6 +162,8 @@ namespace IdentityServerGui
             MyData.HostState = "网站未运行（已停止）";
 
             UpdateHostState();
+
+            ClearMemory();
         }
 
         private void MyMainWindow_Closing(object sender, CancelEventArgs e)
@@ -145,6 +180,7 @@ namespace IdentityServerGui
 
         private void MyMainWindow_Closed(object sender, EventArgs e)
         {
+            PerformanceMonitor.Stop();
             Application.Current.Shutdown(0);
         }
     }
