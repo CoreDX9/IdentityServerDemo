@@ -121,4 +121,8 @@
     <ProjectReference Include="..\..\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="log\" />
+  </ItemGroup>
+
 </Project>

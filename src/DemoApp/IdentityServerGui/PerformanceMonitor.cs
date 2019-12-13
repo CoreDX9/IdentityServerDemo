@@ -51,15 +51,16 @@ namespace IdentityServerGui
                     netRecvCounter.Close();
                     netSendCounter.Close();
                 }
-            }, tokenSource.Token);
+            });
         }
 
-        public void Stop()
+        public async void Stop()
         {
             using(task)
             using (tokenSource)
             {
                 tokenSource.Cancel();
+                await task;
             }
             task = null;
             tokenSource = null;

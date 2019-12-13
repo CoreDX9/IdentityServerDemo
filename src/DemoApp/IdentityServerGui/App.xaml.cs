@@ -60,7 +60,7 @@ namespace IdentityServerGui
                 .Build();
                 return host;
             });
-            }
+        }
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
