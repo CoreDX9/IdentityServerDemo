@@ -13,7 +13,6 @@ using CoreDX.Domain.Core.Event;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Model.Command;
 using CoreDX.Domain.Model.Event;
-using Extensions.Logging.File;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using IdentityServer.CustomMiddlewares;
@@ -526,7 +525,7 @@ namespace IdentityServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -545,8 +544,6 @@ namespace IdentityServer
                     await context.Response.WriteAsync("</tbody></table>");
                 }));
             }
-            //添加文件日志
-            loggerFactory.AddFile(Configuration.GetSection("FileLogging"));
 
             //配置FluentValidation的本地化
             app.ConfigLocalizationFluentValidation();

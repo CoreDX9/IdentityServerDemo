@@ -108,6 +108,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.24" />
@@ -118,7 +119,6 @@
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj" />
   </ItemGroup>
 
   <ItemGroup>

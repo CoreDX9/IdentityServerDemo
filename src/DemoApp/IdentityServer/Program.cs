@@ -1,5 +1,4 @@
 ﻿#if !DEBUG
-using System.IO;
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Configuration;
@@ -7,10 +6,13 @@ using System.Diagnostics;
 #endif
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using NLog.Web;
+using NLog;
 
 namespace IdentityServer
 {
@@ -55,6 +57,19 @@ namespace IdentityServer
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             var host = Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostContext, logging) =>
+                {
+                    var nlogConfig = string.Empty;
+                    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\nlog.{hostContext.HostingEnvironment.EnvironmentName}.config";
+                    nlogConfig = File.Exists(path)
+                        ? path
+                        : $@"{hostContext.HostingEnvironment.ContentRootPath}\nlog.config";
+
+                    var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
+                    configuration.Variables.Add("rootPath", new NLog.Layouts.SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));
+                    logging.AddNLog(configuration);
+                })
+                .UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true })
                 .UseWindowsService()//如果将应用安装为Windows服务，会自动以服务方式运行，否则继续以控制台方式运行
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>E:\Data_of_Rui\Documents\source\repos\IdentityServerDemo\src\WebAPI\WebAPI.xml</DocumentationFile>
+    <DocumentationFile>E:\Data_of_Rui\Documents\source\repos\IdentityServerDemo\src\DemoApp\WebAPI\WebAPI.xml</DocumentationFile>
     <NoWarn>1701;1702;1998;1591</NoWarn>
   </PropertyGroup>
 
