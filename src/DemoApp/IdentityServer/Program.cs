@@ -60,10 +60,10 @@ namespace IdentityServer
                 .ConfigureLogging((hostContext, logging) =>
                 {
                     var nlogConfig = string.Empty;
-                    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\nlog.{hostContext.HostingEnvironment.EnvironmentName}.config";
+                    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
                     nlogConfig = File.Exists(path)
                         ? path
-                        : $@"{hostContext.HostingEnvironment.ContentRootPath}\nlog.config";
+                        : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
 
                     var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
                     configuration.Variables.Add("rootPath", new NLog.Layouts.SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));

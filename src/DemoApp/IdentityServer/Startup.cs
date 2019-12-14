@@ -76,16 +76,16 @@ namespace IdentityServer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //注入视图渲染服务
+            //注册视图渲染服务
             services.AddTransient<RazorViewToStringRenderer>();
 
-            //注入AutoMapper服务
+            //注册AutoMapper服务
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //注入响应压缩服务（gzip）
+            //注册响应压缩服务（gzip）
             services.AddResponseCompression();
 
-            //注入SignalR服务
+            //注册SignalR服务
             var signalRServer = services.AddSignalR();
             //在没有Redis的机器上运行项目设置false
             if (Configuration.GetValue("UseRedisForSignalR", false))
@@ -125,7 +125,7 @@ namespace IdentityServer
                 });
             }
 
-            //注入应用数据保护服务
+            //注册应用数据保护服务
             services.AddDataProtection()
                 .SetApplicationName("IdentityServerDemo")
                 .PersistKeysToFileSystem(new DirectoryInfo($@"{Environment.ContentRootPath}\App_Data\DataProtectionKey"));
@@ -133,7 +133,7 @@ namespace IdentityServer
             //在没有RabbitMQ的机器上运行项目设置false
             if (Configuration.GetValue("UseEntityHistory", false))
             {
-                //注入实体历史记录服务，供ApplicationIdentityDbContext用
+                //注册实体历史记录服务，供ApplicationIdentityDbContext用
                 //services.AddEntityHistoryRecorder(Configuration);
             }
 
@@ -141,7 +141,7 @@ namespace IdentityServer
             var connectionString = string.Empty;
             var migrationsAssemblyName = string.Empty;
             InMemoryDatabaseRoot inMemoryDatabaseRoot = null;
-            //注入EF上下文
+            //注册EF上下文
             if (useInMemoryDatabase)
             {
                 inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
@@ -212,7 +212,7 @@ namespace IdentityServer
             //    });
             //});
 
-            //注入Identity服务（使用EF存储，在EF上下文之后注入）
+            //注册Identity服务（使用EF存储，在EF上下文之后注册）
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
                     // Password settings.
@@ -244,7 +244,7 @@ namespace IdentityServer
                 .AddRoles<ApplicationRole>()
                 .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-                //注入Identity隐私数据保护服务（启用隐私数据保护后必须注入，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
+                //注册Identity隐私数据保护服务（启用隐私数据保护后必须注册，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
                 .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddDefaultTokenProviders();
 
@@ -277,16 +277,16 @@ namespace IdentityServer
                     ServiceLifetime.Singleton);
             }
 
-            //注入修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）（2.0.6开始此bug已修复）
+            //注册修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）（2.0.6开始此bug已修复）
             services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
-            //注入基于Sql数据的本地化服务，需要先注入LocalizationModelContext
+            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
             services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
-            //注入请求处理器信息获取服务
+            //注册请求处理器信息获取服务
             services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
-            //注入Http上下文访问服务
+            //注册Http上下文访问服务
             services.AddHttpContextAccessor();
-            //注入MVC相关服务
-            services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注入获取任何已经注册到服务容器的服务
+            //注册MVC相关服务
+            services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注册获取任何已经注册到服务容器的服务
                 {
                     //options.Filters.Add<MyAsyncPageFilter>();
                     //options.Filters.Add<MyAuthorizeAttribute>();
@@ -296,20 +296,20 @@ namespace IdentityServer
                 .AddNewtonsoftJson()
                 //启用Razor视图的动态编译
                 .AddRazorRuntimeCompilation()
-                //注入FluentValidation服务
+                //注册FluentValidation服务
                 .AddFluentValidation(fv =>
                 {
                     fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true;
                     fv.ImplicitlyValidateChildProperties = true;
                 })
-                //注入视图本地化服务
+                //注册视图本地化服务
                 .AddViewLocalization()
-                //注入数据注解本地化服务
+                //注册数据注解本地化服务
                 .AddDataAnnotationsLocalization()
                 //设定兼容性
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            //注入FluentValidation验证器
+            //注册FluentValidation验证器
             services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
 
             //AssemblyScanner.FindValidatorsInAssemblyContaining<Startup>().ForEach(pair => {
@@ -334,7 +334,7 @@ namespace IdentityServer
                     options.SupportedUICultures = supportedCultures;
                 });
 
-            //注入电子邮件发送服务
+            //注册电子邮件发送服务
             services.AddScoped<IEmailSender, EmailSender>();
 
             //结合EFCore生成IdentityServer4数据库迁移命令详情见Repository项目说明文档
@@ -342,7 +342,7 @@ namespace IdentityServer
             //添加IdentityServer4对EFCore数据库的支持
             //但是这里需要初始化数据 默认生成的数据库中是没有配置数据
 
-            //注入IdentityServer4服务
+            //注册IdentityServer4服务
             var id4 = services.AddIdentityServer(options =>
                 {
                     //活动事件 允许配置是否应该将哪些事件提交给注册的事件接收器
@@ -401,12 +401,12 @@ namespace IdentityServer
                         CorsExpiration = new TimeSpan(1, 0, 0) //设置从资源存储的跨域请求数据的缓存时间
                     };
 
-                    //IdentityServer支持一些端点的CORS。底层CORS实现是从ASP.NET Core提供的，因此它会自动注册在依赖注入系统中
+                    //IdentityServer支持一些端点的CORS。底层CORS实现是从ASP.NET Core提供的，因此它会自动注册在依赖注册系统中
                     //options.Cors = new CorsOptions
                     //{
                     //    CorsPaths = { "/" }, //支持CORS的IdentityServer中的端点。默认为发现，用户信息，令牌和撤销终结点
                     //    CorsPolicyName =
-                    //        "default", //【必备】将CORS请求评估为IdentityServer的CORS策略的名称（默认为"IdentityServer4"）。处理这个问题的策略提供者是ICorsPolicyService在依赖注入系统中注册的。如果您想定制允许连接的一组CORS原点，则建议您提供一个自定义的实现ICorsPolicyService
+                    //        "default", //【必备】将CORS请求评估为IdentityServer的CORS策略的名称（默认为"IdentityServer4"）。处理这个问题的策略提供者是ICorsPolicyService在依赖注册系统中注册的。如果您想定制允许连接的一组CORS原点，则建议您提供一个自定义的实现ICorsPolicyService
                     //    PreflightCacheDuration =
                     //        new TimeSpan(1, 0, 0) //可为空的<TimeSpan>，指示要在预检Access-Control-Max-Age响应标题中使用的值。默认为空，表示在响应中没有设置缓存头
                     //};
@@ -453,7 +453,7 @@ namespace IdentityServer
                     });
             }
 
-            //注入身份验证服务
+            //注册身份验证服务
             services.AddAuthentication()
                 .AddOpenIdConnect("oidc", "OpenID Connect", options =>
                 {
@@ -468,7 +468,7 @@ namespace IdentityServer
                     };
                 });
 
-            //注入跨域访问服务
+            //注册跨域访问服务
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
                 {
@@ -477,13 +477,13 @@ namespace IdentityServer
                         .AllowAnyHeader();
                 }));
 
-            //注入反CSRF服务并配置请求头名称
+            //注册反CSRF服务并配置请求头名称
             services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 
-            //注入CSP（内容安全策略）服务
+            //注册CSP（内容安全策略）服务
             services.AddCsp();
 
-            //注入Hsts（传输安全）服务
+            //注册Hsts（传输安全）服务
             services.AddHsts(options =>
             {
                 options.Preload = true;
@@ -498,7 +498,7 @@ namespace IdentityServer
             //    options.HttpsPort = 5001;
             //});
 
-            //注入开发环境文件夹浏览服务
+            //注册开发环境文件夹浏览服务
             if (Environment.IsDevelopment())
             {
                 services.AddDirectoryBrowser();
@@ -520,7 +520,7 @@ namespace IdentityServer
 
             #endregion
 
-            //注入（工厂方式激活的）自定义中间件服务
+            //注册（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
         }
 
