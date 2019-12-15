@@ -265,3 +265,4 @@ src/DemoApp/IdentityServer/bower_components
 /.publish
 /.svn
 src/DemoApp/IdentityServer/wwwroot/lib
+/src/DemoApp/IdentityServer/.local-chromium/Win64-706915/chrome-win

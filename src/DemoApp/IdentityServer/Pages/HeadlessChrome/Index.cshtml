@@ -1,0 +1,62 @@
+﻿@page
+@using PuppeteerSharp
+@inject PuppeteerSharp.Browser browser
+@{
+    ViewData["Title"] = "Headless Chrome";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+        var type = typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions);
+        var types = type.Assembly.GetTypes().Select(x => x.FullName);
+
+        ViewBag.Types = types;
+    }
+
+    public async Task<IActionResult> OnGetScreenshotPageAsync(string url)
+    {
+        using (var page = await browser.NewPageAsync())
+        {
+            await page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 1600,
+                Height = 900
+            });
+            await page.GoToAsync(url);
+            var imgdata = await page.ScreenshotBase64Async(new ScreenshotOptions() { Type = ScreenshotType.Png, FullPage = true });
+
+            return Content($@"data:image/png;base64,{imgdata}");
+        }
+    }
+}
+
+<h2>Headless Chrome</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <label>Input Url : </label>
+        <input type="text" id="url" value="https://www.baidu.com/" />
+        <button id="run" type="button">Screenshot</button>
+        <div><img style="width: 100%" id="img" src=""></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#run').on('click',
+                function () {
+                    $.ajax({
+                        url: '/HeadlessChrome/Index?handler=screenshotPage&url=' + encodeURIComponent($("#url").val()),
+                        success: function (res) {
+                            $('#img').attr('src', res);
+                        }
+                    });
+                });
+        });
+    </script>
+}

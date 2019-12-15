@@ -46,6 +46,7 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using CoreDX.Domain.Model.Repository;
 using CoreDX.Application.Repository.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -522,6 +523,19 @@ namespace IdentityServer
 
             //注册（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
+
+            //注册无界面chrome服务
+            services.AddSingleton(provider =>
+            {
+                new PuppeteerSharp.BrowserFetcher(options: new PuppeteerSharp.BrowserFetcherOptions() { Path = $@"{Environment.ContentRootPath}\.local-chromium" })
+                .DownloadAsync(PuppeteerSharp.BrowserFetcher.DefaultRevision).Wait();
+                var browserTask = PuppeteerSharp.Puppeteer.LaunchAsync(new PuppeteerSharp.LaunchOptions
+                {
+                    Headless = true
+                });
+                browserTask.Wait();
+                return browserTask.Result;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
