@@ -51,6 +51,10 @@
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Manage" asp-controller="Home" asp-action="Index"><localize>Manager Home</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Users/Index"><localize>User Manager</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Roles/Index"><localize>Role Manager</localize></a></li>
+                                <environment include="Development">
+                                    <div class="dropdown-divider"></div>
+                                    <li class="nav-item"><a class="nav-link text-dark" href="/allservices"><localize>Services List</localize></a></li>
+                                </environment>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">

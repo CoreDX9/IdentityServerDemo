@@ -27,6 +27,7 @@
             });
             await page.GoToAsync(url);
             var imgdata = await page.ScreenshotBase64Async(new ScreenshotOptions() { Type = ScreenshotType.Png, FullPage = true });
+            await page.CloseAsync();
 
             return Content($@"data:image/png;base64,{imgdata}");
         }
@@ -38,7 +39,7 @@
 <div class="row">
     <div class="col-md-12">
         <label>Input Url : </label>
-        <input type="text" id="url" value="https://www.baidu.com/" />
+        <input type="text" id="url" value="https://www.baidu.com/" style="width: 70%;" />
         <button id="run" type="button">Screenshot</button>
         <div><img style="width: 100%" id="img" src=""></div>
     </div>
