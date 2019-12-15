@@ -1,0 +1,75 @@
+﻿@page
+@using ICSharpCode.Decompiler;
+@using ICSharpCode.Decompiler.CSharp;
+@using ICSharpCode.Decompiler.TypeSystem;
+@{
+    ViewData["Title"] = "CSharp";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+        var type = typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions);
+        var types = type.Assembly.GetTypes().Select(x => x.FullName);
+
+        ViewBag.Types = types;
+    }
+
+    public IActionResult OnGetDecompile(string type)
+    {
+        var decompiler = new CSharpDecompiler(typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions).Assembly.Location, new DecompilerSettings());
+        var name = new FullTypeName(type);
+        var code = decompiler.DecompileTypeAsString(name);
+        return Content(code);
+    }
+}
+
+<h2>CSharp</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <label>Select Type : </label>
+        <select id="selectType">
+            @foreach(var type in ViewBag.Types)
+            {
+                <option value="@type">@type</option>
+            }
+        </select>
+        <button id="run" type="button">Decompile</button>
+        <div id="code-editor" style="height: 300px; border: 1px solid grey"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_MonacoEditorScriptsPartial" />
+    <script>
+        (function loadMonacoEditor() {
+            if (!window.isMonacoEditorLoaded) {
+                setTimeout(loadMonacoEditor, 100);
+                return;
+            }
+
+            var editor = window.monaco.editor.create($('#code-editor')[0],
+                {
+                    value: ``,
+                    language: 'csharp',
+                    wordWrap: 'on'
+                });
+
+            $('#code-editor').resize(function () { editor.layout(); });
+
+            $('#run').on('click',
+                function () {
+                    $.ajax({
+                        url: '/decompiler/csharp?handler=decompile&type=' + encodeURIComponent($("#selectType option:selected").val()),
+                        success: function (res) {
+                            editor.setValue(res);
+                        }
+                    });
+                });
+        })();
+    </script>
+}

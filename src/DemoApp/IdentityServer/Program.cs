@@ -59,9 +59,8 @@ namespace IdentityServer
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureLogging((hostContext, logging) =>
                 {
-                    var nlogConfig = string.Empty;
                     var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
-                    nlogConfig = File.Exists(path)
+                    var nlogConfig = File.Exists(path)
                         ? path
                         : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
 

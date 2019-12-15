@@ -76,6 +76,7 @@
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="BundlerMinifier.Core" Version="3.2.435" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.0" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5420-preview1" />
     <PackageReference Include="IdentityServer4" Version="3.1.0-preview.1.4" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.1.0-preview.1.4" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="3.1.0-preview.1.4" />
@@ -119,10 +120,6 @@
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="log\" />
   </ItemGroup>
 
 </Project>
