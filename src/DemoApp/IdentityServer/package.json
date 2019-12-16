@@ -24,6 +24,7 @@
     "element-ui": "2.13.0",
     "@smallwei/avue": "2.2.3",
     "sticky-kit": "1.1.3",
-    "monaco-editor": "0.18.1"
+    "monaco-editor": "0.18.1",
+    "comment-core-library": "0.11.1"
   }
 }

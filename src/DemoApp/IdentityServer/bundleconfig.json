@@ -281,5 +281,23 @@
     "minify": {
       "enabled": true
     }
+  },
+  {
+    "outputFileName": "wwwroot/lib/comment-core-library/CommentCoreLibrary.min.js",
+    "inputFiles": [
+      "node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/comment-core-library/css/style.min.css",
+    "inputFiles": [
+      "node_modules/comment-core-library/dist/css/style.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
   }
 ]

@@ -626,11 +626,11 @@ namespace IdentityServer
 
                 // HTML5 audio and video elemented sources can be from:
                 csp.AllowAudioAndVideo
-                    .FromNowhere();//Nowhere, no media allowed
+                    .FromSelf();
 
                 // Contained iframes can be sourced from:
                 csp.AllowFrames
-                    .FromSelf(); 
+                    .FromSelf();
 
                 // Allow AJAX, WebSocket and EventSource connections to:
                 csp.AllowConnections
@@ -646,7 +646,7 @@ namespace IdentityServer
 
                 // Allow object, embed, and applet sources from:
                 csp.AllowPlugins
-                    .FromNowhere();
+                    .FromSelf();
 
                 // Allow other sites to put this in an iframe?
                 csp.AllowFraming
@@ -706,28 +706,25 @@ namespace IdentityServer
                 }
             });
 
-            //注册开发环境文件浏览器
-            if (Environment.IsDevelopment())
+            //注册文件浏览器
+            var dir = new DirectoryBrowserOptions();
+            dir.FileProvider = new PhysicalFileProvider(Environment.ContentRootPath);
+            dir.RequestPath = "/dir";
+            app.UseDirectoryBrowser(dir);
+
+            var contentTypeProvider = new FileExtensionContentTypeProvider();
+            contentTypeProvider.Mappings.Add(".log", "text/plain");
+
+            var devStaticFileOptions = new StaticFileOptions
             {
-                var dir = new DirectoryBrowserOptions();
-                dir.FileProvider = new PhysicalFileProvider(Environment.ContentRootPath);
-                dir.RequestPath = "/dir";
-                app.UseDirectoryBrowser(dir);
+                FileProvider = new PhysicalFileProvider(Environment.ContentRootPath),
+                RequestPath = "/dir",
+                ServeUnknownFileTypes = true,
+                DefaultContentType = "application/octet-stream",
+                ContentTypeProvider = contentTypeProvider
+            };
 
-                var contentTypeProvider = new FileExtensionContentTypeProvider();
-                contentTypeProvider.Mappings.Add(".log", "text/plain");
-
-                var devStaticFileOptions = new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Environment.ContentRootPath),
-                    RequestPath = "/dir",
-                    ServeUnknownFileTypes = true,
-                    DefaultContentType = "application/octet-stream",
-                    ContentTypeProvider = contentTypeProvider
-                };
-
-                app.UseStaticFiles(devStaticFileOptions);
-            }
+            app.UseStaticFiles(devStaticFileOptions);
 
             //注册开发环境的npm资源
             if (Environment.IsDevelopment())
