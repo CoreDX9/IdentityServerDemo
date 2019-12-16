@@ -1,0 +1,36 @@
+﻿@page
+@inject Microsoft.Extensions.DependencyInjection.IServiceCollection Services
+@{
+    ViewData["Title"] = "Services";
+}
+
+<h2>Services</h2>
+
+<div class="row">
+    <div class="col-md-12 table-responsive" style="height: 447px;">
+        <table class="table table-sm table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>生命周期</th>
+                    <th>注册类型</th>
+                    <th>实现类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var service in Services)
+                {
+                    var rowClass = service.Lifetime == Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton
+                        ? "table-info"
+                        : service.Lifetime == Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped
+                            ? "table-warning"
+                            : "table-danger";
+                <tr class="@rowClass">
+                    <td>@service.Lifetime</td>
+                    <td>@service.ServiceType</td>
+                    <td>@service.ImplementationType</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

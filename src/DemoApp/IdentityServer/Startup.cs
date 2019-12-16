@@ -56,7 +56,6 @@ namespace IdentityServer
     {
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
-        public IServiceCollection Services { get; set; }
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -68,7 +67,6 @@ namespace IdentityServer
         // 异步控制器动作或Razor页面动作返回void可能导致从DI容器获取的efcore或者其他对象被释放，返回Task可以避免这个问题
         public void ConfigureServices(IServiceCollection services)
         {
-            Services = services;
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -536,45 +534,31 @@ namespace IdentityServer
                 browserTask.Wait();
                 return browserTask.Result;
             });
+
+            //注册服务容器
+            services.AddSingleton(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.Map("/allservices", builder => builder.Run(async context =>
-                {
-                    context.Response.ContentType = "text/html; charset=utf-8";
-                    await context.Response.WriteAsync($"<h1>所有服务{Services.Count}个</h1><table><thead><tr><th>类型</th><th>生命周期</th><th>Instance</th></tr></thead><tbody>");
-                    foreach (var svc in Services)
-                    {
-                        await context.Response.WriteAsync("<tr>");
-                        await context.Response.WriteAsync($"<td>{svc.ServiceType.FullName}</td>");
-                        await context.Response.WriteAsync($"<td>{svc.Lifetime}</td>");
-                        await context.Response.WriteAsync($"<td>{svc.ImplementationType?.FullName}</td>");
-                        await context.Response.WriteAsync("</tr>");
-                    }
-                    await context.Response.WriteAsync("</tbody></table>");
-                }));
-            }
-
-            //配置FluentValidation的本地化
+            //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
 
-            //注册管道是有顺序的
-
             if (env.IsDevelopment())
             {
+                //注册开发环境异常信息页面
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
             else
             {
+                //注册异常错误页面
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //捕获异常用
+            //捕获异常用（不然开发环境异常信息页会导致vs不中断，不好调试）
             //app.UseExMiddleware();
 
             //检查到相应配置启用https跳转
@@ -781,6 +765,7 @@ namespace IdentityServer
             app.UseAntiforgeryTokenGenerateMiddleware();
 
             //注册终结点到管道（SignalR集线器和Mvc路由集中在这里配置）
+            //为天堂的Mvc中间件默哀3秒，被终结点中间件上位，彻底沦为一堆服务 ( ╯□╰ )
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/.well-known/acme-challenge/oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88", context => 

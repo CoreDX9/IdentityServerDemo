@@ -51,10 +51,8 @@
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Manage" asp-controller="Home" asp-action="Index"><localize>Manager Home</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Users/Index"><localize>User Manager</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Roles/Index"><localize>Role Manager</localize></a></li>
-                                <environment include="Development">
-                                    <div class="dropdown-divider"></div>
-                                    <li class="nav-item"><a class="nav-link text-dark" href="/allservices"><localize>Services List</localize></a></li>
-                                </environment>
+                                <div class="dropdown-divider"></div>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/Services/Index"><localize>Services List</localize></a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -122,7 +120,8 @@
                 navBlur();
                 containerBlur();
                 footerBlur();
-                if ($(window).width() < 757) {
+
+                if (!$('body > header > nav > div > button').is(':hidden')) {
                     $('#navbarSupportedContent').css('max-height', $(window).height() - 60 + 'px').css('overflow-y', 'auto');
                     $('.nav-item.dropdown .dropdown-menu').css('max-height', '').css('overflow-y', '');
                 }
@@ -130,7 +129,6 @@
                     $('#navbarSupportedContent').css('max-height', 'auto').css('overflow-y', '');
                     $('.nav-item.dropdown .dropdown-menu').css('max-height', '250px').css('overflow-y', 'auto');
                 }
-
             });
 
             $('body > div.container-fluid.body-content').eq(0).resize(function () {
