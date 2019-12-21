@@ -294,7 +294,43 @@
   {
     "outputFileName": "wwwroot/lib/comment-core-library/css/style.min.css",
     "inputFiles": [
-      "node_modules/comment-core-library/dist/css/style.min.css"
+      "node_modules/comment-core-library/dist/css/style.css"
+    ],
+    "minify": {
+      "enabled": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/video.js/video.min.js",
+    "inputFiles": [
+      "node_modules/video.js/dist/video.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/video.js/video-js.min.css",
+    "inputFiles": [
+      "node_modules/video.js/dist/video-js.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/flv.js/flv.min.js",
+    "inputFiles": [
+      "node_modules/flv.js/dist/flv.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/videojs-flvjs/videojs-flvjs.min.js",
+    "inputFiles": [
+      "node_modules/videojs-flvjs/dist/videojs-flvjs.min.js"
     ],
     "minify": {
       "enabled": false

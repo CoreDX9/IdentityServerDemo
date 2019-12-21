@@ -47,6 +47,7 @@ using StackExchange.Redis;
 using CoreDX.Domain.Model.Repository;
 using CoreDX.Application.Repository.EntityFrameworkCore;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 
 #endregion
 
@@ -67,6 +68,9 @@ namespace IdentityServer
         // 异步控制器动作或Razor页面动作返回void可能导致从DI容器获取的efcore或者其他对象被释放，返回Task可以避免这个问题
         public void ConfigureServices(IServiceCollection services)
         {
+            // 注册内存缓存
+            services.AddMemoryCache();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -200,16 +204,6 @@ namespace IdentityServer
                     });
                 });
             }
-
-            ////测试用，本想直接用正式数据，结果迁移工具bug。。。
-            //services.AddDbContext<TestDbContext>(options =>
-            //{
-            //    options.UseSqlServer(connectionString, b =>
-            //    {
-            //        b.MigrationsAssembly(migrationsAssemblyName);
-            //        b.EnableRetryOnFailure(3);
-            //    });
-            //});
 
             //注册Identity服务（使用EF存储，在EF上下文之后注册）
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -535,6 +529,32 @@ namespace IdentityServer
                 return browserTask.Result;
             });
 
+            // 注册选项服务
+            //services.AddOptions();
+
+            //load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            //load ip rules from appsettings.json
+            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+
+            //load general configuration from appsettings.json
+            services.Configure<ClientRateLimitOptions>(Configuration.GetSection("ClientRateLimiting"));
+            //load client rules from appsettings.json
+            services.Configure<ClientRateLimitPolicies>(Configuration.GetSection("ClientRateLimitPolicies"));
+
+            // 注册限流数据内存存储服务，依赖内存缓存服务
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            // 注册限流数据分布式存储服务，依赖Redis
+            //services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+            //services.AddSingleton<IClientPolicyStore, DistributedCacheClientPolicyStore>();
+            //services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+
             //注册服务容器
             services.AddSingleton(services);
         }
@@ -545,6 +565,10 @@ namespace IdentityServer
         {
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
+
+            //注册请求限流到管道
+            //app.UseIpRateLimiting();
+            //app.UseClientRateLimiting();
 
             if (env.IsDevelopment())
             {
@@ -588,6 +612,7 @@ namespace IdentityServer
                     .FromSelf() //This domain
                     .AllowUnsafeInline()
                     .AllowUnsafeEval()
+                    .From("blob:")
                     .From("localhost:5000") //These two domains
                     .From("localhost:5001")
                     .From("localhost:5002")
@@ -626,7 +651,8 @@ namespace IdentityServer
 
                 // HTML5 audio and video elemented sources can be from:
                 csp.AllowAudioAndVideo
-                    .FromSelf();
+                    .FromSelf()
+                    .From("blob:");
 
                 // Contained iframes can be sourced from:
                 csp.AllowFrames
@@ -641,6 +667,7 @@ namespace IdentityServer
                 // Allow fonts to be downloaded from:
                 csp.AllowFonts
                     .FromSelf()
+                    .From("data:")
                     .From("fonts.gstatic.com")
                     .From("ajax.aspnetcdn.com");
 

@@ -25,6 +25,9 @@
     "@smallwei/avue": "2.2.3",
     "sticky-kit": "1.1.3",
     "monaco-editor": "0.18.1",
-    "comment-core-library": "0.11.1"
+    "comment-core-library": "0.11.1",
+    "video.js": "7.7.3",
+    "flv.js": "1.5.0",
+    "videojs-flvjs": "0.2.0"
   }
 }

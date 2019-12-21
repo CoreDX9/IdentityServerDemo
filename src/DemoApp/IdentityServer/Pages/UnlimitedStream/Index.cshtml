@@ -1,0 +1,62 @@
+﻿@page
+@inject Microsoft.Extensions.DependencyInjection.IServiceCollection Services
+@{
+    ViewData["Title"] = "Unlimited Stream";
+}
+
+@functions{
+    public async Task OnGetStreamAsync(int? time, System.Threading.CancellationToken cancellationToken)
+    {
+        var response = HttpContext.Response;
+        response.StatusCode = 200;
+        response.ContentType = "text/plain;charset=utf-8";
+        var t = response.StartAsync();
+        var end = false;
+        if (time.HasValue)
+        {
+            System.Timers.Timer timer = new System.Timers.Timer(time.Value * 1000);
+            timer.Elapsed += (s, arg) => end = true;
+            timer.AutoReset = false;
+            timer.Start();
+        }
+        while (!cancellationToken.IsCancellationRequested && !end)
+        {
+            await response.BodyWriter.WriteAsync(new ReadOnlyMemory<byte>(System.Text.Encoding.UTF8.GetBytes("stream-ing-coredx;\r\n")));
+            await response.BodyWriter.FlushAsync();
+            System.Threading.Thread.Sleep(500);
+        }
+        await response.BodyWriter.WriteAsync(new ReadOnlyMemory<byte>(System.Text.Encoding.UTF8.GetBytes("stream-end-coredx;\r\n")));
+        await response.BodyWriter.FlushAsync();
+        await response.CompleteAsync();
+    }
+}
+
+<h2>Unlimited Stream</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>按下请求流按钮前先打开开发工具面板(F12)的网络标签</p>
+        <button type="button" id="run">请求流</button>
+        <button type="button" id="end">结束请求流</button>
+    </div>
+</div>
+
+@section Scripts{ 
+    <script>
+        var ajax = null;
+        $('#run').click(function () {
+            ajax = $.ajax('/UnlimitedStream/Index?handler=stream', {
+                complete: function complete(XHR, TS) {
+                    console.log('请求结束');
+                }
+            });
+
+        });
+        $('#end').click(function () {
+            if (ajax) {
+                ajax.abort();
+            }
+            ajax = null;
+        });
+    </script>
+}
