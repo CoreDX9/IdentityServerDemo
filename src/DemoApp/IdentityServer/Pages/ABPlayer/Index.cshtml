@@ -20,15 +20,6 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <div id="load-player"></div>
-        <video id="video-1" autobuffer="true" data-setup="{}" width="800" height="450">
-            <source src="/videos/1.mp4" type="video/mp4">
-            <p>Your browser does not support html5 video!</p>
-        </video>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
         <div id="video-js-danmaku" class="abp">
             <div id="video-js-danmaku-stage" class="abp-container" style="pointer-events: none;"></div>
         </div>
@@ -37,27 +28,19 @@
         </video>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="load-player"></div>
+        <video id="video-1" autobuffer="true" data-setup="{}" width="800" height="450">
+            <source src="/videos/1.mp4" type="video/mp4">
+            <p>Your browser does not support html5 video!</p>
+        </video>
+    </div>
+</div>
 
 @section Scripts
 {
     <partial name="_CommentCoreLibraryScriptsPartial" />
-    <script src="~/library/ABPlayerHTML5/ABPlayerHTML5.js"></script>
-    <script>
-        var video = document.getElementById("video-1");
-        var inst = ABP.create(document.getElementById('load-player'), {
-            'src': {
-                "playlist": [
-                    {
-                        "video": video,
-                        "comments": "/danmaku/hanabi.xml"
-                    }
-                ]
-            },
-            'width': 800,
-            'height': 522
-        });
-    </script>
-
     <partial name="_VideoJsScriptsPartial" />
     <script>
         var flvVideo = $('#videojs-flvjs-player');
@@ -123,5 +106,22 @@
                 });
             }
         );
+    </script>
+
+    <script src="~/library/ABPlayerHTML5/ABPlayerHTML5.js"></script>
+    <script>
+        var video = document.getElementById("video-1");
+        var inst = ABP.create(document.getElementById('load-player'), {
+            'src': {
+                "playlist": [
+                    {
+                        "video": video,
+                        "comments": "/danmaku/hanabi.xml"
+                    }
+                ]
+            },
+            'width': 800,
+            'height': 522
+        });
     </script>
 }
