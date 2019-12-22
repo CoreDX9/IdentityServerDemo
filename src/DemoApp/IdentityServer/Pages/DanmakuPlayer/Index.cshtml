@@ -1,6 +1,6 @@
 ﻿@page
 @{
-    ViewData["Title"] = "ABPlayer";
+    ViewData["Title"] = "Html 5 Flv Danmaku Player";
 }
 
 @section Styles
@@ -10,12 +10,14 @@
     <partial name="_VideoJsStylesPartial" />
 }
 
-<h2>ABPlayer</h2>
+<h2>Html 5 Flv Danmaku Player</h2>
 
 <div class="row">
     <div class="col-md-12">
-        <p>请在 wwwroot/videos 文件夹中放入名为 1.mp4 的视频文件。</p>
-        <p>请在 node_modules/comment-core-library/dist/css/style.css 文件中将 .container 替换为 .abp-container 避免与bootstrap的css冲突。</p>
+        @*想看ABPlayer的注意*@
+        @*<p>请在 wwwroot/videos 文件夹中放入名为 1.mp4 的视频文件。</p>
+        <p>请在 node_modules/comment-core-library/dist/css/style.css 文件中将 .container 替换为 .abp-container 避免与bootstrap的css冲突。</p>*@
+        <p>不依赖 flash，直接使用 html 5 播放 flv 视频，并使 video.js 支持 CCL 弹幕。</p>
     </div>
 </div>
 <div class="row">
@@ -23,20 +25,21 @@
         <div id="video-js-danmaku" class="abp">
             <div id="video-js-danmaku-stage" class="abp-container" style="pointer-events: none;"></div>
         </div>
-        <video id="videojs-flvjs-player" class="video-js vjs-default-skin" width="800" height="450" controls>
+        <video id="videojs-flvjs-player" preload="metadata" class="video-js vjs-default-skin" style="width: 90%;" controls>
             <source src="/videos/1.flv" type='video/x-flv'>
         </video>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div id="load-player"></div>
-        <video id="video-1" autobuffer="true" data-setup="{}" width="800" height="450">
-            <source src="/videos/1.mp4" type="video/mp4">
-            <p>Your browser does not support html5 video!</p>
-        </video>
-    </div>
-</div>
+@*ABPlayer不好做自适应宽高，不好排版，想看的取消注释代码*@
+@*<div class="row">
+        <div class="col-md-12">
+            <div id="load-player"></div>
+            <video id="video-1" preload="metadata" data-setup="{}" width="800" height="450">
+                <source src="/videos/1.mp4" type="video/mp4">
+                <p>Your browser does not support html5 video!</p>
+            </video>
+        </div>
+    </div>*@
 
 @section Scripts
 {
@@ -67,15 +70,17 @@
                 danmakuOld.remove();
                 // 初始化完成后把弹幕层移动到video前面，避免video.js修改dom结构导致全屏后弹幕层看不见
                 var flvVideoParentDiv = $('#videojs-flvjs-player');
+                flvVideoParentDiv.height(flvVideoParentDiv.innerWidth() * 0.5625);
                 flvVideoParentDiv.append(danmakuNew);
                 //flvVideo.before(danmaku.parent());
                 var danmakuStage = $('#video-js-danmaku-stage');
-                danmakuStage.width(flvVideoParentDiv.width());
-                danmakuStage.height(flvVideoParentDiv.height());
+                danmakuStage.width(flvVideoParentDiv.innerWidth());
+                danmakuStage.height(flvVideoParentDiv.innerHeight() - 30);
                 var videoJsCm = new CommentManager(danmakuStage[0]);
                 flvVideoParentDiv.resize(function () {
-                    danmakuStage.width(flvVideoParentDiv.width());
-                    danmakuStage.height(flvVideoParentDiv.height());
+                    flvVideoParentDiv.height(flvVideoParentDiv.innerWidth() * 0.5625);
+                    danmakuStage.width(flvVideoParentDiv.innerWidth());
+                    danmakuStage.height(flvVideoParentDiv.innerHeight() - 30);
                     videoJsCm.setBounds();
                 })
                 videoJsCm.init();
@@ -108,7 +113,8 @@
         );
     </script>
 
-    <script src="~/library/ABPlayerHTML5/ABPlayerHTML5.js"></script>
+@*ABPlayer的js部分*@
+    @*<script src="~/library/ABPlayerHTML5/ABPlayerHTML5.js"></script>
     <script>
         var video = document.getElementById("video-1");
         var inst = ABP.create(document.getElementById('load-player'), {
@@ -123,5 +129,5 @@
             'width': 800,
             'height': 522
         });
-    </script>
+    </script>*@
 }
