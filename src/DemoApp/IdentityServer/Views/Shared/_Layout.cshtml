@@ -97,12 +97,13 @@
         <partial name="_CookieConsentPartial" />
         <main role="main">
             @RenderBody()
+            <div style="width: 100%; height: 15px;"></div>
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container-fluid">
-            &copy; 2018 - IdentityServer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTimeOffset.Now.Year - IdentityServer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

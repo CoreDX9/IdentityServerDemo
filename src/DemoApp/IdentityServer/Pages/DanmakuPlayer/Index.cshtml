@@ -22,10 +22,10 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <div id="video-js-danmaku" class="abp">
+        @*<div id="video-js-danmaku" class="abp">
             <div id="video-js-danmaku-stage" class="abp-container" style="pointer-events: none;"></div>
-        </div>
-        <video id="videojs-flvjs-player" preload="metadata" class="video-js vjs-default-skin" style="width: 90%;" controls>
+        </div>*@
+        <video id="videojs-flvjs-player" preload="metadata" class="video-js vjs-default-skin" style="width: 100%;" poster="/videos/1.png" controls>
             <source src="/videos/1.flv" type='video/x-flv'>
         </video>
     </div>
@@ -45,10 +45,9 @@
 {
     <partial name="_CommentCoreLibraryScriptsPartial" />
     <partial name="_VideoJsScriptsPartial" />
+    <partial name="_VideoJsDanmakuScriptsPartial" />
     <script>
-        var flvVideo = $('#videojs-flvjs-player');
         var videoFlvJs = videojs('videojs-flvjs-player', {
-            //techOrder: ['html5', 'flvjs'],
             //flvjs: {
             //    mediaDataSource: {
             //        isLive: true,
@@ -56,61 +55,30 @@
             //        withCredentials: false,
             //    },
             // config: {},
+            playbackRates: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+            userActions: {
+                doubleClick: true,
+            },
+            fluid: true,
+            aspectRatio: '16:9',
         },
             function onPlayerReady() {
-                //创建弹幕供应器
-                var provider = new CommentProvider();
-                // 添加一个静态弹幕源（只加载一次）
-                provider.addStaticSource(CommentProvider.XMLProvider('GET', '/danmaku/hanabi.xml'), CommentProvider.SOURCE_XML);
-                // 添加一个解析器
-                provider.addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML);
-                // 添加一个目标 (CommentManager)
-                var danmakuOld = $('#video-js-danmaku');
-                var danmakuNew = danmakuOld.clone();
-                danmakuOld.remove();
-                // 初始化完成后把弹幕层移动到video前面，避免video.js修改dom结构导致全屏后弹幕层看不见
-                var flvVideoParentDiv = $('#videojs-flvjs-player');
-                flvVideoParentDiv.height(flvVideoParentDiv.innerWidth() * 0.5625);
-                flvVideoParentDiv.append(danmakuNew);
-                //flvVideo.before(danmaku.parent());
-                var danmakuStage = $('#video-js-danmaku-stage');
-                danmakuStage.width(flvVideoParentDiv.innerWidth());
-                danmakuStage.height(flvVideoParentDiv.innerHeight() - 30);
-                var videoJsCm = new CommentManager(danmakuStage[0]);
-                flvVideoParentDiv.resize(function () {
-                    flvVideoParentDiv.height(flvVideoParentDiv.innerWidth() * 0.5625);
-                    danmakuStage.width(flvVideoParentDiv.innerWidth());
-                    danmakuStage.height(flvVideoParentDiv.innerHeight() - 30);
-                    videoJsCm.setBounds();
-                })
-                videoJsCm.init();
-                provider.addTarget(videoJsCm);
-                // 加载弹幕
-                provider.load()
-                    .then(function () {
-                        console.log('弹幕已载入');
-                    })
-                    .catch(function (e) {
-                        console.log('弹幕载入出错');
-                    });
 
-                //绑定播放器事件
-                this.on('play', function () {
-                    videoJsCm.start();
-                });
-                this.on('pause', function () {
-                    videoJsCm.stop();
-                });
-                this.on('ratechange', function () {
-                    videoJsCm.options.global.scale = (1 / this.playbackRate());
-                    videoJsCm.rescale();
-                });
-                this.on('timeupdate', function () {
-                    //这里是关键，此事件会随着播放持续发生，在此处更新弹幕管理器当前时间，让后续弹幕能正常进入
-                    videoJsCm.time(this.currentTime() * 1000);
-                });
             }
         );
+
+        var provider = new CommentProvider();
+        // 添加一个静态弹幕源（只加载一次）
+        provider.addStaticSource(CommentProvider.XMLProvider('GET', '/danmaku/hanabi.xml'), CommentProvider.SOURCE_XML);
+        // 添加一个解析器
+        provider.addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML);
+        // 向播放器实例添加弹幕组件
+        videoFlvJs.addChild('Danmaku', {
+            commentManager: new CommentManager({offsetWidth: 0, offsetHeight: 0}),
+            commentProviders: [
+                provider,
+            ]
+        });
     </script>
 
 @*ABPlayer的js部分*@

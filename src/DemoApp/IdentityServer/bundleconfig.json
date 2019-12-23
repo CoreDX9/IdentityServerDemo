@@ -335,5 +335,14 @@
     "minify": {
       "enabled": false
     }
+  },
+  {
+    "outputFileName": "wwwroot/library/videojs-danmaku/index.min.js",
+    "inputFiles": [
+      "wwwroot/library/videojs-danmaku/index.js"
+    ],
+    "minify": {
+      "enabled": true
+    }
   }
 ]
