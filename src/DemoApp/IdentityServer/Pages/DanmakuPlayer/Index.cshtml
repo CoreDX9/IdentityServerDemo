@@ -6,7 +6,8 @@
 @section Styles
 {
     <partial name="_CommentCoreLibraryStylesPartial" />
-    <link href="~/library/ABPlayerHTML5/css/base.css" rel="stylesheet" />
+    @*ABPlayer的css部分*@
+    @*<link href="~/library/ABPlayerHTML5/css/base.css" rel="stylesheet" />*@
     <partial name="_VideoJsStylesPartial" />
 }
 
@@ -16,15 +17,15 @@
     <div class="col-md-12">
         @*想看ABPlayer的注意*@
         @*<p>请在 wwwroot/videos 文件夹中放入名为 1.mp4 的视频文件。</p>
-        <p>请在 node_modules/comment-core-library/dist/css/style.css 文件中将 .container 替换为 .abp-container 避免与bootstrap的css冲突。</p>*@
+            <p>请在 node_modules/comment-core-library/dist/css/style.css 文件中将 .container 替换为 .abp-container 避免与bootstrap的css冲突。</p>*@
         <p>不依赖 flash，直接使用 html 5 播放 flv 视频，并使 video.js 支持 CCL 弹幕。</p>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         @*<div id="video-js-danmaku" class="abp">
-            <div id="video-js-danmaku-stage" class="abp-container" style="pointer-events: none;"></div>
-        </div>*@
+                <div id="video-js-danmaku-stage" class="abp-container" style="pointer-events: none;"></div>
+            </div>*@
         <video id="videojs-flvjs-player" preload="metadata" class="video-js vjs-default-skin" style="width: 100%;" poster="/videos/1.png" controls>
             <source src="/videos/1.flv" type='video/x-flv'>
         </video>
@@ -74,28 +75,28 @@
         provider.addParser(new BilibiliFormat.XMLParser(), CommentProvider.SOURCE_XML);
         // 向播放器实例添加弹幕组件
         videoFlvJs.addChild('Danmaku', {
-            commentManager: new CommentManager({offsetWidth: 0, offsetHeight: 0}),
+            commentManager: new CommentManager({ offsetWidth: 0, offsetHeight: 0 }),
             commentProviders: [
                 provider,
             ]
         });
     </script>
 
-@*ABPlayer的js部分*@
+    @*ABPlayer的js部分*@
     @*<script src="~/library/ABPlayerHTML5/ABPlayerHTML5.js"></script>
-    <script>
-        var video = document.getElementById("video-1");
-        var inst = ABP.create(document.getElementById('load-player'), {
-            'src': {
-                "playlist": [
-                    {
-                        "video": video,
-                        "comments": "/danmaku/hanabi.xml"
-                    }
-                ]
-            },
-            'width': 800,
-            'height': 522
-        });
-    </script>*@
+        <script>
+            var video = document.getElementById("video-1");
+            var inst = ABP.create(document.getElementById('load-player'), {
+                'src': {
+                    "playlist": [
+                        {
+                            "video": video,
+                            "comments": "/danmaku/hanabi.xml"
+                        }
+                    ]
+                },
+                'width': 800,
+                'height': 522
+            });
+        </script>*@
 }
