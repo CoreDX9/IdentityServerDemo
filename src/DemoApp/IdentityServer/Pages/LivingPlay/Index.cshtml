@@ -1,0 +1,190 @@
+﻿@page
+@using Harmonic.Networking.Rtmp.Messages
+@using Harmonic.Networking.Flv
+@using Harmonic.Controllers.Living
+@using System.Threading
+@using Microsoft.AspNetCore.Http
+@inject IdentityServer.Extensions.RtmpServerManager RtmpServerManager
+@{
+    ViewData["Title"] = "Http-flv living play";
+}
+
+@functions
+{
+    LivingStream publisher = null;
+    List<Action> _cleanupActions = null;
+    FlvMuxer flvMuxer = null;
+    HttpResponse response = null;
+
+    private void SendVideo(VideoMessage message)
+    {
+        response.BodyWriter.WriteAsync(new ReadOnlyMemory<byte>(flvMuxer.MultiplexFlv(message)));
+        response.BodyWriter.FlushAsync();
+    }
+
+    private void SendAudio(AudioMessage message)
+    {
+        response.BodyWriter.WriteAsync(new ReadOnlyMemory<byte>(flvMuxer.MultiplexFlv(message)));
+        response.BodyWriter.FlushAsync();
+    }
+
+    //public override void OnMessage(string msg)
+    //{
+    //}
+
+    public void OnGet()
+    {
+    }
+
+    public async Task OnGetPlayAsync(string name, int? time, CancellationToken cancellationToken)
+    {
+        //查找直播流
+        publisher = RtmpServerManager.GetLivingStream(name);
+
+        if (publisher != null)
+        {
+            //创建flv混流器
+            flvMuxer = new FlvMuxer();
+
+            //记录清理委托
+            _cleanupActions = new List<Action>();
+            _cleanupActions.Add(() =>
+            {
+                publisher.OnAudioMessage -= SendAudio;
+                publisher.OnVideoMessage -= SendVideo;
+            });
+
+            //启动响应发送
+            response = HttpContext.Response;
+            response.StatusCode = 200;
+            response.ContentType = "video/x-flv";
+            var _ = response.StartAsync();
+
+            //读取视频元数据
+            var metadata = (Dictionary<string, object>)publisher.FlvMetadata.Data.Last();
+            var hasAudio = metadata.ContainsKey("audiocodecid");
+            var hasVideo = metadata.ContainsKey("videocodecid");
+
+            //生成打包的视频元数据
+            var memoryStream = new System.IO.MemoryStream();
+            await memoryStream.WriteAsync(flvMuxer.MultiplexFlvHeader(hasAudio, hasVideo));
+            await memoryStream.WriteAsync(flvMuxer.MultiplexFlv(publisher.FlvMetadata));
+
+            if (hasAudio)
+            {
+                await memoryStream.WriteAsync(flvMuxer.MultiplexFlv(publisher.AACConfigureRecord));
+            }
+            if (hasVideo)
+            {
+                await memoryStream.WriteAsync(flvMuxer.MultiplexFlv(publisher.AVCConfigureRecord));
+            }
+            //发送元数据
+            await response.BodyWriter.WriteAsync(new ReadOnlyMemory<byte>(memoryStream.ToArray()));
+            await response.BodyWriter.FlushAsync();
+            memoryStream.Close();
+            memoryStream = null;
+
+            //注册数据发送委托，当推流端发送数据时会触发此事件
+            publisher.OnAudioMessage += SendAudio;
+            publisher.OnVideoMessage += SendVideo;
+
+            //有time参数就在指定秒数后结束数据发送
+            var end = false;
+            if (time.HasValue)
+            {
+                System.Timers.Timer timer = new System.Timers.Timer(time.Value * 1000);
+                timer.Elapsed += (s, arg) => end = true;
+                timer.AutoReset = false;
+                timer.Start();
+            }
+
+            //每秒检测一次请求连接是否断开或时间到，只要请求连接还在或时间没到，就循环
+            while (!cancellationToken.IsCancellationRequested && !end)
+            {
+                Thread.Sleep(1000);
+            }
+
+            //请求连接中断后清理注册的数据发送委托
+            foreach (var c in _cleanupActions)
+            {
+                c();
+            }
+
+            //刷新响应并关闭响应
+            await response.BodyWriter.FlushAsync();
+            await response.CompleteAsync();
+        }
+    }
+}
+
+@section Styles
+{
+    <partial name="_VideoJsStylesPartial" />
+}
+
+<h2>Http-flv living play</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <video id="videojs-flvjs-player" class="video-js vjs-default-skin" style="width: 100%;" muted autoplay controls>
+            <source src="/LivingPlay/Index?handler=play&name=touhou" type='video/x-flv'>
+        </video>
+        @*<video id="player" muted controls></video>*@
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_VideoJsScriptsPartial" />
+    <script>
+        var videoFlvJs = videojs('videojs-flvjs-player', {
+            flvjs: {
+                mediaDataSource: {
+                    isLive: true,
+                    //cors: true,
+                    //withCredentials: false,
+                },
+                config: {},
+            },
+            userActions: {
+                doubleClick: true,
+            },
+            liveui: true,
+            //preload: 'auto',
+            //autoplay: true,
+            fluid: true,
+            aspectRatio: '16:9',
+        },
+            //function onPlayerReady() {
+
+            //}
+        );
+
+        //if (flvjs.isSupported()) {
+        //    var player = document.getElementById('player');
+        //    var flvPlayer = flvjs.createPlayer({
+        //        isLive: true,
+        //        type: 'flv',
+        //        url: '/LivingPlay/Index?handler=play&name=touhou'
+        //        //url: "ws://localhost:8080/websocketplay/touhou"
+        //    },
+        //    {
+        //        enableWorker: false,
+        //        enableStashBuffer: false,
+        //        stashInitialSize: 1,
+        //        lazyLoad: false,
+        //        lazyLoadMaxDuration: 1,
+        //        lazyLoadRecoverDuration: 1,
+        //        deferLoadAfterSourceOpen: false,
+        //        autoCleanupMaxBackwardDuration: 1,
+        //        autoCleanupMinBackwardDuration: 1,
+        //        statisticsInfoReportInterval: 1,
+        //        fixAudioTimestampGap: false,
+ 
+        //    });
+        //    flvPlayer.attachMediaElement(player);
+        //    flvPlayer.load();
+        //    flvPlayer.play();
+        //}
+    </script>
+}

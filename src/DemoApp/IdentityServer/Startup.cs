@@ -554,6 +554,8 @@ namespace IdentityServer
             // configuration (resolvers, counter key builders)
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
+            //注册直播服务主机管理器
+            services.AddSingleton<RtmpServerManager>();
 
             //注册服务容器
             services.AddSingleton(services);
@@ -661,6 +663,7 @@ namespace IdentityServer
                 // Allow AJAX, WebSocket and EventSource connections to:
                 csp.AllowConnections
                     .ToSelf()
+                    .To("ws://localhost:8080")
                     .To("ws://localhost:5000")
                     .To("wss://localhost:5001");
 

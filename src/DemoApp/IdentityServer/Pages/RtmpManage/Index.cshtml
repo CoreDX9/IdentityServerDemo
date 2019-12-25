@@ -1,0 +1,41 @@
+﻿@page
+@inject IdentityServer.Extensions.RtmpServerManager RtmpServerManager
+@{
+    ViewData["Title"] = "Rtmp Living Manage";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+
+    }
+
+    public IActionResult OnGetStartService(string type)
+    {
+        RtmpServerManager.Start();
+        return RedirectToPage(/*"/RtmpManage/Index"*/);
+    }
+
+    public async Task<IActionResult> OnGetStopServiceAsync(string type)
+    {
+        await RtmpServerManager.Stop();
+        return RedirectToPage(/*"/RtmpManage/Index"*/);
+    }
+}
+
+    <h2>Rtmp Living Manage</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (!RtmpServerManager.ServiceHostStarted())
+        {
+            <a asp-page="/RtmpManage/Index" asp-page-handler="StartService">Start Rtmp Service</a>
+        }
+        else
+        {
+    <a asp-page="/RtmpManage/Index" asp-page-handler="StopService">Stop Rtmp Service</a>
+        }
+    </div>
+</div>
