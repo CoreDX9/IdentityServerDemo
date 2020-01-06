@@ -1,0 +1,122 @@
+﻿@page
+@using CoreDX.Sudoku;
+@using System.Linq;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Sudoku";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+
+    }
+
+    public IActionResult OnPostSolve(string sudoku)
+    {
+        var sudo = JsonConvert.DeserializeObject<byte[][]>(sudoku);
+        var su = new SudokuSolver(sudo);
+        var r = su.Solve();
+        var re = r.First().SudokuBoard.Select(x => x.Select(y => (int)y.Number).ToArray()).ToArray();
+
+        return new JsonResult(re);
+    }
+}
+
+@section Styles{
+    <style>
+        .my-table {
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000
+        }
+
+            .my-table td {
+                border-left: 1px solid #000000;
+                border-top: 1px solid #000000
+            }
+    </style>
+}
+
+<h2>Sudoku</h2>
+
+<div class="row">
+    <div class="col-md-12">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="app">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="my-table">
+                        <tr v-for="(row, i) in sudoku">
+                            <td v-for="(cell, j) in row">
+                                <input type="number" style="width: 40px; border: none;" v-model.number="sudoku[i][j]" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button @@click="solve">求解</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="my-table">
+                        <tr v-for="row in sudokuState">
+                            <td v-for="cell in row" style="width: 30px;">{{cell}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <partial name="_VueScriptsPartial" />
+    <partial name="_AxiosScriptsPartial" />
+    <partial name="_QsScriptsPartial" />
+    <partial name="_VueSubmitFormHelperScriptsPartial" />
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: function () {
+                var su = [
+                    [1, 0, 0, 2, 0, 0, 3, 0, 0,],
+                    [0, 4, 0, 5, 0, 0, 0, 6, 0,],
+                    [0, 0, 0, 7, 0, 0, 8, 0, 0,],
+                    [3, 0, 0, 0, 0, 7, 0, 0, 0,],
+                    [0, 9, 0, 0, 0, 0, 0, 5, 0,],
+                    [0, 0, 0, 6, 0, 0, 0, 0, 7,],
+                    [0, 0, 2, 0, 0, 4, 0, 0, 0,],
+                    [0, 5, 0, 0, 0, 6, 0, 9, 0,],
+                    [0, 0, 8, 0, 0, 1, 0, 0, 3,],
+                ];
+                return {
+                    sudoku: su,
+                    sudokuState: su,
+                };
+            },
+            methods: {
+                solve: function () {
+                    var _this = this;
+                    var submitFormHelper = this.$submitFormHelper;
+                    submitFormHelper.submitForm('/Sudoku/Index?handler=Solve', 'post', {sudoku: JSON.stringify(this.sudoku)})
+                        .then(function (response) {
+                            _this.sudokuState = response.data;
+                        })
+                        .catch(function (error) {
+                        });
+                }
+            },
+        });
+    </script>
+
+}

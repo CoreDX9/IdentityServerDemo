@@ -120,6 +120,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Harmonic\Harmonic\Harmonic.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
