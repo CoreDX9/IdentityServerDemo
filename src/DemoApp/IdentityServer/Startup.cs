@@ -327,11 +327,10 @@ namespace IdentityServer
                     options.SupportedUICultures = supportedCultures;
                 });
 
-            //注册电子邮件发送服务
+            //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
             services.AddScoped<IEmailSender, EmailSender>();
 
-            //结合EFCore生成IdentityServer4数据库迁移命令详情见Repository项目说明文档
-            //项目工程文件最后添加 <ItemGroup><DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" /></ItemGroup>
+            //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
             //添加IdentityServer4对EFCore数据库的支持
             //但是这里需要初始化数据 默认生成的数据库中是没有配置数据
 
@@ -491,11 +490,8 @@ namespace IdentityServer
             //    options.HttpsPort = 5001;
             //});
 
-            //注册开发环境文件夹浏览服务
-            if (Environment.IsDevelopment())
-            {
-                services.AddDirectoryBrowser();
-            }
+            //注册文件夹浏览服务
+            services.AddDirectoryBrowser();
 
             services.AddHealthChecks();
 
