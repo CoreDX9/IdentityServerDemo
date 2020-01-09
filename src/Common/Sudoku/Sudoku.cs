@@ -89,13 +89,14 @@ namespace CoreDX.Sudoku
                 //正常情况下返回-1表示已经全部填完
                 if (i == -1 && j == -1 && !multiAnswer)
                 {
-                    var pathLast = path;
+                    var pathLast = path;//记住最后一步
                     var path1 = path;
                     while(path1.Parent.X != -1 && path1.Parent.Y != -1)
                     {
                         path1 = path1.Parent;
                     }
 
+                    //将暴力搜索的第一步追加到唯一数单元格的填写步骤的最后一步之后，连接成完整的填数步骤
                     path0.Children.Add(path1);
                     path1.Parent = path0;
                     yield return (new SudokuState(this), pathLast);
@@ -109,7 +110,7 @@ namespace CoreDX.Sudoku
                     : numNode.Number;
 
                 bool filled = false; //是否发现可以填入的数
-                //循环查看所有候选数是否能填
+                //循环查看从num开始接下来的候选数是否能填（num是最后一次填入的数，传到Candidate[]的索引器中刚好指向 num + 1是否能填的存储位，对于标准数独，候选数为 1~9，Candidate的索引范围就是 0~8）
                 for (; !SudokuBoard[i][j].IsCondition && !SudokuBoard[i][j].IsUnique && num < SudokuBoard[i][j].Candidate.Length; num++)
                 {
                     //如果有可以填的候选数，理论上不会遇见没有可以填的情况，这种死路情况已经在UpdateCandidate时检查了
