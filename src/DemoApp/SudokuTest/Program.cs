@@ -1,5 +1,6 @@
 ﻿using CoreDX.Sudoku;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SudokuTest
@@ -54,8 +55,27 @@ namespace SudokuTest
                 new byte[]{0, 0, 8, 0, 0, 1, 0, 0, 3},};
             var su = new SudokuSolver(game);
             var r = su.Solve();
+            var r1 = r.First();
+            static IEnumerable<PathTree> GetPath(PathTree pathTree)
+            {
+                List<PathTree> list = new List<PathTree>();
+                var path = pathTree;
+                while (path.Parent != null)
+                {
+                    list.Add(path);
+                    path = path.Parent;
+                }
 
-            Console.WriteLine(r.First());
+                return list.Reverse<PathTree>();
+            }
+
+            var p = GetPath(r1.path).Select(x => $"在 {x.X + 1} 行 {x.Y + 1} 列填入 {x.Number}");
+            foreach(var step in p)
+            {
+                Console.WriteLine(step);
+            }
+
+            Console.WriteLine(r1.sudoku);
             Console.ReadKey();
         }
     }

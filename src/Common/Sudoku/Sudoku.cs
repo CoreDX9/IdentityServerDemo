@@ -37,15 +37,18 @@ namespace CoreDX.Sudoku
         /// 求解数独
         /// </summary>
         /// <returns>获得的解</returns>
-        public IEnumerable<SudokuState> Solve(bool multiAnswer = false)
+        public IEnumerable<(SudokuState sudoku, PathTree path)> Solve(bool multiAnswer = false)
         {
             //初始化各个单元格能填入的数字
             InitCandidate();
 
+            var pathRoot0 = new PathTree(null, -1, -1, -1); //填写路径树，在非递归方法中用于记录回退路径和其他有用信息，初始生成一个根
+            var path0 = pathRoot0;
+
             //循环填入能填入的数字只有一个的单元格，每次填入都可能产生新的唯一数单元格，直到没有唯一数单元格可填
             while (true)
             {
-                if (!FillUniqueNumber())
+                if (!FillUniqueNumber(ref path0))
                 {
                     break;
                 }
@@ -70,13 +73,14 @@ namespace CoreDX.Sudoku
             }
             if (finish)
             {
-                yield return new SudokuState(this);
+                yield return (new SudokuState(this), path0);
                 yield break;
             }
 
-            //还存在需要试数才能求解的单元格，开始暴力搜索
             var pathRoot = new PathTree(null, -1, -1, -1); //填写路径树，在非递归方法中用于记录回退路径和其他有用信息，初始生成一个根
             var path = pathRoot;
+            var toRe = new List<(SudokuState sudoku, PathTree path)>();
+            //还存在需要试数才能求解的单元格，开始暴力搜索
             int i = 0, j = 0;
             while (true)
             {
@@ -85,13 +89,24 @@ namespace CoreDX.Sudoku
                 //正常情况下返回-1表示已经全部填完
                 if (i == -1 && j == -1 && !multiAnswer)
                 {
+                    var pathLast = path;
+                    var path1 = path;
+                    while(path1.Parent.X != -1 && path1.Parent.Y != -1)
+                    {
+                        path1 = path1.Parent;
+                    }
+
+                    path0.Children.Add(path1);
+                    path1.Parent = path0;
+                    yield return (new SudokuState(this), pathLast);
                     break;
                 }
 
+                var numNode = path.Children.LastOrDefault();
                 //确定要从哪个数开始进行填入尝试
-                var num = path.Children.LastOrDefault() == null
+                var num = numNode == null
                     ? 0
-                    : path.Children.LastOrDefault().Number;
+                    : numNode.Number;
 
                 bool filled = false; //是否发现可以填入的数
                 //循环查看所有候选数是否能填
@@ -139,8 +154,6 @@ namespace CoreDX.Sudoku
                     j = path.Y < 0 ? 0 : path.Y;
                 }
             }
-
-            yield return new SudokuState(this);
         }
 
         /// <summary>
@@ -225,7 +238,7 @@ namespace CoreDX.Sudoku
         /// 求解开始时寻找并填入单元格唯一可填的数，减少解空间
         /// </summary>
         /// <returns>是否填入过数字，如果为false，表示能立即确定待填数字的单元格已经没有，要开始暴力搜索了</returns>
-        private bool FillUniqueNumber()
+        private bool FillUniqueNumber(ref PathTree path)
         {
             var filled = false;
             for (int i = 0; i < SudokuBoard.Length; i++)
@@ -258,10 +271,13 @@ namespace CoreDX.Sudoku
                             SudokuBoard[i][j].SetNumber(num);
                             SudokuBoard[i][j].SetUnique();
                             filled = true;
-                            if (!UpdateCandidate(i, j, num).canFill)
+                            var upRes = UpdateCandidate(i, j, num);
+                            if (!upRes.canFill)
                             {
                                 throw new Exception("有单元格无法填入任何数字，数独无解");
                             }
+                            path = new PathTree(SudokuBoard[i][j], i, j, num, path);
+                            path.SetList = upRes.setList;
                         }
                     }
                 }
@@ -421,10 +437,10 @@ $@"{Str(SudokuBoard[0][0])},{Str(SudokuBoard[0][1])},{Str(SudokuBoard[0][2])},{S
         }
     }
 
-    internal class PathTree
+    public class PathTree
     {
         public PathTree Parent { get; set; }
-        public List<PathTree> Children { get; set; } = new List<PathTree>();
+        public List<PathTree> Children { get; } = new List<PathTree>();
 
         public SudokuBlock Block { get; }
         public int X { get; }
@@ -474,6 +490,10 @@ $@"{Str(SudokuBoard[0][0])},{Str(SudokuBoard[0][1])},{Str(SudokuBoard[0][2])},{S
                         , sudoku.SudokuBoard[i][j].Number
                         , (byte)i
                         , (byte)j);
+                    if (sudoku.SudokuBoard[i][j].IsUnique)
+                    {
+                        SudokuBoard[i][j].SetUnique();
+                    }
                 }
             }
         }

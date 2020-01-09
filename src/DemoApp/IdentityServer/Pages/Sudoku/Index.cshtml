@@ -19,7 +19,7 @@
         var sudo = JsonConvert.DeserializeObject<byte[][]>(sudoku);
         var su = new SudokuSolver(sudo);
         var r = su.Solve();
-        var re = r.First().SudokuBoard.Select(x => x.Select(y => (int)y.Number).ToArray()).ToArray();
+        var re = r.First().sudoku.SudokuBoard.Select(x => x.Select(y => (int)y.Number).ToArray()).ToArray();
 
         return new JsonResult(re);
     }
