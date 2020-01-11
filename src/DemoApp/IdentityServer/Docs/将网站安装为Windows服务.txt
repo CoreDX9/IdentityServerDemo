@@ -1,0 +1,41 @@
+使用powershell方式（win7 sp1 以上建议使用）
+安装：
+$acl = Get-Acl "{EXE PATH}"
+$aclRuleArgs = {DOMAIN OR COMPUTER NAME\USER}, "Read,Write,ReadAndExecute", "ContainerInherit,ObjectInherit", "None", "Allow"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($aclRuleArgs)
+$acl.SetAccessRule($accessRule)
+$acl | Set-Acl "{EXE PATH}"
+
+New-Service -Name {NAME} -BinaryPathName {EXE FILE PATH} -Credential {DOMAIN OR COMPUTER NAME\USER} -Description "{DESCRIPTION}" -DisplayName "{DISPLAY NAME}" -StartupType Automatic
+
+参数解释：
+{EXE PATH} – 应用在主机上的文件夹的路径（如 d:\myservice）。 请勿在此路径中包含应用的可执行文件。 尾部反斜杠是非必需项。
+{DOMAIN OR COMPUTER NAME\USER} – 服务用户帐户（如 Contoso\ServiceUser）。
+{NAME} – 服务名称（如 MyService）。
+{EXE FILE PATH} – 应用的可执行文件路径（如 d:\myservice\myservice.exe）。 请将可执行文件的文件名和扩展名包括在内。
+{DESCRIPTION} – 服务说明（如 My sample service）。
+{DISPLAY NAME} – 服务显示名称（如 My Service）。
+
+启动：
+Start-Service -Name {NAME}
+
+停止：
+Stop-Service -Name {NAME}
+
+删除：
+Remove-Service -Name {NAME}
+
+查看服务状态：
+Get-Service -Name {NAME}
+
+使用cmd方式，在项目发布文件夹打开cmd执行以下命令
+安装：
+sc create IdentityServer binPath=IdentityServer.exe
+修改服务说明：
+sc description "服务名" "描述"
+启动：
+sc start IdentityServer 
+停止：
+sc stop IdentityServer 
+删除：
+sc delete IdentityServer 
