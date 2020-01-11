@@ -71,6 +71,7 @@ namespace IdentityServer.Extensions
                     LaunchBrowserAsync().Wait();
                     //把启动时默认创建的空白页标签页关掉
                     browser.PagesAsync().Result[0].CloseAsync().Wait();
+                    _logger.LogInformation("已启动后台 Chrome 。");
                 }
                 return browser.NewPageAsync().Result;
             }
