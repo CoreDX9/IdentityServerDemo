@@ -18,6 +18,12 @@
       <DestinationRelativePath>App_Data/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
 
+    <!--发布时包含Ocr数据文件-->
+    <_OcrFiles Include="App_Data/**/*.traineddata" />
+    <DotnetPublishFiles Include="@(_OcrFiles)">
+      <DestinationRelativePath>App_Data/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+    
     <!--包含bootstrap文件-->
     <_BootstrapFiles Include="node_modules/bootstrap/dist/**/*.*" />
     <DotnetPublishFiles Include="@(_BootstrapFiles)">
