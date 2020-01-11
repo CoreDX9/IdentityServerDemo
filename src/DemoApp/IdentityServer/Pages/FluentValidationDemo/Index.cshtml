@@ -1,4 +1,6 @@
 ﻿@page
+@using IdentityServer.Pages.FluentValidationDemo
+@using System.ComponentModel.DataAnnotations
 @model IdentityServer.Pages.FluentValidationDemo.IndexModel
 @{
     ViewData["Title"] = "FluentValidationDemo";
@@ -12,22 +14,22 @@
         <form method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Input.B.C"></label>
+                <label ><localize>@(((DisplayAttribute)(typeof(IndexModel.B).GetProperty("C").GetCustomAttributes(typeof(DisplayAttribute), false)[0])).Name)</localize></label>
                 <input asp-for="Input.B.C" class="form-control" />
                 <span asp-validation-for="Input.B.C" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Input.Dp.E"></label>
+                <label ><localize>@(((DisplayAttribute)(typeof(IndexModel.A.D).GetProperty("E").GetCustomAttributes(typeof(DisplayAttribute), false)[0])).Name)</localize></label>
                 <input asp-for="Input.Dp.E" class="form-control" />
                 <span asp-validation-for="Input.Dp.E" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Input.S"></label>
+                <label ><localize>@(((DisplayAttribute)(typeof(IndexModel.A).GetProperty("S").GetCustomAttributes(typeof(DisplayAttribute), false)[0])).Name)</localize></label>
                 <input asp-for="Input.S" class="form-control" />
                 <span asp-validation-for="Input.S" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Input.T"></label>
+                <label ><localize>@(((DisplayAttribute)(typeof(IndexModel.A).GetProperty("T").GetCustomAttributes(typeof(DisplayAttribute), false)[0])).Name)</localize></label>
                 <input asp-for="Input.T" class="form-control" />
                 <span asp-validation-for="Input.T" class="text-danger"></span>
             </div>
