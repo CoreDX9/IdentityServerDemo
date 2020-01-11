@@ -5,18 +5,21 @@ using System.Threading.Tasks;
 using PuppeteerSharp;
 using Microsoft.AspNetCore.Hosting;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Extensions
 {
     public class HeadlessChromeManager
     {
         private readonly IWebHostEnvironment _environment;
+        private ILogger<HeadlessChromeManager> _logger;
         private Browser browser;
         private object _locker;
 
-        public HeadlessChromeManager(IWebHostEnvironment environment)
+        public HeadlessChromeManager(IWebHostEnvironment environment, ILogger<HeadlessChromeManager> logger)
         {
             _environment = environment;
+            _logger = logger;
             _locker = new object();
             browser = null;
         }
@@ -48,6 +51,7 @@ namespace IdentityServer.Extensions
                             browser.CloseAsync();
                             browser.Dispose();
                             browser = null;
+                            _logger.LogInformation("已关闭后台 Chrome 。");
 
                             return;
                         }
