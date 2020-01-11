@@ -513,17 +513,7 @@ namespace IdentityServer
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
 
             //注册无界面chrome服务
-            services.AddSingleton(provider =>
-            {
-                new PuppeteerSharp.BrowserFetcher(options: new PuppeteerSharp.BrowserFetcherOptions() { Path = $@"{Environment.ContentRootPath}\.local-chromium" })
-                .DownloadAsync(PuppeteerSharp.BrowserFetcher.DefaultRevision).Wait();
-                var browserTask = PuppeteerSharp.Puppeteer.LaunchAsync(new PuppeteerSharp.LaunchOptions
-                {
-                    Headless = true
-                });
-                browserTask.Wait();
-                return browserTask.Result;
-            });
+            services.AddSingleton<HeadlessChromeManager>();
 
             // 注册选项服务
             //services.AddOptions();

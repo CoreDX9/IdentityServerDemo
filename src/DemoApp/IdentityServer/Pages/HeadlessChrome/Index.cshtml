@@ -1,6 +1,7 @@
 ﻿@page
 @using PuppeteerSharp
-@inject PuppeteerSharp.Browser browser
+@using IdentityServer.Extensions
+@inject HeadlessChromeManager browserManager
 @{
     ViewData["Title"] = "Headless Chrome";
 }
@@ -18,7 +19,7 @@
 
     public async Task<IActionResult> OnGetScreenshotPageAsync(string url)
     {
-        using (var page = await browser.NewPageAsync())
+        using (var page = browserManager.GetNewPage())
         {
             await page.SetViewportAsync(new ViewPortOptions
             {

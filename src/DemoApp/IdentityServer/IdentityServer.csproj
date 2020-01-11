@@ -113,6 +113,7 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
+    <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.32" />
   </ItemGroup>

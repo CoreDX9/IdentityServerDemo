@@ -1,0 +1,166 @@
+﻿@page
+@using System.Text;
+@using System.IO
+@using Tesseract
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Environment
+@{
+    ViewData["Title"] = "Tesseract-Ocr";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+
+    }
+
+    public IActionResult OnPostUpload(IFormFile pic, string lang)
+    {
+        var sb = new StringBuilder();
+        try
+        {
+            using (var engine = new TesseractEngine($@"{Environment.ContentRootPath}\App_Data\Tessdata", lang, EngineMode.Default))
+            {
+                var stream = new MemoryStream();
+                pic.CopyTo(stream);
+                using (var img = Pix.LoadFromMemory(stream.ToArray()))
+                {
+                    using (var page = engine.Process(img))
+                    {
+                        var text = page.GetText();
+                        sb.AppendLine($"Mean confidence: {page.GetMeanConfidence()}");
+                        sb.AppendLine($"Text (GetText): \r\n{text}");
+                        sb.AppendLine("Text (iterator):");
+
+                        using (var iter = page.GetIterator())
+                        {
+                            iter.Begin();
+
+                            do
+                            {
+                                do
+                                {
+                                    do
+                                    {
+                                        do
+                                        {
+                                            if (iter.IsAtBeginningOf(PageIteratorLevel.Block))
+                                            {
+                                                sb.AppendLine("<BLOCK>");
+
+                                            }
+                                            sb.Append(iter.GetText(PageIteratorLevel.Word));
+                                            sb.Append(" ");
+
+                                            if (iter.IsAtFinalOf(PageIteratorLevel.TextLine, PageIteratorLevel.Word))
+                                            {
+                                                sb.AppendLine();
+                                            }
+                                        } while (iter.Next(PageIteratorLevel.TextLine, PageIteratorLevel.Word));
+
+                                        if (iter.IsAtFinalOf(PageIteratorLevel.Para, PageIteratorLevel.TextLine))
+                                        {
+                                            sb.AppendLine();
+                                        }
+                                    } while (iter.Next(PageIteratorLevel.Para, PageIteratorLevel.TextLine));
+                                } while (iter.Next(PageIteratorLevel.Block, PageIteratorLevel.Para));
+                            } while (iter.Next(PageIteratorLevel.Block));
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            //Console.WriteLine("Unexpected Error: " + e.Message);
+            //Console.WriteLine("Details: ");
+            //Console.WriteLine(e.ToString());
+        }
+        return Content(sb.ToString());
+    }
+}
+
+    <h2>Tesseract-Ocr</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <form action="/Ocr/Index?handler=Upload"
+              enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;"
+              method="post"
+              asp-antiforgery="true">
+            <dl>
+                <dt>
+                    <label for="FileUpload_FormFile">File</label>
+                </dt>
+                <dd>
+                    <select name="lang">
+                        <option value="chi_sim">简体中文</option>
+                        <option value="chi_sim_vert">简体中文（纵向书写）</option>
+                        <option value="chi_tra">繁体中文</option>
+                        <option value="chi_tra_vert">繁体中文（纵向书写）</option>
+                        <option value="eng">English</option>
+                        <option value="jpn">日本語</option>
+                        <option value="jpn_vert">日本語（vert）</option>
+                    </select>
+                    <input id="FileUpload_FormFile" type="file"
+                           name="pic" />
+                </dd>
+            </dl>
+
+            <input class="button" type="submit" value="Upload" />
+
+            <div class="row">
+                <div class="col-md-12">
+                    <output name="result"></output>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <img id="img" style="width: 100%;" />
+                </div>
+                <div class="col-md-6">
+                    <textarea name="result-text" style="width: 100%; height: 100%;"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        async function AJAXSubmit(oFormElement) {
+            var resultElement = oFormElement.elements.namedItem("result");
+            var resultTextElement = oFormElement.elements.namedItem("result-text");
+            const formData = new FormData(oFormElement);
+
+            try {
+                const response = await fetch(oFormElement.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    //window.location.href = '/';
+                }
+
+                resultElement.value = 'Result: ' + response.status + ' ' + response.statusText;
+
+                var imgElement = document.getElementById("img");
+                var reads = new FileReader();
+                f = oFormElement.elements.namedItem('pic').files[0];
+                reads.readAsDataURL(f);
+                reads.onload = function (e) {
+                    imgElement.src = reads.result;
+                };
+
+                var text = await response.text();
+                resultTextElement.value = text;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+}
