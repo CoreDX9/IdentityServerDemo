@@ -1,0 +1,81 @@
+﻿@page
+@using System.Runtime.CompilerServices;
+@using IdentityServer.Extensions;
+@using System.Reflection;
+@using PluginBase;
+@using Microsoft.AspNetCore.Hosting;
+
+@{
+    ViewData["Title"] = "CSharp";
+}
+
+@functions
+{
+    static IEnumerable<IPlugin> CreatePlugins(Assembly assembly)
+    {
+        int count = 0;
+
+        foreach (Type type in assembly.GetTypes())
+        {
+            if (typeof(IPlugin).IsAssignableFrom(type))
+            {
+                IPlugin result = Activator.CreateInstance(type) as IPlugin;
+                if (result != null)
+                {
+                    count++;
+                    yield return result;
+                }
+            }
+        }
+
+        if (count == 0)
+        {
+            string availableTypes = string.Join(",", assembly.GetTypes().Select(t => t.FullName));
+            throw new ApplicationException(
+                $"Can't find any type which implements ICommand in {assembly} from {assembly.Location}.\n" +
+                $"Available types: {availableTypes}");
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    static string ExecuteAndUnload(string assemblyPath, out WeakReference alcWeakRef)
+    {
+        var alc = new CollectibleAssemblyLoadContext(assemblyPath);
+        Assembly a = alc.LoadFromAssemblyPath(assemblyPath);
+
+        alcWeakRef = new WeakReference(alc, trackResurrection: true);
+
+        var aa = CreatePlugins(a);
+
+        var result = aa.First().Run("Hello");
+
+        alc.Unload();
+
+        return result;
+    }
+    public void OnGet()
+    {
+        var environment = (IWebHostEnvironment)HttpContext.RequestServices.GetService(typeof(IWebHostEnvironment));
+        ViewBag.Data = ExecuteAndUnload($@"{environment.ContentRootPath}\Plugins\Plugin1\netstandard2.0\Plugin1.dll", out var reference);
+
+        //执行强制回收直到程序集载入上下文被完全释放或已经执行了10次回收仍未完成（如果10次回收都失败应该警惕出现内存泄漏了）
+        for (int i = 0; reference.IsAlive && (i < 10); i++)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+    }
+}
+
+<h2>CSharp</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <textarea style="width: 100%;">@ViewBag.Data</textarea>
+    </div>
+</div>
+
+@section Scripts
+{
+
+}

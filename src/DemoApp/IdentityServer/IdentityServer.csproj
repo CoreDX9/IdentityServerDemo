@@ -18,6 +18,12 @@
       <DestinationRelativePath>App_Data/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
 
+    <!--包含插件文件-->
+    <_PluginFiles Include="Plugins/**/*.*" />
+    <DotnetPublishFiles Include="@(_PluginFiles)">
+      <DestinationRelativePath>Plugins/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+
     <!--发布时包含Ocr数据文件-->
     <_OcrFiles Include="App_Data/**/*.traineddata" />
     <DotnetPublishFiles Include="@(_OcrFiles)">
@@ -35,9 +41,14 @@
     <DotnetPublishFiles Include="@(_MonacoEditorFiles)">
       <DestinationRelativePath>wwwroot/lib/monaco-editor/vs/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
+    <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
 
     <!--包含layui文件-->
     <_LayuiFiles Include="node_modules/layui-src/dist/**/*.*" />
+    <DotnetPublishFiles Include="@(_LayuiFiles)">
+      <DestinationRelativePath>wwwroot/lib/layui/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+    
     <Compile Remove="Areas\Manage\Views\OrganizationPermissionDeclaration\**" />
     <Compile Remove="Areas\Manage\Views\Organizations\**" />
     <Compile Remove="Areas\Manage\Views\PermissionDefinition\**" />
@@ -65,10 +76,6 @@
     <Compile Remove="Areas\Manage\Controllers\ListUserCommand.cs" />
     <Compile Remove="Extensions\MyAuthorize.cs" />
     <Content Remove="Areas\Manage\Views\AuthorizationRules\Index-old.cshtml" />
-    <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
-    <DotnetPublishFiles Include="@(_LayuiFiles)">
-      <DestinationRelativePath>wwwroot/lib/layui/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
-    </DotnetPublishFiles>
 
     <!--包含应用SSL证书文件-->
     <ResolvedFileToPublish Include="Certificate/server.pfx">
@@ -128,8 +135,13 @@
     <ProjectReference Include="..\..\..\..\Harmonic\Harmonic\Harmonic.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
     <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
+    <ProjectReference Include="..\..\DemoPlugin\PluginBase\PluginBase.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Plugins\" />
   </ItemGroup>
 </Project>
