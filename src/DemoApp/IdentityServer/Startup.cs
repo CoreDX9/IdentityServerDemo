@@ -48,6 +48,7 @@ using CoreDX.Domain.Model.Repository;
 using CoreDX.Application.Repository.EntityFrameworkCore;
 using System.Threading.Tasks;
 using AspNetCoreRateLimit;
+using IdentityServer.Grpc.Services;
 
 #endregion
 
@@ -543,8 +544,11 @@ namespace IdentityServer
             //注册直播服务主机管理器
             services.AddSingleton<RtmpServerManager>();
 
-            //注册服务容器
+            //注册服务配置表
             services.AddSingleton(services);
+
+            //注册Grpc服务
+            services.AddGrpc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -783,13 +787,22 @@ namespace IdentityServer
             {
                 endpoints.MapGet("/.well-known/acme-challenge/oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88", context => 
                     context.Response.WriteAsync("oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88.MH3xs1jYDVTn05jfUtv4-utqDcgZnd4adWIrVgwTujg"));
+
+                //映射 SignalR 集线器终结点
                 endpoints.MapHub<ChatHub>("/chatHub");
 
+                //映射健康检查终结点
                 endpoints.MapHealthChecks("/health");
 
+                //映射区域控制器终结点
                 endpoints.MapControllerRoute("area", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                //映射默认控制终结点
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                //映射 Razor Pages 终结点
                 endpoints.MapRazorPages();
+
+                //映射gRPC终结点
+                endpoints.MapGrpcService<GreeterService>();
             });
         }
     }

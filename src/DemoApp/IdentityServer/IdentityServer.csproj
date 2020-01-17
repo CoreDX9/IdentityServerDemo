@@ -83,6 +83,13 @@
     </ResolvedFileToPublish>
   </ItemGroup>
 
+  <!--Grpc协议文件-->
+  <ItemGroup>
+    <!--<Protobuf Include="Grpc\Protos\greet.proto" GrpcServices="Server" />-->
+    <Protobuf Include="Grpc/Protos/*.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+  <!--包引用-->
   <ItemGroup>
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.1" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
@@ -90,6 +97,7 @@
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="BundlerMinifier.Core" Version="3.2.435" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.26.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5420-preview1" />
     <PackageReference Include="IdentityServer4" Version="3.1.0" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.1.0" />
@@ -131,6 +139,7 @@
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.32" />
   </ItemGroup>
 
+  <!--项目引用-->
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Harmonic\Harmonic\Harmonic.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
