@@ -24,6 +24,7 @@ namespace IdentityServer.Extensions
                 return LoadFromAssemblyPath(assemblyPath);
             }
 
+            //返回null并非表示找不到要载入的程序集，实际上表示要从默认程序集载入上下文查找，如果还找不到才会抛出异常
             return null;
         }
 

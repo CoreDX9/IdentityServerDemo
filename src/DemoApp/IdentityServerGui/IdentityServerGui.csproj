@@ -23,11 +23,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.1" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.4" />
   </ItemGroup>
 
   <ItemGroup>
