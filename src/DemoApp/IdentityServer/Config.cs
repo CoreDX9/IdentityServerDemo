@@ -150,7 +150,13 @@ namespace IdentityServer
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
 
-                    RedirectUris =           { "https://localhost:5007/callback.html", "https://localhost:5003/swagger/oauth2-redirect.html" },
+                    RedirectUris =
+                    {
+                        "https://localhost:5007/callback.html", 
+                        "https://localhost:5003/swagger/oauth2-redirect.html",
+                        "https://localhost:5001/swagger/oauth2-redirect.html",
+                        "https://localhost/swagger/oauth2-redirect.html" 
+                    },
                     PostLogoutRedirectUris = { "https://localhost:5007/index.html" },
                     AllowedCorsOrigins =     { "https://localhost:5007" },
 

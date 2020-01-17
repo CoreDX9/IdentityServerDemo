@@ -52,10 +52,5 @@
             </summary>
             <param name="id">id</param>
         </member>
-        <member name="T:WebAPI.IdentityServer4OAuth2OperationFilter">
-            <summary>
-            IdentityServer4认证处理
-            </summary>
-        </member>
     </members>
 </doc>

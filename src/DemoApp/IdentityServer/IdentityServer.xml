@@ -1,0 +1,509 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IdentityServer</name>
+    </assembly>
+    <members>
+        <member name="M:IdentityServer.Api.UserController.GetListAsync(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            获取用户列表
+            </summary>
+            <param name="page">页码</param>
+            <param name="size">每页条目数</param>
+            <returns>用户列表</returns>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.Login(System.String)">
+            <summary>
+            Show login page
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.Login(IdentityServer.Areas.IdentityServer.Controllers.Account.LoginInputModel,System.String)">
+            <summary>
+            Handle postback from username/password login
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.ExternalLogin(System.String,System.String)">
+            <summary>
+            initiate roundtrip to external authentication provider
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.ExternalLoginCallback">
+            <summary>
+            Post processing of external authentication
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.Logout(System.String)">
+            <summary>
+            Show logout page
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Account.AccountController.Logout(IdentityServer.Areas.IdentityServer.Controllers.Account.LogoutInputModel)">
+            <summary>
+            Handle logout page postback
+            </summary>
+        </member>
+        <member name="T:IdentityServer.Areas.IdentityServer.Controllers.Consent.ConsentController">
+            <summary>
+            This controller processes the consent UI
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Consent.ConsentController.Index(System.String)">
+            <summary>
+            Shows the consent screen
+            </summary>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Consent.ConsentController.Index(IdentityServer.Areas.IdentityServer.Controllers.Consent.ConsentInputModel)">
+            <summary>
+            Handles the consent screen postback
+            </summary>
+        </member>
+        <member name="T:IdentityServer.Areas.IdentityServer.Controllers.Grants.GrantsController">
+            <summary>
+            This sample controller allows a user to revoke grants given to clients
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Grants.GrantsController.Index">
+            <summary>
+            Show list of grants
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Grants.GrantsController.Revoke(System.String)">
+            <summary>
+            Handle postback to revoke a client
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Areas.IdentityServer.Controllers.Home.HomeController.Error(System.String)">
+            <summary>
+            Shows the error page
+            </summary>
+        </member>
+        <member name="T:IdentityServer.CustomServices.AesProtector">
+            <summary>
+            AES数据加密器
+            </summary>
+        </member>
+        <member name="T:IdentityServer.CustomServices.AesProtectorKeyRing">
+            <summary>
+            AES加密器密钥管理器
+            </summary>
+        </member>
+        <member name="T:IdentityServer.CustomServices.RazorViewToStringRenderer">
+            <summary>
+            将Razor视图渲染为字符串
+            </summary>
+        </member>
+        <member name="M:IdentityServer.CustomServices.RazorViewToStringRenderer.RenderViewToStringAsync``1(System.String,``0,Microsoft.AspNetCore.Routing.RouteData,Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor,Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary)">
+            <summary>
+            渲染并返回结果（在非Web环境中不支持依赖UrlHelper的链接生成，如果需要，可以在Asp.Net Core 2.2之后注入并使用LinkGenerator）
+            </summary>
+            <typeparam name="TModel">视图模型类型</typeparam>
+            <param name="viewName">视图名称（或视图路径）</param>
+            <param name="model">视图模型</param>
+            <param name="routeData">路由数据，传入实际数据可以使用相对路径查找视图、视图引用的部分视图和其他资源，一般直接传入HttpContext中的RouteData</param>
+            <param name="actionDescriptor">动作描述信息，传入实际数据可以使用相对路径查找视图、视图引用的部分视图和其他资源，一般直接传入HttpContext中的ActionDescriptor</param>
+            <param name="httpContext">Http上下文</param>
+            <param name="modelStateDictionary">模型状态字典</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.Extensions.FluentValidationExtensions.WithLanguageManagedMessage``2(FluentValidation.IRuleBuilderOptions{``0,``1},System.String)">
+            <summary>
+            指定基于ValidatorOptions.LanguageManager的验证失败消息
+            </summary>
+            <typeparam name="T">验证对象的类型</typeparam>
+            <typeparam name="TProperty">验证属性的类型</typeparam>
+            <param name="rule">验证规则</param>
+            <param name="message">消息内容</param>
+            <returns>验证规则</returns>
+        </member>
+        <member name="T:IdentityServer.Extensions.LocalizationLanguageManager">
+            <summary>
+            本地化语言管理器
+            使用IStringLocalizerFactory
+            </summary>
+        </member>
+        <member name="T:IdentityServer.Extensions.HtmlHelperDisplayNameExtensions">
+            <summary>
+            DisplayName-related extensions for <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper" /> and <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper`1" />.
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Extensions.HtmlHelperDisplayNameExtensions.DisplayNameFor``2(Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper{X.PagedList.IPagedList{``0}},System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Returns the display name for the specified <paramref name="expression" />
+            if the current model represents a collection.
+            </summary>
+            <param name="htmlHelper">
+            The <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper`1" /> of <see cref="T:System.Collections.Generic.IEnumerable`1" /> instance this method extends.
+            </param>
+            <param name="expression">An expression to be evaluated against an item in the current model.</param>
+            <typeparam name="TModelItem">The type of items in the model collection.</typeparam>
+            <typeparam name="TResult">The type of the <paramref name="expression" /> result.</typeparam>
+            <returns>A <see cref="T:System.String" /> containing the display name.</returns>
+        </member>
+        <member name="M:IdentityServer.Extensions.ControllerExtensions.IsAjaxRequest(Microsoft.AspNetCore.Mvc.Controller)">
+            <summary>
+            基于JQuery Ajax的RequestHeader x-requested-with判断是否为ajax请求
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:IdentityServer.Extensions.JqGridSearchExtensions">
+            <summary>
+            JqGrid搜索表达式扩展
+            </summary>
+        </member>
+        <member name="M:IdentityServer.Extensions.JqGridSearchExtensions.BuildWhere``1(IdentityServer.Models.JqGridSearchRuleGroup,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            根据搜索条件构造where表达式，支持JqGrid高级搜索
+            </summary>
+            <typeparam name="T">搜索的对象类型</typeparam>
+            <param name="ruleGroup">JqGrid搜索条件组</param>
+            <param name="propertyMap">属性映射，把搜索规则的名称映射到属性名称，如果属性是复杂类型，使用点号可以继续访问内部属性</param>
+            <returns>where表达式</returns>
+        </member>
+        <member name="M:IdentityServer.Extensions.JqGridSearchExtensions.BuildGroupExpression``1(IdentityServer.Models.JqGridSearchRuleGroup,System.Linq.Expressions.ParameterExpression,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            构造搜索条件组的表达式（一个组中可能包含若干子条件组）
+            </summary>
+            <typeparam name="T">搜索的对象类型</typeparam>
+            <param name="group">条件组</param>
+            <param name="parameter">参数表达式</param>
+            <param name="propertyMap">属性映射</param>
+            <returns>返回bool的条件组的表达式</returns>
+        </member>
+        <member name="M:IdentityServer.Extensions.JqGridSearchExtensions.BuildRuleExpression``1(IdentityServer.Models.JqGridSearchRule,System.Linq.Expressions.ParameterExpression,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            构造条件表达式
+            </summary>
+            <typeparam name="T">搜索的对象类型</typeparam>
+            <param name="rule">条件</param>
+            <param name="parameter">参数</param>
+            <param name="propertyMap">属性映射</param>
+            <returns>返回bool的条件表达式</returns>
+        </member>
+        <member name="M:IdentityServer.Extensions.JqGridSearchExtensions.BuildContainsExpression(IdentityServer.Models.JqGridSearchRule,System.Linq.Expressions.Expression,System.Type)">
+            <summary>
+            构造Contains调用表达式
+            </summary>
+            <param name="rule">条件</param>
+            <param name="parameter">参数</param>
+            <param name="parameterType">参数类型</param>
+            <returns>Contains调用表达式</returns>
+        </member>
+        <member name="T:IdentityServer.Grpc.Services.GreetReflection">
+            <summary>Holder for reflection information generated from Grpc/Protos/greet.proto</summary>
+        </member>
+        <member name="P:IdentityServer.Grpc.Services.GreetReflection.Descriptor">
+            <summary>File descriptor for Grpc/Protos/greet.proto</summary>
+        </member>
+        <member name="T:IdentityServer.Grpc.Services.HelloRequest">
+            <summary>
+            The request message containing the user's name.
+            </summary>
+        </member>
+        <member name="F:IdentityServer.Grpc.Services.HelloRequest.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="T:IdentityServer.Grpc.Services.HelloReply">
+            <summary>
+            The response message containing the greetings.
+            </summary>
+        </member>
+        <member name="F:IdentityServer.Grpc.Services.HelloReply.MessageFieldNumber">
+            <summary>Field number for the "message" field.</summary>
+        </member>
+        <member name="T:IdentityServer.Grpc.Services.Greeter">
+            <summary>
+            The greeting service definition.
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Grpc.Services.Greeter.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:IdentityServer.Grpc.Services.Greeter.GreeterBase">
+            <summary>Base class for server-side implementations of Greeter</summary>
+        </member>
+        <member name="M:IdentityServer.Grpc.Services.Greeter.GreeterBase.SayHello(IdentityServer.Grpc.Services.HelloRequest,Grpc.Core.ServerCallContext)">
+            <summary>
+            Sends a greeting
+            </summary>
+            <param name="request">The request received from the client.</param>
+            <param name="context">The context of the server-side call handler being invoked.</param>
+            <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:IdentityServer.Grpc.Services.Greeter.BindService(IdentityServer.Grpc.Services.Greeter.GreeterBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:IdentityServer.Grpc.Services.Greeter.BindService(Grpc.Core.ServiceBinderBase,IdentityServer.Grpc.Services.Greeter.GreeterBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the  service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PostResponse(System.String,System.String)">
+            <summary>
+            post请求
+            </summary>
+            <param name="url"></param>
+            <param name="postData">post数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PostResponse``1(System.String,``0)">
+            <summary>
+            发起post请求
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url">url</param>
+            <param name="postData">post数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PostResponseKey``1(System.String,``0)">
+            <summary>
+            发起post请求主键返回
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url">url</param>
+            <param name="postData">post数据</param>
+            <returns>主键</returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PostResponse``1(System.String,System.String)">
+            <summary>
+            发起post请求
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url">url</param>
+            <param name="postData">post数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PostXmlResponse``1(System.String,System.String)">
+            <summary>
+            V3接口全部为Xml形式，故有此方法
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url"></param>
+            <param name="xmlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.XmlDeserialize``1(System.String)">
+            <summary>
+            反序列化Xml
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="xmlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.GetResponse(System.String)">
+            <summary>
+            get请求
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.GetResponse``1(System.String)">
+            <summary>
+            get请求
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:IdentityServer.HttpClientUtil.GetResponseList``1(System.String)" -->
+        <member name="M:IdentityServer.HttpClientUtil.DeleteResponse(System.String)">
+            <summary>
+            Delete请求
+            </summary>
+            <param name="url"></param>
+            <param name="postData">post数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PutListDataResponse``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            发起put请求 List格式数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url">url</param>
+            <param name="postData">put数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpClientUtil.PutDataResponse``1(System.String,``0)">
+            <summary>
+            发起put请求 (修改时候用)
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="url">url</param>
+            <param name="postData">put数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.BaseController.NotFoundView">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object that renders a view to the response.
+            </summary>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.BaseController.NotFoundView(System.String)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="viewName" />.
+            </summary>
+            <param name="viewName">The name or path of the view that is rendered to the response.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.BaseController.NotFoundView(System.Object)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="model" />
+            to be rendered by the view.
+            </summary>
+            <param name="model">The model that is rendered by the view.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.BaseController.NotFoundView(System.String,System.Object)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="viewName" />
+            and the <paramref name="model" /> to be rendered by the view.
+            </summary>
+            <param name="viewName">The name or path of the view that is rendered to the response.</param>
+            <param name="model">The model that is rendered by the view.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.PageModelBase.NotFoundView">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object that renders a view to the response.
+            </summary>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.PageModelBase.NotFoundView(System.String)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="viewName" />.
+            </summary>
+            <param name="viewName">The name or path of the view that is rendered to the response.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.PageModelBase.NotFoundView(System.Object)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="model" />
+            to be rendered by the view.
+            </summary>
+            <param name="model">The model that is rendered by the view.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="M:IdentityServer.HttpHandlerBase.PageModelBase.NotFoundView(System.String,System.Object)">
+            <summary>
+            Creates a <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object by specifying a <paramref name="viewName" />
+            and the <paramref name="model" /> to be rendered by the view.
+            </summary>
+            <param name="viewName">The name or path of the view that is rendered to the response.</param>
+            <param name="model">The model that is rendered by the view.</param>
+            <returns>The created <see cref="T:Microsoft.AspNetCore.Mvc.ViewResult" /> object for the response.</returns>
+        </member>
+        <member name="T:IdentityServer.Models.AreaInfo">
+            <summary>
+            Area、控制器和Razor Page信息类
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter._search">
+            <summary>
+            是否搜索，本来应该是bool，true
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Nd">
+            <summary>
+            请求发送次数，方面服务器处理重复请求
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Rows">
+            <summary>
+            当页数据条数
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Page">
+            <summary>
+            页码
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Sidx">
+            <summary>
+            排序列，多列排序时为排序列名+空格+排序方式，多个列之间用逗号隔开。例：id asc,name desc
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.SIdx">
+            <summary>
+            分离后的排序列
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Sord">
+            <summary>
+            排序方式：asc、desc
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.Filters">
+            <summary>
+            高级搜索条件json
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.FilterObject">
+            <summary>
+            序列化的高级搜索对象
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.SearchField">
+            <summary>
+            简单搜索字段
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.SearchString">
+            <summary>
+            简单搜索关键字
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridParameter.SearchOper">
+            <summary>
+            简单搜索操作
+            </summary>
+        </member>
+        <member name="T:IdentityServer.Models.JqGridSearchRuleGroup">
+            <summary>
+            高级搜索条件组
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRuleGroup.GroupOp">
+            <summary>
+            条件组合方式：and、or
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRuleGroup.Rules">
+            <summary>
+            搜索条件集合
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRuleGroup.Groups">
+            <summary>
+            搜索条件组集合
+            </summary>
+        </member>
+        <member name="T:IdentityServer.Models.JqGridSearchRule">
+            <summary>
+            高级搜索条件
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRule.Field">
+            <summary>
+            搜索字段
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRule.PascalField">
+            <summary>
+            搜索字段的大驼峰命名
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRule.Op">
+            <summary>
+            搜索操作
+            </summary>
+        </member>
+        <member name="P:IdentityServer.Models.JqGridSearchRule.Data">
+            <summary>
+            搜索关键字
+            </summary>
+        </member>
+    </members>
+</doc>

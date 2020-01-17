@@ -40,15 +40,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using CoreDX.Domain.Model.Repository;
 using CoreDX.Application.Repository.EntityFrameworkCore;
-using System.Threading.Tasks;
 using AspNetCoreRateLimit;
 using IdentityServer.Grpc.Services;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 #endregion
 
@@ -460,9 +461,18 @@ namespace IdentityServer
                         RoleClaimType = "role"
                     };
                 });
+               //安装以下包后下面这段代码可用
+               //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
+               //.AddIdentityServerAuthentication(options =>
+               //{
+               //    options.Authority = "https://localhost:5001";
+               //    options.RequireHttpsMetadata = true;
+               //    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
+               //    options.ApiName = "api1";
+               //});
 
-            //注册跨域访问服务
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
+               //注册跨域访问服务
+               services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
                 {
                     builder.WithOrigins("https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
@@ -549,11 +559,89 @@ namespace IdentityServer
 
             //注册Grpc服务
             services.AddGrpc();
+
+            services.AddApiVersioning(options => {
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(), new HeaderApiVersionReader() { HeaderNames = { "x-api-version" } });
+            }).AddVersionedApiExplorer(option =>
+            {
+                option.GroupNameFormat = "'v'VVVV";//api组名格式
+                option.AssumeDefaultVersionWhenUnspecified = true;//是否提供API版本服务
+            });
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(options =>
+            {
+                var apiVersionDescription = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+                foreach (var description in apiVersionDescription.ApiVersionDescriptions)
+                {
+                    options.SwaggerDoc(description.GroupName,
+                         new OpenApiInfo()
+                         {
+                             Title = $"My API {description.ApiVersion}",
+                             Version = description.ApiVersion.ToString(),
+                             Description = "A simple example ASP.NET Core Web API  \r\n IdentityServer clientId: jsIm",
+                             TermsOfService = new Uri("https://example.com/terms"),
+                             Contact = new OpenApiContact
+                             {
+                                 Name = "CoreDX",
+                                 Email = string.Empty,
+                                 Url = new Uri("https://example.com/coredx"),
+                             },
+                             License = new OpenApiLicense
+                             {
+                                 Name = "Use under LICX",
+                                 Url = new Uri("https://example.com/license"),
+                             }
+                         }
+                    );
+                }
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{typeof(Startup).Assembly.GetName().Name}.xml";
+                var xmlPath = Path.Combine(Environment.ContentRootPath, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+
+                var authorizationUrl = string.Empty;
+#if DEBUG
+                authorizationUrl = "https://localhost:5001/connect/authorize";
+#else
+                authorizationUrl = "https://localhost/connect/authorize";
+#endif
+
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            AuthorizationUrl = new Uri(authorizationUrl),
+                            Scopes = new Dictionary<string, string> { { "api1", "api1" } }
+                        },
+                    },
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+                        },
+                        new[] { "api1" }
+                    }
+                });
+
+                //options.OperationFilter<SecurityRequirementsOperationFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescription)
         {
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
@@ -745,6 +833,19 @@ namespace IdentityServer
             };
 
             app.UseStaticFiles(devStaticFileOptions);
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(options =>
+            {
+                foreach (var description in apiVersionDescription.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                }
+            });
 
             //注册开发环境的npm资源
             if (Environment.IsDevelopment())

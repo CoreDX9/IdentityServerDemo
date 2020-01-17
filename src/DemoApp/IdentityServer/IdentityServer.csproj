@@ -6,8 +6,14 @@
     <UserSecretsId>a8df754f-1b52-4a2e-ac66-ee03f1465195</UserSecretsId>
     <LangVersion>8.0</LangVersion>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
     <!--<RazorCompileOnBuild>false</RazorCompileOnBuild>
     <RazorCompileOnPublish>false</RazorCompileOnPublish>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <!--发布时包含文件-->
@@ -100,6 +106,7 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.26.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5420-preview1" />
     <PackageReference Include="IdentityServer4" Version="3.1.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.1.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="3.1.0" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="3.0.0" />
@@ -109,6 +116,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Redis" Version="1.1.5" />
@@ -134,6 +142,7 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.32" />

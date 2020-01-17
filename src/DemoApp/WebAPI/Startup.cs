@@ -8,21 +8,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
             Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -49,7 +48,7 @@ namespace WebAPI
                     options.ApiName = "api1";
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddCors(options =>
             {
@@ -84,23 +83,26 @@ namespace WebAPI
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
-                {
-                    Title = "IdentityServer Web API", Version = "v1",
-                    Description = "A simple example ASP.NET Core IdentityServer Web API. \r\n IdentityServer clientId: jsIm",
-                    TermsOfService = "None",
-                    Contact = new Contact
-                    {
-                        Name = "CoreDX",
-                        Email = string.Empty,
-                        Url = "http://localhost:5002/Home/Contact"
-                    },
-                    License = new License
-                    {
-                        Name = "许可证名字",
-                        Url = "http://localhost:5002/Home/Contact"
-                    }
-                });
+                c.SwaggerDoc("v1",
+                     new OpenApiInfo()
+                     {
+                         Title = "IdentityServer Web API",
+                         Version = "v1",
+                         Description = "A simple example ASP.NET Core IdentityServer Web API. \r\n IdentityServer clientId: jsIm",
+                         TermsOfService = new Uri("https://example.com/terms"),
+                         Contact = new OpenApiContact
+                         {
+                             Name = "CoreDX",
+                             Email = string.Empty,
+                             Url = new Uri("https://example.com/coredx"),
+                         },
+                         License = new OpenApiLicense
+                         {
+                             Name = "Use under LICX",
+                             Url = new Uri("https://example.com/license"),
+                         }
+                     }
+                );
 
                 var basePath = Environment.ContentRootPath;
 
@@ -108,18 +110,20 @@ namespace WebAPI
 
                 c.IncludeXmlComments(xmlPath, true);
 
-                c.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Type = "oauth2",
-                    Flow = "implicit",
-                    AuthorizationUrl = "https://localhost:5001/connect/authorize",
-                    Scopes = new Dictionary<string, string>
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        { "api1", "api1" },
-                    }
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            AuthorizationUrl = new Uri("https://localhost:5001/connect/authorize"),
+                            Scopes = new Dictionary<string, string> { { "api1", "api1" } }
+                        },
+                    },
                 });
 
-                c.OperationFilter<IdentityServer4OAuth2OperationFilter>();
+                //c.OperationFilter<IdentityServer4OAuth2OperationFilter>();
             });
         }
 
@@ -228,34 +232,39 @@ namespace WebAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
+            app.UseRouting();
 
-            app.UseMvc();
+            app.UseAuthentication();
 
             app.UseSwagger()
                 .UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI V1");
                 });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
         }
     }
 
     /// <summary>
     /// IdentityServer4认证处理
     /// </summary>
-    public class IdentityServer4OAuth2OperationFilter : IOperationFilter
-    {
-        public void Apply(Operation operation, OperationFilterContext context)
-        {
+    //public class IdentityServer4OAuth2OperationFilter : IOperationFilter
+    //{
+    //    public void Apply(Operation operation, OperationFilterContext context)
+    //    {
 
-            if (operation.Security == null)
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
-            var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
-            {
+    //        if (operation.Security == null)
+    //            operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
+    //        var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
+    //        {
 
-                {"oauth2", new List<string> { "openid", "profile", "api1" }}
-            };
-            operation.Security.Add(oAuthRequirements);
-        }
-    }
+    //            {"oauth2", new List<string> { "openid", "profile", "api1" }}
+    //        };
+    //        operation.Security.Add(oAuthRequirements);
+    //    }
+    //}
 }
