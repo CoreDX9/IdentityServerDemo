@@ -107,7 +107,7 @@ namespace IdentityServer.CustomServices
             return _keyRings.Keys;
         }
 
-        public string CurrentKeyId => NewestActivationKey(DateTimeOffset.Now)?.Element("key")?.Attribute("id")?.Value ?? GenericKey(_dirInfo)?.Element("key")?.Attribute("id")?.Value;
+        public string CurrentKeyId => NewestActivationKey(DateTimeOffset.Now)?.Element("key")?.Attribute("id")?.Value ?? GenerateKey(_dirInfo)?.Element("key")?.Attribute("id")?.Value;
 
         public string this[string keyId] =>
             GetAllKeyIds().First(id => id == keyId) ?? throw new KeyNotFoundException();
@@ -125,7 +125,7 @@ namespace IdentityServer.CustomServices
             }
         }
 
-        private XDocument GenericKey(DirectoryInfo dirInfo)
+        private XDocument GenerateKey(DirectoryInfo dirInfo)
         {
             var now = DateTimeOffset.Now;
             if (!_keyRings.Any(item =>
