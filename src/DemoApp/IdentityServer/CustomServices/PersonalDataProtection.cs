@@ -110,7 +110,7 @@ namespace IdentityServer.CustomServices
         public string CurrentKeyId => NewestActivationKey(DateTimeOffset.Now)?.Element("key")?.Attribute("id")?.Value ?? GenerateKey(_dirInfo)?.Element("key")?.Attribute("id")?.Value;
 
         public string this[string keyId] =>
-            GetAllKeyIds().First(id => id == keyId) ?? throw new KeyNotFoundException();
+            GetAllKeyIds().FirstOrDefault(id => id == keyId) ?? throw new KeyNotFoundException();
 
         private void ReadKeys(DirectoryInfo dirInfo)
         {
