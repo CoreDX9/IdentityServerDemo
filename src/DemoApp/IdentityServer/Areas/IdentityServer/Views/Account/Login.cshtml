@@ -18,7 +18,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <form asp-route="Login">
+                        <form asp-route="Login" asp-antiforgery="true">
                             <input type="hidden" asp-for="ReturnUrl" />
 
                             <fieldset>

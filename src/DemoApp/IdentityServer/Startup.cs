@@ -243,13 +243,6 @@ namespace IdentityServer
                 .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddDefaultTokenProviders();
 
-            //配置Identity跳转链接
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
-            });
-
             //配置本地化数据服务存储
             if (useInMemoryDatabase)
             {
@@ -331,6 +324,30 @@ namespace IdentityServer
 
             //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
             services.AddScoped<IEmailSender, EmailSender>();
+
+            //注册身份验证服务
+            services.AddAuthentication()
+                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
+                {
+                    options.Authority = "https://demo.identityserver.io/";
+                    options.ClientId = "implicit";
+                    options.SaveTokens = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                });
+            //安装以下包后下面这段代码可用
+            //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
+            //.AddIdentityServerAuthentication(options =>
+            //{
+            //    options.Authority = "https://localhost:5001";
+            //    options.RequireHttpsMetadata = true;
+            //    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
+            //    options.ApiName = "api1";
+            //});
 
             //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
             //添加IdentityServer4对EFCore数据库的支持
@@ -447,35 +464,42 @@ namespace IdentityServer
                     });
             }
 
-            //注册身份验证服务
-            services.AddAuthentication()
-                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
+            //配置Identity跳转链接（对于 Api 调用，直接返回响应状态码，不做跳转）
+            services.ConfigureApplicationCookie(options =>
+            {
+                var onRedirectToLogin = options.Events.OnRedirectToLogin;
+                options.Events.OnRedirectToLogin = context => 
                 {
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
-                    options.SaveTokens = true;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
                     {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
-                });
-               //安装以下包后下面这段代码可用
-               //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
-               //.AddIdentityServerAuthentication(options =>
-               //{
-               //    options.Authority = "https://localhost:5001";
-               //    options.RequireHttpsMetadata = true;
-               //    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
-               //    options.ApiName = "api1";
-               //});
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
 
-               //注册跨域访问服务
-               services.AddCors(options => options.AddPolicy("CorsPolicy",
+                    return onRedirectToLogin(context);
+                };
+
+                var onRedirectToAccessDenied = options.Events.OnRedirectToAccessDenied;
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
+
+                    return onRedirectToAccessDenied(context);
+                };
+
+                options.LoginPath = "/IdentityServer/Account/Login";
+                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+            });
+
+            //注册跨域访问服务
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
                 {
-                    builder.WithOrigins("https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
+                    builder.WithOrigins("https://localhost:5001", "https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 }));
