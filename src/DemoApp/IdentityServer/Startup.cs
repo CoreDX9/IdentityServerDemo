@@ -372,7 +372,7 @@ namespace IdentityServer
 
             #endregion
 
-            #region 配置本地化服务
+            #region 注册配置本地化服务
 
             //配置本地化数据服务存储
             if (useInMemoryDatabase)
@@ -419,7 +419,7 @@ namespace IdentityServer
 
             #endregion
 
-            #region 注册 FluentValidation
+            #region 注册 FluentValidation 服务
 
             //注册FluentValidation验证器
             services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
@@ -433,7 +433,7 @@ namespace IdentityServer
 
             #endregion
 
-            #region 注册提供对外访问的相关服务
+            #region 注册处理访问请求功能的相关服务
 
             //注册MVC相关服务
             services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注册获取任何已经注册到服务容器的服务
