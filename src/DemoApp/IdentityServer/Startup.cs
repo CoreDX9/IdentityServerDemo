@@ -50,6 +50,8 @@ using IdentityServer.Grpc.Services;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 #endregion
 
@@ -70,9 +72,57 @@ namespace IdentityServer
         // 异步控制器动作或Razor页面动作返回void可能导致从DI容器获取的efcore或者其他对象被释放，返回Task可以避免这个问题
         public void ConfigureServices(IServiceCollection services)
         {
+            #region 数据库配置
+
+            var useInMemoryDatabase = Configuration.GetValue("UseInMemoryDatabase", false);
+
+            //内存数据库配置
+            InMemoryDatabaseRoot inMemoryDatabaseRoot = useInMemoryDatabase ? new InMemoryDatabaseRoot() : null;
+
+            //真实数据库配置
+            var connectionString = useInMemoryDatabase ? string.Empty : Configuration.GetConnectionString("IdentityServerDbContextConnection");
+
+            //重定向数据库文件（默认文件在用户文件夹，改到项目内部文件夹方便管理）
+            if (!useInMemoryDatabase && Environment.IsDevelopment())
+            {
+                connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Dev.mdf";
+            }
+            if (!useInMemoryDatabase && Environment.IsProduction())
+            {
+                connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Production.mdf";
+            }
+
+            //迁移程序集名
+            var migrationsAssemblyName = useInMemoryDatabase ? string.Empty : "CoreDX.Application.DbMigration";
+
+            #endregion
+
+            //注册Http上下文访问服务
+            services.AddHttpContextAccessor();
+
             // 注册内存缓存
             services.AddMemoryCache();
 
+            //注册应用数据保护服务
+            services.AddDataProtection()
+                .SetApplicationName("IdentityServerDemo")
+                .PersistKeysToFileSystem(new DirectoryInfo($@"{Environment.ContentRootPath}\App_Data\DataProtectionKey"));
+
+            //注册响应压缩服务（gzip）
+            services.AddResponseCompression();
+
+            //注册网站健康检查服务
+            services.AddHealthChecks();
+
+            //注册文件夹浏览服务
+            services.AddDirectoryBrowser();
+
+            //注册AutoMapper服务
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            #region 注册应用 cookie 配置
+
+            // 注册 cookie 配置
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -81,14 +131,335 @@ namespace IdentityServer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //注册视图渲染服务
-            services.AddTransient<RazorViewToStringRenderer>();
+            //配置Identity跳转链接（对于 Api 调用，直接返回响应状态码，不做跳转）
+            services.ConfigureApplicationCookie(options =>
+            {
+                var onRedirectToLogin = options.Events.OnRedirectToLogin;
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
 
-            //注册AutoMapper服务
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+                    return onRedirectToLogin(context);
+                };
 
-            //注册响应压缩服务（gzip）
-            services.AddResponseCompression();
+                var onRedirectToAccessDenied = options.Events.OnRedirectToAccessDenied;
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
+
+                    return onRedirectToAccessDenied(context);
+                };
+
+                options.LoginPath = new PathString("/IdentityServer/Account/Login");
+                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+            });
+
+            #endregion
+
+            #region 注册 Identity EF上下文
+
+            //注册EF上下文
+            if (useInMemoryDatabase)
+            {
+                services.AddEntityFrameworkInMemoryDatabase()
+                    .AddDbContext<ApplicationIdentityDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    })
+                    .AddDbContext<ApplicationDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    })
+                    .AddDbContext<ApplicationPermissionDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    });
+            }
+            else
+            {
+                services.AddDbContext<ApplicationIdentityDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, b =>
+                    {
+                        b.MigrationsAssembly(migrationsAssemblyName);
+                        b.EnableRetryOnFailure(3);
+                    });
+                });
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, b =>
+                    {
+                        b.MigrationsAssembly(migrationsAssemblyName);
+                        b.EnableRetryOnFailure(3);
+                    });
+                });
+                services.AddDbContext<ApplicationPermissionDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, b =>
+                    {
+                        b.MigrationsAssembly(migrationsAssemblyName);
+                        b.EnableRetryOnFailure(3);
+                    });
+                });
+            }
+
+            #endregion
+
+            #region 注册 Identity 服务
+
+            //注册Identity服务（使用EF存储，在EF上下文之后注册）
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+                {
+                    // Password settings.
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 3;
+                    options.Password.RequiredUniqueChars = 0;
+
+                    // Lockout settings.
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.AllowedForNewUsers = true;
+
+                    // User settings.
+                    //options.User.AllowedUserNameCharacters =
+                    //    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                    options.User.RequireUniqueEmail = true;
+
+                    //启用Identity隐私数据保护
+                    //一旦加密，必须保证密钥安全，密钥丢失将无法解密数据
+                    //隐私加密会修改模型配置，可能需要运行迁移，并且会改变隐私数据的存储格式
+                    //在有数据的情况下修改配置必须自行对隐私数据进行转换
+                    //所有受保护的隐私字段通过Linq To EF Core只能进行精确匹配查询
+                    //模糊查询只能全表或受保护字段载入内存再进行内存筛选
+                    options.Stores.ProtectPersonalData = true;
+                })
+                .AddRoles<ApplicationRole>()
+                .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+                //注册Identity隐私数据保护服务（启用隐私数据保护后必须注册，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
+                .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
+                .AddDefaultTokenProviders();
+
+            #endregion
+
+            #region 注册 IdentityServer4 服务
+
+            //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
+            //添加IdentityServer4对EFCore数据库的支持
+            //但是这里需要初始化数据 默认生成的数据库中是没有配置数据
+
+            //注册IdentityServer4服务
+            var id4 = services.AddIdentityServer(options =>
+            {
+                //活动事件 允许配置是否应该将哪些事件提交给注册的事件接收器
+                options.Events = new EventsOptions
+                {
+                    RaiseErrorEvents = true,
+                    RaiseFailureEvents = true,
+                    RaiseInformationEvents = true,
+                    RaiseSuccessEvents = true
+                };
+
+                //设置认证
+                options.Authentication = new AuthenticationOptions
+                {
+                    CheckSessionCookieName = "idr.Cookies",  //用于检查会话端点的cookie的名称
+                    CookieLifetime = new TimeSpan(1, 0, 0), //身份验证Cookie生存期（仅在使用IdentityServer提供的Cookie处理程序时有效）
+                    CookieSlidingExpiration = true, //指定cookie是否应该滑动（仅在使用IdentityServer提供的cookie处理程序时有效）
+                    RequireAuthenticatedUserForSignOutMessage = true //指示是否必须对用户进行身份验证才能接受参数以结束会话端点。默认为false
+                };
+
+                //允许设置各种协议参数（如客户端ID，范围，重定向URI等）的长度限制
+                //options.InputLengthRestrictions = new IdentityServer4.Configuration.InputLengthRestrictions
+                //{
+                //    //可以看出下面很多参数都是对长度的限制 
+                //    AcrValues = 100,
+                //    AuthorizationCode = 100,
+                //    ClientId = 100,
+                //    /*
+                //    ..
+                //    ..
+                //    ..
+                //    */
+                //    ClientSecret = 1000
+                //};
+
+                //用户交互页面定向设置处理
+                options.UserInteraction = new UserInteractionOptions
+                {
+                    LoginUrl = "/IdentityServer/Account/Login", //【必备】登录地址  会覆盖全局未授权跳转地址替换掉aspnet Identity内置登录页，a标签与302跳转不受影响
+                    LogoutUrl = "/IdentityServer/Account/Logout", //【必备】退出地址 
+                    ConsentUrl = "/IdentityServer/Consent", //【必备】允许授权同意页面地址
+                    ErrorUrl = "/IdentityServer/Home/Error", //【必备】错误页面地址
+                    LoginReturnUrlParameter = "returnUrl", //【必备】设置传递给登录页面的返回URL参数的名称。默认为returnUrl 
+                    LogoutIdParameter = "logoutId", //【必备】设置传递给注销页面的注销消息ID参数的名称。缺省为logoutId 
+                    ConsentReturnUrlParameter = "returnUrl", //【必备】设置传递给同意页面的返回URL参数的名称。默认为returnUrl
+                    ErrorIdParameter = "errorId", //【必备】设置传递给错误页面的错误消息ID参数的名称。缺省为errorId
+                    CustomRedirectReturnUrlParameter = "returnUrl", //【必备】设置从授权端点传递给自定义重定向的返回URL参数的名称。默认为returnUrl
+                    CookieMessageThreshold = 5 //【必备】由于浏览器对Cookie的大小有限制，设置Cookies数量的限制，有效的保证了浏览器打开多个选项卡，一旦超出了Cookies限制就会清除以前的Cookies值
+                };
+
+                //缓存参数处理  缓存起来提高了效率 不用每次从数据库查询
+                options.Caching = new CachingOptions
+                {
+                    ClientStoreExpiration = new TimeSpan(1, 0, 0), //设置Client客户端存储加载的客户端配置的数据缓存的有效时间 
+                    ResourceStoreExpiration = new TimeSpan(1, 0, 0), // 设置从资源存储加载的身份和API资源配置的缓存持续时间
+                    CorsExpiration = new TimeSpan(1, 0, 0) //设置从资源存储的跨域请求数据的缓存时间
+                };
+
+                //IdentityServer支持一些端点的CORS。底层CORS实现是从ASP.NET Core提供的，因此它会自动注册在依赖注册系统中
+                //options.Cors = new CorsOptions
+                //{
+                //    CorsPaths = { "/" }, //支持CORS的IdentityServer中的端点。默认为发现，用户信息，令牌和撤销终结点
+                //    CorsPolicyName =
+                //        "default", //【必备】将CORS请求评估为IdentityServer的CORS策略的名称（默认为"IdentityServer4"）。处理这个问题的策略提供者是ICorsPolicyService在依赖注册系统中注册的。如果您想定制允许连接的一组CORS原点，则建议您提供一个自定义的实现ICorsPolicyService
+                //    PreflightCacheDuration =
+                //        new TimeSpan(1, 0, 0) //可为空的<TimeSpan>，指示要在预检Access-Control-Max-Age响应标题中使用的值。默认为空，表示在响应中没有设置缓存头
+                //};
+                options.Cors.PreflightCacheDuration = new TimeSpan(1, 0, 0);
+            })
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddDeveloperSigningCredential();
+
+            //配置IdentityServer4存储
+            if (useInMemoryDatabase)
+            {
+                id4.AddConfigurationStore(options =>
+                {
+                    options.ConfigureDbContext = b =>
+                        b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                })
+                    .AddOperationalStore(options =>
+                    {
+                        options.ConfigureDbContext = b =>
+                            b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+
+                        options.EnableTokenCleanup = true;
+                    });
+            }
+            else
+            {
+                // this adds the config data from DB (clients, resources)
+                id4.AddConfigurationStore(options =>
+                {
+                    options.ConfigureDbContext = b =>
+                        b.UseSqlServer(connectionString,
+                            sql => sql.MigrationsAssembly(migrationsAssemblyName));
+                })
+                    // this adds the operational data from DB (codes, tokens, consents)
+                    .AddOperationalStore(options =>
+                    {
+                        options.ConfigureDbContext = b =>
+                            b.UseSqlServer(connectionString,
+                                sql => sql.MigrationsAssembly(migrationsAssemblyName));
+
+                        // this enables automatic token cleanup. this is optional.
+                        options.EnableTokenCleanup = true;
+                        // options.TokenCleanupInterval = 15; // frequency in seconds to cleanup stale grants. 15 is useful during debugging
+                    });
+            }
+
+            #endregion
+
+            #region 配置本地化服务
+
+            //配置本地化数据服务存储
+            if (useInMemoryDatabase)
+            {
+                services.AddDbContext<LocalizationModelContext>(
+                        options => { options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot); },
+                        ServiceLifetime.Singleton,
+                        ServiceLifetime.Singleton);
+            }
+            else
+            {
+                services.AddDbContext<LocalizationModelContext>(options =>
+                    {
+                        options.UseSqlServer(connectionString, b =>
+                        {
+                            b.MigrationsAssembly(migrationsAssemblyName);
+                            b.EnableRetryOnFailure(3);
+                        });
+                    },
+                    ServiceLifetime.Singleton,
+                    ServiceLifetime.Singleton);
+            }
+
+            //注册本地化服务工厂
+            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
+
+            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
+            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+
+            //配置请求本地化选项
+            services.Configure<RequestLocalizationOptions>(
+                options =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("zh-CN"),
+                        new CultureInfo("en-US")
+                    };
+
+                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                });
+
+            #endregion
+
+            #region 注册 FluentValidation
+
+            //注册FluentValidation验证器
+            services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
+
+            //AssemblyScanner.FindValidatorsInAssemblyContaining<Startup>().ForEach(pair => {
+            //    // RegisterValidatorsFromAssemblyContaing does this:
+            //    services.Add(ServiceDescriptor.Transient(pair.InterfaceType, pair.ValidatorType));
+            //    // Also register it as its concrete type as well as the interface type
+            //    services.Add(ServiceDescriptor.Transient(pair.ValidatorType, pair.ValidatorType));
+            //});
+
+            #endregion
+
+            #region 注册提供对外访问的相关服务
+
+            //注册MVC相关服务
+            services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注册获取任何已经注册到服务容器的服务
+                {
+                    //options.Filters.Add<MyAsyncPageFilter>();
+                    //options.Filters.Add<MyAuthorizeAttribute>();
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());//自动对控制器的post，put，delete，patch请求进行保护
+                })
+                //使用NewtonsoftJson替换微软内置的Json框架（Core 3.x开始）
+                .AddNewtonsoftJson()
+                //启用Razor视图的动态编译
+                .AddRazorRuntimeCompilation()
+                //注册FluentValidation服务
+                .AddFluentValidation(fv =>
+                {
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true;
+                    fv.ImplicitlyValidateChildProperties = true;
+                })
+                //注册视图本地化服务
+                .AddViewLocalization()
+                //注册数据注解本地化服务
+                .AddDataAnnotationsLocalization()
+                //设定兼容性
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            #region 注册SignalR服务
 
             //注册SignalR服务
             var signalRServer = services.AddSignalR();
@@ -130,459 +501,7 @@ namespace IdentityServer
                 });
             }
 
-            //注册应用数据保护服务
-            services.AddDataProtection()
-                .SetApplicationName("IdentityServerDemo")
-                .PersistKeysToFileSystem(new DirectoryInfo($@"{Environment.ContentRootPath}\App_Data\DataProtectionKey"));
-
-            //在没有RabbitMQ的机器上运行项目设置false
-            if (Configuration.GetValue("UseEntityHistory", false))
-            {
-                //注册实体历史记录服务，供ApplicationIdentityDbContext用
-                //services.AddEntityHistoryRecorder(Configuration);
-            }
-
-            var useInMemoryDatabase = Configuration.GetValue("UseInMemoryDatabase", false);
-            var connectionString = string.Empty;
-            var migrationsAssemblyName = string.Empty;
-            InMemoryDatabaseRoot inMemoryDatabaseRoot = null;
-            //注册EF上下文
-            if (useInMemoryDatabase)
-            {
-                inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
-                services.AddEntityFrameworkInMemoryDatabase()
-                    .AddDbContext<ApplicationIdentityDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    })
-                    .AddDbContext<ApplicationDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    })
-                    .AddDbContext<ApplicationPermissionDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    });
-            }
-            else
-            {
-                connectionString = Configuration.GetConnectionString("IdentityServerDbContextConnection");
-
-                //重定向数据库文件（默认文件在用户文件夹，改到项目内部文件夹方便管理）
-                if (Environment.IsDevelopment())
-                {
-                    connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Dev.mdf";
-                }
-                if (Environment.IsProduction())
-                {
-                    connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Production.mdf";
-                }
-
-                //迁移程序集名
-                migrationsAssemblyName = "CoreDX.Application.DbMigration";
-
-                services.AddDbContext<ApplicationIdentityDbContext>(options =>
-                {
-                    options.UseSqlServer(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(migrationsAssemblyName);
-                        b.EnableRetryOnFailure(3);
-                    });
-                });
-                services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseSqlServer(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(migrationsAssemblyName);
-                        b.EnableRetryOnFailure(3);
-                    });
-                });
-                services.AddDbContext<ApplicationPermissionDbContext>(options =>
-                {
-                    options.UseSqlServer(connectionString, b =>
-                    {
-                        b.MigrationsAssembly(migrationsAssemblyName);
-                        b.EnableRetryOnFailure(3);
-                    });
-                });
-            }
-
-            //注册Identity服务（使用EF存储，在EF上下文之后注册）
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-                {
-                    // Password settings.
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequiredLength = 3;
-                    options.Password.RequiredUniqueChars = 0;
-
-                    // Lockout settings.
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                    options.Lockout.MaxFailedAccessAttempts = 5;
-                    options.Lockout.AllowedForNewUsers = true;
-
-                    // User settings.
-                    //options.User.AllowedUserNameCharacters =
-                    //    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                    options.User.RequireUniqueEmail = true;
-
-                    //启用Identity隐私数据保护
-                    //一旦加密，必须保证密钥安全，密钥丢失将无法解密数据
-                    //隐私加密会修改模型配置，可能需要运行迁移，并且会改变隐私数据的存储格式
-                    //在有数据的情况下修改配置必须自行对隐私数据进行转换
-                    //所有受保护的隐私字段通过Linq To EF Core只能进行精确匹配查询
-                    //模糊查询只能全表或受保护字段载入内存再进行内存筛选
-                    options.Stores.ProtectPersonalData = true;
-                })
-                .AddRoles<ApplicationRole>()
-                .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
-                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-                //注册Identity隐私数据保护服务（启用隐私数据保护后必须注册，和上面那个应用数据保护服务不一样，这个是给IdentityDbContext用的，上面那个是给cookies之类加密用的）
-                .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
-                .AddDefaultTokenProviders();
-
-            //配置本地化数据服务存储
-            if (useInMemoryDatabase)
-            {
-                services.AddDbContext<LocalizationModelContext>(
-                        options => { options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot); },
-                        ServiceLifetime.Singleton,
-                        ServiceLifetime.Singleton);
-            }
-            else
-            {
-                services.AddDbContext<LocalizationModelContext>(options =>
-                    {
-                        options.UseSqlServer(connectionString, b =>
-                        {
-                            b.MigrationsAssembly(migrationsAssemblyName);
-                            b.EnableRetryOnFailure(3);
-                        });
-                    },
-                    ServiceLifetime.Singleton,
-                    ServiceLifetime.Singleton);
-            }
-
-            //注册修改后的本地化服务工厂（SqlStringLocalizerFactory在IViewLocalizer中使用时无法自动创建记录）（2.0.6开始此bug已修复）
-            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
-            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
-            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
-            //注册请求处理器信息获取服务
-            services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
-            //注册Http上下文访问服务
-            services.AddHttpContextAccessor();
-            //注册MVC相关服务
-            services.AddMvc(options =>//在这里添加的过滤器可以使用构造方法依赖注册获取任何已经注册到服务容器的服务
-                {
-                    //options.Filters.Add<MyAsyncPageFilter>();
-                    //options.Filters.Add<MyAuthorizeAttribute>();
-                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());//自动对控制器的post，put，delete，patch请求进行保护
-                })
-                //使用NewtonsoftJson替换微软内置的Json框架（Core 3.x开始）
-                .AddNewtonsoftJson()
-                //启用Razor视图的动态编译
-                .AddRazorRuntimeCompilation()
-                //注册FluentValidation服务
-                .AddFluentValidation(fv =>
-                {
-                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true;
-                    fv.ImplicitlyValidateChildProperties = true;
-                })
-                //注册视图本地化服务
-                .AddViewLocalization()
-                //注册数据注解本地化服务
-                .AddDataAnnotationsLocalization()
-                //设定兼容性
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            //注册FluentValidation验证器
-            services.AddTransient<IValidator<Pages.FluentValidationDemo.IndexModel.A>, Pages.FluentValidationDemo.IndexModel.AValidator>();
-
-            //AssemblyScanner.FindValidatorsInAssemblyContaining<Startup>().ForEach(pair => {
-            //    // RegisterValidatorsFromAssemblyContaing does this:
-            //    services.Add(ServiceDescriptor.Transient(pair.InterfaceType, pair.ValidatorType));
-            //    // Also register it as its concrete type as well as the interface type
-            //    services.Add(ServiceDescriptor.Transient(pair.ValidatorType, pair.ValidatorType));
-            //});
-
-            //配置请求本地化选项
-            services.Configure<RequestLocalizationOptions>(
-                options =>
-                {
-                    var supportedCultures = new List<CultureInfo>
-                    {
-                        new CultureInfo("zh-CN"),
-                        new CultureInfo("en-US")
-                    };
-
-                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
-                    options.SupportedCultures = supportedCultures;
-                    options.SupportedUICultures = supportedCultures;
-                });
-
-            //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
-            services.AddScoped<IEmailSender, EmailSender>();
-
-            //注册身份验证服务
-            services.AddAuthentication()
-                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
-                {
-                    options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
-                    options.SaveTokens = true;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
-                });
-            //安装以下包后下面这段代码可用
-            //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
-            //.AddIdentityServerAuthentication(options =>
-            //{
-            //    options.Authority = "https://localhost:5001";
-            //    options.RequireHttpsMetadata = true;
-            //    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
-            //    options.ApiName = "api1";
-            //});
-
-            //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
-            //添加IdentityServer4对EFCore数据库的支持
-            //但是这里需要初始化数据 默认生成的数据库中是没有配置数据
-
-            //注册IdentityServer4服务
-            var id4 = services.AddIdentityServer(options =>
-                {
-                    //活动事件 允许配置是否应该将哪些事件提交给注册的事件接收器
-                    options.Events = new EventsOptions
-                    {
-                        RaiseErrorEvents = true,
-                        RaiseFailureEvents = true,
-                        RaiseInformationEvents = true,
-                        RaiseSuccessEvents = true
-                    };
-
-                    //设置认证
-                    options.Authentication = new AuthenticationOptions
-                    {
-                        CheckSessionCookieName = "idr.Cookies",  //用于检查会话端点的cookie的名称
-                        CookieLifetime = new TimeSpan(1, 0, 0), //身份验证Cookie生存期（仅在使用IdentityServer提供的Cookie处理程序时有效）
-                        CookieSlidingExpiration = true, //指定cookie是否应该滑动（仅在使用IdentityServer提供的cookie处理程序时有效）
-                        RequireAuthenticatedUserForSignOutMessage = true //指示是否必须对用户进行身份验证才能接受参数以结束会话端点。默认为false
-                    };
-
-                    //允许设置各种协议参数（如客户端ID，范围，重定向URI等）的长度限制
-                    //options.InputLengthRestrictions = new IdentityServer4.Configuration.InputLengthRestrictions
-                    //{
-                    //    //可以看出下面很多参数都是对长度的限制 
-                    //    AcrValues = 100,
-                    //    AuthorizationCode = 100,
-                    //    ClientId = 100,
-                    //    /*
-                    //    ..
-                    //    ..
-                    //    ..
-                    //    */
-                    //    ClientSecret = 1000
-                    //};
-
-                    //用户交互页面定向设置处理
-                    options.UserInteraction = new UserInteractionOptions
-                    {
-                        LoginUrl = "/IdentityServer/Account/Login", //【必备】登录地址  会覆盖全局未授权跳转地址替换掉aspnet Identity内置登录页，a标签与302跳转不受影响
-                        LogoutUrl = "/IdentityServer/Account/Logout", //【必备】退出地址 
-                        ConsentUrl = "/IdentityServer/Consent", //【必备】允许授权同意页面地址
-                        ErrorUrl = "/IdentityServer/Home/Error", //【必备】错误页面地址
-                        LoginReturnUrlParameter = "returnUrl", //【必备】设置传递给登录页面的返回URL参数的名称。默认为returnUrl 
-                        LogoutIdParameter = "logoutId", //【必备】设置传递给注销页面的注销消息ID参数的名称。缺省为logoutId 
-                        ConsentReturnUrlParameter = "returnUrl", //【必备】设置传递给同意页面的返回URL参数的名称。默认为returnUrl
-                        ErrorIdParameter = "errorId", //【必备】设置传递给错误页面的错误消息ID参数的名称。缺省为errorId
-                        CustomRedirectReturnUrlParameter = "returnUrl", //【必备】设置从授权端点传递给自定义重定向的返回URL参数的名称。默认为returnUrl
-                        CookieMessageThreshold = 5 //【必备】由于浏览器对Cookie的大小有限制，设置Cookies数量的限制，有效的保证了浏览器打开多个选项卡，一旦超出了Cookies限制就会清除以前的Cookies值
-                    };
-
-                    //缓存参数处理  缓存起来提高了效率 不用每次从数据库查询
-                    options.Caching = new CachingOptions
-                    {
-                        ClientStoreExpiration = new TimeSpan(1, 0, 0), //设置Client客户端存储加载的客户端配置的数据缓存的有效时间 
-                        ResourceStoreExpiration = new TimeSpan(1, 0, 0), // 设置从资源存储加载的身份和API资源配置的缓存持续时间
-                        CorsExpiration = new TimeSpan(1, 0, 0) //设置从资源存储的跨域请求数据的缓存时间
-                    };
-
-                    //IdentityServer支持一些端点的CORS。底层CORS实现是从ASP.NET Core提供的，因此它会自动注册在依赖注册系统中
-                    //options.Cors = new CorsOptions
-                    //{
-                    //    CorsPaths = { "/" }, //支持CORS的IdentityServer中的端点。默认为发现，用户信息，令牌和撤销终结点
-                    //    CorsPolicyName =
-                    //        "default", //【必备】将CORS请求评估为IdentityServer的CORS策略的名称（默认为"IdentityServer4"）。处理这个问题的策略提供者是ICorsPolicyService在依赖注册系统中注册的。如果您想定制允许连接的一组CORS原点，则建议您提供一个自定义的实现ICorsPolicyService
-                    //    PreflightCacheDuration =
-                    //        new TimeSpan(1, 0, 0) //可为空的<TimeSpan>，指示要在预检Access-Control-Max-Age响应标题中使用的值。默认为空，表示在响应中没有设置缓存头
-                    //};
-                    options.Cors.PreflightCacheDuration = new TimeSpan(1, 0, 0);
-                })
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddDeveloperSigningCredential();
-
-            //配置IdentityServer4存储
-            if (useInMemoryDatabase)
-            {
-                id4.AddConfigurationStore(options =>
-                    {
-                        options.ConfigureDbContext = b =>
-                            b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    })
-                    .AddOperationalStore(options =>
-                    {
-                        options.ConfigureDbContext = b =>
-                            b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-
-                        options.EnableTokenCleanup = true;
-                    });
-            }
-            else
-            {
-                // this adds the config data from DB (clients, resources)
-                id4.AddConfigurationStore(options =>
-                    {
-                        options.ConfigureDbContext = b =>
-                            b.UseSqlServer(connectionString,
-                                sql => sql.MigrationsAssembly(migrationsAssemblyName));
-                    })
-                    // this adds the operational data from DB (codes, tokens, consents)
-                    .AddOperationalStore(options =>
-                    {
-                        options.ConfigureDbContext = b =>
-                            b.UseSqlServer(connectionString,
-                                sql => sql.MigrationsAssembly(migrationsAssemblyName));
-
-                        // this enables automatic token cleanup. this is optional.
-                        options.EnableTokenCleanup = true;
-                        // options.TokenCleanupInterval = 15; // frequency in seconds to cleanup stale grants. 15 is useful during debugging
-                    });
-            }
-
-            //配置Identity跳转链接（对于 Api 调用，直接返回响应状态码，不做跳转）
-            services.ConfigureApplicationCookie(options =>
-            {
-                var onRedirectToLogin = options.Events.OnRedirectToLogin;
-                options.Events.OnRedirectToLogin = context => 
-                {
-                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        return System.Threading.Tasks.Task.CompletedTask;
-                    }
-
-                    return onRedirectToLogin(context);
-                };
-
-                var onRedirectToAccessDenied = options.Events.OnRedirectToAccessDenied;
-                options.Events.OnRedirectToAccessDenied = context =>
-                {
-                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        return System.Threading.Tasks.Task.CompletedTask;
-                    }
-
-                    return onRedirectToAccessDenied(context);
-                };
-
-                options.LoginPath = "/IdentityServer/Account/Login";
-                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
-            });
-
-            //注册跨域访问服务
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
-                builder =>
-                {
-                    builder.WithOrigins("https://localhost:5001", "https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                }));
-
-            //注册反CSRF服务并配置请求头名称
-            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
-
-            //注册CSP（内容安全策略）服务
-            services.AddCsp();
-
-            //注册Hsts（传输安全）服务
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-                //options.ExcludedHosts.Add("localhost:5000");
-            });
-
-            //services.AddHttpsRedirection(options =>
-            //{
-            //    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-            //    options.HttpsPort = 5001;
-            //});
-
-            //注册文件夹浏览服务
-            services.AddDirectoryBrowser();
-
-            services.AddHealthChecks();
-
-            #region DDD+CQRS+EDA 相关服务
-
-            services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
-            services.AddScoped(typeof(ICommandBus<,>), typeof(MediatRCommandBus<,>));
-            services.AddScoped(typeof(ICommandStore), typeof(InProcessCommandStore));
-            services.AddScoped(typeof(IEventBus), typeof(MediatREventBus));
-            services.AddScoped(typeof(IEventBus<>), typeof(MediatREventBus<>));
-            services.AddScoped(typeof(IEventStore), typeof(InProcessEventStore));
-            services.AddScoped(typeof(IEFCoreRepository<,>), typeof(EFCoreRepository<,>));
-            services.AddScoped(typeof(IEFCoreRepository<,,>), typeof(EFCoreRepository<,,>));
-            services.AddMediatR(typeof(CoreDX.Application.Command.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
-
             #endregion
-
-            //注册（工厂方式激活的）自定义中间件服务
-            services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
-
-            //注册无界面chrome服务
-            services.AddSingleton<HeadlessChromeManager>();
-
-            // 注册选项服务
-            //services.AddOptions();
-
-            //load general configuration from appsettings.json
-            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
-            //load ip rules from appsettings.json
-            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
-
-            //load general configuration from appsettings.json
-            services.Configure<ClientRateLimitOptions>(Configuration.GetSection("ClientRateLimiting"));
-            //load client rules from appsettings.json
-            services.Configure<ClientRateLimitPolicies>(Configuration.GetSection("ClientRateLimitPolicies"));
-
-            // 注册限流数据内存存储服务，依赖内存缓存服务
-            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-            services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
-            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-            // 注册限流数据分布式存储服务，依赖Redis
-            //services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
-            //services.AddSingleton<IClientPolicyStore, DistributedCacheClientPolicyStore>();
-            //services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
-
-            // configuration (resolvers, counter key builders)
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-
-            //注册直播服务主机管理器
-            services.AddSingleton<RtmpServerManager>();
-
-            //注册服务配置表
-            services.AddSingleton(services);
-
-            //注册Grpc服务
-            services.AddGrpc();
 
             services.AddApiVersioning(options => {
                 options.ReportApiVersions = true;
@@ -661,6 +580,149 @@ namespace IdentityServer
 
                 //options.OperationFilter<SecurityRequirementsOperationFilter>();
             });
+
+            //注册Grpc服务
+            services.AddGrpc();
+
+            #endregion
+
+            #region 注册身份验证服务
+
+            //注册身份验证服务
+            services.AddAuthentication()
+                .AddOpenIdConnect("oidc", "OpenID Connect", options =>
+                {
+                    options.Authority = "https://demo.identityserver.io/";
+                    options.ClientId = "implicit";
+                    options.SaveTokens = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                });
+            //安装以下包后下面这段代码可用
+            //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
+            //.AddIdentityServerAuthentication(options =>
+            //{
+            //    options.Authority = "https://localhost:5001";
+            //    options.RequireHttpsMetadata = true;
+            //    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
+            //    options.ApiName = "api1";
+            //});
+
+            #endregion
+
+            #region 注册配置安全相关服务
+
+            //注册跨域访问服务
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+                builder =>
+                {
+                    builder.WithOrigins("https://localhost:5001", "https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                }));
+
+            //注册反CSRF服务并配置请求头名称
+            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+
+            //注册CSP（内容安全策略）服务
+            services.AddCsp();
+
+            //注册Hsts（传输安全）服务
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+                //options.ExcludedHosts.Add("localhost:5000");
+            });
+
+            //services.AddHttpsRedirection(options =>
+            //{
+            //    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //    options.HttpsPort = 5001;
+            //});
+
+            #endregion
+
+            #region 注册配置访问限流服务
+
+            //load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            //load ip rules from appsettings.json
+            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+
+            //load general configuration from appsettings.json
+            services.Configure<ClientRateLimitOptions>(Configuration.GetSection("ClientRateLimiting"));
+            //load client rules from appsettings.json
+            services.Configure<ClientRateLimitPolicies>(Configuration.GetSection("ClientRateLimitPolicies"));
+
+            // 注册限流数据内存存储服务，依赖内存缓存服务
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            // 注册限流数据分布式存储服务，依赖Redis
+            //services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+            //services.AddSingleton<IClientPolicyStore, DistributedCacheClientPolicyStore>();
+            //services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+            #endregion
+
+            #region 注册自己写的各种服务
+
+            #region 配置 RabbitMQ 使用测试
+
+            //在没有RabbitMQ的机器上运行项目设置false，现在暂时没什么用
+            //if (Configuration.GetValue("UseEntityHistory", false))
+            //{
+            //    //注册实体历史记录服务，供ApplicationIdentityDbContext用
+            //    //services.AddEntityHistoryRecorder(Configuration);
+            //}
+
+            #endregion
+
+            //注册服务配置表
+            services.AddSingleton(services);
+
+            //注册请求处理器信息获取服务
+            services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
+
+            //注册视图渲染服务
+            services.AddTransient<RazorViewToStringRenderer>();
+
+            //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
+            services.AddScoped<IEmailSender, EmailSender>();
+
+            #region DDD+CQRS+EDA 相关服务
+
+            services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
+            services.AddScoped(typeof(ICommandBus<,>), typeof(MediatRCommandBus<,>));
+            services.AddScoped(typeof(ICommandStore), typeof(InProcessCommandStore));
+            services.AddScoped(typeof(IEventBus), typeof(MediatREventBus));
+            services.AddScoped(typeof(IEventBus<>), typeof(MediatREventBus<>));
+            services.AddScoped(typeof(IEventStore), typeof(InProcessEventStore));
+            services.AddScoped(typeof(IEFCoreRepository<,>), typeof(EFCoreRepository<,>));
+            services.AddScoped(typeof(IEFCoreRepository<,,>), typeof(EFCoreRepository<,,>));
+            services.AddMediatR(typeof(CoreDX.Application.Command.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
+
+            #endregion
+
+            //注册（工厂方式激活的）自定义中间件服务
+            services.AddScoped<AntiforgeryTokenGenerateMiddleware>();
+
+            //注册无界面chrome服务
+            services.AddSingleton<HeadlessChromeManager>();
+
+            //注册直播服务主机管理器
+            services.AddSingleton<RtmpServerManager>();
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -838,6 +900,8 @@ namespace IdentityServer
                 }
             });
 
+            #region 注册网站文件夹浏览
+
             //注册文件浏览器
             var dir = new DirectoryBrowserOptions();
             dir.FileProvider = new PhysicalFileProvider(Environment.ContentRootPath);
@@ -858,6 +922,10 @@ namespace IdentityServer
 
             app.UseStaticFiles(devStaticFileOptions);
 
+            #endregion
+
+            #region 注册 Swagger
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -870,6 +938,8 @@ namespace IdentityServer
                     options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
                 }
             });
+
+            #endregion
 
             //注册开发环境的npm资源
             if (Environment.IsDevelopment())
@@ -918,6 +988,10 @@ namespace IdentityServer
 
                 //映射健康检查终结点
                 endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
 
                 //映射区域控制器终结点
                 endpoints.MapControllerRoute("area", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
