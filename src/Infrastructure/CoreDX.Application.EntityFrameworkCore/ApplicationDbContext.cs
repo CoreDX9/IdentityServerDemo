@@ -2,7 +2,7 @@
 using CoreDX.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using CoreDX.Domain.Entity.App.Sample;
-using CoreDX.Application.EntityFrameworkCore.Extensions;
+using CoreDX.EntityFrameworkCore.Extensions.Domain;
 
 namespace CoreDX.Application.EntityFrameworkCore
 {

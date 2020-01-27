@@ -40,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationDomain", "Applic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Model", "src\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj", "{D71032BD-AE4F-4820-9C26-93D6A9DC3F4B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Service", "src\ApplicationDomain\CoreDX.Domain.Service\CoreDX.Domain.Service.csproj", "{8B874FBC-9833-4014-8102-5A57D17CFE85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Service.App", "src\ApplicationDomain\CoreDX.Domain.Service.App\CoreDX.Domain.Service.App.csproj", "{8B874FBC-9833-4014-8102-5A57D17CFE85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.EntityFrameworkCore.Extensions", "src\Common\CoreDX.EntityFrameworkCore.Extensions\CoreDX.EntityFrameworkCore.Extensions.csproj", "{29FD8B3C-E50C-4DB5-B582-651255C7C6B8}"
 EndProject
@@ -82,7 +82,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepsOfPlugin1", "src\DemoPl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginBase", "src\DemoPlugin\PluginBase\PluginBase.csproj", "{085A10C4-2D8A-4FED-B9C7-D5878426EAB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcClient", "src\DemoApp\GrpcClient\GrpcClient.csproj", "{5E6C2002-1595-4324-9F3C-B4FA84FC008C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcClient", "src\DemoApp\GrpcClient\GrpcClient.csproj", "{5E6C2002-1595-4324-9F3C-B4FA84FC008C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Repository.EntityFrameworkCore", "src\ApplicationDomain\CoreDX.Domain.Repository.EntityFrameworkCore\CoreDX.Domain.Repository.EntityFrameworkCore.csproj", "{C2790CFB-5F4B-4762-93D5-C69B16A83C9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.EntityFrameworkCore.DataAnnotations", "src\Common\CoreDX.EntityFrameworkCore.DataAnnotations\CoreDX.EntityFrameworkCore.DataAnnotations.csproj", "{34E706E9-888F-4A21-863F-18F0BDC3830F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Application.Service", "src\Infrastructure\CoreDX.Application.Service\CoreDX.Application.Service.csproj", "{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Domain.Repository.App", "src\ApplicationDomain\CoreDX.Domain.Repository.App\CoreDX.Domain.Repository.App.csproj", "{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.EntityFrameworkCore.Extensions.Domain", "src\Common\CoreDX.EntityFrameworkCore.Extensions.Domain\CoreDX.EntityFrameworkCore.Extensions.Domain.csproj", "{05996CB4-B384-4F96-B475-DCDD88393AA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -226,6 +236,26 @@ Global
 		{5E6C2002-1595-4324-9F3C-B4FA84FC008C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E6C2002-1595-4324-9F3C-B4FA84FC008C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E6C2002-1595-4324-9F3C-B4FA84FC008C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2790CFB-5F4B-4762-93D5-C69B16A83C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2790CFB-5F4B-4762-93D5-C69B16A83C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2790CFB-5F4B-4762-93D5-C69B16A83C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2790CFB-5F4B-4762-93D5-C69B16A83C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34E706E9-888F-4A21-863F-18F0BDC3830F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34E706E9-888F-4A21-863F-18F0BDC3830F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34E706E9-888F-4A21-863F-18F0BDC3830F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34E706E9-888F-4A21-863F-18F0BDC3830F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05996CB4-B384-4F96-B475-DCDD88393AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05996CB4-B384-4F96-B475-DCDD88393AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05996CB4-B384-4F96-B475-DCDD88393AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05996CB4-B384-4F96-B475-DCDD88393AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,6 +301,11 @@ Global
 		{F6D5B518-774D-41CC-AD76-A902D68531CB} = {695ED280-AFE8-48E4-BD8A-058806BA5745}
 		{085A10C4-2D8A-4FED-B9C7-D5878426EAB4} = {695ED280-AFE8-48E4-BD8A-058806BA5745}
 		{5E6C2002-1595-4324-9F3C-B4FA84FC008C} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
+		{C2790CFB-5F4B-4762-93D5-C69B16A83C9A} = {27AAF7D4-CC18-49AF-91CD-E38478A03F5E}
+		{34E706E9-888F-4A21-863F-18F0BDC3830F} = {2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}
+		{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
+		{9F1A9DF4-1D5A-499A-B494-047601F4B8BC} = {27AAF7D4-CC18-49AF-91CD-E38478A03F5E}
+		{05996CB4-B384-4F96-B475-DCDD88393AA3} = {2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {981D0405-3008-4145-B708-5F559C811D64}

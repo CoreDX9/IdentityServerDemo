@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+using CoreDX.EntityFrameworkCore.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace CoreDX.Domain.Entity.Identity

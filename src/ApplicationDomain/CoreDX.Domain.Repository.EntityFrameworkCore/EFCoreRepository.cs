@@ -1,6 +1,6 @@
-﻿using CoreDX.Common.Util.TypeExtensions;
+﻿using CoreDX.Application.Repository.EntityFrameworkCore;
+using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.Domain.Model.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreDX.Application.Repository.EntityFrameworkCore
+namespace CoreDX.Domain.Repository.EntityFrameworkCore
 {
     public class EFCoreRepository<TEntity, TKey, TDbContext> : EFCoreRepository<TEntity, TDbContext>, IEFCoreRepository<TEntity, TKey, TDbContext>
         where TEntity : class, IEntity<TKey>
@@ -200,6 +200,58 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore
 
         public virtual TEntity Find(TEntity entity)
         {
+            var exp = GenerateWhere(dbContext, entity);
+
+            return dbSet.AsNoTracking().SingleOrDefault(exp);
+        }
+
+        public virtual Task<TEntity> FindAsync(TEntity entity)
+        {
+            var exp = GenerateWhere(dbContext, entity);
+
+            return dbSet.AsNoTracking().SingleOrDefaultAsync(exp);
+        }
+
+        public virtual void SaveChanges()
+        {
+            ProcessChangedEntity();
+            dbContext.SaveChanges();
+        }
+
+        public virtual Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ProcessChangedEntity();
+            return dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public virtual IQueryable<TEntity> Set => dbSet.AsNoTracking();
+
+        public virtual void Update(TEntity entity)
+        {
+            ResetDeletedMark(entity);
+            dbSet.Update(entity);
+        }
+
+        public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            Update(entity);
+            return Task.CompletedTask;
+        }
+
+        public virtual void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            ResetDeletedMark(entities.ToArray());
+            dbSet.UpdateRange(entities);
+        }
+
+        public virtual Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        {
+            UpdateRange(entities);
+            return Task.CompletedTask;
+        }
+
+        static private Expression<Func<TEntity, bool>> GenerateWhere(TDbContext dbContext, TEntity entity)
+        {
             //查找实体类型主键
             var model = dbContext.Model.FindEntityType(typeof(TEntity));
             var key = model.FindPrimaryKey();
@@ -253,8 +305,6 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore
 
             //生成完整的过滤条件表达式，形如：  (TEntity x) => { return x.a == ? && x.b == ? && x.obj1.m == ? && x.obj1.n == ? && x.obj2.u.v == ?; }
             var exp = Expression.Lambda<Func<TEntity, bool>>(and, parameter);
-            //返回查询
-            return dbSet.AsNoTracking().SingleOrDefault(exp);
 
             //判断某个类型是否是基础数据类型
             static bool IsPrimitiveType(Type type)
@@ -286,55 +336,8 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore
 
                 return tmp.IsEnum || primitiveTypes.Contains(tmp);
             }
-        }
 
-        public virtual Task<TEntity> FindAsync(TEntity entity)
-        {
-            var model = dbContext.Model.FindEntityType(typeof(TEntity));
-            var key = model.FindPrimaryKey();
-            var keys = key.Properties.Select(x => x.PropertyInfo);
-
-            Expression<Func<TEntity, bool>> exp = null;
-
-            return dbSet.AsNoTracking().SingleOrDefaultAsync(exp);
-        }
-
-        public virtual void SaveChanges()
-        {
-            ProcessChangedEntity();
-            dbContext.SaveChanges();
-        }
-
-        public virtual Task SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            ProcessChangedEntity();
-            return dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        public virtual IQueryable<TEntity> Set => dbSet.AsNoTracking();
-
-        public virtual void Update(TEntity entity)
-        {
-            ResetDeletedMark(entity);
-            dbSet.Update(entity);
-        }
-
-        public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
-        {
-            Update(entity);
-            return Task.CompletedTask;
-        }
-
-        public virtual void UpdateRange(IEnumerable<TEntity> entities)
-        {
-            ResetDeletedMark(entities.ToArray());
-            dbSet.UpdateRange(entities);
-        }
-
-        public virtual Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-        {
-            UpdateRange(entities);
-            return Task.CompletedTask;
+            return exp;
         }
     }
 }

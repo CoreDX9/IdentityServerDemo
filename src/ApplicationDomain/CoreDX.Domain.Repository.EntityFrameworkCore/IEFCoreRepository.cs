@@ -3,7 +3,7 @@ using CoreDX.Domain.Core.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace CoreDX.Domain.Model.Repository
+namespace CoreDX.Domain.Repository.EntityFrameworkCore
 {
     public interface IEFCoreRepository<TEntity, TDbContext> : IReadOnlyRepository<TEntity>, IBulkOperateVariableRepository<TEntity>
         where TEntity : class, IEntity

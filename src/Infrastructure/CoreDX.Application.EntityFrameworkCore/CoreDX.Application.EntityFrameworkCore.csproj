@@ -13,13 +13,18 @@
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.App\CoreDX.Domain.Entity.App.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Permission\CoreDX.Domain.Entity.Permission.csproj" />
-    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.EntityFrameworkCore.Extensions.Domain\CoreDX.EntityFrameworkCore.Extensions.Domain.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.EntityFrameworkCore.Extensions\CoreDX.EntityFrameworkCore.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IdentityServer\" />
   </ItemGroup>
 
 </Project>

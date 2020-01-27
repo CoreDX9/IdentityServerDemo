@@ -43,8 +43,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using CoreDX.Domain.Model.Repository;
-using CoreDX.Application.Repository.EntityFrameworkCore;
 using AspNetCoreRateLimit;
 using IdentityServer.Grpc.Services;
 using Microsoft.OpenApi.Models;
@@ -52,6 +50,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using CoreDX.Domain.Repository.EntityFrameworkCore;
 
 #endregion
 
@@ -517,7 +516,12 @@ namespace IdentityServer
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(options =>
             {
-                var apiVersionDescription = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+#pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                using var rootProvider = services.BuildServiceProvider();
+#pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+                using var service = rootProvider.CreateScope();
+
+                var apiVersionDescription = service.ServiceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
                 foreach (var description in apiVersionDescription.ApiVersionDescriptions)
                 {
                     options.SwaggerDoc(description.GroupName,
@@ -526,7 +530,7 @@ namespace IdentityServer
                              Title = $"My API {description.ApiVersion}",
                              Version = description.ApiVersion.ToString(),
                              Description = "A simple example ASP.NET Core Web API  \r\n IdentityServer clientId: jsIm",
-                             TermsOfService = new Uri("https://example.com/terms"),
+                             TermsOfService = new Uri("https://example.com/coredx"),
                              Contact = new OpenApiContact
                              {
                                  Name = "CoreDX",
@@ -687,18 +691,6 @@ namespace IdentityServer
 
             #endregion
 
-            //注册服务配置表
-            services.AddSingleton(services);
-
-            //注册请求处理器信息获取服务
-            services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
-
-            //注册视图渲染服务
-            services.AddTransient<RazorViewToStringRenderer>();
-
-            //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
-            services.AddScoped<IEmailSender, EmailSender>();
-
             #region DDD+CQRS+EDA 相关服务
 
             services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
@@ -712,6 +704,18 @@ namespace IdentityServer
             services.AddMediatR(typeof(CoreDX.Application.Command.UserManage.ListUserCommandHandler).GetTypeInfo().Assembly);
 
             #endregion
+
+            //注册服务配置表
+            services.AddSingleton(services);
+
+            //注册请求处理器信息获取服务
+            services.AddSingleton<IRequestHandlerInfo, RequestHandlerInfo>();
+
+            //注册视图渲染服务
+            services.AddTransient<RazorViewToStringRenderer>();
+
+            //注册电子邮件发送服务（实际是在桌面生成一个网页文件）
+            services.AddScoped<IEmailSender, EmailSender>();
 
             //注册（工厂方式激活的）自定义中间件服务
             services.AddScoped<AntiforgeryTokenGenerateMiddleware>();

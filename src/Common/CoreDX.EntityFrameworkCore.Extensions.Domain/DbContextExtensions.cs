@@ -1,4 +1,4 @@
-﻿namespace CoreDX.Application.EntityFrameworkCore.Extensions
+﻿namespace CoreDX.EntityFrameworkCore.Extensions.Domain
 {
     //public static class DbContextExtensions
     //{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreDX.EntityFrameworkCore.Extensions.DataAnnotations
+namespace CoreDX.EntityFrameworkCore.DataAnnotations
 {
     /// <summary>
     /// 实体在数据库中的表和列的说明

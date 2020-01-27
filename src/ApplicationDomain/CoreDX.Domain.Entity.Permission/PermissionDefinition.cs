@@ -1,7 +1,7 @@
 ﻿using System;
 using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Model.Entity;
-using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+using CoreDX.EntityFrameworkCore.DataAnnotations;
 
 namespace CoreDX.Domain.Entity.Permission
 {

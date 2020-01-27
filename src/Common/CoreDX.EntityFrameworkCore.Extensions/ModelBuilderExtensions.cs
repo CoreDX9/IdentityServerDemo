@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Core.Entity;
-using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+using CoreDX.EntityFrameworkCore.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

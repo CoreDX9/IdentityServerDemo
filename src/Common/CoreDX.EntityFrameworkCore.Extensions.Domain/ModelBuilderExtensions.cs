@@ -3,7 +3,7 @@ using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Model.Entity;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CoreDX.Application.EntityFrameworkCore.Extensions
+namespace CoreDX.EntityFrameworkCore.Extensions.Domain
 {
     public static class ModelBuilderExtensions
     {
@@ -296,7 +296,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
         /// <param name="builder">实体类型构造器</param>
         /// <returns>实体类型构造器</returns>
         public static EntityTypeBuilder<TEntity> ConfigForIDomainTreeEntity<TKey, TEntity>(this EntityTypeBuilder<TEntity> builder)
-            where TKey : struct , IEquatable<TKey>
+            where TKey : struct, IEquatable<TKey>
             where TEntity : class, IDomainTreeEntity<TKey, TEntity>
         {
             builder.ConfigForIDomainEntity();
@@ -337,7 +337,7 @@ namespace CoreDX.Application.EntityFrameworkCore.Extensions
             where TEntity : DomainTreeEntityBase<TKey, TEntity>
             where TIdentityKey : struct, IEquatable<TIdentityKey>
         {
-            builder.ConfigForDomainTreeEntityBase< TKey, TEntity>();
+            builder.ConfigForDomainTreeEntityBase<TKey, TEntity>();
 
             return builder;
         }

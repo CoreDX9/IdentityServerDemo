@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.EntityFrameworkCore.Extensions.Domain\CoreDX.EntityFrameworkCore.Extensions.Domain.csproj" />
+    <ProjectReference Include="..\CoreDX.Domain.Core\CoreDX.Domain.Core.csproj" />
+  </ItemGroup>
+  
+</Project>

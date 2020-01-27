@@ -1,6 +1,6 @@
 ﻿using System;
-using CoreDX.Application.EntityFrameworkCore.Extensions;
 using CoreDX.Domain.Entity.Permission;
+using CoreDX.EntityFrameworkCore.Extensions.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

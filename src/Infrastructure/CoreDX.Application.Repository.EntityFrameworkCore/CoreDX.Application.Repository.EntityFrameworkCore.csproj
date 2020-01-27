@@ -10,8 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Core\CoreDX.Domain.Core.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Model\CoreDX.Domain.Model.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Repository.App\CoreDX.Domain.Repository.App.csproj" />
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Repository.EntityFrameworkCore\CoreDX.Domain.Repository.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

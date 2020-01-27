@@ -1,7 +1,7 @@
 ﻿using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Model.Command;
-using CoreDX.Domain.Model.Repository;
+using CoreDX.Domain.Repository.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

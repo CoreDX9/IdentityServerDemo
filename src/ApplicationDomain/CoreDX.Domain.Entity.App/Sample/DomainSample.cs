@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using CoreDX.Domain.Model.Entity;
-using CoreDX.EntityFrameworkCore.Extensions.DataAnnotations;
+using CoreDX.EntityFrameworkCore.DataAnnotations;
 
 namespace CoreDX.Domain.Entity.App.Sample
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CoreDX.Application.EntityFrameworkCore.Extensions;
 using CoreDX.Domain.Core.Entity;
 using CoreDX.Domain.Entity.Identity;
+using CoreDX.EntityFrameworkCore.Extensions.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
