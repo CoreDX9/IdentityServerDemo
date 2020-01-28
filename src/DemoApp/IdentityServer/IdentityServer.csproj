@@ -98,7 +98,7 @@
   <!--包引用-->
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.0.2" />
-    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="1.1.1" />
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="2.1.0" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
@@ -146,7 +146,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.33" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.34" />
   </ItemGroup>
 
   <!--项目引用-->

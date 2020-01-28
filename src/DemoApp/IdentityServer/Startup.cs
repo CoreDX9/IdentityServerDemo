@@ -507,7 +507,8 @@ namespace IdentityServer
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(), new HeaderApiVersionReader() { HeaderNames = { "x-api-version" } });
-            }).AddVersionedApiExplorer(option =>
+            })
+                .AddVersionedApiExplorer(option =>
             {
                 option.GroupNameFormat = "'v'VVVV";//api组名格式
                 option.AssumeDefaultVersionWhenUnspecified = true;//是否提供API版本服务
@@ -998,9 +999,15 @@ namespace IdentityServer
                 });
 
                 //映射区域控制器终结点
-                endpoints.MapControllerRoute("area", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapAreaControllerRoute(
+                    name: "areas", "areas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
                 //映射默认控制终结点
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
                 //映射 Razor Pages 终结点
                 endpoints.MapRazorPages();
 
