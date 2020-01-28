@@ -96,18 +96,11 @@ namespace IdentityServer.CustomServices
 
         private ActionContext GetActionContext(RouteData routeData = null, ActionDescriptor actionDescriptor = null, HttpContext httpContext = null, ModelStateDictionary modelStateDictionary = null)
         {
-            HttpContext defaultHttpContext;
-            if (httpContext != null)
-            {
-                defaultHttpContext = httpContext;
-            }
-            else
-            {
-                defaultHttpContext = new DefaultHttpContext
+            var defaultHttpContext = httpContext
+                ?? new DefaultHttpContext
                 {
                     RequestServices = _serviceProvider,
                 };
-            }
 
             return new ActionContext(defaultHttpContext, routeData ?? new RouteData(), actionDescriptor ?? new ActionDescriptor(), modelStateDictionary ?? new ModelStateDictionary());
         }

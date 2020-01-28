@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Repository.App\CoreDX.Domain.Repository.App.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Service.App\CoreDX.Domain.Service.App.csproj" />
   </ItemGroup>

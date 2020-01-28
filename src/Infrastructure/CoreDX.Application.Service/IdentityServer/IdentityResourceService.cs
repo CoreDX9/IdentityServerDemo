@@ -1,9 +1,8 @@
-﻿using CoreDX.Domain.Entity.App.IdentityServer;
+﻿using AutoMapper;
+using CoreDX.Domain.Entity.App.IdentityServer;
 using CoreDX.Domain.Repository.App.IdentityServer;
 using CoreDX.Domain.Service.App.IdentityServer;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -12,34 +11,33 @@ namespace CoreDX.Application.Service.IdentityServer
     public class IdentityResourceService : IIdentityResourceService
     {
         protected readonly IIdentityResourceRepository IdentityResourceRepository;
+        protected readonly IMapper _mapper;
 
-        public IdentityResourceService(IIdentityResourceRepository identityResourceRepository)
+        public IdentityResourceService(IIdentityResourceRepository identityResourceRepository, IMapper mapper)
         {
             IdentityResourceRepository = identityResourceRepository;
+            _mapper = mapper;
         }
 
         public virtual async Task<IPagedList<IdentityResourceDto>> GetIdentityResourcesAsync(string search, int page = 1, int pageSize = 10)
         {
-            var pagedList = await IdentityResourceRepository.GetIdentityResourcesAsync(search, page, pageSize);
-            var identityResourcesDto = pagedList.ToModel();
+            var data = await IdentityResourceRepository.GetIdentityResourcesAsync(search, page, pageSize);
 
-            return identityResourcesDto;
+            return data.Select(x => _mapper.Map<IdentityResourceDto>(x));
         }
 
         public virtual async Task<IdentityResourceDto> GetIdentityResourceAsync(int identityResourceId)
         {
             var identityResource = await IdentityResourceRepository.GetIdentityResourceAsync(identityResourceId);
-            if (identityResource == null) throw new UserFriendlyErrorPageException(string.Format(IdentityResourceServiceResources.IdentityResourceDoesNotExist().Description, identityResourceId));
+            if (identityResource == null) throw new Exception(string.Format("Identity resource (id : {0}) doesn't exist.", identityResourceId));
 
-            var identityResourceDto = identityResource.ToModel();
-
-            return identityResourceDto;
+            return _mapper.Map<IdentityResourceDto>(identityResource);
         }
 
         public virtual async Task<IdentityResourcePropertiesDto> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1, int pageSize = 10)
         {
             var identityResource = await IdentityResourceRepository.GetIdentityResourceAsync(identityResourceId);
-            if (identityResource == null) throw new UserFriendlyErrorPageException(string.Format(IdentityResourceServiceResources.IdentityResourceDoesNotExist().Description, identityResourceId), IdentityResourceServiceResources.IdentityResourceDoesNotExist().Description);
+            if (identityResource == null) throw new Exception(string.Format(IdentityResourceServiceResources.IdentityResourceDoesNotExist().Description, identityResourceId), IdentityResourceServiceResources.IdentityResourceDoesNotExist().Description);
 
             var pagedList = await IdentityResourceRepository.GetIdentityResourcePropertiesAsync(identityResourceId, page, pageSize);
             var identityResourcePropertiesAsync = pagedList.ToModel();
@@ -52,7 +50,7 @@ namespace CoreDX.Application.Service.IdentityServer
         public virtual async Task<IdentityResourcePropertiesDto> GetIdentityResourcePropertyAsync(int identityResourcePropertyId)
         {
             var identityResourceProperty = await IdentityResourceRepository.GetIdentityResourcePropertyAsync(identityResourcePropertyId);
-            if (identityResourceProperty == null) throw new UserFriendlyErrorPageException(string.Format(IdentityResourceServiceResources.IdentityResourcePropertyDoesNotExist().Description, identityResourcePropertyId));
+            if (identityResourceProperty == null) throw new Exception(string.Format(IdentityResourceServiceResources.IdentityResourcePropertyDoesNotExist().Description, identityResourcePropertyId));
 
             var identityResource = await IdentityResourceRepository.GetIdentityResourceAsync(identityResourceProperty.IdentityResourceId);
 
@@ -69,7 +67,7 @@ namespace CoreDX.Application.Service.IdentityServer
             if (!canInsert)
             {
                 await BuildIdentityResourcePropertiesViewModelAsync(identityResourceProperties);
-                throw new UserFriendlyViewException(string.Format(IdentityResourceServiceResources.IdentityResourcePropertyExistsValue().Description, identityResourceProperties.Key), IdentityResourceServiceResources.IdentityResourcePropertyExistsKey().Description, identityResourceProperties);
+                throw new Exception(string.Format(IdentityResourceServiceResources.IdentityResourcePropertyExistsValue().Description, identityResourceProperties.Key), IdentityResourceServiceResources.IdentityResourcePropertyExistsKey().Description, identityResourceProperties);
             }
 
             var identityResourceProperty = identityResourceProperties.ToEntity();
@@ -114,7 +112,7 @@ namespace CoreDX.Application.Service.IdentityServer
             var canInsert = await CanInsertIdentityResourceAsync(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IdentityResourceServiceResources.IdentityResourceExistsValue().Description, identityResource.Name), IdentityResourceServiceResources.IdentityResourceExistsKey().Description, identityResource);
+                throw new Exception(string.Format(IdentityResourceServiceResources.IdentityResourceExistsValue().Description, identityResource.Name), IdentityResourceServiceResources.IdentityResourceExistsKey().Description, identityResource);
             }
 
             var resource = identityResource.ToEntity();
@@ -129,7 +127,7 @@ namespace CoreDX.Application.Service.IdentityServer
             var canInsert = await CanInsertIdentityResourceAsync(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IdentityResourceServiceResources.IdentityResourceExistsValue().Description, identityResource.Name), IdentityResourceServiceResources.IdentityResourceExistsKey().Description, identityResource);
+                throw new Exception(string.Format(IdentityResourceServiceResources.IdentityResourceExistsValue().Description, identityResource.Name), IdentityResourceServiceResources.IdentityResourceExistsKey().Description, identityResource);
             }
 
             var resource = identityResource.ToEntity();
