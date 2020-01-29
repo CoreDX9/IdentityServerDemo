@@ -20,7 +20,7 @@ namespace CoreDX.Domain.Repository.App.IdentityServer
 
         Task<bool> CanInsertIdentityResourcePropertyAsync(IdentityResourceProperty identityResourceProperty);
 
-        Task<PagedList<IdentityResourceProperty>> GetIdentityResourcePropertiesAsync(int identityResourceId,
+        Task<IPagedList<IdentityResourceProperty>> GetIdentityResourcePropertiesAsync(int identityResourceId,
             int page = 1, int pageSize = 10);
 
         Task<IdentityResourceProperty> GetIdentityResourcePropertyAsync(int identityResourcePropertyId);

@@ -1,9 +1,9 @@
-﻿using CoreDX.Domain.Repository.App.IdentityServer;
+﻿using CoreDX.Common.Util.EnumerableExtensions;
+using CoreDX.Common.Util.TypeExtensions;
+using CoreDX.Domain.Repository.App.IdentityServer;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -23,17 +23,10 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
 
         public virtual async Task<IPagedList<IdentityResource>> GetIdentityResourcesAsync(string search, int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<IdentityResource>();
-
-            Expression<Func<IdentityResource, bool>> searchCondition = x => x.Name.Contains(search);
-
-            var identityResources = await DbContext.IdentityResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Name, page, pageSize).ToListAsync();
-
-            pagedList.Data.AddRange(identityResources);
-            pagedList.TotalCount = await DbContext.IdentityResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return await DbContext.IdentityResources
+                .WhereIf(!search.IsNullOrEmpty(), x => x.Name.Contains(search))
+                .OrderBy(x => x.Name)
+                .ToPagedListAsync(page, pageSize);
         }
 
         public virtual Task<IdentityResource> GetIdentityResourceAsync(int identityResourceId)
@@ -45,18 +38,12 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
                 .SingleOrDefaultAsync();
         }
 
-        public virtual async Task<PagedList<IdentityResourceProperty>> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1, int pageSize = 10)
+        public virtual async Task<IPagedList<IdentityResourceProperty>> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<IdentityResourceProperty>();
-
-            var properties = await DbContext.IdentityResourceProperties.Where(x => x.IdentityResource.Id == identityResourceId).PageBy(x => x.Id, page, pageSize)
-                .ToListAsync();
-
-            pagedList.Data.AddRange(properties);
-            pagedList.TotalCount = await DbContext.IdentityResourceProperties.Where(x => x.IdentityResource.Id == identityResourceId).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return await DbContext.IdentityResourceProperties
+                .Where(x => x.IdentityResource.Id == identityResourceId)
+                .OrderBy(x => x.Id)
+                .ToPagedListAsync(page, pageSize);
         }
 
         public virtual Task<IdentityResourceProperty> GetIdentityResourcePropertyAsync(int identityResourcePropertyId)
@@ -154,5 +141,10 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             return await DbContext.SaveChangesAsync();
         }
+    }
+
+    public enum SavedStatus
+    {
+        WillBeSavedExplicitly = 0
     }
 }
