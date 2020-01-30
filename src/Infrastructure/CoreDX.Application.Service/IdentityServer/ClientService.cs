@@ -141,7 +141,8 @@ namespace CoreDX.Application.Service.IdentityServer
             var canInsert = await CanInsertClientAsync(client);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                //throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                throw new Exception(string.Format("{0}"));
             }
 
             PrepareClientTypeForNewClient(client);
@@ -157,7 +158,8 @@ namespace CoreDX.Application.Service.IdentityServer
             var canInsert = await CanInsertClientAsync(client);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                //throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                throw new Exception(string.Format("{0}"));
             }
 
             var clientEntity = client.ToEntity();
@@ -184,11 +186,12 @@ namespace CoreDX.Application.Service.IdentityServer
             if (!canInsert)
             {
                 //If it failed you need get original clientid, clientname for view title
-                var clientInfo = await ClientRepository.GetClientIdAsync(client.Id);
-                client.ClientIdOriginal = clientInfo.ClientId;
-                client.ClientNameOriginal = clientInfo.ClientName;
+                var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(client.Id);
+                client.ClientIdOriginal = ClientId;
+                client.ClientNameOriginal = ClientName;
 
-                throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                //throw new UserFriendlyViewException(string.Format(ClientServiceResources.ClientExistsValue().Description, client.ClientId), ClientServiceResources.ClientExistsKey().Description, client);
+                throw new Exception(string.Format("{0}"));
             }
 
             var clientEntity = client.ToEntity();
@@ -212,7 +215,8 @@ namespace CoreDX.Application.Service.IdentityServer
         {
             var client = await ClientRepository.GetClientAsync(clientId);
 
-            if (client == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            //if (client == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            if (client == null) throw new Exception(string.Format("{0}"));
 
             var clientDto = client.ToModel();
 
@@ -311,13 +315,14 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<ClientSecretsDto> GetClientSecretsAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientId);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientId);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientSecretsAsync(clientId, page, pageSize);
             var clientSecretsDto = pagedList.ToModel();
             clientSecretsDto.ClientId = clientId;
-            clientSecretsDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientSecretsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientSecretsDto;
         }
@@ -325,40 +330,44 @@ namespace CoreDX.Application.Service.IdentityServer
         public virtual async Task<ClientSecretsDto> GetClientSecretAsync(int clientSecretId)
         {
             var clientSecret = await ClientRepository.GetClientSecretAsync(clientSecretId);
-            if (clientSecret == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientSecretDoesNotExist().Description, clientSecretId));
+            //if (clientSecret == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientSecretDoesNotExist().Description, clientSecretId));
+            if (clientSecret == null) throw new Exception(string.Format("{0}"));
 
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientSecret.Client.Id);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientSecret.Client.Id));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientSecret.Client.Id);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientSecret.Client.Id));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var clientSecretsDto = clientSecret.ToModel();
             clientSecretsDto.ClientId = clientSecret.Client.Id;
-            clientSecretsDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientSecretsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientSecretsDto;
         }
 
         public virtual async Task<ClientClaimsDto> GetClientClaimsAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientId);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientId);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientClaimsAsync(clientId, page, pageSize);
             var clientClaimsDto = pagedList.ToModel();
             clientClaimsDto.ClientId = clientId;
-            clientClaimsDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientClaimsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientClaimsDto;
         }
 
         public virtual async Task<ClientPropertiesDto> GetClientPropertiesAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientId);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientId);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientPropertiesAsync(clientId, page, pageSize);
             var clientPropertiesDto = pagedList.ToModel();
             clientPropertiesDto.ClientId = clientId;
-            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientPropertiesDto;
         }
@@ -366,14 +375,16 @@ namespace CoreDX.Application.Service.IdentityServer
         public virtual async Task<ClientClaimsDto> GetClientClaimAsync(int clientClaimId)
         {
             var clientClaim = await ClientRepository.GetClientClaimAsync(clientClaimId);
-            if (clientClaim == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientClaimDoesNotExist().Description, clientClaimId));
+            //if (clientClaim == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientClaimDoesNotExist().Description, clientClaimId));
+            if (clientClaim == null) throw new Exception(string.Format("{0}"));
 
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientClaim.Client.Id);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientClaim.Client.Id));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientClaim.Client.Id);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientClaim.Client.Id));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var clientClaimsDto = clientClaim.ToModel();
             clientClaimsDto.ClientId = clientClaim.Client.Id;
-            clientClaimsDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientClaimsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientClaimsDto;
         }
@@ -381,14 +392,16 @@ namespace CoreDX.Application.Service.IdentityServer
         public virtual async Task<ClientPropertiesDto> GetClientPropertyAsync(int clientPropertyId)
         {
             var clientProperty = await ClientRepository.GetClientPropertyAsync(clientPropertyId);
-            if (clientProperty == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientPropertyDoesNotExist().Description, clientPropertyId));
+            //if (clientProperty == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientPropertyDoesNotExist().Description, clientPropertyId));
+            if (clientProperty == null) throw new Exception(string.Format("{0}"));
 
-            var clientInfo = await ClientRepository.GetClientIdAsync(clientProperty.Client.Id);
-            if (clientInfo.ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientProperty.Client.Id));
+            var (ClientId, ClientName) = await ClientRepository.GetClientIdAsync(clientProperty.Client.Id);
+            //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientProperty.Client.Id));
+            if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var clientPropertiesDto = clientProperty.ToModel();
             clientPropertiesDto.ClientId = clientProperty.Client.Id;
-            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(clientInfo.ClientId, clientInfo.ClientName);
+            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
 
             return clientPropertiesDto;
         }
