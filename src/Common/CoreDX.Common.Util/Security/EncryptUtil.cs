@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreDX.Common.Util.TypeExtensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -140,33 +141,72 @@ namespace CoreDX.Common.Util.Security
             return HashAlgorithmBase(sha1, value, encoding);
         }
 
-        /// <summary>
-        /// SHA256 加密
-        /// </summary>
-        public static string Sha256(this string value)
+        //
+        // 摘要:
+        //     /// Creates a SHA256 hash of the specified input. ///
+        //
+        // 参数:
+        //   input:
+        //     The input.
+        //
+        // 返回结果:
+        //     A hash
+        public static string Sha256(this string input)
         {
-            if (value == null)
+            if (input.IsNullOrEmpty())
             {
-                throw new ArgumentNullException("未将对象引用设置到对象的实例。");
+                return string.Empty;
             }
-
-            var encoding = Encoding.UTF8;
-            SHA256 sha256 = new SHA256Managed();
-            return HashAlgorithmBase(sha256, value, encoding);
+            using (SHA256 sHA = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(input);
+                return Convert.ToBase64String(sHA.ComputeHash(bytes));
+            }
         }
 
-        /// <summary>
-        /// SHA512 加密
-        /// </summary>
-        public static string Sha512(this string value)
+        //
+        // 摘要:
+        //     /// Creates a SHA256 hash of the specified input. ///
+        //
+        // 参数:
+        //   input:
+        //     The input.
+        //
+        // 返回结果:
+        //     A hash.
+        public static byte[] Sha256(this byte[] input)
         {
-            if (value == null)
+            if (input == null)
             {
-                throw new ArgumentNullException("未将对象引用设置到对象的实例。");
+                return null;
             }
-            var encoding = Encoding.UTF8;
-            SHA512 sha512 = new SHA512Managed();
-            return HashAlgorithmBase(sha512, value, encoding);
+            using (SHA256 sHA = SHA256.Create())
+            {
+                return sHA.ComputeHash(input);
+            }
+        }
+
+        //
+        // 摘要:
+        //     /// Creates a SHA512 hash of the specified input. ///
+        //
+        // 参数:
+        //   input:
+        //     The input.
+        //
+        // 返回结果:
+        //     A hash
+        public static string Sha512(this string input)
+        {
+            if (input.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+            using (SHA512 sHA = SHA512.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(input);
+                return Convert.ToBase64String(sHA.ComputeHash(bytes));
+            }
         }
 
         #endregion

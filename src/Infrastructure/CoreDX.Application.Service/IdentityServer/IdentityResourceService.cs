@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CoreDX.Application.Service.IdentityServer.Helpers;
 using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Entity.App.IdentityServer;
 using CoreDX.Domain.Repository.App.IdentityServer;
@@ -158,11 +159,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual IdentityResourceDto BuildIdentityResourceViewModel(IdentityResourceDto identityResource)
         {
-            if (!identityResource.UserClaimsItems.IsNullOrEmpty())
-            {
-                var list = JsonSerializer.Deserialize<List<string>>(identityResource.UserClaimsItems);
-                if (list?.Count > 0) identityResource.UserClaims.AddRange(list);
-            }
+            ComboBoxHelpers.PopulateValuesToList(identityResource.UserClaimsItems, identityResource.UserClaims);
 
             return identityResource;
         }

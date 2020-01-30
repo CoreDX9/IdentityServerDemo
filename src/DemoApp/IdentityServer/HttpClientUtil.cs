@@ -246,7 +246,7 @@ namespace IdentityServer
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="url"></param>
-        /// <returns>List<T></returns>
+        /// <returns></returns>
         public static List<T> GetResponseList<T>(string url) where T : class, new()
         {
             if (url.StartsWith("https"))

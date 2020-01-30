@@ -908,9 +908,11 @@ namespace IdentityServer
             #region 注册网站文件夹浏览
 
             //注册文件浏览器
-            var dir = new DirectoryBrowserOptions();
-            dir.FileProvider = new PhysicalFileProvider(Environment.ContentRootPath);
-            dir.RequestPath = "/dir";
+            var dir = new DirectoryBrowserOptions
+            {
+                FileProvider = new PhysicalFileProvider(Environment.ContentRootPath),
+                RequestPath = "/dir"
+            };
             app.UseDirectoryBrowser(dir);
 
             var contentTypeProvider = new FileExtensionContentTypeProvider();
