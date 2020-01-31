@@ -1,21 +1,18 @@
 ﻿using CoreDX.Domain.Entity.App.IdentityServer;
 using CoreDX.Domain.Service.App.IdentityServer;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
 {
     [Area("IdentityServer")]
-    public class ManageController : Controller
+    public class ConfigurationController : Controller
     {
         private readonly IIdentityResourceService _identityResourceService;
         private readonly IApiResourceService _apiResourceService;
         private readonly IClientService _clientService;
 
-        public ManageController(IIdentityResourceService identityResourceService,
+        public ConfigurationController(IIdentityResourceService identityResourceService,
             IApiResourceService apiResourceService,
             IClientService clientService)
         {
