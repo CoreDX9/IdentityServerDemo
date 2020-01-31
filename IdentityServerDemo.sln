@@ -28,8 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.EntityFrameworkCore"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityHistoryMQReceive", "src\Data\RabbitMQReceive\EntityHistoryMQReceive.csproj", "{1C983BEA-0D75-4455-BF48-253899147E69}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Logging.File", "src\Infrastructure\Extensions.Logging.File\Extensions.Logging.File.csproj", "{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpScriptDemo", "src\DemoApp\CSharpScriptDemo\CSharpScriptDemo.csproj", "{ED2A7D11-8350-4B19-A3B0-23273727339E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B6A62D81-BB03-4D59-834F-7D4916B97094}"
@@ -88,11 +86,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Repository.En
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.EntityFrameworkCore.DataAnnotations", "src\Common\CoreDX.EntityFrameworkCore.DataAnnotations\CoreDX.EntityFrameworkCore.DataAnnotations.csproj", "{34E706E9-888F-4A21-863F-18F0BDC3830F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Application.Service", "src\Infrastructure\CoreDX.Application.Service\CoreDX.Application.Service.csproj", "{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Application.Service", "src\Infrastructure\CoreDX.Application.Service\CoreDX.Application.Service.csproj", "{C44A8661-2D96-41BD-8CBE-BB8E1F0BF15D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Domain.Repository.App", "src\ApplicationDomain\CoreDX.Domain.Repository.App\CoreDX.Domain.Repository.App.csproj", "{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Domain.Repository.App", "src\ApplicationDomain\CoreDX.Domain.Repository.App\CoreDX.Domain.Repository.App.csproj", "{9F1A9DF4-1D5A-499A-B494-047601F4B8BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.EntityFrameworkCore.Extensions.Domain", "src\Common\CoreDX.EntityFrameworkCore.Extensions.Domain\CoreDX.EntityFrameworkCore.Extensions.Domain.csproj", "{05996CB4-B384-4F96-B475-DCDD88393AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.EntityFrameworkCore.Extensions.Domain", "src\Common\CoreDX.EntityFrameworkCore.Extensions.Domain\CoreDX.EntityFrameworkCore.Extensions.Domain.csproj", "{05996CB4-B384-4F96-B475-DCDD88393AA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,10 +142,6 @@ Global
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C983BEA-0D75-4455-BF48-253899147E69}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED2A7D11-8350-4B19-A3B0-23273727339E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -274,7 +268,6 @@ Global
 		{825FDFD2-8BE1-4CDD-86D1-EF65F734CF77} = {2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}
 		{388C3474-9930-4A06-8667-6D169D8F87FD} = {ED739766-2880-48C7-B0FC-8FB4F77B7918}
 		{1C983BEA-0D75-4455-BF48-253899147E69} = {ED739766-2880-48C7-B0FC-8FB4F77B7918}
-		{FF61A6D0-D6EA-4CCE-BD2E-4C447BF07F02} = {7AAF1931-16C1-4F79-BCCD-332B774D3223}
 		{ED2A7D11-8350-4B19-A3B0-23273727339E} = {8A609C05-0214-4187-B7EF-B1CADA8CF2E0}
 		{342AAAA1-47AB-4E69-B3F5-985C1DE09312} = {27AAF7D4-CC18-49AF-91CD-E38478A03F5E}
 		{27AAF7D4-CC18-49AF-91CD-E38478A03F5E} = {B6A62D81-BB03-4D59-834F-7D4916B97094}
