@@ -20,5 +20,19 @@ namespace CoreDX.Common.Util.EnumerableExtensions
                 ? query.Where(predicate)
                 : query;
         }
+
+        public static IEnumerable<T> TakeIf<T>(this IEnumerable<T> query, bool condition, int limit)
+        {
+            return condition
+                ? query.Take(limit)
+                : query;
+        }
+
+        public static IQueryable<T> TakeIf<T>(this IQueryable<T> query, bool condition, int limit)
+        {
+            return condition
+                ? query.Take(limit)
+                : query;
+        }
     }
 }

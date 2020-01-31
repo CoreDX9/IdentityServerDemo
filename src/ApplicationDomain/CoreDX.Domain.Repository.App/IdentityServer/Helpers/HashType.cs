@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoreDX.Application.Service.IdentityServer.Helpers
+namespace CoreDX.Domain.Repository.App.IdentityServer.Helpers
 {
 	public enum HashType
 	{

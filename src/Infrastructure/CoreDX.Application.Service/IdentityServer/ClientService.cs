@@ -3,7 +3,9 @@ using CoreDX.Application.Service.IdentityServer.Helpers;
 using CoreDX.Common.Util.Security;
 using CoreDX.Domain.Entity.App.IdentityServer;
 using CoreDX.Domain.Repository.App.IdentityServer;
+using CoreDX.Domain.Repository.App.IdentityServer.Helpers;
 using CoreDX.Domain.Service.App.IdentityServer;
+using IdentityServer4.EntityFramework.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -146,7 +148,7 @@ namespace CoreDX.Application.Service.IdentityServer
             }
 
             PrepareClientTypeForNewClient(client);
-            var clientEntity = client.ToEntity();
+            var clientEntity = _mapper.Map<Client>(client);
 
             var added = await ClientRepository.AddClientAsync(clientEntity);
 
@@ -162,7 +164,7 @@ namespace CoreDX.Application.Service.IdentityServer
                 throw new Exception(string.Format("{0}"));
             }
 
-            var clientEntity = client.ToEntity();
+            var clientEntity = _mapper.Map<Client>(client);
 
             var originalClient = await GetClientAsync(client.Id);
 
@@ -173,7 +175,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<int> RemoveClientAsync(ClientDto client)
         {
-            var clientEntity = client.ToEntity();
+            var clientEntity = _mapper.Map<Client>(client);
 
             var deleted = await ClientRepository.RemoveClientAsync(clientEntity);
 
@@ -194,7 +196,7 @@ namespace CoreDX.Application.Service.IdentityServer
                 throw new Exception(string.Format("{0}"));
             }
 
-            var clientEntity = client.ToEntity();
+            var clientEntity = _mapper.Map<Client>(client);
 
             var clonedClientId = await ClientRepository.CloneClientAsync(clientEntity, client.CloneClientCorsOrigins,
                 client.CloneClientGrantTypes, client.CloneClientIdPRestrictions,
@@ -206,7 +208,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual Task<bool> CanInsertClientAsync(ClientDto client, bool isCloned = false)
         {
-            var clientEntity = client.ToEntity();
+            var clientEntity = _mapper.Map<Client>(client);
 
             return ClientRepository.CanInsertClientAsync(clientEntity, isCloned);
         }
@@ -218,7 +220,7 @@ namespace CoreDX.Application.Service.IdentityServer
             //if (client == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientId));
             if (client == null) throw new Exception(string.Format("{0}"));
 
-            var clientDto = client.ToModel();
+            var clientDto = _mapper.Map<ClientDto>(client);
 
             return clientDto;
         }
@@ -226,7 +228,7 @@ namespace CoreDX.Application.Service.IdentityServer
         public virtual async Task<IPagedList<ClientDto>> GetClientsAsync(string search, int page = 1, int pageSize = 10)
         {
             var pagedList = await ClientRepository.GetClientsAsync(search, page, pageSize);
-            var clientsDto = pagedList.ToModel();
+            var clientsDto = pagedList.Select(x => _mapper.Map<ClientDto>(x));
 
             return clientsDto;
         }
@@ -247,42 +249,42 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual List<SelectItemDto> GetAccessTokenTypes()
         {
-            var accessTokenTypes = ClientRepository.GetAccessTokenTypes().ToModel();
+            var accessTokenTypes = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetAccessTokenTypes());
 
             return accessTokenTypes;
         }
 
         public virtual List<SelectItemDto> GetTokenExpirations()
         {
-            var tokenExpirations = ClientRepository.GetTokenExpirations().ToModel();
+            var tokenExpirations = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetTokenExpirations());
 
             return tokenExpirations;
         }
 
         public virtual List<SelectItemDto> GetTokenUsage()
         {
-            var tokenUsage = ClientRepository.GetTokenUsage().ToModel();
+            var tokenUsage = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetTokenUsage());
 
             return tokenUsage;
         }
 
         public virtual List<SelectItemDto> GetHashTypes()
         {
-            var hashTypes = ClientRepository.GetHashTypes().ToModel();
+            var hashTypes = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetHashTypes());
 
             return hashTypes;
         }
 
         public virtual List<SelectItemDto> GetSecretTypes()
         {
-            var secretTypes = ClientRepository.GetSecretTypes().ToModel();
+            var secretTypes = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetSecretTypes());
 
             return secretTypes;
         }
 
         public virtual List<SelectItemDto> GetProtocolTypes()
         {
-            var protocolTypes = ClientRepository.GetProtocolTypes().ToModel();
+            var protocolTypes = _mapper.Map<List<SelectItemDto>>(ClientRepository.GetProtocolTypes());
 
             return protocolTypes;
         }
@@ -298,7 +300,7 @@ namespace CoreDX.Application.Service.IdentityServer
         {
             HashClientSharedSecret(clientSecret);
 
-            var clientSecretEntity = clientSecret.ToEntity();
+            var clientSecretEntity = _mapper.Map<ClientSecret>(clientSecret);
             var added = await ClientRepository.AddClientSecretAsync(clientSecret.ClientId, clientSecretEntity);
 
             return added;
@@ -306,7 +308,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<int> DeleteClientSecretAsync(ClientSecretsDto clientSecret)
         {
-            var clientSecretEntity = clientSecret.ToEntity();
+            var clientSecretEntity = _mapper.Map<ClientSecret>(clientSecret);
 
             var deleted = await ClientRepository.DeleteClientSecretAsync(clientSecretEntity);
 
@@ -320,9 +322,9 @@ namespace CoreDX.Application.Service.IdentityServer
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientSecretsAsync(clientId, page, pageSize);
-            var clientSecretsDto = pagedList.ToModel();
+            var clientSecretsDto = _mapper.Map<ClientSecretsDto>(pagedList);
             clientSecretsDto.ClientId = clientId;
-            clientSecretsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientSecretsDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientSecretsDto;
         }
@@ -337,9 +339,9 @@ namespace CoreDX.Application.Service.IdentityServer
             //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientSecret.Client.Id));
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
-            var clientSecretsDto = clientSecret.ToModel();
+            var clientSecretsDto = _mapper.Map<ClientSecretsDto>(clientSecret);
             clientSecretsDto.ClientId = clientSecret.Client.Id;
-            clientSecretsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientSecretsDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientSecretsDto;
         }
@@ -351,9 +353,9 @@ namespace CoreDX.Application.Service.IdentityServer
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientClaimsAsync(clientId, page, pageSize);
-            var clientClaimsDto = pagedList.ToModel();
+            var clientClaimsDto = _mapper.Map<ClientClaimsDto>(pagedList);
             clientClaimsDto.ClientId = clientId;
-            clientClaimsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientClaimsDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientClaimsDto;
         }
@@ -365,9 +367,9 @@ namespace CoreDX.Application.Service.IdentityServer
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
             var pagedList = await ClientRepository.GetClientPropertiesAsync(clientId, page, pageSize);
-            var clientPropertiesDto = pagedList.ToModel();
+            var clientPropertiesDto = _mapper.Map<ClientPropertiesDto>(pagedList);
             clientPropertiesDto.ClientId = clientId;
-            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientPropertiesDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientPropertiesDto;
         }
@@ -382,9 +384,9 @@ namespace CoreDX.Application.Service.IdentityServer
             //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientClaim.Client.Id));
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
-            var clientClaimsDto = clientClaim.ToModel();
+            var clientClaimsDto = _mapper.Map<ClientClaimsDto>(clientClaim);
             clientClaimsDto.ClientId = clientClaim.Client.Id;
-            clientClaimsDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientClaimsDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientClaimsDto;
         }
@@ -399,16 +401,16 @@ namespace CoreDX.Application.Service.IdentityServer
             //if (ClientId == null) throw new UserFriendlyErrorPageException(string.Format(ClientServiceResources.ClientDoesNotExist().Description, clientProperty.Client.Id));
             if (ClientId == null) throw new Exception(string.Format("{0}"));
 
-            var clientPropertiesDto = clientProperty.ToModel();
+            var clientPropertiesDto = _mapper.Map<ClientPropertiesDto>(clientProperty);
             clientPropertiesDto.ClientId = clientProperty.Client.Id;
-            clientPropertiesDto.ClientName = ViewHelpers.GetClientName(ClientId, ClientName);
+            clientPropertiesDto.ClientName = $"{ClientId} ({ClientName})";
 
             return clientPropertiesDto;
         }
 
         public virtual async Task<int> AddClientClaimAsync(ClientClaimsDto clientClaim)
         {
-            var clientClaimEntity = clientClaim.ToEntity();
+            var clientClaimEntity = _mapper.Map<ClientClaim>(clientClaim);
 
             var saved = await ClientRepository.AddClientClaimAsync(clientClaim.ClientId, clientClaimEntity);
 
@@ -417,7 +419,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<int> AddClientPropertyAsync(ClientPropertiesDto clientProperties)
         {
-            var clientProperty = clientProperties.ToEntity();
+            var clientProperty = _mapper.Map<ClientProperty>(clientProperties);
 
             var saved = await ClientRepository.AddClientPropertyAsync(clientProperties.ClientId, clientProperty);
 
@@ -426,7 +428,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<int> DeleteClientClaimAsync(ClientClaimsDto clientClaim)
         {
-            var clientClaimEntity = clientClaim.ToEntity();
+            var clientClaimEntity = _mapper.Map<ClientClaim>(clientClaim);
 
             var deleted = await ClientRepository.DeleteClientClaimAsync(clientClaimEntity);
 
@@ -435,7 +437,7 @@ namespace CoreDX.Application.Service.IdentityServer
 
         public virtual async Task<int> DeleteClientPropertyAsync(ClientPropertiesDto clientProperty)
         {
-            var clientPropertyEntity = clientProperty.ToEntity();
+            var clientPropertyEntity = _mapper.Map<ClientProperty>(clientProperty);
 
             var deleted = await ClientRepository.DeleteClientPropertyAsync(clientPropertyEntity);
 

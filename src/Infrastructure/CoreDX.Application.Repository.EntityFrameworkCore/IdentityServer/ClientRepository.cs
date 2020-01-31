@@ -3,12 +3,13 @@ using CoreDX.Common.Util.EnumerableExtensions;
 using CoreDX.Domain.Repository.App.IdentityServer;
 using CoreDX.Domain.Repository.App.IdentityServer.Helpers;
 using IdentityServer4.EntityFramework.Entities;
+using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
+using Client = IdentityServer4.EntityFramework.Entities.Client;
 
 namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
 {
@@ -42,30 +43,29 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
 
         public virtual async Task<IPagedList<Client>> GetClientsAsync(string search = "", int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<Client>();
+            var clients = await DbContext.Clients
+                .WhereIf(!string.IsNullOrEmpty(search), x => x.ClientId.Contains(search) || x.ClientName.Contains(search))
+                .OrderByDescending(x => x.Id)
+                .ToPagedListAsync(page, pageSize);
 
-            Expression<Func<Client, bool>> searchCondition = x => x.ClientId.Contains(search) || x.ClientName.Contains(search);
-            var clients = await DbContext.Clients.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Id, page, pageSize).ToListAsync();
-            pagedList.Data.AddRange(clients);
-            pagedList.TotalCount = await DbContext.Clients.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return clients;
         }
 
         public virtual async Task<List<string>> GetScopesAsync(string scope, int limit = 0)
         {
             var identityResources = await DbContext.IdentityResources
                 .WhereIf(!string.IsNullOrEmpty(scope), x => x.Name.Contains(scope))
-                .TakeIf(x => x.Id, limit > 0, limit)
+                .OrderByDescending(x => x.Id)
+                .TakeIf(limit > 0, limit)
                 .Select(x => x.Name).ToListAsync();
 
             var apiScopes = await DbContext.ApiScopes
                 .WhereIf(!string.IsNullOrEmpty(scope), x => x.Name.Contains(scope))
-                .TakeIf(x => x.Id, limit > 0, limit)
+                .OrderByDescending(x => x.Id)
+                .TakeIf(limit > 0, limit)
                 .Select(x => x.Name).ToListAsync();
 
-            var scopes = identityResources.Concat(apiScopes).TakeIf(x => x, limit > 0, limit).ToList();
+            var scopes = identityResources.Concat(apiScopes).TakeIf(limit > 0, limit).ToList();
 
             return scopes;
         }
@@ -74,7 +74,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             var filteredGrants = ClientConsts.GetGrantTypes()
                 .WhereIf(!string.IsNullOrWhiteSpace(grant), x => x.Contains(grant))
-                .TakeIf(x => x, limit > 0, limit)
+                .TakeIf(limit > 0, limit)
                 .ToList();
 
             return filteredGrants;
@@ -97,7 +97,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             var filteredClaims = ClientConsts.GetStandardClaims()
                 .WhereIf(!string.IsNullOrWhiteSpace(claim), x => x.Contains(claim))
-                .TakeIf(x => x, limit > 0, limit)
+                .TakeIf(limit > 0, limit)
                 .ToList();
 
             return filteredClaims;
@@ -181,19 +181,11 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
 
         public virtual async Task<IPagedList<ClientSecret>> GetClientSecretsAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<ClientSecret>();
-
             var secrets = await DbContext.ClientSecrets
                 .Where(x => x.Client.Id == clientId)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                .ToPagedListAsync(page, pageSize);
 
-            pagedList.Data.AddRange(secrets);
-            pagedList.TotalCount = await DbContext.ClientSecrets.Where(x => x.Client.Id == clientId).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return secrets;
         }
 
         public virtual Task<ClientSecret> GetClientSecretAsync(int clientSecretId)
@@ -207,30 +199,22 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
 
         public virtual async Task<IPagedList<ClientClaim>> GetClientClaimsAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<ClientClaim>();
+            var claims = await DbContext.ClientClaims
+                .Where(x => x.Client.Id == clientId)
+                .OrderByDescending(x => x.Id)
+                .ToPagedListAsync(page, pageSize);
 
-            var claims = await DbContext.ClientClaims.Where(x => x.Client.Id == clientId).PageBy(x => x.Id, page, pageSize)
-                .ToListAsync();
-
-            pagedList.Data.AddRange(claims);
-            pagedList.TotalCount = await DbContext.ClientClaims.Where(x => x.Client.Id == clientId).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return claims;
         }
 
         public virtual async Task<IPagedList<ClientProperty>> GetClientPropertiesAsync(int clientId, int page = 1, int pageSize = 10)
         {
-            var pagedList = new PagedList<ClientProperty>();
+            var properties = await DbContext.ClientProperties
+                .Where(x => x.Client.Id == clientId)
+                .OrderByDescending(x => x.Id)
+                .ToPagedListAsync(page, pageSize);
 
-            var properties = await DbContext.ClientProperties.Where(x => x.Client.Id == clientId).PageBy(x => x.Id, page, pageSize)
-                .ToListAsync();
-
-            pagedList.Data.AddRange(properties);
-            pagedList.TotalCount = await DbContext.ClientProperties.Where(x => x.Client.Id == clientId).CountAsync();
-            pagedList.PageSize = pageSize;
-
-            return pagedList;
+            return properties;
         }
 
         public virtual Task<ClientClaim> GetClientClaimAsync(int clientClaimId)

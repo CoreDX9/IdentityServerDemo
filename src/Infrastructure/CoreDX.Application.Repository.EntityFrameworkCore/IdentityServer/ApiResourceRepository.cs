@@ -25,7 +25,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             var apiResources = await DbContext.ApiResources
                 .WhereIf(!string.IsNullOrEmpty(search), x => x.Name.Contains(search))
-                .OrderBy(x => x.Name)
+                .OrderByDescending(x => x.Name)
                 .ToPagedListAsync(page, pageSize);
 
             return apiResources;
@@ -44,7 +44,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             var properties = await DbContext.ApiResourceProperties
                 .Where(x => x.ApiResource.Id == apiResourceId)
-                .OrderBy(x => x.Id)
+                .OrderByDescending(x => x.Id)
                 .ToPagedListAsync(page, pageSize);
 
             return properties;
@@ -157,7 +157,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
             var apiScopes = await DbContext.ApiScopes
                 .Include(x => x.ApiResource)
                 .Where(x => x.ApiResource.Id == apiResourceId)
-                .OrderBy(x => x.Name)
+                .OrderByDescending(x => x.Name)
                 .ToPagedListAsync(page, pageSize);
 
             return apiScopes;
@@ -224,7 +224,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             var apiSecrets = await DbContext.ApiSecrets
                 .Where(x => x.ApiResource.Id == apiResourceId)
-                .OrderBy(x => x.Id)
+                .OrderByDescending(x => x.Id)
                 .ToPagedListAsync(page, pageSize);
 
             return apiSecrets;

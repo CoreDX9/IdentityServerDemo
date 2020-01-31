@@ -25,7 +25,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             return await DbContext.IdentityResources
                 .WhereIf(!search.IsNullOrEmpty(), x => x.Name.Contains(search))
-                .OrderBy(x => x.Name)
+                .OrderByDescending(x => x.Name)
                 .ToPagedListAsync(page, pageSize);
         }
 
@@ -42,7 +42,7 @@ namespace CoreDX.Application.Repository.EntityFrameworkCore.IdentityServer
         {
             return await DbContext.IdentityResourceProperties
                 .Where(x => x.IdentityResource.Id == identityResourceId)
-                .OrderBy(x => x.Id)
+                .OrderByDescending(x => x.Id)
                 .ToPagedListAsync(page, pageSize);
         }
 
