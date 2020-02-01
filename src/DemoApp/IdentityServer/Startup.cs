@@ -1,11 +1,6 @@
 ﻿#region using
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Reflection;
+using AspNetCoreRateLimit;
 using AutoMapper;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Core.Command;
@@ -13,25 +8,32 @@ using CoreDX.Domain.Core.Event;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Model.Command;
 using CoreDX.Domain.Model.Event;
+using CoreDX.Domain.Repository.EntityFrameworkCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
 using IdentityServer.CustomMiddlewares;
 using IdentityServer.CustomServices;
 using IdentityServer.Extensions;
+using IdentityServer.Grpc.Services;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
+using IdentityServerAdmin.Admin.EntityFramework.Shared.DbContexts;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -42,15 +44,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using StackExchange.Redis;
-using AspNetCoreRateLimit;
-using IdentityServer.Grpc.Services;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using HealthChecks.UI.Client;
-using CoreDX.Domain.Repository.EntityFrameworkCore;
+using StackExchange.Redis;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Reflection;
 
 #endregion
 
@@ -82,13 +83,9 @@ namespace IdentityServer
             var connectionString = useInMemoryDatabase ? string.Empty : Configuration.GetConnectionString("IdentityServerDbContextConnection");
 
             //重定向数据库文件（默认文件在用户文件夹，改到项目内部文件夹方便管理）
-            if (!useInMemoryDatabase && Environment.IsDevelopment())
+            if (!useInMemoryDatabase)
             {
-                connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Dev.mdf";
-            }
-            if (!useInMemoryDatabase && Environment.IsProduction())
-            {
-                connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-Production.mdf";
+                connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-{Environment.EnvironmentName}.mdf";
             }
 
             //迁移程序集名
@@ -334,12 +331,12 @@ namespace IdentityServer
             //配置IdentityServer4存储
             if (useInMemoryDatabase)
             {
-                id4.AddConfigurationStore(options =>
+                id4.AddConfigurationStore<IdentityServerConfigurationDbContext>(options =>
                 {
                     options.ConfigureDbContext = b =>
                         b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
                 })
-                    .AddOperationalStore(options =>
+                    .AddOperationalStore<IdentityServerPersistedGrantDbContext>(options =>
                     {
                         options.ConfigureDbContext = b =>
                             b.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
@@ -350,14 +347,14 @@ namespace IdentityServer
             else
             {
                 // this adds the config data from DB (clients, resources)
-                id4.AddConfigurationStore(options =>
+                id4.AddConfigurationStore<IdentityServerConfigurationDbContext>(options =>
                 {
                     options.ConfigureDbContext = b =>
                         b.UseSqlServer(connectionString,
                             sql => sql.MigrationsAssembly(migrationsAssemblyName));
                 })
                     // this adds the operational data from DB (codes, tokens, consents)
-                    .AddOperationalStore(options =>
+                    .AddOperationalStore<IdentityServerPersistedGrantDbContext>(options =>
                     {
                         options.ConfigureDbContext = b =>
                             b.UseSqlServer(connectionString,
@@ -368,6 +365,12 @@ namespace IdentityServer
                         // options.TokenCleanupInterval = 15; // frequency in seconds to cleanup stale grants. 15 is useful during debugging
                     });
             }
+
+            #endregion
+
+            #region 注册管理 IdentityServer4 相关的服务
+
+
 
             #endregion
 
@@ -502,7 +505,8 @@ namespace IdentityServer
 
             #endregion
 
-            services.AddApiVersioning(options => {
+            services.AddApiVersioning(options =>
+            {
                 options.ReportApiVersions = true;
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -987,7 +991,7 @@ namespace IdentityServer
             //为天堂的Mvc中间件默哀3秒，被终结点中间件上位，彻底沦为一堆服务 ( ╯□╰ )
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/.well-known/acme-challenge/oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88", context => 
+                endpoints.MapGet("/.well-known/acme-challenge/oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88", context =>
                     context.Response.WriteAsync("oeqphuvkAh-nkRhOmfgwK0jin33MZFvdY84t96Dei88.MH3xs1jYDVTn05jfUtv4-utqDcgZnd4adWIrVgwTujg"));
 
                 //映射 SignalR 集线器终结点

@@ -7,6 +7,7 @@ using CoreDX.Domain.Entity.Identity;
 using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServerAdmin.Admin.EntityFramework.Shared.DbContexts;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ namespace IdentityServer
 
                 try
                 {
-                    scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                    scope.ServiceProvider.GetRequiredService<IdentityServerPersistedGrantDbContext>().Database.Migrate();
                 }
                 catch (Exception ex)
                 {
@@ -51,7 +52,7 @@ namespace IdentityServer
                 }
 
                 {
-                    var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                    var context = scope.ServiceProvider.GetRequiredService<IdentityServerConfigurationDbContext>();
 
                     try
                     {
@@ -502,7 +503,7 @@ namespace IdentityServer
             Console.WriteLine();
         }
 
-        private static void EnsureSeedData(ConfigurationDbContext context)
+        private static void EnsureSeedData(IdentityServerConfigurationDbContext context)
         {
             Console.WriteLine("正在初始化IdentityServer配置数据库……");
 

@@ -148,6 +148,8 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
+    <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic" Version="1.0.0-rc1" />
+    <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic.Identity" Version="1.0.0-rc1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
@@ -161,9 +163,11 @@
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
     <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
     <ProjectReference Include="..\..\DemoPlugin\PluginBase\PluginBase.csproj" />
+    <ProjectReference Include="..\..\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.Shared\IdentityServerAdmin.Admin.EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Repository.EntityFrameworkCore\CoreDX.Application.Repository.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Service\CoreDX.Application.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

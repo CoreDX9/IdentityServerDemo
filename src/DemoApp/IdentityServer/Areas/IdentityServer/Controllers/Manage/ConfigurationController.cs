@@ -1,6 +1,6 @@
-﻿using CoreDX.Domain.Entity.App.IdentityServer;
-using CoreDX.Domain.Service.App.IdentityServer;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Areas.IdentityServer.Controllers.Manage

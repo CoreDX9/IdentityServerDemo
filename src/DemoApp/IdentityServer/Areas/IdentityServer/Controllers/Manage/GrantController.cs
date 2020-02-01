@@ -1,7 +1,8 @@
-﻿using CoreDX.Domain.Entity.App.IdentityServer;
-using CoreDX.Domain.Service.App.IdentityServer;
-using IdentityServer.Areas.IdentityServer.Models;
+﻿using IdentityServer.Areas.IdentityServer.Models;
+using IdentityServer.Helpers.IdentityServerAdmin;
 using Microsoft.AspNetCore.Mvc;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Grant;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Areas.IdentityServer.Controllers.Manage

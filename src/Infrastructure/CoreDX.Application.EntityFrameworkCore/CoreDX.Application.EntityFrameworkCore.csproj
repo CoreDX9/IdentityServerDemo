@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IdentityServer\**" />
+    <EmbeddedResource Remove="IdentityServer\**" />
+    <None Remove="IdentityServer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="EntityConfiguration\ApplicationDomainEntityConfiguration.cs" />
   </ItemGroup>
 
