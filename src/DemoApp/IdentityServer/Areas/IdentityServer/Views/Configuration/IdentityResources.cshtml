@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
-@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.IdentityResourcesDto
+@using X.PagedList
+@model IPagedList<IdentityResourceDto>
 @inject IViewLocalizer Localizer
 
 @{
@@ -34,7 +34,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var identity in Model.IdentityResources)
+					@foreach (var identity in Model)
 					{
 						<tr>
 							<th scope="row"><a class="btn btn-primary" asp-action="IdentityResource" asp-route-id="@identity.Id">@Localizer["TableButtonEdit"]</a></th>
@@ -52,6 +52,6 @@
 
 <div class="row">
 	<div class="col-12">
-		@await Html.PartialAsync("Common/Pager", new Pager { Action = "IdentityResources", PageSize = Model.PageSize, TotalCount = Model.TotalCount, EnableSearch = true, Search = ViewBag.Search })
+		@await Html.PartialAsync("Common/Pager", new Pager { Action = "IdentityResources", PageSize = Model.PageSize, TotalCount = Model.TotalItemCount, EnableSearch = true, Search = ViewBag.Search })
 	</div>
 </div>

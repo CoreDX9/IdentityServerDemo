@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.ApiResourcePropertiesDto
+@model ApiResourcePropertiesDto
 @inject IViewLocalizer Localizer
 
 @{
@@ -23,7 +23,7 @@
 
 		<div class="col-md-12">
 			<h3>@Localizer["PageTitle"]</h3>
-			
+
 			<!--Hidden -->
 			<input type="hidden" asp-for="ApiResourceId" />
 			<input type="hidden" asp-for="ApiResourcePropertyId" />
