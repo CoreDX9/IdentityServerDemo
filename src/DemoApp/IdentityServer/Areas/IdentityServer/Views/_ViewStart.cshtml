@@ -1,3 +1,14 @@
-﻿@{
-    Layout = "/Views/Shared/_Layout.cshtml";
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.Controllers
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var httpContext = HttpContextAccessor.HttpContext;
+    var actionInfo = httpContext.GetEndpoint().Metadata.GetMetadata<ControllerActionDescriptor>();
+
+    string area = null, controller = null;
+    actionInfo?.RouteValues.TryGetValue("area", out area);
+    actionInfo?.RouteValues.TryGetValue("controller", out controller);
+
+    if (area == "IdentityServer" && new[] { "Configuration", "Grant" }.Contains(controller)) Layout = "_Id4ConfigLayout";
+    else Layout = "/Views/Shared/_Layout.cshtml";
 }
