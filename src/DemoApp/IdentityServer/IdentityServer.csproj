@@ -161,6 +161,7 @@
     <ProjectReference Include="..\..\..\..\Harmonic\Harmonic\Harmonic.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Service.App\CoreDX.Domain.Service.App.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj" />
     <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
     <ProjectReference Include="..\..\DemoPlugin\PluginBase\PluginBase.csproj" />
     <ProjectReference Include="..\..\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.Shared\IdentityServerAdmin.Admin.EntityFramework.Shared.csproj" />

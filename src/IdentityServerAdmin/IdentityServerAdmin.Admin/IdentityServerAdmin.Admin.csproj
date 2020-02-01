@@ -119,6 +119,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\IdentityServerAdmin.Admin.EntityFramework.MySql\IdentityServerAdmin.Admin.EntityFramework.MySql.csproj" />

@@ -8,6 +8,9 @@ dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c Ident
 
 dotnet ef migrations add InitialLocalizationDbMigration -c LocalizationModelContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Application/LocalizationDb
 
+dotnet ef migrations add InitialAdminAuditLogDbMigration -c AdminAuditLogDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/AdminAuditLogDb
+dotnet ef migrations add InitialAdminLogDbMigration -c AdminLogDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/AdminLogDb
+
 vs2019 初始化迁移命令，在包管理控制台，将默认项目切换为 IdentityServer
 Add-Migration InitialApplicationDbMigration -Context ApplicationDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application
 Add-Migration InitialApplicationIdentityDbMigration -Context ApplicationIdentityDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Identity
@@ -17,6 +20,10 @@ Add-Migration InitialIdentityServerConfigurationDbMigration -Context IdentitySer
 Add-Migration InitialIdentityServerPersistedGrantDbMigration -Context IdentityServerPersistedGrantDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir IdentityServer/PersistedGrantDb
 
 Add-Migration InitialLocalizationDbMigration -Context LocalizationModelContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application/LocalizationDb
+
+将默认项目切换为 IdentityServerAdmin.Admin
+Add-Migration InitialAdminAuditLogDbMigration -Context AdminAuditLogDbContext -Project IdentityServerAdmin.Admin.EntityFramework.SqlServer -StartupProject IdentityServerAdmin.Admin -OutputDir Migrations/AdminAuditLogDb
+Add-Migration InitialAdminLogDbMigration -Context AdminLogDbContext -Project IdentityServerAdmin.Admin.EntityFramework.SqlServer -StartupProject IdentityServerAdmin.Admin -OutputDir Migrations/AdminLogDb
 
             //自动扫描迁移模型并创建树形实体视图
 			migrationBuilder.ApplyDatabaseDescription(this);

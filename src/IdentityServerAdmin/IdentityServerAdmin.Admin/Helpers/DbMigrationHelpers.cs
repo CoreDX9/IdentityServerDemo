@@ -168,7 +168,8 @@ namespace IdentityServerAdmin.Admin.Helpers
         private static async Task EnsureSeedIdentityServerData<TIdentityServerDbContext>(TIdentityServerDbContext context, IdentityServerDataConfiguration identityServerDataConfiguration)
             where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
         {
-            if (!context.IdentityResources.Any())
+            var irns = identityServerDataConfiguration.IdentityResources.Select(x => x.Name).ToArray();
+            if (!await context.IdentityResources.AnyAsync(x => irns.Contains(x.Name)))
             {
                 foreach (var resource in identityServerDataConfiguration.IdentityResources)
                 {
@@ -178,7 +179,8 @@ namespace IdentityServerAdmin.Admin.Helpers
                 await context.SaveChangesAsync();
             }
 
-            if (!context.ApiResources.Any())
+            var arns = identityServerDataConfiguration.ApiResources.Select(x => x.Name).ToArray();
+            if (!await context.ApiResources.AnyAsync(x => arns.Contains(x.Name)))
             {
                 foreach (var resource in identityServerDataConfiguration.ApiResources)
                 {
@@ -193,7 +195,8 @@ namespace IdentityServerAdmin.Admin.Helpers
                 await context.SaveChangesAsync();
             }
 
-            if (!context.Clients.Any())
+            var cids = identityServerDataConfiguration.Clients.Select(x => x.ClientId).ToArray();
+            if (!await context.Clients.AnyAsync(x => cids.Contains(x.ClientId)))
             {
                 foreach (var client in identityServerDataConfiguration.Clients)
                 {

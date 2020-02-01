@@ -106,6 +106,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.EntityFramework.Shared", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.Shared\IdentityServerAdmin.Admin.EntityFramework.Shared.csproj", "{115DAEE4-8906-44A3-88ED-9073B13CE07A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Identity.Extensions", "src\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj", "{95507D50-9F2B-464D-930B-765D9B4A1226}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -288,6 +290,10 @@ Global
 		{115DAEE4-8906-44A3-88ED-9073B13CE07A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{115DAEE4-8906-44A3-88ED-9073B13CE07A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{115DAEE4-8906-44A3-88ED-9073B13CE07A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95507D50-9F2B-464D-930B-765D9B4A1226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95507D50-9F2B-464D-930B-765D9B4A1226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95507D50-9F2B-464D-930B-765D9B4A1226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95507D50-9F2B-464D-930B-765D9B4A1226}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -344,6 +350,7 @@ Global
 		{995C3BBE-7834-438C-B42D-1E95386FE502} = {35B8AA13-7323-43A2-9A53-7D8FAFAD5D4A}
 		{169CD702-B6E5-401E-8A99-E34B80BF3580} = {35B8AA13-7323-43A2-9A53-7D8FAFAD5D4A}
 		{115DAEE4-8906-44A3-88ED-9073B13CE07A} = {35B8AA13-7323-43A2-9A53-7D8FAFAD5D4A}
+		{95507D50-9F2B-464D-930B-765D9B4A1226} = {2C4660CF-D7D0-44E7-8998-DA5DF3575E6D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {981D0405-3008-4145-B708-5F559C811D64}

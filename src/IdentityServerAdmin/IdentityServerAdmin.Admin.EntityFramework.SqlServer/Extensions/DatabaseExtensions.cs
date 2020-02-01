@@ -38,10 +38,10 @@ namespace IdentityServerAdmin.Admin.EntityFramework.SqlServer.Extensions
             services.AddDbContext<TIdentityDbContext>(options => options.UseSqlServer(identityConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
 
             // Config DB from existing connection
-            services.AddConfigurationDbContext<TConfigurationDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(configurationConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
+            services.AddConfigurationDbContext<TConfigurationDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(configurationConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
 
             // Operational DB from existing connection
-            services.AddOperationalDbContext<TPersistedGrantDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(persistedGrantConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
+            services.AddOperationalDbContext<TPersistedGrantDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(persistedGrantConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
 
             // Log DB from existing connection
             services.AddDbContext<TLogDbContext>(options => options.UseSqlServer(errorLoggingConnectionString, optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));

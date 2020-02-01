@@ -43,6 +43,7 @@ using IdentityServerAdmin.Admin.EntityFramework.SqlServer.Extensions;
 using IdentityServerAdmin.Admin.EntityFramework.PostgreSQL.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 using Microsoft.AspNetCore.Hosting;
+using CoreDX.Identity.Extensions;
 
 namespace IdentityServerAdmin.Admin.Helpers
 {
@@ -354,10 +355,14 @@ namespace IdentityServerAdmin.Admin.Helpers
         public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, AdminConfiguration adminConfiguration)
             where TContext : DbContext where TUserIdentity : class where TUserIdentityRole : class
         {
+            services.AddSingleton(new ProtectorOptions { KeyPath = $@"E:\Data_of_Rui\Documents\source\repos\IdentityServerDemo\src\DemoApp\IdentityServer\App_Data\AesDataProtectionKey" });
+
             services.AddIdentity<TUserIdentity, TUserIdentityRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
+                    options.Stores.ProtectPersonalData = true;
                 })
+                .AddPersonalDataProtection<AesProtector, AesProtectorKeyRing>()
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
 

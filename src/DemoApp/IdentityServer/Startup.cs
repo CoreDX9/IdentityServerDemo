@@ -9,6 +9,7 @@ using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Model.Command;
 using CoreDX.Domain.Model.Event;
 using CoreDX.Domain.Repository.EntityFrameworkCore;
+using CoreDX.Identity.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
@@ -211,6 +212,8 @@ namespace IdentityServer
 
             #region 注册 Identity 服务
 
+            services.AddSingleton(new ProtectorOptions { KeyPath = $@"{Environment.ContentRootPath}\App_Data\AesDataProtectionKey" });
+
             //注册Identity服务（使用EF存储，在EF上下文之后注册）
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
@@ -371,53 +374,6 @@ namespace IdentityServer
             #region 注册管理 IdentityServer4 相关的服务
 
 
-
-            #endregion
-
-            #region 注册配置本地化服务
-
-            //配置本地化数据服务存储
-            if (useInMemoryDatabase)
-            {
-                services.AddDbContext<LocalizationModelContext>(
-                        options => { options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot); },
-                        ServiceLifetime.Singleton,
-                        ServiceLifetime.Singleton);
-            }
-            else
-            {
-                services.AddDbContext<LocalizationModelContext>(options =>
-                    {
-                        options.UseSqlServer(connectionString, b =>
-                        {
-                            b.MigrationsAssembly(migrationsAssemblyName);
-                            b.EnableRetryOnFailure(3);
-                        });
-                    },
-                    ServiceLifetime.Singleton,
-                    ServiceLifetime.Singleton);
-            }
-
-            //注册本地化服务工厂
-            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
-
-            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
-            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
-
-            //配置请求本地化选项
-            services.Configure<RequestLocalizationOptions>(
-                options =>
-                {
-                    var supportedCultures = new List<CultureInfo>
-                    {
-                        new CultureInfo("zh-CN"),
-                        new CultureInfo("en-US")
-                    };
-
-                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
-                    options.SupportedCultures = supportedCultures;
-                    options.SupportedUICultures = supportedCultures;
-                });
 
             #endregion
 
@@ -592,6 +548,53 @@ namespace IdentityServer
 
             //注册Grpc服务
             services.AddGrpc();
+
+            #endregion
+
+            #region 注册本地化服务，配置本地化数据源（要在注册 MVC 时配置启用本地化才有效）
+
+            //配置本地化数据服务存储
+            if (useInMemoryDatabase)
+            {
+                services.AddDbContext<LocalizationModelContext>(
+                        options => { options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot); },
+                        ServiceLifetime.Singleton,
+                        ServiceLifetime.Singleton);
+            }
+            else
+            {
+                services.AddDbContext<LocalizationModelContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, b =>
+                    {
+                        b.MigrationsAssembly(migrationsAssemblyName);
+                        b.EnableRetryOnFailure(3);
+                    });
+                },
+                    ServiceLifetime.Singleton,
+                    ServiceLifetime.Singleton);
+            }
+
+            //注册本地化服务工厂
+            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
+
+            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
+            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+
+            //配置请求本地化选项
+            services.Configure<RequestLocalizationOptions>(
+                options =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("zh-CN"),
+                        new CultureInfo("en-US")
+                    };
+
+                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                });
 
             #endregion
 

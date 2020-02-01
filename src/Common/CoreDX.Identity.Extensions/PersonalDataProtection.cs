@@ -6,16 +6,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
 using CoreDX.Common.Util.TypeExtensions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using SecurityUtil = CoreDX.Common.Util.Security;
 
-namespace IdentityServer.CustomServices
+namespace CoreDX.Identity.Extensions
 {
     /// <summary>
     /// AES数据加密器
     /// </summary>
-    class AesProtector : ILookupProtector
+    public class AesProtector : ILookupProtector
     {
         private readonly object _locker;
 
@@ -23,13 +22,13 @@ namespace IdentityServer.CustomServices
 
         private readonly DirectoryInfo _dirInfo;
 
-        public AesProtector(IWebHostEnvironment environment)
+        public AesProtector(ProtectorOptions options)
         {
             _locker = new object();
 
             _protectors = new Dictionary<string, SecurityUtil.AesProtector>();
 
-            _dirInfo = new DirectoryInfo($@"{environment.ContentRootPath}\App_Data\AesDataProtectionKey");
+            _dirInfo = new DirectoryInfo(options.KeyPath);
         }
 
         public string Protect(string keyId, string data)
@@ -87,17 +86,17 @@ namespace IdentityServer.CustomServices
     /// <summary>
     /// AES加密器密钥管理器
     /// </summary>
-    class AesProtectorKeyRing : ILookupProtectorKeyRing
+    public class AesProtectorKeyRing : ILookupProtectorKeyRing
     {
         private readonly object _locker;
         private readonly Dictionary<string, XDocument> _keyRings;
         private readonly DirectoryInfo _dirInfo;
 
-        public AesProtectorKeyRing(IWebHostEnvironment environment)
+        public AesProtectorKeyRing(ProtectorOptions options)
         {
             _locker = new object();
             _keyRings = new Dictionary<string, XDocument>();
-            _dirInfo = new DirectoryInfo($@"{environment.ContentRootPath}\App_Data\AesDataProtectionKey");
+            _dirInfo = new DirectoryInfo(options.KeyPath);
 
             ReadKeys(_dirInfo);
         }
@@ -201,5 +200,10 @@ namespace IdentityServer.CustomServices
                 .OrderByDescending(item =>
                     DateTimeOffset.Parse(item.Value.Element("key")?.Element("expirationDate")?.Value)).FirstOrDefault().Value;
         }
+    }
+
+    public class ProtectorOptions
+    {
+        public string KeyPath { get; set; }
     }
 }

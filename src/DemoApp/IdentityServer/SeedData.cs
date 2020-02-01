@@ -5,7 +5,6 @@ using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.App.Management;
 using CoreDX.Domain.Entity.Identity;
 using IdentityModel;
-using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServerAdmin.Admin.EntityFramework.Shared.DbContexts;
 using Localization.SqlLocalizer.DbStringLocalizer;
@@ -507,7 +506,8 @@ namespace IdentityServer
         {
             Console.WriteLine("正在初始化IdentityServer配置数据库……");
 
-            if (!context.Clients.Any())
+            var cids = Config.GetClients().Select(x => x.ClientId).ToArray();
+            if (!context.Clients.Any(x => cids.Contains(x.ClientId)))
             {
                 Console.WriteLine("正在初始化客户端……");
                 foreach (var client in Config.GetClients().ToList())
@@ -521,7 +521,8 @@ namespace IdentityServer
                 Console.WriteLine("客户端已初始化");
             }
 
-            if (!context.IdentityResources.Any())
+            var irns = Config.GetIdentityResources().Select(x => x.Name).ToArray();
+            if (!context.IdentityResources.Any(x => irns.Contains(x.Name)))
             {
                 Console.WriteLine("正在初始化Identity资源……");
                 foreach (var resource in Config.GetIdentityResources().ToList())
@@ -535,7 +536,8 @@ namespace IdentityServer
                 Console.WriteLine("Identity资源已初始化");
             }
 
-            if (!context.ApiResources.Any())
+            var arns = Config.GetApiResources().Select(x => x.Name).ToArray();
+            if (!context.ApiResources.Any(x => arns.Contains(x.Name)))
             {
                 Console.WriteLine("正在初始化API资源");
                 foreach (var resource in Config.GetApiResources().ToList())
