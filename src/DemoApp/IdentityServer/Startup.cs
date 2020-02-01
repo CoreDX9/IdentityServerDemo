@@ -1001,8 +1001,8 @@ namespace IdentityServer
                 });
 
                 //映射区域控制器终结点
-                endpoints.MapAreaControllerRoute(
-                    name: "areas", "areas",
+                endpoints.MapControllerRoute(
+                    name: "areas",
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
                 //映射默认控制终结点
