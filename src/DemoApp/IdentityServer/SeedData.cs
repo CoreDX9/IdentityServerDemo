@@ -6,7 +6,7 @@ using CoreDX.Domain.Entity.App.Management;
 using CoreDX.Domain.Entity.Identity;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServerAdmin.Admin.EntityFramework.Shared.DbContexts;
+using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

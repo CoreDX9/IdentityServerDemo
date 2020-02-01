@@ -19,7 +19,7 @@ using IdentityServer.Extensions;
 using IdentityServer.Grpc.Services;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
-using IdentityServerAdmin.Admin.EntityFramework.Shared.DbContexts;
+using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using MediatR;

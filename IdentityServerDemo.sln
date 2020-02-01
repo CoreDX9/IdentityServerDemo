@@ -94,19 +94,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.EntityFrameworkCore.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityServerAdmin", "IdentityServerAdmin", "{35B8AA13-7323-43A2-9A53-7D8FAFAD5D4A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin", "src\IdentityServerAdmin\IdentityServerAdmin.Admin\IdentityServerAdmin.Admin.csproj", "{8318E1C6-ED6E-4CF9-A39B-CDB73719311C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin", "src\IdentityServerAdmin\IdentityServer.Admin\IdentityServer.Admin.csproj", "{8318E1C6-ED6E-4CF9-A39B-CDB73719311C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.Api", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.Api\IdentityServerAdmin.Admin.Api.csproj", "{F7D0A47D-7664-4155-8B54-F3D25A8DBAB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin.Api", "src\IdentityServerAdmin\IdentityServer.Admin.Api\IdentityServer.Admin.Api.csproj", "{F7D0A47D-7664-4155-8B54-F3D25A8DBAB0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.EntityFramework.SqlServer", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.SqlServer\IdentityServerAdmin.Admin.EntityFramework.SqlServer.csproj", "{A795764B-DEC4-4591-9462-45650C996B23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin.EntityFramework.SqlServer", "src\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.SqlServer\IdentityServer.Admin.EntityFramework.SqlServer.csproj", "{A795764B-DEC4-4591-9462-45650C996B23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.EntityFramework.MySql", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.MySql\IdentityServerAdmin.Admin.EntityFramework.MySql.csproj", "{995C3BBE-7834-438C-B42D-1E95386FE502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin.EntityFramework.MySql", "src\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.MySql\IdentityServer.Admin.EntityFramework.MySql.csproj", "{995C3BBE-7834-438C-B42D-1E95386FE502}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.EntityFramework.PostgreSQL", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.PostgreSQL\IdentityServerAdmin.Admin.EntityFramework.PostgreSQL.csproj", "{169CD702-B6E5-401E-8A99-E34B80BF3580}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin.EntityFramework.PostgreSQL", "src\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.PostgreSQL\IdentityServer.Admin.EntityFramework.PostgreSQL.csproj", "{169CD702-B6E5-401E-8A99-E34B80BF3580}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerAdmin.Admin.EntityFramework.Shared", "src\IdentityServerAdmin\IdentityServerAdmin.Admin.EntityFramework.Shared\IdentityServerAdmin.Admin.EntityFramework.Shared.csproj", "{115DAEE4-8906-44A3-88ED-9073B13CE07A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.Admin.EntityFramework.Shared", "src\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.Shared\IdentityServer.Admin.EntityFramework.Shared.csproj", "{115DAEE4-8906-44A3-88ED-9073B13CE07A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDX.Identity.Extensions", "src\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj", "{95507D50-9F2B-464D-930B-765D9B4A1226}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.Identity.Extensions", "src\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj", "{95507D50-9F2B-464D-930B-765D9B4A1226}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
