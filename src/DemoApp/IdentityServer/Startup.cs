@@ -53,6 +53,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Linq;
 
 #endregion
 
@@ -553,7 +554,7 @@ namespace IdentityServer
 
             #region 注册本地化服务，配置本地化数据源（要在注册 MVC 时配置启用本地化才有效）
 
-            //配置本地化数据服务存储
+            //注册基于 EFCore 的本地化数据服务存储服务
             if (useInMemoryDatabase)
             {
                 services.AddDbContext<LocalizationModelContext>(
@@ -575,23 +576,23 @@ namespace IdentityServer
                     ServiceLifetime.Singleton);
             }
 
-            //注册本地化服务工厂
-            services.AddSingleton<IStringLocalizerFactory, SqlStringLocalizerFactory>();
+            //注册混合本地化服务工厂，先使用基于 ResourceManager 的本地化字符串，如果没有找到，再使用基于 EFCore 存储的本地化字符串（可配置为在没有找到相应记录时自动创建记录）
+            services.AddMixedLocalization(opts => { opts.ResourcesPath = "Resources"; }, options => options.UseSettings(true, false, true, true));
 
             //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
-            services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+            //services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
 
             //配置请求本地化选项
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {
-                    var supportedCultures = new List<CultureInfo>
-                    {
-                        new CultureInfo("zh-CN"),
-                        new CultureInfo("en-US")
-                    };
+                    var cultures =  Configuration.GetSection("Globalization").GetSection("Cultures")
+                    .Get<List<string>>()
+                    .Select(x => new CultureInfo(x)).ToList();
+                    var supportedCultures = cultures;
 
-                    options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
+                    var defaultRequestCulture = cultures.FirstOrDefault() ?? new CultureInfo("zh-CN");
+                    options.DefaultRequestCulture = new RequestCulture(culture: defaultRequestCulture, uiCulture: defaultRequestCulture);
                     options.SupportedCultures = supportedCultures;
                     options.SupportedUICultures = supportedCultures;
                 });
