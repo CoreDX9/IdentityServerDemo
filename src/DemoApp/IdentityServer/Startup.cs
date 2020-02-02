@@ -66,6 +66,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
 using IdentityServer.Helpers.IdentityServerAdmin;
 using Skoruba.AuditLogging.EntityFramework.Entities;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -1101,6 +1102,13 @@ namespace IdentityServer
                 {
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+
+                //临时修复 IdentityServer 管理的登录跳转链接错误
+                endpoints.MapGet("/Account/Login", context =>
+                    {
+                        context.Response.Redirect($"/Identity{context.Request.Path}{context.Request.QueryString}");
+                        return Task.CompletedTask;
+                    });
 
                 //映射区域控制器终结点
                 endpoints.MapControllerRoute(
