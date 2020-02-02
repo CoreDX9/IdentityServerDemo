@@ -1,12 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
+using CoreDX.Identity.Extensions;
+using IdentityServer.Admin.Configuration.Constants;
+using IdentityServer.Admin.EntityFramework.Shared.Configuration;
+using IdentityServer.Admin.EntityFramework.SqlServer.Extensions;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -27,23 +34,15 @@ using Skoruba.AuditLogging.EntityFramework.Services;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
-using IdentityServer.Admin.ExceptionHandling;
-using IdentityServer.Admin.Configuration;
-using IdentityServer.Admin.Configuration.ApplicationParts;
-using IdentityServer.Admin.Configuration.Constants;
-using IdentityServer.Admin.Configuration.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
-using IdentityServer.Admin.Helpers.Localization;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using IdentityServer.Admin.EntityFramework.MySql.Extensions;
-using IdentityServer.Admin.EntityFramework.Shared.Configuration;
-using IdentityServer.Admin.EntityFramework.SqlServer.Extensions;
-using IdentityServer.Admin.EntityFramework.PostgreSQL.Extensions;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
-using Microsoft.AspNetCore.Hosting;
-using CoreDX.Identity.Extensions;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Helpers
 {
@@ -117,11 +116,11 @@ namespace IdentityServer.Admin.Helpers
                     break;
                 case DatabaseProviderType.PostgreSQL:
                     throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}.");
-                    services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
+                    //services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
                     break;
                 case DatabaseProviderType.MySql:
                     throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}.");
-                    services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
+                    //services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}.");

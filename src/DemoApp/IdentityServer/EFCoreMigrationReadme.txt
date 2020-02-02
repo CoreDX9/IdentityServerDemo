@@ -6,12 +6,12 @@ dotnet ef migrations add InitialApplicationDbMigration -c ApplicationPermissionD
 dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c IdentityServerConfigurationDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/ConfigurationDb
 dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c IdentityServerPersistedGrantDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/PersistedGrantDb
 
-dotnet ef migrations add InitialLocalizationDbMigration -c LocalizationModelContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Application/LocalizationDb
-
 dotnet ef migrations add InitialAdminAuditLogDbMigration -c AdminAuditLogDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/AdminAuditLogDb
 dotnet ef migrations add InitialAdminLogDbMigration -c AdminLogDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/AdminLogDb
 
-vs2019 初始化迁移命令，在包管理控制台，将默认项目切换为 IdentityServer
+dotnet ef migrations add InitialLocalizationDbMigration -c LocalizationModelContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Application/LocalizationDb
+
+vs2019 初始化迁移命令，在包管理控制台
 Add-Migration InitialApplicationDbMigration -Context ApplicationDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application
 Add-Migration InitialApplicationIdentityDbMigration -Context ApplicationIdentityDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Identity
 Add-Migration InitialApplicationPermissionDbMigration -Context ApplicationPermissionDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Permission
@@ -19,11 +19,10 @@ Add-Migration InitialApplicationPermissionDbMigration -Context ApplicationPermis
 Add-Migration InitialIdentityServerConfigurationDbMigration -Context IdentityServerConfigurationDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir IdentityServer/ConfigurationDb
 Add-Migration InitialIdentityServerPersistedGrantDbMigration -Context IdentityServerPersistedGrantDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir IdentityServer/PersistedGrantDb
 
-Add-Migration InitialLocalizationDbMigration -Context LocalizationModelContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application/LocalizationDb
+Add-Migration InitialAdminAuditLogDbMigration -Context AdminAuditLogDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir IdentityServer/AdminAuditLogDb
+Add-Migration InitialAdminLogDbMigration -Context AdminLogDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir IdentityServer/AdminLogDb
 
-将默认项目切换为 IdentityServerAdmin.Admin
-Add-Migration InitialAdminAuditLogDbMigration -Context AdminAuditLogDbContext -Project IdentityServerAdmin.Admin.EntityFramework.SqlServer -StartupProject IdentityServerAdmin.Admin -OutputDir Migrations/AdminAuditLogDb
-Add-Migration InitialAdminLogDbMigration -Context AdminLogDbContext -Project IdentityServerAdmin.Admin.EntityFramework.SqlServer -StartupProject IdentityServerAdmin.Admin -OutputDir Migrations/AdminLogDb
+Add-Migration InitialLocalizationDbMigration -Context LocalizationModelContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Application/LocalizationDb
 
             //自动扫描迁移模型并创建树形实体视图
 			migrationBuilder.ApplyDatabaseDescription(this);

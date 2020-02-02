@@ -81,8 +81,11 @@ namespace IdentityServer.Admin
                  .ConfigureAppConfiguration((hostContext, configApp) =>
                  {
                      configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
+                     configApp.AddJsonFile($"serilog.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                      configApp.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
+                     configApp.AddJsonFile($"identitydata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                      configApp.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
+                     configApp.AddJsonFile($"identityserverdata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
                      if (hostContext.HostingEnvironment.IsDevelopment())
                      {

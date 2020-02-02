@@ -1,10 +1,12 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Grant
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
 @model PersistedGrantsDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <div class="row">
@@ -85,3 +87,8 @@
 		</div>
 	</div>
 </form>
+
+
+
+
+

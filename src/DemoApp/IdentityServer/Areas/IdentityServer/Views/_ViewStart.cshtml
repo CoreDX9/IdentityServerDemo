@@ -9,6 +9,13 @@
     actionInfo?.RouteValues.TryGetValue("area", out area);
     actionInfo?.RouteValues.TryGetValue("controller", out controller);
 
-    if (area == "IdentityServer" && new[] { "Configuration", "Grant" }.Contains(controller)) Layout = "_Id4ConfigLayout";
-    else Layout = "/Views/Shared/_Layout.cshtml";
+
+    if (area == "IdentityServer" && new[] { "Configuration", "Grant", "ConfigHome", "Identity", "Log" }.Contains(controller))
+    {
+        Layout = "/Areas/IdentityServer/Views/Shared/_Id4ConfigLayout.cshtml";
+    }
+    else
+    {
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
 }

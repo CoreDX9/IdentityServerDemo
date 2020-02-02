@@ -9,13 +9,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
-using IdentityServer.Admin.Configuration.Interfaces;
 using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using IdentityServer.Admin.Helpers;
-using IdentityServer.Admin.Configuration;
 using IdentityServer.Admin.Configuration.Constants;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
 
 namespace IdentityServer.Admin
 {
@@ -101,7 +101,8 @@ namespace IdentityServer.Admin
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoint => 
-            { 
+            {
+                //映射默认控制终结点
                 endpoint.MapDefaultControllerRoute();
                 endpoint.MapHealthChecks("/health", new HealthCheckOptions
                 {

@@ -1,6 +1,5 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Identity;
@@ -9,9 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
-using IdentityServer.Admin.Configuration;
-using IdentityServer.Admin.Configuration.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Helpers
 {
@@ -27,7 +27,7 @@ namespace IdentityServer.Admin.Helpers
             where TIdentityDbContext : DbContext
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TLogDbContext : DbContext, IAdminLogDbContext
-            where TAuditLogDbContext: DbContext, IAuditLoggingDbContext<AuditLog>
+            where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
             where TUser : IdentityUser<TKey>, new()
             where TRole : IdentityRole<TKey>, new()
             where TKey : IEquatable<TKey>
@@ -45,7 +45,7 @@ namespace IdentityServer.Admin.Helpers
             where TPersistedGrantDbContext : DbContext
             where TConfigurationDbContext : DbContext
             where TLogDbContext : DbContext
-            where TAuditLogDbContext: DbContext
+            where TAuditLogDbContext : DbContext
         {
             using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

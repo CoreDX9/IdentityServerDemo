@@ -1,5 +1,5 @@
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using IdentityServer.Admin.Configuration.Interfaces;
 
 namespace IdentityServer.Admin.ViewComponents
 {
@@ -15,7 +15,7 @@ namespace IdentityServer.Admin.ViewComponents
         public IViewComponentResult Invoke()
         {
             var identityServerUrl = _configuration.AdminConfiguration.IdentityServerBaseUrl;
-            
+
             return View(model: identityServerUrl);
         }
     }

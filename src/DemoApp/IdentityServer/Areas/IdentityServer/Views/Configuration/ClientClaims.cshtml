@@ -1,10 +1,11 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@model ClientClaimsDto
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.ClientClaimsDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <form id="client-claims-form" asp-controller="Configuration" asp-action="ClientClaims" Method="post">
@@ -23,7 +24,7 @@
 		<div class="col-md-12">
 			<h3>@Localizer["PageTitle"]</h3>
 
-			<div asp-validation-summary="All" class="text-danger"></div>
+			<div asp-validation-summary="All" class="text-danger"></div>			
 
 			<!--Hidden -->
 			<input type="hidden" asp-for="ClientId" />
@@ -43,13 +44,13 @@
 						<div class="col-sm-9">
 							<picker id="Type" multiple-select="false" min-search-text="2"
 									selected-item="@Model.Type" url="@Url.Action("SearchClaims", "Configuration")?claim"
-									search-input-placeholder="@Localizer["PickerSearchItemPlaceholder"].Value"
-									selected-items-title="@Localizer["PickerSelectedItemsTitle"].Value"
-									search-result-title="@Localizer["PickerSearchResultTitle"].Value"
-									suggested-items-title="@Localizer["PickerSuggestedItemsTitle"].Value"
-									no-item-selected-title="@Localizer["PickerNoItemSelectedTitle"].Value"
-									show-all-items-title="@Localizer["PickerShowAllItemsTitle"].Value"
-									item-already-selected-title="@Localizer["PickerItemAlreadySelectedTitle"].Value"
+							        search-input-placeholder="@Localizer["PickerSearchItemPlaceholder"].Value"
+							        selected-items-title="@Localizer["PickerSelectedItemsTitle"].Value" 
+							        search-result-title="@Localizer["PickerSearchResultTitle"].Value"
+							        suggested-items-title="@Localizer["PickerSuggestedItemsTitle"].Value" 
+							        no-item-selected-title="@Localizer["PickerNoItemSelectedTitle"].Value" 
+							        show-all-items-title="@Localizer["PickerShowAllItemsTitle"].Value"
+							        item-already-selected-title="@Localizer["PickerItemAlreadySelectedTitle"].Value"
 									required="true" required-message="@Localizer["PickerRequiredMessage"].Value">
 							</picker>
 
@@ -133,3 +134,8 @@
 		});
 	</script>
 }
+
+
+
+
+

@@ -132,7 +132,7 @@ namespace IdentityServerGui
 
                 try
                 {
-                    await SeedData.EnsureSeedDataAsync(host.Services);
+                    await Program.EnsureSeedDataAsync(host); //初始化数据库
                     await host.StartAsync();
                     Host = host;
                     MyData.HostState = "网站运行中";

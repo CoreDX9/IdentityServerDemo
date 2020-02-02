@@ -32,7 +32,8 @@ namespace IdentityServer.Admin.EntityFramework.SqlServer.Extensions
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLoggingDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
         {
-            var migrationsAssembly = typeof(DatabaseExtensions).GetTypeInfo().Assembly.GetName().Name;
+            //var migrationsAssembly = typeof(DatabaseExtensions).GetTypeInfo().Assembly.GetName().Name;
+            var migrationsAssembly = "CoreDX.Application.DbMigration";
 
             // Config DB for identity
             services.AddDbContext<TIdentityDbContext>(options => options.UseSqlServer(identityConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));

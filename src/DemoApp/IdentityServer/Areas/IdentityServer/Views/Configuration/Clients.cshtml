@@ -1,11 +1,11 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using X.PagedList
-@model IPagedList<ClientDto>
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.ClientsDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <div class="row">
@@ -34,7 +34,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var client in Model)
+					@foreach (var client in Model.Clients)
 					{
 						<tr>
 							<th><a class="btn btn-primary" asp-action="Client" asp-route-id="@client.Id">@Localizer["TableButtonEdit"]</a></th>
@@ -53,6 +53,11 @@
 
 <div class="row">
 	<div class="col-12">
-		@await Html.PartialAsync("Common/Pager", new Pager { Action = "Clients", PageSize = Model.PageSize, TotalCount = Model.TotalItemCount, Search = ViewBag.Search, EnableSearch = true })
+		@await Html.PartialAsync("Common/Pager", new Pager { Action = "Clients", PageSize = Model.PageSize, TotalCount = Model.TotalCount, Search = ViewBag.Search, EnableSearch = true })
 	</div>
 </div>
+
+
+
+
+

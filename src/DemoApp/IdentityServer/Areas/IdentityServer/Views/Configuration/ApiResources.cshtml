@@ -1,11 +1,11 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using X.PagedList
-@model IPagedList<ApiResourceDto>
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.ApiResourcesDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <div class="row">
@@ -35,7 +35,7 @@
 				</thead>
 
 				<tbody>
-					@foreach (var api in Model)
+					@foreach (var api in Model.ApiResources)
 					{
 						<tr>
 							<th scope="row"><a class="btn btn-primary" asp-action="ApiResource" asp-route-id="@api.Id">@Localizer["TableButtonEdit"]</a></th>
@@ -53,6 +53,11 @@
 
 <div class="row">
 	<div class="col-12">
-		@await Html.PartialAsync("Common/Pager", new Pager { Action = "ApiResources", PageSize = Model.PageSize, TotalCount = Model.TotalItemCount, EnableSearch = true, Search = @ViewBag.Search })
+		@await Html.PartialAsync("Common/Pager", new Pager { Action = "ApiResources", PageSize = Model.PageSize, TotalCount = Model.TotalCount, EnableSearch = true, Search = @ViewBag.Search })
 	</div>
 </div>
+
+
+
+
+

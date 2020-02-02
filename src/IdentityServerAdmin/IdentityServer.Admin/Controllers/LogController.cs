@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
-using IdentityServer.Admin.Configuration.Constants;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Controllers
 {
@@ -53,7 +53,7 @@ namespace IdentityServer.Admin.Controllers
             {
                 return View(nameof(ErrorsLog), log);
             }
-            
+
             await _logService.DeleteLogsOlderThanAsync(log.DeleteOlderThan.Value);
 
             return RedirectToAction(nameof(ErrorsLog));

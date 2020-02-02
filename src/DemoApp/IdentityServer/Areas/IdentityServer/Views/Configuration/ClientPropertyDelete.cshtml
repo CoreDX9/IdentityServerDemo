@@ -1,10 +1,10 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@model ClientPropertiesDto
+@using Microsoft.AspNetCore.Mvc.Localization
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.ClientPropertiesDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <form asp-controller="Configuration" asp-action="ClientPropertyDelete" Method="post">
@@ -64,3 +64,8 @@
 		</div>
 	</div>
 </form>
+
+
+
+
+

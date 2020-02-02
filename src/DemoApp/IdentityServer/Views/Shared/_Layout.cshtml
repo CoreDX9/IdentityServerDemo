@@ -41,7 +41,6 @@
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><localize>Home</localize></a></li>
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About"><localize>About</localize></a></li>
                         <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact"><localize>Contact</localize></a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" asp-area="Manage" asp-controller="Localization" asp-action="Index"><localize>Localization Manager</localize></a></li>
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
                                 <localize>Application Manager</localize>
@@ -49,6 +48,8 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GetControllersAndActions"><localize>Web Endpoints List</localize></a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="Manage" asp-controller="Localization" asp-action="Index"><localize>Localization Manager</localize></a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="IdentityServer" asp-controller="ConfigHome" asp-action="Index"><localize>IdentityServer Config Home</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Manage" asp-controller="Home" asp-action="Index"><localize>Manager Home</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Users/Index"><localize>User Manager</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Manage/Roles/Index"><localize>Role Manager</localize></a></li>
@@ -73,6 +74,8 @@
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="DomainDemo" asp-action="Index"><localize>Domain demo</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/TreeDomainDemo/Index"><localize>TreeDomain demo</localize></a></li>
                                 <div class="dropdown-divider"></div>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/SignalR/Chat/Index"><localize>SignalR Chat Demo</localize></a></li>
+                                <div class="dropdown-divider"></div>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/OnlineCode/CSharp"><localize>Web C# Script Demo</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/Decompiler/CSharp"><localize>C# Decompiler Demo</localize></a></li>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/CollectibleAssembly/Index"><localize>Collectible Assembly Demo</localize></a></li>
@@ -85,15 +88,6 @@
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/LivingPlay/Index"><localize>Living Play Demo</localize></a></li>
                                 <div class="dropdown-divider"></div>
                                 <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/Ocr/Index"><localize>Ocr Demo</localize></a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link text-dark dropdown-toggle" data-toggle="dropdown">
-                                <localize>SignalR</localize>
-                                <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-page="/SignalR/Chat/Index"><localize>Chat</localize></a></li>
                             </ul>
                         </li>
                     </ul>

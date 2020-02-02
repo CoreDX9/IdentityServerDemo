@@ -26,7 +26,7 @@
 
     <div class="menu d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
         <!--Site name -->
-        <h3 class="menu-logo my-0 mr-md-auto font-weight-normal"><a class="logo" asp-area="" asp-controller="Home" asp-action="Index">RootConfiguration.AdminConfiguration.PageTitle</a></h3>
+        <h3 class="menu-logo my-0 mr-md-auto font-weight-normal"><a class="logo" asp-area="IdentityServer" asp-controller="ConfigHome" asp-action="Index">RootConfiguration.AdminConfiguration.PageTitle</a></h3>
 
         <!--Menu item -->
         <vc:identity-server-link></vc:identity-server-link>
@@ -37,12 +37,12 @@
                 @Localizer["TitleConfiguration"]
             </button>
             <div class="dropdown-menu">
-                <a class="dropdown-item" asp-area="" asp-controller="Configuration" asp-action="Clients">@Localizer["LinkClients"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Configuration" asp-action="Clients">@Localizer["LinkClients"]</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" asp-area="" asp-controller="Configuration" asp-action="IdentityResources">@Localizer["LinkIdentityResources"]</a>
-                <a class="dropdown-item" asp-area="" asp-controller="Configuration" asp-action="ApiResources">@Localizer["LinkApiResources"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Configuration" asp-action="IdentityResources">@Localizer["LinkIdentityResources"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Configuration" asp-action="ApiResources">@Localizer["LinkApiResources"]</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" asp-area="" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
             </div>
         </div>
 
@@ -52,8 +52,8 @@
                 @Localizer["TitleUsermanagement"]
             </button>
             <div class="dropdown-menu">
-                <a class="dropdown-item" asp-area="" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
-                <a class="dropdown-item" asp-area="" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
             </div>
         </div>
 
@@ -63,8 +63,8 @@
                 @Localizer["TitleLogs"]
             </button>
             <div class="dropdown-menu">
-                <a class="dropdown-item" asp-area="" asp-controller="Log" asp-action="AuditLog">@Localizer["Audit Logs"]</a>
-                <a class="dropdown-item" asp-area="" asp-controller="Log" asp-action="ErrorsLog">@Localizer["Error Logs"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Log" asp-action="AuditLog">@Localizer["Audit Logs"]</a>
+                <a class="dropdown-item" asp-area="IdentityServer" asp-controller="Log" asp-action="ErrorsLog">@Localizer["Error Logs"]</a>
             </div>
         </div>
 

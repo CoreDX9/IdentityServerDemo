@@ -1,10 +1,10 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@model IdentityResourcePropertiesDto
+@using Microsoft.AspNetCore.Mvc.Localization
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration.IdentityResourcePropertiesDto
 @inject IViewLocalizer Localizer
 
 @{
 	ViewBag.Title = Localizer["PageTitle"];
-	Layout = "_Layout";
+	//Layout = "_Layout";
 }
 
 <form asp-controller="Configuration" asp-action="IdentityResourcePropertyDelete" Method="post">
@@ -64,3 +64,8 @@
 		</div>
 	</div>
 </form>
+
+
+
+
+

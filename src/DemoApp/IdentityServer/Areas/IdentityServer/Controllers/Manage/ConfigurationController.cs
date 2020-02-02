@@ -1,27 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Helpers;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
 using System.Threading.Tasks;
 
-namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
+namespace IdentityServer.Admin.Controllers
 {
     [Area("IdentityServer")]
-    public class ConfigurationController : Controller
+    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+    [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
+    public class ConfigurationController : BaseController
     {
         private readonly IIdentityResourceService _identityResourceService;
         private readonly IApiResourceService _apiResourceService;
         private readonly IClientService _clientService;
+        private readonly IStringLocalizer<ConfigurationController> _localizer;
 
         public ConfigurationController(IIdentityResourceService identityResourceService,
             IApiResourceService apiResourceService,
-            IClientService clientService)
+            IClientService clientService,
+            IStringLocalizer<ConfigurationController> localizer,
+            ILogger<ConfigurationController> logger)
+            : base(logger)
         {
             _identityResourceService = identityResourceService;
             _apiResourceService = apiResourceService;
             _clientService = clientService;
+            _localizer = localizer;
         }
 
         [HttpGet]
+        [Route("[controller]/[action]")]
+        [Route("[controller]/[action]/{id:int}")]
         public async Task<IActionResult> Client(int id)
         {
             if (id == 0)
@@ -37,6 +52,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Client(ClientDto client)
         {
             client = _clientService.BuildClientViewModel(client);
@@ -50,12 +66,14 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             if (client.Id == 0)
             {
                 var clientId = await _clientService.AddClientAsync(client);
+                SuccessNotification(string.Format(_localizer["SuccessAddClient"], client.ClientId), _localizer["SuccessTitle"]);
 
                 return RedirectToAction(nameof(Client), new { Id = clientId });
             }
 
             //Update client
             await _clientService.UpdateClientAsync(client);
+            SuccessNotification(string.Format(_localizer["SuccessUpdateClient"], client.ClientId), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(Client), new { client.Id });
         }
@@ -72,6 +90,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClientClone(ClientCloneDto client)
         {
             if (!ModelState.IsValid)
@@ -80,6 +99,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             var newClientId = await _clientService.CloneClientAsync(client);
+            SuccessNotification(string.Format(_localizer["SuccessClientClone"], client.ClientId), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(Client), new { Id = newClientId });
         }
@@ -95,9 +115,12 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClientDelete(ClientDto client)
         {
             await _clientService.RemoveClientAsync(client);
+
+            SuccessNotification(_localizer["SuccessClientDelete"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(Clients));
         }
@@ -133,6 +156,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiResourceProperties(ApiResourcePropertiesDto apiResourceProperty)
         {
             if (!ModelState.IsValid)
@@ -141,6 +165,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             await _apiResourceService.AddApiResourcePropertyAsync(apiResourceProperty);
+            SuccessNotification(string.Format(_localizer["SuccessAddApiResourceProperty"], apiResourceProperty.Key, apiResourceProperty.ApiResourceName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiResourceProperties), new { Id = apiResourceProperty.ApiResourceId });
         }
@@ -156,6 +181,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> IdentityResourceProperties(IdentityResourcePropertiesDto identityResourceProperty)
         {
             if (!ModelState.IsValid)
@@ -164,11 +190,13 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             await _identityResourceService.AddIdentityResourcePropertyAsync(identityResourceProperty);
+            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResourceProperty"], identityResourceProperty.Value, identityResourceProperty.IdentityResourceName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(IdentityResourceProperties), new { Id = identityResourceProperty.IdentityResourceId });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClientProperties(ClientPropertiesDto clientProperty)
         {
             if (!ModelState.IsValid)
@@ -177,6 +205,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             await _clientService.AddClientPropertyAsync(clientProperty);
+            SuccessNotification(string.Format(_localizer["SuccessAddClientProperty"], clientProperty.ClientId, clientProperty.ClientName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientProperties), new { Id = clientProperty.ClientId });
         }
@@ -191,6 +220,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             await _clientService.AddClientClaimAsync(clientClaim);
+            SuccessNotification(string.Format(_localizer["SuccessAddClientClaim"], clientClaim.Value, clientClaim.ClientName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientClaims), new { Id = clientClaim.ClientId });
         }
@@ -239,6 +269,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ClientClaimDelete(ClientClaimsDto clientClaim)
         {
             await _clientService.DeleteClientClaimAsync(clientClaim);
+            SuccessNotification(_localizer["SuccessDeleteClientClaim"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientClaims), new { Id = clientClaim.ClientId });
         }
@@ -248,6 +279,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ClientPropertyDelete(ClientPropertiesDto clientProperty)
         {
             await _clientService.DeleteClientPropertyAsync(clientProperty);
+            SuccessNotification(_localizer["SuccessDeleteClientProperty"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientProperties), new { Id = clientProperty.ClientId });
         }
@@ -257,6 +289,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ApiResourcePropertyDelete(ApiResourcePropertiesDto apiResourceProperty)
         {
             await _apiResourceService.DeleteApiResourcePropertyAsync(apiResourceProperty);
+            SuccessNotification(_localizer["SuccessDeleteApiResourceProperty"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiResourceProperties), new { Id = apiResourceProperty.ApiResourceId });
         }
@@ -266,6 +299,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> IdentityResourcePropertyDelete(IdentityResourcePropertiesDto identityResourceProperty)
         {
             await _identityResourceService.DeleteIdentityResourcePropertyAsync(identityResourceProperty);
+            SuccessNotification(_localizer["SuccessDeleteIdentityResourceProperty"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(IdentityResourceProperties), new { Id = identityResourceProperty.IdentityResourceId });
         }
@@ -286,6 +320,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ClientSecrets(ClientSecretsDto clientSecret)
         {
             await _clientService.AddClientSecretAsync(clientSecret);
+            SuccessNotification(string.Format(_localizer["SuccessAddClientSecret"], clientSecret.ClientName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientSecrets), new { Id = clientSecret.ClientId });
         }
@@ -305,6 +340,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ClientSecretDelete(ClientSecretsDto clientSecret)
         {
             await _clientService.DeleteClientSecretAsync(clientSecret);
+            SuccessNotification(_localizer["SuccessDeleteClientSecret"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientSecrets), new { Id = clientSecret.ClientId });
         }
@@ -355,6 +391,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> IdentityResourceDelete(IdentityResourceDto identityResource)
         {
             await _identityResourceService.DeleteIdentityResourceAsync(identityResource);
+            SuccessNotification(_localizer["SuccessDeleteIdentityResource"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(IdentityResources));
         }
@@ -382,6 +419,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
                 await _identityResourceService.UpdateIdentityResourceAsync(identityResource);
             }
 
+            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.Name), _localizer["SuccessTitle"]);
+
             return RedirectToAction(nameof(IdentityResource), new { Id = identityResourceId });
         }
 
@@ -394,7 +433,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
                 return View(apiResource);
             }
 
-            //ComboBoxHelpers.PopulateValuesToList(apiResource.UserClaimsItems, apiResource.UserClaims);
+            ComboBoxHelpers.PopulateValuesToList(apiResource.UserClaimsItems, apiResource.UserClaims);
 
             int apiResourceId;
 
@@ -407,6 +446,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
                 apiResourceId = apiResource.Id;
                 await _apiResourceService.UpdateApiResourceAsync(apiResource);
             }
+
+            SuccessNotification(string.Format(_localizer["SuccessAddApiResource"], apiResource.Name), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiResource), new { Id = apiResourceId });
         }
@@ -426,6 +467,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ApiResourceDelete(ApiResourceDto apiResource)
         {
             await _apiResourceService.DeleteApiResourceAsync(apiResource);
+            SuccessNotification(_localizer["SuccessDeleteApiResource"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiResources));
         }
@@ -467,6 +509,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
             }
 
             await _apiResourceService.AddApiSecretAsync(apiSecret);
+            SuccessNotification(_localizer["SuccessAddApiSecret"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiSecrets), new { Id = apiSecret.ApiResourceId });
         }
@@ -512,6 +555,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
                 await _apiResourceService.UpdateApiScopeAsync(apiScope);
             }
 
+            SuccessNotification(string.Format(_localizer["SuccessAddApiScope"], apiScope.Name), _localizer["SuccessTitle"]);
+
             return RedirectToAction(nameof(ApiScopes), new { Id = apiScope.ApiResourceId, Scope = apiScopeId });
         }
 
@@ -530,6 +575,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ApiScopeDelete(ApiScopesDto apiScope)
         {
             await _apiResourceService.DeleteApiScopeAsync(apiScope);
+            SuccessNotification(_localizer["SuccessDeleteApiScope"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiScopes), new { Id = apiScope.ApiResourceId });
         }
@@ -567,6 +613,7 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> ApiSecretDelete(ApiSecretsDto apiSecret)
         {
             await _apiResourceService.DeleteApiSecretAsync(apiSecret);
+            SuccessNotification(_localizer["SuccessDeleteApiSecret"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ApiSecrets), new { Id = apiSecret.ApiResourceId });
         }
@@ -588,3 +635,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
     }
 }
+
+
+
+
+

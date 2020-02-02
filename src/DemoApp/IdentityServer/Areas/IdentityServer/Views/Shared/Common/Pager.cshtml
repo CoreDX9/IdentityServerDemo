@@ -1,5 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
-@model Pager
+@using Microsoft.AspNetCore.Mvc.Localization
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common.Pager
 @inject IViewLocalizer Localizer
 @{
 	var currentPage = PagerHelpers.GetCurrentPage(Context.Request.Query["page"]);
@@ -83,3 +83,8 @@
 		</ul>
 	</nav>
 }
+
+
+
+
+

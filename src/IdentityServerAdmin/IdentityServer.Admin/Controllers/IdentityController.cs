@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,9 +10,10 @@ using Microsoft.Extensions.Logging;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common;
-using IdentityServer.Admin.Configuration.Constants;
-using IdentityServer.Admin.ExceptionHandling;
-using IdentityServer.Admin.Helpers.Localization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Controllers
 {
@@ -422,7 +423,7 @@ namespace IdentityServer.Admin.Controllers
             var currentUserId = User.GetSubjectId();
             if (user.Id.ToString() == currentUserId)
             {
-                CreateNotification(Helpers.NotificationHelpers.AlertType.Warning, _localizer["ErrorDeleteUser_CannotSelfDelete"]);
+                CreateNotification(NotificationHelpers.AlertType.Warning, _localizer["ErrorDeleteUser_CannotSelfDelete"]);
                 return RedirectToAction(nameof(UserDelete), user.Id);
             }
             else

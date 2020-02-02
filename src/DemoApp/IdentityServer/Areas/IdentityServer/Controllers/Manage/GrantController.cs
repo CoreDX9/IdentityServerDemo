@@ -1,20 +1,30 @@
-﻿using IdentityServer.Areas.IdentityServer.Models;
-using IdentityServer.Helpers.IdentityServerAdmin;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Grant;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Grant;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
 using System.Threading.Tasks;
 
-namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
+namespace IdentityServer.Admin.Controllers
 {
     [Area("IdentityServer")]
-    public class GrantController : Controller
+    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+    [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
+    public class GrantController : BaseController
     {
         private readonly IPersistedGrantAspNetIdentityService _persistedGrantService;
+        private readonly IStringLocalizer<GrantController> _localizer;
 
-        public GrantController(IPersistedGrantAspNetIdentityService persistedGrantService)
+        public GrantController(IPersistedGrantAspNetIdentityService persistedGrantService,
+            ILogger<ConfigurationController> logger,
+            IStringLocalizer<GrantController> localizer) : base(logger)
         {
             _persistedGrantService = persistedGrantService;
+            _localizer = localizer;
         }
 
         [HttpGet]
@@ -44,6 +54,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         {
             await _persistedGrantService.DeletePersistedGrantAsync(grant.Key);
 
+            SuccessNotification(_localizer["SuccessPersistedGrantDelete"], _localizer["SuccessTitle"]);
+
             return RedirectToAction(nameof(PersistedGrants));
         }
 
@@ -52,6 +64,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         public async Task<IActionResult> PersistedGrantsDelete(PersistedGrantsDto grants)
         {
             await _persistedGrantService.DeletePersistedGrantsAsync(grants.SubjectId);
+
+            SuccessNotification(_localizer["SuccessPersistedGrantsDelete"], _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(PersistedGrants));
         }
@@ -67,3 +81,8 @@ namespace IdentityServer.Areas.IdentityServer.Controllers.Manage
         }
     }
 }
+
+
+
+
+

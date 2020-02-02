@@ -54,6 +54,18 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Linq;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using IdentityServer.Admin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using IdentityServer.Helpers.IdentityServerAdmin;
+using Skoruba.AuditLogging.EntityFramework.Entities;
 
 #endregion
 
@@ -74,7 +86,14 @@ namespace IdentityServer
         // 异步控制器动作或Razor页面动作返回void可能导致从DI容器获取的efcore或者其他对象被释放，返回Task可以避免这个问题
         public void ConfigureServices(IServiceCollection services)
         {
-            #region 数据库配置
+            #region 注册 IdentityServer 管理用配置项
+
+            var rootConfiguration = CreateRootConfiguration();
+            services.AddSingleton(rootConfiguration);
+
+            #endregion
+
+            #region 数据库连接配置
 
             var useInMemoryDatabase = Configuration.GetValue("UseInMemoryDatabase", false);
 
@@ -253,6 +272,45 @@ namespace IdentityServer
 
             #endregion
 
+            #region 注册 IdentityServer 管理需要的上下文
+
+            if (useInMemoryDatabase)
+            {
+                services.AddEntityFrameworkInMemoryDatabase()
+                    .AddDbContext<AdminLogDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    })
+                    .AddDbContext<AdminAuditLogDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    });
+            }
+            else
+            {
+                // Log DB from existing connection
+                services.AddDbContext<AdminLogDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, optionsSql =>
+                    {
+                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
+                        optionsSql.EnableRetryOnFailure(3);
+                    });
+                });
+
+                // Audit logging connection
+                services.AddDbContext<AdminAuditLogDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, optionsSql =>
+                    {
+                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
+                        optionsSql.EnableRetryOnFailure(3);
+                    });
+                });
+            }
+
+            #endregion
+
             #region 注册 IdentityServer4 服务
 
             //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
@@ -374,8 +432,24 @@ namespace IdentityServer
 
             #region 注册管理 IdentityServer4 相关的服务
 
+            services.AddScoped<ControllerExceptionFilterAttribute>();
 
+            services.AddAdminServices<IdentityServerConfigurationDbContext,
+                IdentityServerPersistedGrantDbContext, AdminLogDbContext>();
 
+            services.AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
+                    ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole,
+                    ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken,
+                    UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
+                    UserClaimsDto<int>, UserProviderDto<int>, UserProvidersDto<int>, UserChangePasswordDto<int>,
+                    RoleClaimsDto<int>, UserClaimDto<int>, RoleClaimDto<int>>();
+
+            // Add audit logging
+            services.AddAuditEventLogging<AdminAuditLogDbContext, AuditLog>(Configuration);
+
+            services.AddIdSHealthChecks<IdentityServerConfigurationDbContext,
+                IdentityServerPersistedGrantDbContext, ApplicationIdentityDbContext, AdminLogDbContext,
+                AdminAuditLogDbContext>(Configuration, rootConfiguration.AdminConfiguration, connectionString);
             #endregion
 
             #region 注册 FluentValidation 服务
@@ -400,6 +474,7 @@ namespace IdentityServer
                     //options.Filters.Add<MyAsyncPageFilter>();
                     //options.Filters.Add<MyAuthorizeAttribute>();
                     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());//自动对控制器的post，put，delete，patch请求进行保护
+                    options.Conventions.Add(new GenericControllerRouteConvention());//给 IdentityServer 管理用的
                 })
                 //使用NewtonsoftJson替换微软内置的Json框架（Core 3.x开始）
                 .AddNewtonsoftJson()
@@ -412,9 +487,19 @@ namespace IdentityServer
                     fv.ImplicitlyValidateChildProperties = true;
                 })
                 //注册视图本地化服务
-                .AddViewLocalization()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix,
+                    opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
                 //注册数据注解本地化服务
                 .AddDataAnnotationsLocalization()
+                .ConfigureApplicationPartManager(m =>
+                {
+                    m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<UserDto<int>, int, RoleDto<int>, int, int, int,
+                        ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole,
+                        ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken,
+                        UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
+                        UserClaimsDto<int>, UserProviderDto<int>, UserProvidersDto<int>, UserChangePasswordDto<int>,
+                        RoleClaimsDto<int>>());
+                })
                 //设定兼容性
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
@@ -576,11 +661,13 @@ namespace IdentityServer
                     ServiceLifetime.Singleton);
             }
 
-            //注册混合本地化服务工厂，先使用基于 ResourceManager 的本地化字符串，如果没有找到，再使用基于 EFCore 存储的本地化字符串（可配置为在没有找到相应记录时自动创建记录）
-            services.AddMixedLocalization(opts => { opts.ResourcesPath = "Resources"; }, options => options.UseSettings(true, false, true, true));
+            //注册混合本地化服务工厂，先使用基于 ResourceManager 的本地化字符串，如果没有找到，再使用基于 EFCore 存储的本地化字符串
+            //（可配置为在没有找到相应记录时自动创建记录，需要先注册LocalizationModelContext）
+            services.AddMixedLocalization(opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; },
+                options => options.UseSettings(true, false, true, true));
 
-            //注册基于Sql数据的本地化服务，需要先注册LocalizationModelContext
-            //services.AddSqlLocalization(options => options.UseSettings(true, false, true, true));
+            //这个是给 IdentityServer 管理用的
+            services.TryAddTransient(typeof(IGenericControllerLocalizer<>), typeof(GenericControllerLocalizer<>));
 
             //配置请求本地化选项
             services.Configure<RequestLocalizationOptions>(
@@ -628,6 +715,13 @@ namespace IdentityServer
             #endregion
 
             #region 注册配置安全相关服务
+
+            services.AddAuthorization(options =>
+            {
+                //IdentityServer 管理用
+                options.AddPolicy(AuthorizationConsts.AdministrationPolicy,
+                    policy => policy.RequireRole(rootConfiguration.AdminConfiguration.AdministrationRole));
+            });
 
             //注册跨域访问服务
             services.AddCors(options => options.AddPolicy("CorsPolicy",
@@ -1024,6 +1118,19 @@ namespace IdentityServer
                 //映射gRPC终结点
                 endpoints.MapGrpcService<GreeterService>();
             });
+        }
+
+        /// <summary>
+        /// IdentityServer 管理用
+        /// </summary>
+        /// <returns></returns>
+        protected IRootConfiguration CreateRootConfiguration()
+        {
+            var rootConfiguration = new RootConfiguration();
+            Configuration.GetSection(ConfigurationConsts.AdminConfigurationKey).Bind(rootConfiguration.AdminConfiguration);
+            Configuration.GetSection(ConfigurationConsts.IdentityDataConfigurationKey).Bind(rootConfiguration.IdentityDataConfiguration);
+            Configuration.GetSection(ConfigurationConsts.IdentityServerDataConfigurationKey).Bind(rootConfiguration.IdentityServerDataConfiguration);
+            return rootConfiguration;
         }
     }
 }

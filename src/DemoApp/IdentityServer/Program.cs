@@ -1,18 +1,22 @@
 ﻿#if !DEBUG
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 #endif
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using NLog.Web;
-using NLog;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using IdentityServer.Helpers.IdentityServerAdmin;
+using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Domain.Entity.Identity;
 
 namespace IdentityServer
 {
@@ -50,25 +54,58 @@ namespace IdentityServer
             #endregion
 
             var host = CreateHostBuilder(args).Build();
-            await SeedData.EnsureSeedDataAsync(host.Services);//初始化数据库
+            await EnsureSeedDataAsync(host);
             await host.RunAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             var host = Host.CreateDefaultBuilder(args)
-                .ConfigureLogging((hostContext, logging) =>
+                .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
-                    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
-                    var nlogConfig = File.Exists(path)
-                        ? path
-                        : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
+                    configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
+                    configApp.AddJsonFile($"serilog.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configApp.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
+                    configApp.AddJsonFile($"identitydata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configApp.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
+                    configApp.AddJsonFile($"identityserverdata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-                    var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
-                    configuration.Variables.Add("rootPath", new NLog.Layouts.SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));
-                    logging.AddNLog(configuration);
+                    //if (hostContext.HostingEnvironment.IsDevelopment())
+                    //{
+                    //    configApp.AddUserSecrets<Startup>();
+                    //}
+                    configApp.AddEnvironmentVariables();
+                    configApp.AddCommandLine(args);
                 })
-                .UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true })
+                //.ConfigureLogging((hostContext, logging) =>
+                //{
+                //    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
+                //    var nlogConfig = File.Exists(path)
+                //        ? path
+                //        : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
+
+                //    var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
+                //    configuration.Variables.Add("rootPath", new NLog.Layouts.SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));
+                //    logging.AddNLog(configuration);
+                //})
+                //.UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true })
+                .UseSerilog((hostContext, loggerConfig) =>
+                {
+                    //var logDB = @"Server=...";
+                    //var logTable = "Logs";
+                    //var opts = new Serilog.Sinks.MSSqlServer.ColumnOptions();
+
+                    loggerConfig
+                        .ReadFrom.Configuration(hostContext.Configuration)
+                        //.WriteTo.Console()
+                        //.WriteTo.MSSqlServer(
+                        //    connectionString: logDB,
+                        //    tableName: logTable,
+                        //    columnOptions: opts,
+                        //    appConfiguration: hostContext.Configuration
+                        //)
+                        .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
+                })
                 .UseWindowsService()//如果将应用安装为Windows服务，会自动以服务方式运行，否则继续以控制台方式运行
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -76,6 +113,7 @@ namespace IdentityServer
                     webBuilder.ConfigureKestrel(SetHost);
 #endif
                     webBuilder.UseStartup<Startup>();
+                    //webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
                 });
 
             return host;
@@ -84,6 +122,15 @@ namespace IdentityServer
         public static IHostBuilder CreateHostBuilderP(string[] args)
         {
             return CreateHostBuilder(args);
+        }
+
+        public static async Task EnsureSeedDataAsync(IHost host)
+        {
+            await SeedData.EnsureSeedDataAsync(host.Services);//初始化数据库
+            await DbMigrationHelpers
+                .EnsureSeedData<IdentityServerConfigurationDbContext, ApplicationIdentityDbContext,
+                    IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
+                    ApplicationUser, ApplicationRole, int>(host);
         }
 
 #if !DEBUG

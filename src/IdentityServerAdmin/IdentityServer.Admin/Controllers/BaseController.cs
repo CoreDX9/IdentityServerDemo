@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using IdentityServer.Admin.Helpers;
+using System.Collections.Generic;
 
 namespace IdentityServer.Admin.Controllers
 {
@@ -56,7 +56,7 @@ namespace IdentityServer.Admin.Controllers
             ViewBag.Notifications = TempData[NotificationHelpers.NotificationKey];
             TempData.Remove(NotificationHelpers.NotificationKey);
         }
-        
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             GenerateNotifications();

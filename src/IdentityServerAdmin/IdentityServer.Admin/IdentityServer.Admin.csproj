@@ -10,6 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Configuration\**" />
+      <Content Remove="Configuration\**" />
+      <EmbeddedResource Remove="Configuration\**" />
+      <None Remove="Configuration\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="3.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="3.0.0" />
@@ -120,12 +127,15 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj" />
+        <ProjectReference Include="..\..\Infrastructure\CoreDX.Applicaiton.IdnetityServerAdmin\CoreDX.Applicaiton.IdnetityServerAdmin.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
-        <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.MySql\IdentityServer.Admin.EntityFramework.MySql.csproj" />
-        <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.PostgreSQL\IdentityServer.Admin.EntityFramework.PostgreSQL.csproj" />
         <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.Shared\IdentityServer.Admin.EntityFramework.Shared.csproj" />
         <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.SqlServer\IdentityServer.Admin.EntityFramework.SqlServer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Log\" />
     </ItemGroup>
 
 </Project>

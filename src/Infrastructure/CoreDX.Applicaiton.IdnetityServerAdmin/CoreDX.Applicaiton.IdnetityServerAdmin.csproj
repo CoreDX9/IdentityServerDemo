@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configuration\Test\**" />
+    <EmbeddedResource Remove="Configuration\Test\**" />
+    <None Remove="Configuration\Test\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityServer4.Storage" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic.Identity" Version="1.0.0-rc1" />
+  </ItemGroup>
+
+</Project>
