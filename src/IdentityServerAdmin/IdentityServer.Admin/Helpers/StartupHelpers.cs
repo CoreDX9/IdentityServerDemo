@@ -6,7 +6,6 @@ using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
 using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
 using CoreDX.Application.EntityFrameworkCore.Configuration;
 using CoreDX.Identity.Extensions;
-using IdentityServer.Admin.Configuration.Constants;
 using IdentityServer.Admin.EntityFramework.SqlServer.Extensions;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Authentication;

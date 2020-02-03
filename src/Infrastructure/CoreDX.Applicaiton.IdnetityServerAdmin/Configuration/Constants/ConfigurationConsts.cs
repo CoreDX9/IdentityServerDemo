@@ -1,4 +1,4 @@
-namespace IdentityServer.Admin.Configuration.Constants
+namespace CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants
 {
     public class ConfigurationConsts
     {

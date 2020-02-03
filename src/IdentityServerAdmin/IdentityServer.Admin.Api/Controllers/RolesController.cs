@@ -1,18 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.AccessTokenValidation;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.Roles;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using IdentityServer.Admin.Api.Configuration.Constants;
-using IdentityServer.Admin.Api.Dtos.Roles;
-using IdentityServer.Admin.Api.ExceptionHandling;
-using IdentityServer.Admin.Api.Helpers.Localization;
-using IdentityServer.Admin.Api.Resources;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Api.Controllers
 {
@@ -93,7 +92,7 @@ namespace IdentityServer.Admin.Api.Controllers
             {
                 return BadRequest(_errorResources.CannotSetId());
             }
- 
+
             var (identityResult, roleId) = await _identityService.CreateRoleAsync(role);
             var createdRole = await _identityService.GetRoleAsync(roleId.ToString());
 

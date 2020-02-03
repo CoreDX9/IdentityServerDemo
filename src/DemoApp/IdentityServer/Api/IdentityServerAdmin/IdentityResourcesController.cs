@@ -1,8 +1,8 @@
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.IdentityResources;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
-using IdentityServer.Admin.Api.Mappers;
-using IdentityServer.Api.IdentityServerAdmin.Dtos.IdentityResources;
-using IdentityServer.Api.IdentityServerAdmin.ExceptionHandling;
-using IdentityServer.Api.IdentityServerAdmin.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;

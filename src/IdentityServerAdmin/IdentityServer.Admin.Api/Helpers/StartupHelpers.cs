@@ -1,11 +1,13 @@
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.AuditLogging;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
 using CoreDX.Application.EntityFrameworkCore.Configuration;
 using CoreDX.Identity.Extensions;
 using IdentityModel;
-using IdentityServer.Admin.Api.AuditLogging;
 using IdentityServer.Admin.Api.Configuration;
-using IdentityServer.Admin.Api.Configuration.ApplicationParts;
-using IdentityServer.Admin.Api.Configuration.Constants;
-using IdentityServer.Admin.Api.Helpers.Localization;
 using IdentityServer.Admin.EntityFramework.SqlServer.Extensions;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.Options;
@@ -25,6 +27,7 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using System;
+using AuditLoggingConfiguration = CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.AuditLogging.AuditLoggingConfiguration;
 
 namespace IdentityServer.Admin.Api.Helpers
 {

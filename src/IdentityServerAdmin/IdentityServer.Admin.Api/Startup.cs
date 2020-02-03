@@ -1,6 +1,14 @@
-using System;
-using System.Collections.Generic;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.Authorization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources;
+using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using CoreDX.Domain.Entity.Identity;
 using HealthChecks.UI.Client;
+using IdentityServer.Admin.Api.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -9,17 +17,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Skoruba.AuditLogging.EntityFramework.Entities;
-using IdentityServer.Admin.Api.Configuration;
-using IdentityServer.Admin.Api.Configuration.Authorization;
-using IdentityServer.Admin.Api.ExceptionHandling;
-using IdentityServer.Admin.Api.Helpers;
-using IdentityServer.Admin.Api.Mappers;
-using IdentityServer.Admin.Api.Resources;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
-using CoreDX.Application.EntityFrameworkCore;
-using CoreDX.Domain.Entity.Identity;
-using CoreDX.Application.EntityFrameworkCore.IdentityServer;
-using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using System;
+using System.Collections.Generic;
 
 namespace IdentityServer.Admin.Api
 {

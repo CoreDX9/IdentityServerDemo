@@ -159,8 +159,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.1.3" />
-    <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic" Version="1.0.0-rc1" />
-    <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic.Identity" Version="1.0.0-rc1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
@@ -183,24 +181,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IdentityServerAdmin\" />
     <Folder Include="log\" />
     <Folder Include="Plugins\" />
     <Folder Include="wwwroot\id4config\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Api\IdentityServerAdmin\Resources\ApiErrorResource.Designer.cs">
-      <DependentUpon>ApiErrorResource.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Api\IdentityServerAdmin\Resources\ApiErrorResource.resx">
-      <LastGenOutput>ApiErrorResource.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.AccessTokenValidation;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.Roles;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.Users;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using IdentityServer.Admin.Api.Configuration.Constants;
-using IdentityServer.Admin.Api.Dtos.Roles;
-using IdentityServer.Admin.Api.Dtos.Users;
-using IdentityServer.Admin.Api.ExceptionHandling;
-using IdentityServer.Admin.Api.Helpers.Localization;
-using IdentityServer.Admin.Api.Resources;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace IdentityServer.Admin.Api.Controllers
 {
@@ -228,15 +227,15 @@ namespace IdentityServer.Admin.Api.Controllers
             return Ok();
         }
 
-		[HttpGet("{id}/RoleClaims")]
-		public async Task<ActionResult<RoleClaimsApiDto<TRoleDtoKey>>> GetRoleClaims(TUserDtoKey id, string claimSearchText, int page = 1, int pageSize = 10)
-		{
-			var roleClaimsDto = await _identityService.GetUserRoleClaimsAsync(id.ToString(), claimSearchText, page, pageSize);
-			var roleClaimsApiDto = _mapper.Map<RoleClaimsApiDto<TRoleDtoKey>>(roleClaimsDto);
+        [HttpGet("{id}/RoleClaims")]
+        public async Task<ActionResult<RoleClaimsApiDto<TRoleDtoKey>>> GetRoleClaims(TUserDtoKey id, string claimSearchText, int page = 1, int pageSize = 10)
+        {
+            var roleClaimsDto = await _identityService.GetUserRoleClaimsAsync(id.ToString(), claimSearchText, page, pageSize);
+            var roleClaimsApiDto = _mapper.Map<RoleClaimsApiDto<TRoleDtoKey>>(roleClaimsDto);
 
-			return Ok(roleClaimsApiDto);
-		}
-	}
+            return Ok(roleClaimsApiDto);
+        }
+    }
 }
 
 

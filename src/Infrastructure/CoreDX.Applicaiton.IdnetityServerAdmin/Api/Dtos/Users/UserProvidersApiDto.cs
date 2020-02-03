@@ -1,0 +1,19 @@
+using System.Collections.Generic;
+
+namespace CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.Users
+{
+    public class UserProvidersApiDto<TUserDtoKey>
+    {
+        public UserProvidersApiDto()
+        {
+            Providers = new List<UserProviderApiDto<TUserDtoKey>>();
+        }
+
+        public List<UserProviderApiDto<TUserDtoKey>> Providers { get; set; }
+    }
+}
+
+
+
+
+
