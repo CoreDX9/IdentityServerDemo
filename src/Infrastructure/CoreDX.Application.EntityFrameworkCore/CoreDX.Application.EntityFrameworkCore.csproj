@@ -1,15 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="IdentityServer\**" />
-    <EmbeddedResource Remove="IdentityServer\**" />
-    <None Remove="IdentityServer\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="EntityConfiguration\ApplicationDomainEntityConfiguration.cs" />
@@ -29,6 +23,9 @@
     <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="Skoruba.AuditLogging.EntityFramework" Version="1.0.0-beta7" />
+    <PackageReference Include="Skoruba.IdentityServer4.Admin.EntityFramework" Version="1.0.0-rc1" />
+    <PackageReference Include="Skoruba.IdentityServer4.Admin.EntityFramework.Identity" Version="1.0.0-rc1" />
   </ItemGroup>
 
 </Project>

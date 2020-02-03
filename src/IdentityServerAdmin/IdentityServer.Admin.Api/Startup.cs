@@ -16,9 +16,10 @@ using IdentityServer.Admin.Api.Helpers;
 using IdentityServer.Admin.Api.Mappers;
 using IdentityServer.Admin.Api.Resources;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 
 namespace IdentityServer.Admin.Api
 {

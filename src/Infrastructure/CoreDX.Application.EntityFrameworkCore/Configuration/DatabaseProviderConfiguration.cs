@@ -1,4 +1,4 @@
-namespace IdentityServer.Admin.EntityFramework.Shared.Configuration
+namespace CoreDX.Application.EntityFrameworkCore.Configuration
 {
     public class DatabaseProviderConfiguration
     {

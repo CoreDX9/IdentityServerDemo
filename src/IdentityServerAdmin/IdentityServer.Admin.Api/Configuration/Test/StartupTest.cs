@@ -3,12 +3,13 @@ using CoreDX.Domain.Entity.Identity;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer.Admin.Api.Helpers;
 using IdentityServer.Admin.Api.Middlewares;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 
 namespace IdentityServer.Admin.Api.Configuration.Test
 {

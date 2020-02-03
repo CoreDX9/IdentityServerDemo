@@ -1,5 +1,5 @@
 ﻿using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
-using IdentityServer.Admin.EntityFramework.Shared.Configuration;
+using CoreDX.Application.EntityFrameworkCore.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

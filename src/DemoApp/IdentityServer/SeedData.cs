@@ -6,11 +6,11 @@ using CoreDX.Domain.Entity.App.Management;
 using CoreDX.Domain.Entity.Identity;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
 
 namespace IdentityServer
 {

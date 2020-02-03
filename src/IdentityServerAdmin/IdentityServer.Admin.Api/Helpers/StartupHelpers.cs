@@ -1,3 +1,4 @@
+using CoreDX.Application.EntityFrameworkCore.Configuration;
 using CoreDX.Identity.Extensions;
 using IdentityModel;
 using IdentityServer.Admin.Api.AuditLogging;
@@ -5,7 +6,6 @@ using IdentityServer.Admin.Api.Configuration;
 using IdentityServer.Admin.Api.Configuration.ApplicationParts;
 using IdentityServer.Admin.Api.Configuration.Constants;
 using IdentityServer.Admin.Api.Helpers.Localization;
-using IdentityServer.Admin.EntityFramework.Shared.Configuration;
 using IdentityServer.Admin.EntityFramework.SqlServer.Extensions;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.Options;

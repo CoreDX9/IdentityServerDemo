@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -8,13 +8,6 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <DockerfileContext>..\..</DockerfileContext>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Compile Remove="Configuration\**" />
-      <Content Remove="Configuration\**" />
-      <EmbeddedResource Remove="Configuration\**" />
-      <None Remove="Configuration\**" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.0.0" />
@@ -130,7 +123,6 @@
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Applicaiton.IdnetityServerAdmin\CoreDX.Applicaiton.IdnetityServerAdmin.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />
         <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
-        <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.Shared\IdentityServer.Admin.EntityFramework.Shared.csproj" />
         <ProjectReference Include="..\IdentityServer.Admin.EntityFramework.SqlServer\IdentityServer.Admin.EntityFramework.SqlServer.csproj" />
     </ItemGroup>
 

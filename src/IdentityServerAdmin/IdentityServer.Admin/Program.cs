@@ -1,6 +1,7 @@
 using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 using CoreDX.Domain.Entity.Identity;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using IdentityServer.Admin.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

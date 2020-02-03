@@ -3,7 +3,7 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Constants;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 
-namespace IdentityServer.Admin.EntityFramework.Shared.DbContexts
+namespace CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin
 {
     public class AdminLogDbContext : DbContext, IAdminLogDbContext
     {

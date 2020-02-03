@@ -14,9 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using IdentityServer.Helpers.IdentityServerAdmin;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 
 namespace IdentityServer
 {

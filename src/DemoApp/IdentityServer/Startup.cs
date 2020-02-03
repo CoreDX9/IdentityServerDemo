@@ -19,7 +19,6 @@ using IdentityServer.Extensions;
 using IdentityServer.Grpc.Services;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Localization.SqlLocalizer.DbStringLocalizer;
 using MediatR;
@@ -67,6 +66,8 @@ using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
 using IdentityServer.Helpers.IdentityServerAdmin;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using System.Threading.Tasks;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 
 #endregion
 

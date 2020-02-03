@@ -9,13 +9,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
-using IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using IdentityServer.Admin.Helpers;
 using IdentityServer.Admin.Configuration.Constants;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 
 namespace IdentityServer.Admin
 {

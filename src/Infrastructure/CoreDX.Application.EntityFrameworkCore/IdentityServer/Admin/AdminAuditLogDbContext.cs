@@ -1,10 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
+using System.Threading.Tasks;
 
-namespace IdentityServer.Admin.EntityFramework.Shared.DbContexts
+namespace CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin
 {
     public class AdminAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
     {

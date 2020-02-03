@@ -175,7 +175,6 @@
     <ProjectReference Include="..\..\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj" />
     <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
     <ProjectReference Include="..\..\DemoPlugin\PluginBase\PluginBase.csproj" />
-    <ProjectReference Include="..\..\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.Shared\IdentityServer.Admin.EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Applicaiton.IdnetityServerAdmin\CoreDX.Applicaiton.IdnetityServerAdmin.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.Command\CoreDX.Application.Command.csproj" />
     <ProjectReference Include="..\..\Infrastructure\CoreDX.Application.DbMigration\CoreDX.Application.DbMigration.csproj" />

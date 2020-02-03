@@ -36,13 +36,13 @@ namespace IdentityServer.Admin.EntityFramework.SqlServer.Extensions
             var migrationsAssembly = "CoreDX.Application.DbMigration";
 
             // Config DB for identity
-            services.AddDbContext<TIdentityDbContext>(options => options.UseSqlServer(identityConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
+            services.AddDbContext<TIdentityDbContext>(options => options.UseSqlServer(identityConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
             // Config DB from existing connection
-            services.AddConfigurationDbContext<TConfigurationDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(configurationConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
+            services.AddConfigurationDbContext<TConfigurationDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(configurationConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
             // Operational DB from existing connection
-            services.AddOperationalDbContext<TPersistedGrantDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(persistedGrantConnectionString, sql => sql.MigrationsAssembly("CoreDX.Application.DbMigration")));
+            services.AddOperationalDbContext<TPersistedGrantDbContext>(options => options.ConfigureDbContext = b => b.UseSqlServer(persistedGrantConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
             // Log DB from existing connection
             services.AddDbContext<TLogDbContext>(options => options.UseSqlServer(errorLoggingConnectionString, optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));
@@ -70,7 +70,8 @@ namespace IdentityServer.Admin.EntityFramework.SqlServer.Extensions
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
         {
-            var migrationsAssembly = typeof(DatabaseExtensions).GetTypeInfo().Assembly.GetName().Name;
+            //var migrationsAssembly = typeof(DatabaseExtensions).GetTypeInfo().Assembly.GetName().Name;
+            var migrationsAssembly = "CoreDX.Application.DbMigration";
 
             // Config DB for identity
             services.AddDbContext<TIdentityDbContext>(options => options.UseSqlServer(identityConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));

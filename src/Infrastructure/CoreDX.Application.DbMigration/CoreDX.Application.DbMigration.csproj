@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CoreDX.EntityFrameworkCore.Extensions\CoreDX.EntityFrameworkCore.Extensions.csproj" />
-    <ProjectReference Include="..\..\IdentityServerAdmin\IdentityServer.Admin.EntityFramework.Shared\IdentityServer.Admin.EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\CoreDX.Application.EntityFrameworkCore\CoreDX.Application.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
