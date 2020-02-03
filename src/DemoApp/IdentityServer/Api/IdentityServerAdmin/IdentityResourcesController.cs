@@ -1,3 +1,4 @@
+using AutoMapper;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.IdentityResources;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
@@ -21,18 +22,20 @@ namespace IdentityServer.Admin.Api.Controllers
     {
         private readonly IIdentityResourceService _identityResourceService;
         private readonly IApiErrorResources _errorResources;
+        private readonly IMapper _mapper;
 
-        public IdentityResourcesController(IIdentityResourceService identityResourceService, IApiErrorResources errorResources)
+        public IdentityResourcesController(IIdentityResourceService identityResourceService, IApiErrorResources errorResources, IMapper mapper)
         {
             _identityResourceService = identityResourceService;
             _errorResources = errorResources;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IdentityResourcesApiDto>> Get(string searchText, int page = 1, int pageSize = 10)
         {
             var identityResourcesDto = await _identityResourceService.GetIdentityResourcesAsync(searchText, page, pageSize);
-            var identityResourcesApiDto = identityResourcesDto.ToIdentityResourceApiModel<IdentityResourcesApiDto>();
+            var identityResourcesApiDto = identityResourcesDto.ToIdentityResourceApiModel<IdentityResourcesApiDto>(_mapper);
 
             return Ok(identityResourcesApiDto);
         }
@@ -41,7 +44,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<IdentityResourceApiDto>> Get(int id)
         {
             var identityResourceDto = await _identityResourceService.GetIdentityResourceAsync(id);
-            var identityResourceApiModel = identityResourceDto.ToIdentityResourceApiModel<IdentityResourceApiDto>();
+            var identityResourceApiModel = identityResourceDto.ToIdentityResourceApiModel<IdentityResourceApiDto>(_mapper);
 
             return Ok(identityResourceApiModel);
         }
@@ -51,7 +54,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Post([FromBody]IdentityResourceApiDto identityResourceApi)
         {
-            var identityResourceDto = identityResourceApi.ToIdentityResourceApiModel<IdentityResourceDto>();
+            var identityResourceDto = identityResourceApi.ToIdentityResourceApiModel<IdentityResourceDto>(_mapper);
 
             if (!identityResourceDto.Id.Equals(default))
             {
@@ -67,7 +70,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]IdentityResourceApiDto identityResourceApi)
         {
-            var identityResource = identityResourceApi.ToIdentityResourceApiModel<IdentityResourceDto>();
+            var identityResource = identityResourceApi.ToIdentityResourceApiModel<IdentityResourceDto>(_mapper);
 
             await _identityResourceService.GetIdentityResourceAsync(identityResource.Id);
             await _identityResourceService.UpdateIdentityResourceAsync(identityResource);
@@ -90,7 +93,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<IdentityResourcePropertiesApiDto>> GetProperties(int id, int page = 1, int pageSize = 10)
         {
             var identityResourcePropertiesDto = await _identityResourceService.GetIdentityResourcePropertiesAsync(id, page, pageSize);
-            var identityResourcePropertiesApiDto = identityResourcePropertiesDto.ToIdentityResourceApiModel<IdentityResourcePropertiesApiDto>();
+            var identityResourcePropertiesApiDto = identityResourcePropertiesDto.ToIdentityResourceApiModel<IdentityResourcePropertiesApiDto>(_mapper);
 
             return Ok(identityResourcePropertiesApiDto);
         }
@@ -99,7 +102,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<IdentityResourcePropertyApiDto>> GetProperty(int propertyId)
         {
             var identityResourcePropertiesDto = await _identityResourceService.GetIdentityResourcePropertyAsync(propertyId);
-            var identityResourcePropertyApiDto = identityResourcePropertiesDto.ToIdentityResourceApiModel<IdentityResourcePropertyApiDto>();
+            var identityResourcePropertyApiDto = identityResourcePropertiesDto.ToIdentityResourceApiModel<IdentityResourcePropertyApiDto>(_mapper);
 
             return Ok(identityResourcePropertyApiDto);
         }
@@ -109,7 +112,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostProperty(int id, [FromBody]IdentityResourcePropertyApiDto identityResourcePropertyApi)
         {
-            var identityResourcePropertiesDto = identityResourcePropertyApi.ToIdentityResourceApiModel<IdentityResourcePropertiesDto>();
+            var identityResourcePropertiesDto = identityResourcePropertyApi.ToIdentityResourceApiModel<IdentityResourcePropertiesDto>(_mapper);
             identityResourcePropertiesDto.IdentityResourceId = id;
 
             if (!identityResourcePropertiesDto.IdentityResourcePropertyId.Equals(default))

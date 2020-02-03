@@ -1,3 +1,4 @@
+using AutoMapper;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.PersistedGrants;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
@@ -19,17 +20,19 @@ namespace IdentityServer.Admin.Api.Controllers
     public class PersistedGrantsController : ControllerBase
     {
         private readonly IPersistedGrantAspNetIdentityService _persistedGrantsService;
+        private readonly IMapper _mapper;
 
-        public PersistedGrantsController(IPersistedGrantAspNetIdentityService persistedGrantsService)
+        public PersistedGrantsController(IPersistedGrantAspNetIdentityService persistedGrantsService, IMapper mapper)
         {
             _persistedGrantsService = persistedGrantsService;
+            _mapper = mapper;
         }
 
         [HttpGet("Subjects")]
         public async Task<ActionResult<PersistedGrantSubjectsApiDto>> Get(string searchText, int page = 1, int pageSize = 10)
         {
             var persistedGrantsDto = await _persistedGrantsService.GetPersistedGrantsByUsersAsync(searchText, page, pageSize);
-            var persistedGrantSubjectsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantSubjectsApiDto>();
+            var persistedGrantSubjectsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantSubjectsApiDto>(_mapper);
 
             return Ok(persistedGrantSubjectsApiDto);
         }
@@ -38,7 +41,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<PersistedGrantApiDto>> Get(string id)
         {
             var persistedGrantDto = await _persistedGrantsService.GetPersistedGrantAsync(UrlHelpers.QueryStringUnSafeHash(id));
-            var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantApiDto>();
+            var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantApiDto>(_mapper);
 
             ParsePersistedGrantKey(persistedGrantApiDto);
 
@@ -49,7 +52,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<PersistedGrantsApiDto>> GetBySubject(string subjectId, int page = 1, int pageSize = 10)
         {
             var persistedGrantDto = await _persistedGrantsService.GetPersistedGrantsByUserAsync(subjectId, page, pageSize);
-            var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantsApiDto>();
+            var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantsApiDto>(_mapper);
 
             ParsePersistedGrantKeys(persistedGrantApiDto);
 

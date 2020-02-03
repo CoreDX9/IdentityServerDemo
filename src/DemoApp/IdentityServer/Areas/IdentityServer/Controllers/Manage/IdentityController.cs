@@ -73,8 +73,8 @@ namespace IdentityServer.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/[action]")]
-        [Route("[controller]/[action]/{id}")]
+        [Route("[area]/[controller]/[action]")]
+        [Route("[area]/[controller]/[action]/{id}")]
         public async Task<IActionResult> Role(TRoleDtoKey id)
         {
             if (EqualityComparer<TRoleDtoKey>.Default.Equals(id, default))
@@ -171,7 +171,7 @@ namespace IdentityServer.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/UserProfile/{id}")]
+        [Route("[area]/[controller]/UserProfile/{id}")]
         public async Task<IActionResult> UserProfile(TUserDtoKey id)
         {
             var user = await _identityService.GetUserAsync(id.ToString());

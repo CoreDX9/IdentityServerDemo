@@ -1,3 +1,4 @@
+using AutoMapper;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.Clients;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
@@ -21,18 +22,20 @@ namespace IdentityServer.Admin.Api.Controllers
     {
         private readonly IClientService _clientService;
         private readonly IApiErrorResources _errorResources;
+        private readonly IMapper _mapper;
 
-        public ClientsController(IClientService clientService, IApiErrorResources errorResources)
+        public ClientsController(IClientService clientService, IApiErrorResources errorResources, IMapper mapper)
         {
             _clientService = clientService;
             _errorResources = errorResources;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<ClientsApiDto>> Get(string searchText, int page = 1, int pageSize = 10)
         {
             var clientsDto = await _clientService.GetClientsAsync(searchText, page, pageSize);
-            var clientsApiDto = clientsDto.ToClientApiModel<ClientsApiDto>();
+            var clientsApiDto = clientsDto.ToClientApiModel<ClientsApiDto>(_mapper);
 
             return Ok(clientsApiDto);
         }
@@ -41,7 +44,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientApiDto>> Get(int id)
         {
             var clientDto = await _clientService.GetClientAsync(id);
-            var clientApiDto = clientDto.ToClientApiModel<ClientApiDto>();
+            var clientApiDto = clientDto.ToClientApiModel<ClientApiDto>(_mapper);
 
             return Ok(clientApiDto);
         }
@@ -51,7 +54,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Post([FromBody]ClientApiDto client)
         {
-            var clientDto = client.ToClientApiModel<ClientDto>();
+            var clientDto = client.ToClientApiModel<ClientDto>(_mapper);
 
             if (!clientDto.Id.Equals(default))
             {
@@ -67,7 +70,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]ClientApiDto client)
         {
-            var clientDto = client.ToClientApiModel<ClientDto>();
+            var clientDto = client.ToClientApiModel<ClientDto>(_mapper);
 
             await _clientService.GetClientAsync(clientDto.Id);
             await _clientService.UpdateClientAsync(clientDto);
@@ -91,7 +94,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostClientClone([FromBody]ClientCloneApiDto client)
         {
-            var clientCloneDto = client.ToClientApiModel<ClientCloneDto>();
+            var clientCloneDto = client.ToClientApiModel<ClientCloneDto>(_mapper);
 
             var originalClient = await _clientService.GetClientAsync(clientCloneDto.Id);
             var id = await _clientService.CloneClientAsync(clientCloneDto);
@@ -104,7 +107,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientSecretsApiDto>> GetSecrets(int id, int page = 1, int pageSize = 10)
         {
             var clientSecretsDto = await _clientService.GetClientSecretsAsync(id, page, pageSize);
-            var clientSecretsApiDto = clientSecretsDto.ToClientApiModel<ClientSecretsApiDto>();
+            var clientSecretsApiDto = clientSecretsDto.ToClientApiModel<ClientSecretsApiDto>(_mapper);
 
             return Ok(clientSecretsApiDto);
         }
@@ -113,7 +116,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientSecretApiDto>> GetSecret(int secretId)
         {
             var clientSecretsDto = await _clientService.GetClientSecretAsync(secretId);
-            var clientSecretDto = clientSecretsDto.ToClientApiModel<ClientSecretApiDto>();
+            var clientSecretDto = clientSecretsDto.ToClientApiModel<ClientSecretApiDto>(_mapper);
 
             return Ok(clientSecretDto);
         }
@@ -123,7 +126,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostSecret(int id, [FromBody]ClientSecretApiDto clientSecretApi)
         {
-            var secretsDto = clientSecretApi.ToClientApiModel<ClientSecretsDto>();
+            var secretsDto = clientSecretApi.ToClientApiModel<ClientSecretsDto>(_mapper);
             secretsDto.ClientId = id;
 
             if (!secretsDto.ClientSecretId.Equals(default))
@@ -152,7 +155,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientPropertiesApiDto>> GetProperties(int id, int page = 1, int pageSize = 10)
         {
             var clientPropertiesDto = await _clientService.GetClientPropertiesAsync(id, page, pageSize);
-            var clientPropertiesApiDto = clientPropertiesDto.ToClientApiModel<ClientPropertiesApiDto>();
+            var clientPropertiesApiDto = clientPropertiesDto.ToClientApiModel<ClientPropertiesApiDto>(_mapper);
 
             return Ok(clientPropertiesApiDto);
         }
@@ -161,7 +164,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientPropertyApiDto>> GetProperty(int propertyId)
         {
             var clientPropertiesDto = await _clientService.GetClientPropertyAsync(propertyId);
-            var clientPropertyApiDto = clientPropertiesDto.ToClientApiModel<ClientPropertyApiDto>();
+            var clientPropertyApiDto = clientPropertiesDto.ToClientApiModel<ClientPropertyApiDto>(_mapper);
 
             return Ok(clientPropertyApiDto);
         }
@@ -171,7 +174,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostProperty(int id, [FromBody]ClientPropertyApiDto clientPropertyApi)
         {
-            var clientPropertiesDto = clientPropertyApi.ToClientApiModel<ClientPropertiesDto>();
+            var clientPropertiesDto = clientPropertyApi.ToClientApiModel<ClientPropertiesDto>(_mapper);
             clientPropertiesDto.ClientId = id;
 
             if (!clientPropertiesDto.ClientPropertyId.Equals(default))
@@ -200,7 +203,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientClaimsApiDto>> GetClaims(int id, int page = 1, int pageSize = 10)
         {
             var clientClaimsDto = await _clientService.GetClientClaimsAsync(id, page, pageSize);
-            var clientClaimsApiDto = clientClaimsDto.ToClientApiModel<ClientClaimsApiDto>();
+            var clientClaimsApiDto = clientClaimsDto.ToClientApiModel<ClientClaimsApiDto>(_mapper);
 
             return Ok(clientClaimsApiDto);
         }
@@ -209,7 +212,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ClientClaimApiDto>> GetClaim(int claimId)
         {
             var clientClaimsDto = await _clientService.GetClientClaimAsync(claimId);
-            var clientClaimApiDto = clientClaimsDto.ToClientApiModel<ClientClaimApiDto>();
+            var clientClaimApiDto = clientClaimsDto.ToClientApiModel<ClientClaimApiDto>(_mapper);
 
             return Ok(clientClaimApiDto);
         }
@@ -219,7 +222,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostClaim(int id, [FromBody]ClientClaimApiDto clientClaimApiDto)
         {
-            var clientClaimsDto = clientClaimApiDto.ToClientApiModel<ClientClaimsDto>();
+            var clientClaimsDto = clientClaimApiDto.ToClientApiModel<ClientClaimsDto>(_mapper);
             clientClaimsDto.ClientId = id;
 
             if (!clientClaimsDto.ClientClaimId.Equals(default))

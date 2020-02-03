@@ -67,6 +67,15 @@ using Skoruba.AuditLogging.EntityFramework.Entities;
 using System.Threading.Tasks;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.Authorization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories;
 
 #endregion
 
@@ -91,6 +100,9 @@ namespace IdentityServer
 
             var rootConfiguration = CreateRootConfiguration();
             services.AddSingleton(rootConfiguration);
+
+            var adminApiConfiguration = Configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
+            services.AddSingleton(adminApiConfiguration);
 
             #endregion
 
@@ -136,7 +148,34 @@ namespace IdentityServer
             services.AddDirectoryBrowser();
 
             //注册AutoMapper服务
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            AutoMapper.IConfigurationProvider config = new MapperConfiguration(cfg =>
+            {
+                var profileTypes =
+                from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in assembly.GetTypes()
+                where type.IsSubclassOf(typeof(Profile)) && !type.IsGenericType
+                select type;
+
+                var profiles = profileTypes.Select(x =>
+                    {
+                        try
+                        {
+                            return (Profile)Activator.CreateInstance(x);
+                        }
+                        catch (MissingMethodException ex)
+                        {
+                            return null;
+                        }
+                        catch(Exception ex)
+                        {
+                            throw ex;
+                        }
+                    }).Where(x => x != null);
+                cfg.AddProfiles(profiles);
+            });
+            services.AddSingleton(config);
+            services.AddScoped<IMapper, Mapper>();
 
             #region 注册应用 cookie 配置
 
@@ -273,45 +312,6 @@ namespace IdentityServer
 
             #endregion
 
-            #region 注册 IdentityServer 管理需要的上下文
-
-            if (useInMemoryDatabase)
-            {
-                services.AddEntityFrameworkInMemoryDatabase()
-                    .AddDbContext<AdminLogDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    })
-                    .AddDbContext<AdminAuditLogDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
-                    });
-            }
-            else
-            {
-                // Log DB from existing connection
-                services.AddDbContext<AdminLogDbContext>(options =>
-                {
-                    options.UseSqlServer(connectionString, optionsSql =>
-                    {
-                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
-                        optionsSql.EnableRetryOnFailure(3);
-                    });
-                });
-
-                // Audit logging connection
-                services.AddDbContext<AdminAuditLogDbContext>(options =>
-                {
-                    options.UseSqlServer(connectionString, optionsSql =>
-                    {
-                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
-                        optionsSql.EnableRetryOnFailure(3);
-                    });
-                });
-            }
-
-            #endregion
-
             #region 注册 IdentityServer4 服务
 
             //结合EFCore生成IdentityServer4数据库迁移命令详情见 CoreDX.Application.EntityFrameworkCore 项目说明文档
@@ -431,19 +431,80 @@ namespace IdentityServer
 
             #endregion
 
+            #region 注册 IdentityServer4 管理需要的上下文
+
+            if (useInMemoryDatabase)
+            {
+                services.AddEntityFrameworkInMemoryDatabase()
+                    .AddDbContext<AdminLogDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    })
+                    .AddDbContext<AdminAuditLogDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("IdentityServerDb-InMemory", inMemoryDatabaseRoot);
+                    });
+            }
+            else
+            {
+                // Log DB from existing connection
+                services.AddDbContext<AdminLogDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, optionsSql =>
+                    {
+                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
+                        optionsSql.EnableRetryOnFailure(3);
+                    });
+                });
+
+                // Audit logging connection
+                services.AddDbContext<AdminAuditLogDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString, optionsSql =>
+                    {
+                        optionsSql.MigrationsAssembly(migrationsAssemblyName);
+                        optionsSql.EnableRetryOnFailure(3);
+                    });
+                });
+            }
+
+            #endregion
+
             #region 注册管理 IdentityServer4 相关的服务
 
             services.AddScoped<ControllerExceptionFilterAttribute>();
 
-            services.AddAdminServices<IdentityServerConfigurationDbContext,
-                IdentityServerPersistedGrantDbContext, AdminLogDbContext>();
+            //内置服务与 DI 中的 AutoMapper 冲突
+            //services.AddAdminServices<IdentityServerConfigurationDbContext,
+            //    IdentityServerPersistedGrantDbContext, AdminLogDbContext>();
+            services.AddTransient<IClientRepository, ClientRepository<IdentityServerConfigurationDbContext>>();
+            services.AddTransient<IIdentityResourceRepository, IdentityResourceRepository<IdentityServerConfigurationDbContext>>();
+            services.AddTransient<IApiResourceRepository, ApiResourceRepository<IdentityServerConfigurationDbContext>>();
+            services.AddTransient<IPersistedGrantRepository, PersistedGrantRepository<IdentityServerPersistedGrantDbContext>>();
+            services.AddTransient<ILogRepository, LogRepository<AdminLogDbContext>>();
+            services.AddTransient<IClientService, ClientService>();
+            services.AddTransient<IApiResourceService, ApiResourceService>();
+            services.AddTransient<IIdentityResourceService, IdentityResourceService>();
+            services.AddTransient<IPersistedGrantService, PersistedGrantService>();
+            services.AddTransient<ILogService, Skoruba.IdentityServer4.Admin.BusinessLogic.Services.LogService>();
+            services.AddScoped<IApiResourceServiceResources, ApiResourceServiceResources>();
+            services.AddScoped<IClientServiceResources, ClientServiceResources>();
+            services.AddScoped<IIdentityResourceServiceResources, IdentityResourceServiceResources>();
+            services.AddScoped<IPersistedGrantServiceResources, PersistedGrantServiceResources>();
 
-            services.AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
+            //内置服务与 DI 中的 AutoMapper 冲突
+            //services.AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
+            //        ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole,
+            //        ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken,
+            //        UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
+            //        UserClaimsDto<int>, UserProviderDto<int>, UserProvidersDto<int>, UserChangePasswordDto<int>,
+            //        RoleClaimsDto<int>, UserClaimDto<int>, RoleClaimDto<int>>();
+            AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
                     ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole,
                     ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken,
                     UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
                     UserClaimsDto<int>, UserProviderDto<int>, UserProvidersDto<int>, UserChangePasswordDto<int>,
-                    RoleClaimsDto<int>, UserClaimDto<int>, RoleClaimDto<int>>();
+                    RoleClaimsDto<int>, UserClaimDto<int>, RoleClaimDto<int>>(services);
 
             // Add audit logging
             services.AddAuditEventLogging<AdminAuditLogDbContext, AuditLog>(Configuration);
@@ -614,10 +675,15 @@ namespace IdentityServer
                         Implicit = new OpenApiOAuthFlow()
                         {
                             AuthorizationUrl = new Uri(authorizationUrl),
-                            Scopes = new Dictionary<string, string> { { "api1", "api1" } }
+                            Scopes = new Dictionary<string, string> {
+                                { "api1", "api1" },
+                                { adminApiConfiguration.OidcApiName, adminApiConfiguration.ApiName }
+                            }
                         },
                     },
                 });
+
+                options.OperationFilter<AuthorizeCheckOperationFilter>();
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -835,7 +901,7 @@ namespace IdentityServer
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescription)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
         {
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
@@ -1047,6 +1113,9 @@ namespace IdentityServer
                 {
                     options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
                 }
+
+                options.OAuthClientId(adminApiConfiguration.OidcSwaggerUIClientId);
+                options.OAuthAppName(adminApiConfiguration.ApiName);
             });
 
             #endregion
@@ -1138,6 +1207,40 @@ namespace IdentityServer
             Configuration.GetSection(ConfigurationConsts.IdentityDataConfigurationKey).Bind(rootConfiguration.IdentityDataConfiguration);
             Configuration.GetSection(ConfigurationConsts.IdentityServerDataConfigurationKey).Bind(rootConfiguration.IdentityServerDataConfiguration);
             return rootConfiguration;
+        }
+
+        //临时替换服务，内置服务与 DI 中的 AutoMapper 冲突
+        public static IServiceCollection AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext, TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(IServiceCollection services)
+            where TIdentityDbContext : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+            where TPersistedGrantDbContext : DbContext, Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces.IAdminPersistedGrantDbContext
+            where TUserDto : UserDto<TUserDtoKey>
+            where TRoleDto : RoleDto<TRoleDtoKey>
+            where TUser : IdentityUser<TKey>
+            where TRole : IdentityRole<TKey>
+            where TKey : IEquatable<TKey>
+            where TUserClaim : IdentityUserClaim<TKey>
+            where TUserRole : IdentityUserRole<TKey>
+            where TUserLogin : IdentityUserLogin<TKey>
+            where TRoleClaim : IdentityRoleClaim<TKey>
+            where TUserToken : IdentityUserToken<TKey>
+            where TUsersDto : UsersDto<TUserDto, TUserDtoKey>
+            where TRolesDto : RolesDto<TRoleDto, TRoleDtoKey>
+            where TUserRolesDto : UserRolesDto<TRoleDto, TUserDtoKey, TRoleDtoKey>
+            where TUserClaimsDto : UserClaimsDto<TUserDtoKey>
+            where TUserProviderDto : UserProviderDto<TUserDtoKey>
+            where TUserProvidersDto : UserProvidersDto<TUserDtoKey>
+            where TUserChangePasswordDto : UserChangePasswordDto<TUserDtoKey>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleDtoKey>
+            where TUserClaimDto : UserClaimDto<TUserDtoKey>
+            where TRoleClaimDto : RoleClaimDto<TRoleDtoKey>
+        {
+            ServiceCollectionServiceExtensions.AddTransient<IIdentityRepository<TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IdentityRepository<TIdentityDbContext, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>(services);
+            ServiceCollectionServiceExtensions.AddTransient<IPersistedGrantAspNetIdentityRepository, PersistedGrantAspNetIdentityRepository<TIdentityDbContext, TPersistedGrantDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>(services);
+            ServiceCollectionServiceExtensions.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IIdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.IdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>>(services);
+            ServiceCollectionServiceExtensions.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IPersistedGrantAspNetIdentityService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.PersistedGrantAspNetIdentityService>(services);
+            ServiceCollectionServiceExtensions.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IdentityServiceResources>(services);
+            ServiceCollectionServiceExtensions.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IPersistedGrantAspNetIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.PersistedGrantAspNetIdentityServiceResources>(services);
+            return services;
         }
     }
 }

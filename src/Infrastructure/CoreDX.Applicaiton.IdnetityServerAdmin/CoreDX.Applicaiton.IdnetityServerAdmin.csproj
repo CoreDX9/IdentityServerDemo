@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Identity\Interfaces\IIdentityRepository.cs" />
+    <Compile Remove="Services\LogService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IdentityServer4.Storage" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic" Version="1.0.0-rc1" />
@@ -31,6 +36,15 @@
       <LastGenOutput>ApiErrorResource.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Identity\Interfaces\" />
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Entity.Identity\CoreDX.Domain.Entity.Identity.csproj" />
   </ItemGroup>
 
 </Project>

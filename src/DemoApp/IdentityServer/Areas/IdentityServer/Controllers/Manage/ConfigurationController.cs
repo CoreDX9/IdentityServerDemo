@@ -35,8 +35,8 @@ namespace IdentityServer.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/[action]")]
-        [Route("[controller]/[action]/{id:int}")]
+        [Route("[area]/[controller]/[action]")]
+        [Route("[area]/[controller]/[action]/{id:int}")]
         public async Task<IActionResult> Client(int id)
         {
             if (id == 0)
@@ -473,8 +473,8 @@ namespace IdentityServer.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/[action]")]
-        [Route("[controller]/[action]/{id:int}")]
+        [Route("[area]/[controller]/[action]")]
+        [Route("[area]/[controller]/[action]/{id:int}")]
         public async Task<IActionResult> ApiResource(int id)
         {
             if (id == 0)
@@ -619,8 +619,8 @@ namespace IdentityServer.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/[action]")]
-        [Route("[controller]/[action]/{id:int}")]
+        [Route("[area]/[controller]/[action]")]
+        [Route("[area]/[controller]/[action]/{id:int}")]
         public async Task<IActionResult> IdentityResource(int id)
         {
             if (id == 0)

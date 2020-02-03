@@ -1,3 +1,4 @@
+using AutoMapper;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Dtos.ApiResources;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
@@ -21,18 +22,20 @@ namespace IdentityServer.Admin.Api.Controllers
     {
         private readonly IApiResourceService _apiResourceService;
         private readonly IApiErrorResources _errorResources;
+        private readonly IMapper _mapper;
 
-        public ApiResourcesController(IApiResourceService apiResourceService, IApiErrorResources errorResources)
+        public ApiResourcesController(IApiResourceService apiResourceService, IApiErrorResources errorResources, IMapper mapper)
         {
             _apiResourceService = apiResourceService;
             _errorResources = errorResources;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResourcesApiDto>> Get(string searchText, int page = 1, int pageSize = 10)
         {
             var apiResourcesDto = await _apiResourceService.GetApiResourcesAsync(searchText, page, pageSize);
-            var apiResourcesApiDto = apiResourcesDto.ToApiResourceApiModel<ApiResourcesApiDto>();
+            var apiResourcesApiDto = apiResourcesDto.ToApiResourceApiModel<ApiResourcesApiDto>(_mapper);
 
             return Ok(apiResourcesApiDto);
         }
@@ -41,7 +44,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiResourceApiDto>> Get(int id)
         {
             var apiResourceDto = await _apiResourceService.GetApiResourceAsync(id);
-            var apiResourceApiDto = apiResourceDto.ToApiResourceApiModel<ApiResourceApiDto>();
+            var apiResourceApiDto = apiResourceDto.ToApiResourceApiModel<ApiResourceApiDto>(_mapper);
 
             return Ok(apiResourceApiDto);
         }
@@ -51,7 +54,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Post([FromBody]ApiResourceApiDto apiResourceApi)
         {
-            var apiResourceDto = apiResourceApi.ToApiResourceApiModel<ApiResourceDto>();
+            var apiResourceDto = apiResourceApi.ToApiResourceApiModel<ApiResourceDto>(_mapper);
 
             if (!apiResourceDto.Id.Equals(default))
             {
@@ -67,7 +70,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody]ApiResourceApiDto apiResourceApi)
         {
-            var apiResourceDto = apiResourceApi.ToApiResourceApiModel<ApiResourceDto>();
+            var apiResourceDto = apiResourceApi.ToApiResourceApiModel<ApiResourceDto>(_mapper);
 
             await _apiResourceService.GetApiResourceAsync(apiResourceDto.Id);
             await _apiResourceService.UpdateApiResourceAsync(apiResourceDto);
@@ -90,7 +93,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiScopesApiDto>> GetScopes(int id, int page = 1, int pageSize = 10)
         {
             var apiScopesDto = await _apiResourceService.GetApiScopesAsync(id, page, pageSize);
-            var apiScopesApiDto = apiScopesDto.ToApiResourceApiModel<ApiScopesApiDto>();
+            var apiScopesApiDto = apiScopesDto.ToApiResourceApiModel<ApiScopesApiDto>(_mapper);
 
             return Ok(apiScopesApiDto);
         }
@@ -99,7 +102,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiScopeApiDto>> GetScope(int id, int scopeId)
         {
             var apiScopesDto = await _apiResourceService.GetApiScopeAsync(id, scopeId);
-            var apiScopeApiDto = apiScopesDto.ToApiResourceApiModel<ApiScopeApiDto>();
+            var apiScopeApiDto = apiScopesDto.ToApiResourceApiModel<ApiScopeApiDto>(_mapper);
 
             return Ok(apiScopeApiDto);
         }
@@ -109,7 +112,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostScope(int id, [FromBody]ApiScopeApiDto apiScopeApi)
         {
-            var apiScope = apiScopeApi.ToApiResourceApiModel<ApiScopesDto>();
+            var apiScope = apiScopeApi.ToApiResourceApiModel<ApiScopesDto>(_mapper);
             apiScope.ApiResourceId = id;
 
             if (!apiScope.ApiScopeId.Equals(default))
@@ -127,7 +130,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [HttpPut("{id}/Scopes")]
         public async Task<IActionResult> PutScope(int id, [FromBody]ApiScopeApiDto apiScopeApi)
         {
-            var apiScope = apiScopeApi.ToApiResourceApiModel<ApiScopesDto>();
+            var apiScope = apiScopeApi.ToApiResourceApiModel<ApiScopesDto>(_mapper);
             apiScope.ApiResourceId = id;
 
             await _apiResourceService.GetApiResourceAsync(apiScope.ApiResourceId);
@@ -155,7 +158,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiSecretsApiDto>> GetSecrets(int id, int page = 1, int pageSize = 10)
         {
             var apiSecretsDto = await _apiResourceService.GetApiSecretsAsync(id, page, pageSize);
-            var apiSecretsApiDto = apiSecretsDto.ToApiResourceApiModel<ApiSecretsApiDto>();
+            var apiSecretsApiDto = apiSecretsDto.ToApiResourceApiModel<ApiSecretsApiDto>(_mapper);
 
             return Ok(apiSecretsApiDto);
         }
@@ -164,7 +167,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiSecretApiDto>> GetSecret(int secretId)
         {
             var apiSecretsDto = await _apiResourceService.GetApiSecretAsync(secretId);
-            var apiSecretApiDto = apiSecretsDto.ToApiResourceApiModel<ApiSecretApiDto>();
+            var apiSecretApiDto = apiSecretsDto.ToApiResourceApiModel<ApiSecretApiDto>(_mapper);
 
             return Ok(apiSecretApiDto);
         }
@@ -174,7 +177,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostSecret(int id, [FromBody]ApiSecretApiDto clientSecretApi)
         {
-            var secretsDto = clientSecretApi.ToApiResourceApiModel<ApiSecretsDto>();
+            var secretsDto = clientSecretApi.ToApiResourceApiModel<ApiSecretsDto>(_mapper);
             secretsDto.ApiResourceId = id;
 
             if (!secretsDto.ApiSecretId.Equals(default))
@@ -203,7 +206,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiResourcePropertiesApiDto>> GetProperties(int id, int page = 1, int pageSize = 10)
         {
             var apiResourcePropertiesDto = await _apiResourceService.GetApiResourcePropertiesAsync(id, page, pageSize);
-            var apiResourcePropertiesApiDto = apiResourcePropertiesDto.ToApiResourceApiModel<ApiResourcePropertiesApiDto>();
+            var apiResourcePropertiesApiDto = apiResourcePropertiesDto.ToApiResourceApiModel<ApiResourcePropertiesApiDto>(_mapper);
 
             return Ok(apiResourcePropertiesApiDto);
         }
@@ -212,7 +215,7 @@ namespace IdentityServer.Admin.Api.Controllers
         public async Task<ActionResult<ApiResourcePropertyApiDto>> GetProperty(int propertyId)
         {
             var apiResourcePropertiesDto = await _apiResourceService.GetApiResourcePropertyAsync(propertyId);
-            var apiResourcePropertyApiDto = apiResourcePropertiesDto.ToApiResourceApiModel<ApiResourcePropertyApiDto>();
+            var apiResourcePropertyApiDto = apiResourcePropertiesDto.ToApiResourceApiModel<ApiResourcePropertyApiDto>(_mapper);
 
             return Ok(apiResourcePropertyApiDto);
         }
@@ -222,7 +225,7 @@ namespace IdentityServer.Admin.Api.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PostProperty(int id, [FromBody]ApiResourcePropertyApiDto apiPropertyApi)
         {
-            var apiResourcePropertiesDto = apiPropertyApi.ToApiResourceApiModel<ApiResourcePropertiesDto>();
+            var apiResourcePropertiesDto = apiPropertyApi.ToApiResourceApiModel<ApiResourcePropertiesDto>(_mapper);
             apiResourcePropertiesDto.ApiResourceId = id;
 
             if (!apiResourcePropertiesDto.ApiResourcePropertyId.Equals(default))
