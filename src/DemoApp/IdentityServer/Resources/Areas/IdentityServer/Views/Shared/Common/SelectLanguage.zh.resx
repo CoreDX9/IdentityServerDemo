@@ -120,4 +120,7 @@
   <data name="Language:" xml:space="preserve">
     <value>语言：</value>
   </data>
+  <data name="Request culture provider:" xml:space="preserve">
+    <value>请求文化提供者：</value>
+  </data>
 </root>

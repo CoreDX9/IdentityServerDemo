@@ -13,9 +13,11 @@
     if (area == "IdentityServer" && new[] { "Configuration", "Grant", "ConfigHome", "Identity", "Log" }.Contains(controller))
     {
         Layout = "/Areas/IdentityServer/Views/Shared/_Id4ConfigLayout.cshtml";
+        ViewBag.AppTitle = "CoreDX IdentityServer";
     }
     else
     {
         Layout = "/Views/Shared/_Layout.cshtml";
+        ViewBag.AppTitle = "CoreDX IdentityServer";
     }
 }

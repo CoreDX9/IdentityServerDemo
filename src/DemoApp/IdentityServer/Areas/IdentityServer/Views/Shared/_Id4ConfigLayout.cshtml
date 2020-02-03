@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     @*<link rel="icon" type="image/x-icon" href="RootConfiguration.AdminConfiguration.FaviconUri" />
     <link rel="shortcut icon" type="image/x-icon" href="RootConfiguration.AdminConfiguration.FaviconUri" />*@
-    <title>@ViewData["Title"] - RootConfiguration.AdminConfiguration.PageTitle</title>
+<title>@ViewData["Title"] - @ViewBag.AppTitle</title>
 
     <environment include="Development">
         <link href="~/id4config/dist/css/bundle.min.css" asp-append-version="false" rel="stylesheet" />
@@ -86,7 +86,7 @@
         <footer class="pt-4 my-md-5 pt-md-5 border-top">
             <div class="row">
                 <div class="col-6 col-md">
-                    RootConfiguration.AdminConfiguration.PageTitle
+                    @ViewBag.AppTitle
                     <small class="d-block mb-3 text-muted">@Localizer["FooterCopyright"] @DateTime.Now.Year</small>
                 </div>
                 <div class="col-md-6 text-right">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - IdentityServer</title>
+    <title>@ViewData["Title"] - @ViewBag.AppTitle</title>
 
     <partial name="_BootstrapStylesPartial" />
     <partial name="_AnimateCssStylesPartial" />
@@ -106,7 +106,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container-fluid">
-            &copy; @DateTimeOffset.Now.Year - IdentityServer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTimeOffset.Now.Year - @ViewBag.AppTitle - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
