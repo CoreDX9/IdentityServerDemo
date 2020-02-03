@@ -1097,7 +1097,6 @@ namespace IdentityServer
                 endpoints.MapHub<ChatHub>("/chatHub");
 
                 //映射健康检查终结点
-                endpoints.MapHealthChecks("/health");
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
