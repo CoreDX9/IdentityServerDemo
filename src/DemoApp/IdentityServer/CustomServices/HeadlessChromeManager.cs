@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using PuppeteerSharp;
-using Microsoft.AspNetCore.Hosting;
-using System.Timers;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp;
+using System;
+using System.Threading.Tasks;
+using System.Timers;
 
-namespace IdentityServer.Extensions
+namespace IdentityServer.CustomServices
 {
     public class HeadlessChromeManager
     {
@@ -41,7 +39,7 @@ namespace IdentityServer.Extensions
                 timer.AutoReset = true;
                 timer.Elapsed += async (sender, e) =>
                 {
-                    var pages = await browser.PagesAsync(); 
+                    var pages = await browser.PagesAsync();
                     if (pages.Length == 0)
                     {
                         lock (_locker)

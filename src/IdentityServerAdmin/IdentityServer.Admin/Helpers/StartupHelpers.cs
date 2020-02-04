@@ -71,7 +71,7 @@ namespace IdentityServer.Admin.Helpers
 
             // repository and service for admin
             services.AddTransient<IAuditLogRepository<TAuditLog>, AuditLogRepository<TAuditLoggingDbContext, TAuditLog>>();
-            services.AddTransient<IAuditLogService, AuditLogService<TAuditLog>>();
+            services.AddTransient<IAuditLogService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.AuditLogService<TAuditLog>>();
 
             return services;
         }

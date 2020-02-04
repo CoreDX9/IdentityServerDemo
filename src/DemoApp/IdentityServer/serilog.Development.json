@@ -1,7 +1,7 @@
 ﻿{
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Information",
+      "Default": "Information"
     },
     "WriteTo": [
       {

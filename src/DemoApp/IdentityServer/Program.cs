@@ -13,11 +13,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using IdentityServer.Helpers.IdentityServerAdmin;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using IdentityServer.Helpers;
 
 namespace IdentityServer
 {
@@ -127,7 +127,6 @@ namespace IdentityServer
 
         public static async Task EnsureSeedDataAsync(IHost host)
         {
-            await SeedData.EnsureSeedDataAsync(host.Services);//初始化数据库
             await DbMigrationHelpers
                 .EnsureSeedData<IdentityServerConfigurationDbContext, ApplicationIdentityDbContext,
                     IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,

@@ -1,6 +1,8 @@
 ﻿using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
+using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Application.EntityFrameworkCore.Configuration;
+using Localization.SqlLocalizer.DbStringLocalizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +64,8 @@ namespace IdentityServer.Helpers.IdentityServerAdmin
                 .AddDbContextCheck<TIdentityDbContext>("IdentityDbContext")
                 .AddDbContextCheck<TLogDbContext>("LogDbContext")
                 .AddDbContextCheck<TAuditLoggingDbContext>("AuditLogDbContext")
+                .AddDbContextCheck<LocalizationModelContext>(nameof(LocalizationModelContext))
+                .AddDbContextCheck<ApplicationDbContext>(nameof(ApplicationDbContext))
 
                 .AddIdentityServer(new Uri(identityServerUri), "Identity Server");
 
@@ -74,6 +78,8 @@ namespace IdentityServer.Helpers.IdentityServerAdmin
                 var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
                 var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
                 var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
+                var LocalizationTableName = DbContextHelpers.GetEntityTable<LocalizationModelContext>(scope.ServiceProvider);
+                var ApplicationTableName = DbContextHelpers.GetEntityTable<ApplicationDbContext>(scope.ServiceProvider);
 
                 var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
                 switch (databaseProvider.ProviderType)
@@ -89,7 +95,11 @@ namespace IdentityServer.Helpers.IdentityServerAdmin
                             .AddSqlServer(connectionString, name: "LogDb",
                                 healthQuery: $"SELECT TOP 1 * FROM dbo.[{logTableName}]")
                             .AddSqlServer(connectionString, name: "AuditLogDb",
-                                healthQuery: $"SELECT TOP 1 * FROM dbo.[{auditLogTableName}]");
+                                healthQuery: $"SELECT TOP 1 * FROM dbo.[{auditLogTableName}]")
+                            .AddSqlServer(connectionString, name: "LocalizationModelDb",
+                                healthQuery: $"SELECT TOP 1 * FROM dbo.[{LocalizationTableName}]")
+                        .AddSqlServer(connectionString, name: "ApplicationDb",
+                                healthQuery: $"SELECT TOP 1 * FROM dbo.[{ApplicationTableName}]");
                         break;
                     case DatabaseProviderType.PostgreSQL:
                         //healthChecksBuilder

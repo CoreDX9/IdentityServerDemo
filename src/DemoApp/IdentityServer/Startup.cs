@@ -147,7 +147,8 @@ namespace IdentityServer
             //注册文件夹浏览服务
             services.AddDirectoryBrowser();
 
-            //注册AutoMapper服务
+            #region 注册 AutoMapper 服务
+
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             AutoMapper.IConfigurationProvider config = new MapperConfiguration(cfg =>
             {
@@ -176,48 +177,6 @@ namespace IdentityServer
             });
             services.AddSingleton(config);
             services.AddScoped<IMapper, Mapper>();
-
-            #region 注册应用 cookie 配置
-
-            // 注册 cookie 配置
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                //GDPR支持配置
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-            //配置Identity跳转链接（对于 Api 调用，直接返回响应状态码，不做跳转）
-            services.ConfigureApplicationCookie(options =>
-            {
-                var onRedirectToLogin = options.Events.OnRedirectToLogin;
-                options.Events.OnRedirectToLogin = context =>
-                {
-                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        return System.Threading.Tasks.Task.CompletedTask;
-                    }
-
-                    return onRedirectToLogin(context);
-                };
-
-                var onRedirectToAccessDenied = options.Events.OnRedirectToAccessDenied;
-                options.Events.OnRedirectToAccessDenied = context =>
-                {
-                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        return System.Threading.Tasks.Task.CompletedTask;
-                    }
-
-                    return onRedirectToAccessDenied(context);
-                };
-
-                options.LoginPath = new PathString("/IdentityServer/Account/Login");
-                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
-            });
 
             #endregion
 
@@ -473,6 +432,7 @@ namespace IdentityServer
             #region 注册管理 IdentityServer4 相关的服务
 
             services.AddScoped<ControllerExceptionFilterAttribute>();
+            services.AddScoped<CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources.IApiErrorResources, CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources.ApiErrorResources>();
 
             //内置服务与 DI 中的 AutoMapper 冲突
             //services.AddAdminServices<IdentityServerConfigurationDbContext,
@@ -549,8 +509,7 @@ namespace IdentityServer
                     fv.ImplicitlyValidateChildProperties = true;
                 })
                 //注册视图本地化服务
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix,
-                    opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
                 //注册数据注解本地化服务
                 .AddDataAnnotationsLocalization()
                 .ConfigureApplicationPartManager(m =>
@@ -897,6 +856,52 @@ namespace IdentityServer
             services.AddSingleton<RtmpServerManager>();
 
             #endregion
+
+            #region 注册应用 cookie 配置，一定要放在最后
+            //这个单例配置不知道为什么被注册了快20次，不放在最后很可能被中途不知道哪个服务注册扩展给你覆盖掉
+            //导致自定义配置无法执行，坑爹
+
+            // 注册 cookie 配置
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                //GDPR支持配置
+                options.CheckConsentNeeded = context => true;
+                //options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            //配置Identity跳转链接（对于 Api 调用，直接返回响应状态码，不做跳转）
+            services.ConfigureApplicationCookie(options =>
+            {
+                var onRedirectToLogin = options.Events.OnRedirectToLogin;
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
+
+                    return onRedirectToLogin(context);
+                };
+
+                var onRedirectToAccessDenied = options.Events.OnRedirectToAccessDenied;
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    if (context.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
+
+                    return onRedirectToAccessDenied(context);
+                };
+
+                options.LoginPath = new PathString("/IdentityServer/Account/Login");
+                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+            });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -1200,7 +1205,7 @@ namespace IdentityServer
         /// IdentityServer 管理用
         /// </summary>
         /// <returns></returns>
-        protected IRootConfiguration CreateRootConfiguration()
+        private IRootConfiguration CreateRootConfiguration()
         {
             var rootConfiguration = new RootConfiguration();
             Configuration.GetSection(ConfigurationConsts.AdminConfigurationKey).Bind(rootConfiguration.AdminConfiguration);
@@ -1210,7 +1215,7 @@ namespace IdentityServer
         }
 
         //临时替换服务，内置服务与 DI 中的 AutoMapper 冲突
-        public static IServiceCollection AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext, TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(IServiceCollection services)
+        private static IServiceCollection AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext, TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(IServiceCollection services)
             where TIdentityDbContext : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
             where TPersistedGrantDbContext : DbContext, Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces.IAdminPersistedGrantDbContext
             where TUserDto : UserDto<TUserDtoKey>
