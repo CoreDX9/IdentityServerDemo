@@ -1,4 +1,4 @@
-# English [中文](README.md "中文")
+# English [涓枃](README.md "涓枃")
 # IdentityServerDemo
 This is a .net core comprehensive learning and sample collection project that contains basic usage and comprehensive application examples for various functions. The goal is to show as quickly and easily as possible the use and practical effects of various functions.
 <br> Current framework version: .Net Core 3.1
