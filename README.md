@@ -75,6 +75,7 @@
 26. 无界面浏览器使用示例，基于 Puppeteer，Chromium79.
 27. video.js 使用和扩展示例；集成 CCL 弹幕引擎，集成 flv.js 实现 HTML5 直接支持 flv 格式视频的播放。
 28. 基于神经网络的光学字符识别使用示例。
+29. 方便快捷的数据库说明扩展。
 #### 还有更多……
 
 ### IdentityServerGui

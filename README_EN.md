@@ -75,6 +75,7 @@ This is a .net core comprehensive learning and sample collection project that co
 26. Example of using interfaceless browser, based on Puppeteer, Chromium79.
 27. Video.js usage and extension examples; integrated with CCL Danmaku Engine and integrated with flv.js for HTML5 to directly support the playback of video in flv format.
 28. Examples of use of neural network-based optical character integration.
+29. Convenient and fast database description extension.
 #### and more...
 
 ### IdentityServerGui
