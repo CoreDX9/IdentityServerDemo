@@ -114,7 +114,8 @@ namespace IdentityServer
             InMemoryDatabaseRoot inMemoryDatabaseRoot = useInMemoryDatabase ? new InMemoryDatabaseRoot() : null;
 
             //真实数据库配置
-            var connectionString = useInMemoryDatabase ? string.Empty : Configuration.GetConnectionString("IdentityServerDbContextConnection");
+            var connectionString = useInMemoryDatabase ? string.Empty : Configuration.GetConnectionString("IdentityServerDbContextConnection")
+                .Replace("{EnvironmentName}", Environment.EnvironmentName);
 
             //重定向数据库文件（默认文件在用户文件夹，改到项目内部文件夹方便管理）
             if (!useInMemoryDatabase)
@@ -123,7 +124,9 @@ namespace IdentityServer
             }
 
             //迁移程序集名
-            var migrationsAssemblyName = useInMemoryDatabase ? string.Empty : "CoreDX.Application.DbMigration";
+            var migrationsAssemblyName = useInMemoryDatabase
+                ? string.Empty
+                : typeof(CoreDX.Application.DbMigration.Application.InitialApplicationDbMigration).Assembly.GetName().Name;
 
             #endregion
 

@@ -107,7 +107,13 @@ namespace IdentityServer.Admin.Helpers
             configurationConnectionString += $@";AttachDbFileName={dbFilePath}\IdentityServerDb-{webHostEnvironment.EnvironmentName}.mdf";
             persistedGrantsConnectionString += $@";AttachDbFileName={dbFilePath}\IdentityServerDb-{webHostEnvironment.EnvironmentName}.mdf";
             errorLoggingConnectionString += $@";AttachDbFileName={dbFilePath}\IdentityServerDb-{webHostEnvironment.EnvironmentName}.mdf";
-            auditLoggingConnectionString += $@";AttachDbFileName={dbFilePath}\IdentityServerDb-{webHostEnvironment.EnvironmentName}.mdf";
+            auditLoggingConnectionString += $@";AttachDbFileName={dbFilePath}\IdentityServerDb-{webHostEnvironment.EnvironmentName}.mdf"; 
+            
+            identityConnectionString = identityConnectionString.Replace("{EnvironmentName}", webHostEnvironment.EnvironmentName);
+            configurationConnectionString = configurationConnectionString.Replace("{EnvironmentName}", webHostEnvironment.EnvironmentName);
+            persistedGrantsConnectionString = persistedGrantsConnectionString.Replace("{EnvironmentName}", webHostEnvironment.EnvironmentName);
+            errorLoggingConnectionString = errorLoggingConnectionString.Replace("{EnvironmentName}", webHostEnvironment.EnvironmentName);
+            auditLoggingConnectionString = auditLoggingConnectionString.Replace("{EnvironmentName}", webHostEnvironment.EnvironmentName);
 
             switch (databaseProvider.ProviderType)
             {

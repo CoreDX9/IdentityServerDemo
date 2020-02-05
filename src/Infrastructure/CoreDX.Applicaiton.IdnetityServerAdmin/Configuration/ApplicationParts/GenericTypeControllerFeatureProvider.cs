@@ -34,14 +34,21 @@ namespace CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts
         where TUserChangePasswordDto : UserChangePasswordDto<TUserDtoKey>
         where TRoleClaimsDto : RoleClaimsDto<TRoleDtoKey>
     {
+        public GenericTypeControllerFeatureProvider()
+        {
+        }
+
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
         {
             //var currentAssembly = typeof(GenericTypeControllerFeatureProvider<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
             //    TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             //    TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>).Assembly;
-            var currentAssembly = Assembly.GetEntryAssembly();
+            var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var types = from assembly in currentAssemblies
+                    from exType in assembly.GetTypes()
+                    select exType;
 
-            var controllerTypes = currentAssembly.GetExportedTypes()
+            var controllerTypes = types
                                                  .Where(t => typeof(ControllerBase).IsAssignableFrom(t) && t.IsGenericTypeDefinition)
                                                  .Select(t => t.GetTypeInfo());
 
