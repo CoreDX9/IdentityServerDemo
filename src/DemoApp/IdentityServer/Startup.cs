@@ -600,7 +600,7 @@ namespace IdentityServer
                          {
                              Title = $"My API {description.ApiVersion}",
                              Version = description.ApiVersion.ToString(),
-                             Description = "A simple example ASP.NET Core Web API  \r\n IdentityServer clientId: jsIm",
+                             Description = $"A simple example ASP.NET Core Web API  \r\n IdentityServerDemo clientId: jsIm, scopes: api1.  \r\n IdentityServer4Admin clientId: {adminApiConfiguration.OidcSwaggerUIClientId}, scopes: {adminApiConfiguration.ApiName}.",
                              TermsOfService = new Uri("https://example.com/coredx"),
                              Contact = new OpenApiContact
                              {
