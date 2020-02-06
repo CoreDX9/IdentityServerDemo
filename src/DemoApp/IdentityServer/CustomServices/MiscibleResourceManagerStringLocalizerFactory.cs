@@ -72,7 +72,6 @@ namespace IdentityServer.CustomServices
         }
     }
 
-
     public class MixedStringLocalizer : IStringLocalizer
     {
         private readonly IEnumerable<IStringLocalizer> _stringLocalizers;

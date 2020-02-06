@@ -41,7 +41,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -702,7 +701,7 @@ namespace IdentityServer
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {
-                    var cultures =  Configuration.GetSection("Globalization").GetSection("Cultures")
+                    var cultures =  Configuration.GetSection("Internationalization").GetSection("Cultures")
                     .Get<List<string>>()
                     .Select(x => new CultureInfo(x)).ToList();
                     var supportedCultures = cultures;

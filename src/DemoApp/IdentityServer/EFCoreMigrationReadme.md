@@ -1,8 +1,8 @@
 cmd 初始化迁移命令，在 IdentityServer 项目文件夹中执行 cmd
 ```
 dotnet ef migrations add InitialApplicationDbMigration -c ApplicationDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Application
-dotnet ef migrations add InitialApplicationDbMigration -c ApplicationIdentityDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Identity
-dotnet ef migrations add InitialApplicationDbMigration -c ApplicationPermissionDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Permission
+dotnet ef migrations add InitialApplicationIdentityDbMigration -c ApplicationIdentityDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Identity
+dotnet ef migrations add InitialApplicationPermissionDbMigration -c ApplicationPermissionDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o Permission
 
 dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c IdentityServerConfigurationDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/ConfigurationDb
 dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c IdentityServerPersistedGrantDbContext -p "../../Infrastructure/CoreDX.Application.DbMigration" -o IdentityServer/PersistedGrantDb
