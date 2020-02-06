@@ -31,20 +31,44 @@ namespace IdentityServer.CustomServices
     public class MixedStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly IEnumerable<IMiscibleStringLocalizerFactory> _localizerFactories;
+        private readonly ILogger<MixedStringLocalizerFactory> _logger;
 
-        public MixedStringLocalizerFactory(IEnumerable<IMiscibleStringLocalizerFactory> localizerFactories)
+        public MixedStringLocalizerFactory(IEnumerable<IMiscibleStringLocalizerFactory> localizerFactories, ILogger<MixedStringLocalizerFactory> logger)
         {
             _localizerFactories = localizerFactories;
+            _logger = logger;
         }
 
         public IStringLocalizer Create(string baseName, string location)
         {
-            return new MixedStringLocalizer(_localizerFactories.Select(x => x.Create(baseName, location)));
+            return new MixedStringLocalizer(_localizerFactories.Select(x =>
+            {
+                try
+                {
+                    return x.Create(baseName, location);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    return null;
+                }
+            }));
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new MixedStringLocalizer(_localizerFactories.Select(x => x.Create(resourceSource)));
+            return new MixedStringLocalizer(_localizerFactories.Select(x =>
+            {
+                try
+                {
+                    return x.Create(resourceSource);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    return null;
+                }
+            }));
         }
     }
 

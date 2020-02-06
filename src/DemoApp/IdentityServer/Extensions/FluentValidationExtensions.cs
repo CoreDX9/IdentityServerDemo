@@ -52,6 +52,8 @@ namespace IdentityServer.Extensions
                             {
                                 app.ApplicationServices.GetService<ILogger<LocalizationLanguageManager>>()
                                     .LogError(ex, "There is an error on get localization display name, get default display name instead.");
+
+                                //return defaultDisplayNameResolver?.Invoke(type, info, lambda);
                             }
                         }
                     }
@@ -68,12 +70,13 @@ namespace IdentityServer.Extensions
         /// <typeparam name="TProperty">验证属性的类型</typeparam>
         /// <param name="rule">验证规则</param>
         /// <param name="message">消息内容</param>
+        /// <param name="includeTypeName">消息中是否包括被验证实例的类型名</param>
         /// <returns>验证规则</returns>
         public static IRuleBuilderOptions<T, TProperty> WithLanguageManagedMessage<T, TProperty>(
-            this IRuleBuilderOptions<T, TProperty> rule, string message)
+            this IRuleBuilderOptions<T, TProperty> rule, string message, bool includeTypeName = false)
         {
             return rule.WithMessage(((instanceOfValidated, valueOfValidatedProperty) =>
-                ValidatorOptions.LanguageManager.GetString($"{instanceOfValidated.GetType().FullName}:{message}")));
+                ValidatorOptions.LanguageManager.GetString($"{(includeTypeName ? instanceOfValidated.GetType().FullName : string.Empty)}:{message}")));
         }
     }
 

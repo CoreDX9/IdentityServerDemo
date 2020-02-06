@@ -122,21 +122,14 @@
             navBlur();
             containerBlur();
             footerBlur();
+            navOverflow();
 
             $(window).resize(function () {
                 bodyPaddingTop();
                 navBlur();
                 containerBlur();
                 footerBlur();
-
-                if (!$('body > header > nav > div > button').is(':hidden')) {
-                    $('#navbarSupportedContent').css('max-height', $(window).height() - 60 + 'px').css('overflow-y', 'auto');
-                    $('.nav-item.dropdown .dropdown-menu').css('max-height', '').css('overflow-y', '');
-                }
-                else {
-                    $('#navbarSupportedContent').css('max-height', 'auto').css('overflow-y', '');
-                    $('.nav-item.dropdown .dropdown-menu').css('max-height', '250px').css('overflow-y', 'auto');
-                }
+                navOverflow();
             });
 
             $('body > div.container-fluid.body-content').eq(0).resize(function () {
@@ -180,6 +173,17 @@
                 $footer.css('position', 'absolute');
             } else {
                 $footer.css('position', 'static');
+            }
+        }
+
+        function navOverflow() {
+            if (!$('body > header > nav > div > button').is(':hidden')) {
+                $('#navbarSupportedContent').css('max-height', $(window).height() - 60 + 'px').css('overflow-y', 'auto');
+                $('.nav-item.dropdown .dropdown-menu').css('max-height', '').css('overflow-y', '');
+            }
+            else {
+                $('#navbarSupportedContent').css('max-height', 'auto').css('overflow-y', '');
+                $('.nav-item.dropdown .dropdown-menu').css('max-height', '250px').css('overflow-y', 'auto');
             }
         }
     </script>
