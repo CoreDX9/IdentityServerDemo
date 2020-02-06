@@ -45,6 +45,4 @@ protected override void Down(MigrationBuilder migrationBuilder)
         .DropTreeEntityView("TreeDomains")
     .DropTreeEntityView("Organizations")
     .DropTreeEntityView("Menus");
-
-    Add-Migration InitialTestDbMigration -Context TestDbContext -Project CoreDX.Application.DbMigration -StartupProject IdentityServer -OutputDir Test
 ```
