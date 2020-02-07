@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreDX.Common.Util.PropertyChangedExtensions;
+using System;
 using System.ComponentModel;
 
 namespace CoreDX.Domain.Core.Entity
@@ -12,6 +13,7 @@ namespace CoreDX.Domain.Core.Entity
         , ICreationTimeRecordable
         , ILastModificationTimeRecordable
         , INotifyPropertyChanged
+        , INotifyPropertyChangedExtension
         , IPropertyChangeTrackable
     {}
 

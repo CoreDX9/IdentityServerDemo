@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CoreDX.Common.Util.PropertyChangedExtensions;
 using CoreDX.Domain.Core.Entity;
 
 namespace CoreDX.Domain.Model.Entity
@@ -136,9 +137,10 @@ namespace CoreDX.Domain.Model.Entity
         /// 属性变更事件
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedExtensionEventHandler PropertyChangedExtension;
 
         /// <summary>
-        /// 内部属性变更事件处理器
+        /// 内部属性变更事件处理器，将会由 PropertyChanged.Fody 在编译时自动注入到属性设置器
         /// </summary>
         /// <param name="propertyName">属性名</param>
         /// <param name="oldValue">旧值</param>
@@ -150,6 +152,7 @@ namespace CoreDX.Domain.Model.Entity
             _propertyChangeMask[Array.IndexOf(PropertyNamesDictionary[this.GetType()], propertyName)] = true;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChangedExtension?.Invoke(this, new PropertyChangedExtensionEventArgs(propertyName, oldValue, newValue));
         }
 
         /// <summary>

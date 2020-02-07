@@ -8,4 +8,8 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+  </ItemGroup>
+
 </Project>

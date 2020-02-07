@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using CoreDX.Common.Util.PropertyChangedExtensions;
 using CoreDX.Domain.Core.Entity;
 using Microsoft.AspNetCore.Identity;
 using PropertyChanged;
@@ -154,6 +155,7 @@ namespace CoreDX.Domain.Entity.Identity
         /// 属性变更事件
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedExtensionEventHandler PropertyChangedExtension;
 
         /// <summary>
         /// 内部属性变更事件处理器
@@ -168,6 +170,7 @@ namespace CoreDX.Domain.Entity.Identity
             _propertyChangeMask[Array.IndexOf(PropertyNamesDictionary[this.GetType()], propertyName)] = true;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChangedExtension?.Invoke(this, new PropertyChangedExtensionEventArgs(propertyName, oldValue, newValue));
         }
 
         /// <summary>

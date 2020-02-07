@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using CoreDX.Common.Util.PropertyChangedExtensions;
 using CoreDX.Domain.Core.Entity;
 
 namespace CoreDX.Domain.Model.Entity
@@ -46,6 +47,8 @@ namespace CoreDX.Domain.Model.Entity
         public virtual string Path { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedExtensionEventHandler PropertyChangedExtension;
+
         public bool HasChanges(params string[] names)
         {
             return false;
@@ -84,6 +87,8 @@ namespace CoreDX.Domain.Model.Entity
         public virtual string Path { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedExtensionEventHandler PropertyChangedExtension;
+
         public bool HasChanges(params string[] names)
         {
             return false;

@@ -3,6 +3,7 @@ using CoreDX.Applicaiton.IdnetityServerAdmin.Api.ExceptionHandling;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Mappers;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Resources;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using IdentityServer.Admin.Api.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;
