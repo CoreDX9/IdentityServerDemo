@@ -1,0 +1,63 @@
+﻿@page
+@using IdentityServer.CustomServices
+@inject RazorViewToStringRenderer Randerer
+@{
+    ViewData["Title"] = "Razor view to string";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+    }
+
+    public async Task<IActionResult> OnGetResultAsync()
+    {
+        var res = await Randerer.RenderViewToStringAsync("/Views/Home/Index.cshtml", null, this.PageContext);
+        return Content(res);
+    }
+}
+
+    <h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12 resize-border">
+        <div id="code-editor" style="height: 100%; border: 1px solid grey"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_MonacoEditorScriptsPartial" />
+    <script>
+        (function loadMonacoEditor() {
+            if (!window.isMonacoEditorLoaded) {
+                setTimeout(loadMonacoEditor, 100);
+                return;
+            }
+
+            var editor = window.monaco.editor.create($('#code-editor')[0],
+                {
+                    value: ``,
+                    language: 'html',
+                    wordWrap: 'on'
+                });
+
+            $('#code-editor').resize(function () { editor.layout(); });
+
+            $.ajax({
+                url: '/RazorRenderer/ToString?handler=Result',
+                success: function (res) {
+                    editor.setValue(res);
+                }
+            });
+
+            var resizeEl = '.resize-border';
+
+            elementResize(resizeEl);
+
+            $(window).resize(function () { elementResize(resizeEl); });
+        })();
+    </script>
+}

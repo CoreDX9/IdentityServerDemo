@@ -107,7 +107,7 @@
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.435" />
     <PackageReference Include="BundlerMinifier.Core" Version="3.2.435" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.26.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5559-preview2" />
     <PackageReference Include="IdentityServer4" Version="3.1.1" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
@@ -162,7 +162,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.35" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.36" />
   </ItemGroup>
 
   <!--项目引用-->

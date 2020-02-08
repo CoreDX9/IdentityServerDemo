@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -72,6 +73,11 @@ namespace IdentityServer.CustomServices
             }
         }
 
+        public async Task<string> RenderViewToStringAsync(string viewName, dynamic model, RouteData routeData = null, ActionDescriptor actionDescriptor = null, HttpContext httpContext = null, ModelStateDictionary modelStateDictionary = null)
+        {
+            return await RenderViewToStringAsync<dynamic>(viewName, model, routeData, actionDescriptor, httpContext, modelStateDictionary);
+        }
+
         private IView FindView(ActionContext actionContext, string viewName)
         {
             var getViewResult = _viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
@@ -112,6 +118,24 @@ namespace IdentityServer.CustomServices
         {
             return await razorViewToStringRenderer.RenderViewToStringAsync(viewName, model, controllerContext.RouteData,
                 controllerContext.ActionDescriptor, controllerContext.HttpContext, controllerContext.ModelState);
+        }
+
+        public static async Task<string> RenderViewToStringAsync(this RazorViewToStringRenderer razorViewToStringRenderer, string viewName, dynamic model, ControllerContext controllerContext)
+        {
+            return await razorViewToStringRenderer.RenderViewToStringAsync<dynamic>(viewName, model, controllerContext.RouteData,
+                controllerContext.ActionDescriptor, controllerContext.HttpContext, controllerContext.ModelState);
+        }
+
+        public static async Task<string> RenderViewToStringAsync<TModel>(this RazorViewToStringRenderer razorViewToStringRenderer, string viewName, TModel model, PageContext pageContext)
+        {
+            return await razorViewToStringRenderer.RenderViewToStringAsync(viewName, model, pageContext.RouteData,
+                pageContext.ActionDescriptor, pageContext.HttpContext, pageContext.ModelState);
+        }
+
+        public static async Task<string> RenderViewToStringAsync(this RazorViewToStringRenderer razorViewToStringRenderer, string viewName, dynamic model, PageContext pageContext)
+        {
+            return await razorViewToStringRenderer.RenderViewToStringAsync<dynamic>(viewName, model, pageContext.RouteData,
+                pageContext.ActionDescriptor, pageContext.HttpContext, pageContext.ModelState);
         }
     }
 }
