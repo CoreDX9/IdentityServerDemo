@@ -11,7 +11,8 @@
 
     public void OnGet()
     {
-        var type = typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions);
+        //var type = typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions);
+        var type = typeof(CoreDX.Domain.Entity.Identity.ApplicationUser);
         var types = type.Assembly.GetTypes().Select(x => x.FullName);
 
         ViewBag.Types = types;
@@ -19,7 +20,8 @@
 
     public IActionResult OnGetDecompile(string type)
     {
-        var decompiler = new CSharpDecompiler(typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions).Assembly.Location, new DecompilerSettings());
+        //var decompiler = new CSharpDecompiler(typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions).Assembly.Location, new DecompilerSettings());
+        var decompiler = new CSharpDecompiler(typeof(CoreDX.Domain.Entity.Identity.ApplicationUser).Assembly.Location, new DecompilerSettings());
         var name = new FullTypeName(type);
         var code = decompiler.DecompileTypeAsString(name);
         return Content(code);
@@ -29,16 +31,16 @@
 <h2>CSharp</h2>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 resize-border">
         <label>Select Type : </label>
         <select id="selectType">
-            @foreach(var type in ViewBag.Types)
+            @foreach (var type in ViewBag.Types)
             {
                 <option value="@type">@type</option>
             }
         </select>
         <button id="run" type="button">Decompile</button>
-        <div id="code-editor" style="height: 300px; border: 1px solid grey"></div>
+        <div id="code-editor" style="height: 100%; border: 1px solid grey"></div>
     </div>
 </div>
 
@@ -70,6 +72,12 @@
                         }
                     });
                 });
+
+            var resizeEl = '.resize-border';
+
+            elementResize(resizeEl);
+
+            $(window).resize(function () { elementResize(resizeEl); });
         })();
     </script>
 }

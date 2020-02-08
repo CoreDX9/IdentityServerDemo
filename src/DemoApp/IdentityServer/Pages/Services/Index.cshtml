@@ -7,7 +7,7 @@
 <h2>Services</h2>
 
 <div class="row">
-    <div class="col-md-12 table-responsive" style="height: 447px;">
+    <div class="col-md-12 table-responsive resize-border" style="height: 447px;">
         <table class="table table-sm table-striped table-bordered table-hover">
             <thead>
                 <tr>
@@ -34,3 +34,16 @@
         </table>
     </div>
 </div>
+
+@section Scripts
+{
+<script>
+    $(document).ready(function () {
+        var resizeEl = '.resize-border';
+
+        elementResize(resizeEl);
+
+        $(window).resize(function () { elementResize(resizeEl); });
+    });
+</script>
+}

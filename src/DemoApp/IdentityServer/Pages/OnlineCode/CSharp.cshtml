@@ -32,9 +32,9 @@
 <h2>CSharp</h2>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 resize-border">
         <button id="run" type="button">Run</button>
-        <div id="code-editor" style="height: 400px; border: 1px solid grey"></div>
+        <div id="code-editor" style="height: 100%; border: 1px solid grey"></div>
     </div>
     <div class="col-md-6">
         <div id="result" style="background-color: white; height: 100%;"></div>
@@ -101,6 +101,12 @@
                         }
                     });
                 });
+
+            var resizeEl = '.resize-border';
+
+            elementResize(resizeEl);
+
+            $(window).resize(function () { elementResize(resizeEl); });
         })();
     </script>
 }

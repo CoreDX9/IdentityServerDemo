@@ -163,7 +163,7 @@ $(document).ready(function() {
             sendEvent(e);
     });
 
-    $(window).resize(chatBoardResize);
+    $(window).resize(function () { elementResize('.chat-board');  });
 
     $('.chat-board').resize(function () {
         var el = $('.chat-self .content, .chat-other .content');
@@ -172,7 +172,7 @@ $(document).ready(function() {
         });
     });
 
-    chatBoardResize();
+    elementResize('.chat-board');
 });
 
 function connect(hubConnection) {
@@ -195,21 +195,6 @@ function chatContentResize(jq) {
         jq.parent().width(jq.width() + 15);
     }
     jq.css('display', 'block');
-}
-
-function chatBoardResize() {
-    var bc = $('.body-content');
-    var h1 = $(window).height() - 61;
-
-    bc.css('height', h1);
-    var h2 = 0;
-
-    var cb = $('.chat-board');
-    cb.parent().prevAll().each(function () {
-        h2 += $(this).outerHeight();
-    });
-
-    cb.css('height', bc.height() - h2 - 70);
 }
 
 function isAtBottom(jqEl) {
