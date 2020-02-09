@@ -23,12 +23,13 @@
 ## 使用说明
 ### 调试方式
 1. 下载这两个项目并打开 IdentityServerDemo 解决方案： <br>``` https://github.com/CoreDX9/IdentityServerDemo.git ```<br>``` https://github.com/CoreDX9/Harmonic.git ```
-2. 修复 Infrastructure/Harmonic 的项目引用。
-3. 等待 VS2019 自动还原 Nuget 和 npm 包。如果 npm 包自动还原失败，可尝试在 cmd 中运行 npm install 命令。请确保已安装 Node.js。
-4. 把 IdentityServer 设置为默认启动项目并设置启动方式为自托管方式。
-5. 根据你的实际情况修改 IdentityServer/appsettings.json 和 appsettings.Development.json 中的数据库连接字符串。目前仅支持 MS SqlServer，需要其他数据库支持的请自行修改代码。
-6. 运行 IdentityServer 项目。开始试用并探索各种示例吧。所有示例均可在网页顶部的导航栏找到。如果网页显示效果异常，请尝试调整浏览器窗口大小或调整页面缩放比例。
-7. 运行你感兴趣的其他可执行程序项目。
+2. 卸载这些项目：<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
+3. 修复 Infrastructure/Harmonic 的项目引用。
+4. 等待 VS2019 自动还原 Nuget 和 npm 包。如果 npm 包自动还原失败，可尝试在 cmd 中运行 npm install 命令。请确保已安装 Node.js。
+5. 把 IdentityServer 设置为默认启动项目并设置启动方式为自托管方式。
+6. 根据你的实际情况修改 IdentityServer/appsettings.json 和 appsettings.Development.json 中的数据库连接字符串。目前仅支持 MS SqlServer，需要其他数据库支持的请自行修改代码。
+7. 运行 IdentityServer 项目。开始试用并探索各种示例吧。所有示例均可在网页顶部的导航栏找到。如果网页显示效果异常，请尝试调整浏览器窗口大小或调整页面缩放比例。
+8. 运行你感兴趣的其他可执行程序项目。
 
 ### 发布方式
 1. 根据前面的说明确保能正常启动调试。
@@ -48,7 +49,7 @@
 ## 包含的示例
 ### IdentityServer
 1. 自定义项目发布配置，通过修改 csproj 项目文件实现全自动化发布。
-2. JQuery、Bootstrap4、Lay UI、Vue、Element-UI、Avue、Axios、等众多常用前端框架和库的使用。
+2. JQuery、Bootstrap4、Lay UI、Vue、Element-UI、Avue、Axios、Monaco-editor 等众多常用前端框架和库的使用。
 3. IdentityServer4 与 Identity Core 的使用；SSO 集成支持。
 4. Identity Core 管理；IdentityServer4 管理。（存在缺陷）
 5. Identity Core 隐私数据保护。
@@ -76,6 +77,7 @@
 27. video.js 使用和扩展示例；集成 CCL 弹幕引擎，集成 flv.js 实现 HTML5 直接支持 flv 格式视频的播放。
 28. 基于神经网络的光学字符识别使用示例。
 29. 方便快捷的数据库说明扩展。
+30. Razor 视图渲染为字符串服务示例。
 #### 还有更多……
 
 ### IdentityServerGui

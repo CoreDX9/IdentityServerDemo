@@ -23,12 +23,13 @@ This is a .net core comprehensive learning and sample collection project that co
 ## Instructions for Running
 ### Debugging
 1. Download both projects and open IdentityServerDemo solution: <br> ``` https://github.com/CoreDX9/IdentityServerDemo.git ``` <br> ``` https://github.com/CoreDX9/Harmonic.git ```
-2. Fix project references for Infrastructure/Harmonic.
-3. Wait for VS2019 to automatically restore Nuget and npm packages. If the automatic restore of the npm package fails, try running the npm install command in cmd. Make sure Node.js is installed.
-4. Set IdentityServer as the default startup project and set the startup mode to self-hosted.
-5. Modify the database connection strings in IdentityServer/appsettings.json and appsettings.Development.json according to your actual situation. Currently only MS SqlServer is supported. If you need other database support, please modify the code yourself.
-6. Run the IdentityServer project. Start experimenting and exploring various examples. All examples can be found in the navigation bar at the top of the web page. If the webpage is displaying abnormally, try resizing the browser window or adjusting the page zoom ratio.
-7. Run other executable program projects that interest you.
+2. Unload projects :<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
+3. Fix project references for Infrastructure/Harmonic.
+4. Wait for VS2019 to automatically restore Nuget and npm packages. If the automatic restore of the npm package fails, try running the npm install command in cmd. Make sure Node.js is installed.
+5. Set IdentityServer as the default startup project and set the startup mode to self-hosted.
+6. Modify the database connection strings in IdentityServer/appsettings.json and appsettings.Development.json according to your actual situation. Currently only MS SqlServer is supported. If you need other database support, please modify the code yourself.
+7. Run the IdentityServer project. Start experimenting and exploring various examples. All examples can be found in the navigation bar at the top of the web page. If the webpage is displaying abnormally, try resizing the browser window or adjusting the page zoom ratio.
+8. Run other executable program projects that interest you.
 
 ### Release
 1. Follow the previous instructions to ensure that commissioning can be started normally.
@@ -48,7 +49,7 @@ This is a .net core comprehensive learning and sample collection project that co
 ## Examples included
 ### IdentityServer
 1. Customize project release configuration, and realize fully automated release by modifying csproj project files.
-2. JQuery, Bootstrap4, Lay UI, Vue, Element-UI, Avue, Axios, and many other common front-end frameworks and libraries.
+2. JQuery, Bootstrap4, Lay UI, Vue, Element-UI, Avue, Axios, Monaco-editor and many other common front-end frameworks and libraries.
 3. Use of IdentityServer4 and Identity Core; SSO integration support.
 4. Identity Core management; IdentityServer4 management. (Flawed)
 5. Identity Core privacy data protection.
@@ -76,6 +77,7 @@ This is a .net core comprehensive learning and sample collection project that co
 27. Video.js usage and extension examples; integrated with CCL Danmaku Engine and integrated with flv.js for HTML5 to directly support the playback of video in flv format.
 28. Examples of use of neural network-based optical character integration.
 29. Convenient and fast database description extension.
+30. Razor view render to string example.
 #### and more...
 
 ### IdentityServerGui
