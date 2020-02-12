@@ -156,6 +156,7 @@ namespace IdentityServer
                 options.PopupShowTimeWithChildren = true;
                 options.RouteBasePath = "/MiniProfiler";
 
+                // 请确保已经在迁移中创建了表，本演示已经在初始迁移中集成了表创建
                 options.Storage = new StackExchange.Profiling.Storage.SqlServerStorage(connectionString);
             }).AddEntityFramework();
 

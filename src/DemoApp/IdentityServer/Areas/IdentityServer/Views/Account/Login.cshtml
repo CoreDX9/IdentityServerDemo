@@ -1,9 +1,13 @@
 ﻿@using IdentityServer.Areas.IdentityServer.Controllers.Account
 @model LoginViewModel
 
+@{
+    ViewData["Title"] = "Log in";
+}
+
 <div class="login-page">
     <div class="page-header">
-        <h1>Login</h1>
+        <h1>@ViewData["Title"]</h1>
     </div>
 
     <partial name="_ValidationSummary" />
@@ -47,7 +51,7 @@
 
                                 <div class="form-group">
                                     <button class="btn btn-primary" name="button" value="login">Login</button>
-                                    <button class="btn btn-default" name="button" value="cancel">Cancel</button>
+                                    <button class="btn btn-info" name="button" value="cancel">Cancel</button>
                                 </div>
                             </fieldset>
                         </form>
@@ -68,7 +72,7 @@
                             @foreach (var provider in Model.VisibleExternalProviders)
                             {
                                 <li>
-                                    <a class="btn btn-default"
+                                    <a class="btn btn-primary"
                                        asp-action="ExternalLogin"
                                        asp-route-provider="@provider.AuthenticationScheme"
                                        asp-route-returnUrl="@Model.ReturnUrl">
