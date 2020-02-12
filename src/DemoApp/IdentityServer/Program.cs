@@ -78,6 +78,9 @@ namespace IdentityServer
                     configApp.AddEnvironmentVariables();
                     configApp.AddCommandLine(args);
                 })
+
+            #region NLog 配置
+
                 //.ConfigureLogging((hostContext, logging) =>
                 //{
                 //    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
@@ -90,6 +93,11 @@ namespace IdentityServer
                 //    logging.AddNLog(configuration);
                 //})
                 //.UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true })
+
+            #endregion
+
+            #region Serilog 配置
+
                 .UseSerilog((hostContext, loggerConfig) =>
                 {
                     //var logDB = @"Server=...";
@@ -98,15 +106,11 @@ namespace IdentityServer
 
                     loggerConfig
                         .ReadFrom.Configuration(hostContext.Configuration)
-                        //.WriteTo.Console()
-                        //.WriteTo.MSSqlServer(
-                        //    connectionString: logDB,
-                        //    tableName: logTable,
-                        //    columnOptions: opts,
-                        //    appConfiguration: hostContext.Configuration
-                        //)
                         .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
                 })
+
+            #endregion
+
                 .UseWindowsService()//如果将应用安装为Windows服务，会自动以服务方式运行，否则继续以控制台方式运行
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

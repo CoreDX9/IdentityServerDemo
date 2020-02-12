@@ -157,7 +157,10 @@ namespace IdentityServer
                 options.RouteBasePath = "/MiniProfiler";
 
                 // 请确保已经在迁移中创建了表，本演示已经在初始迁移中集成了表创建
-                options.Storage = new StackExchange.Profiling.Storage.SqlServerStorage(connectionString);
+                if(Configuration.GetValue("SaveMiniProfilerData", false))
+                {
+                    options.Storage = new StackExchange.Profiling.Storage.SqlServerStorage(connectionString);
+                }
             }).AddEntityFramework();
 
             #region 注册 AutoMapper 服务
