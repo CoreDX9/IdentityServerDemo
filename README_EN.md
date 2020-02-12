@@ -78,6 +78,7 @@ This is a .net core comprehensive learning and sample collection project that co
 28. Examples of use of neural network-based optical character integration.
 29. Convenient and fast database description extension.
 30. Razor view render to string example.
+31. MiniProfiler example.
 #### and more...
 
 ### IdentityServerGui

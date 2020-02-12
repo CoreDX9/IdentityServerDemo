@@ -1,0 +1,44 @@
+﻿@page
+@using StackExchange.Profiling;
+@using System;
+@using System.Threading;
+@{
+    ViewData["Title"] = "MiniProfiler demo";
+}
+
+@functions
+{
+    public IActionResult OnGet()
+    {
+        var r = new Random();
+        using (MiniProfiler.Current.Step("Step 1"))
+        {
+            Thread.Sleep(r.Next(0, 30));
+            using (MiniProfiler.Current.Step("Step 1.1"))
+            {
+                Thread.Sleep(r.Next(0, 30));
+            }
+        }
+
+        using (MiniProfiler.Current.Step("Step 2"))
+        {
+            Thread.Sleep(r.Next(0, 30));
+
+            using(CustomTiming timing = MiniProfiler.Current.CustomTiming("custom timing demo", string.Empty, "example"))
+            {
+                Thread.Sleep(r.Next(0, 30));
+                timing.CommandString = "command string example";
+            }
+        }
+
+        return Page();
+    }
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>Test MiniProfiler.</p>
+    </div>
+</div>

@@ -154,7 +154,7 @@ namespace IdentityServer
             {
                 options.PopupRenderPosition = StackExchange.Profiling.RenderPosition.BottomRight;
                 options.PopupShowTimeWithChildren = true;
-                options.RouteBasePath = "/MiniProfiler";
+                options.RouteBasePath = "/MiniProfilerBase";
 
                 // 请确保已经在迁移中创建了表，本演示已经在初始迁移中集成了表创建
                 if(Configuration.GetValue("SaveMiniProfilerData", false))
