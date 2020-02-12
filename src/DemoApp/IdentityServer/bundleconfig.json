@@ -69,8 +69,11 @@
   {
     "outputFileName": "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
     "inputFiles": [
-      "node_modules/jquery-validation-unobtrusive/src/jquery.validate.unobtrusive.js"
-    ]
+      "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
   },
   {
     "outputFileName": "wwwroot/lib/qrcode_js/qrcode.min.js",

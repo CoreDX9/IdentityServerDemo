@@ -149,6 +149,16 @@ namespace IdentityServer
             //注册文件夹浏览服务
             services.AddDirectoryBrowser();
 
+            //注册 MiniProfiler 服务
+            services.AddMiniProfiler(options =>
+            {
+                options.PopupRenderPosition = StackExchange.Profiling.RenderPosition.BottomRight;
+                options.PopupShowTimeWithChildren = true;
+                options.RouteBasePath = "/MiniProfiler";
+
+                options.Storage = new StackExchange.Profiling.Storage.SqlServerStorage(connectionString);
+            }).AddEntityFramework();
+
             #region 注册 AutoMapper 服务
 
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -1144,6 +1154,9 @@ namespace IdentityServer
 
             //注册静态文件到管道（wwwroot文件夹）
             app.UseStaticFiles();
+
+            //注册 MiniProfiler 到管道
+            app.UseMiniProfiler();
 
             //注册路由到管道
             app.UseRouting();

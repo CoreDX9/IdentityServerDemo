@@ -133,10 +133,33 @@ namespace CoreDX.Application.DbMigration.Application
 
             migrationBuilder.ApplyDatabaseDescription(this);
             migrationBuilder.CreateTreeEntityView(TargetModel.GetEntityTypes());
+
+            #region 创建 MiniProfiler 的分析数据存储表
+
+            var sqls = new StackExchange.Profiling.Storage.SqlServerStorage("").TableCreationScripts;
+            foreach (var sql in sqls)
+            {
+                migrationBuilder.Sql(sql);
+            }
+
+            #endregion
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            #region 删除 MiniProfiler 的分析数据存储表
+
+            migrationBuilder.DropTable(
+                name: "MiniProfilerClientTimings");
+
+            migrationBuilder.DropTable(
+                name: "MiniProfilerTimings");
+
+            migrationBuilder.DropTable(
+                name: "MiniProfilers");
+
+            #endregion
+
             migrationBuilder.DropTable(
                 name: "Domains");
 
