@@ -11,11 +11,6 @@ using PropertyChanged;
 
 namespace CoreDX.Domain.Entity.Identity
 {
-    //实现IDomainTreeEntity<TParentKey, TEntity, TIdentityUserKey>接口后不知道为什么无法为CreationUserId
-    //和LastModificationUserId赋值，会报System.Security.VerificationException异常说
-    //Method System.Nullable.Equals: type argument 'TEntity' violates the constraint of type parameter 'T'.
-    //原因未知，只能放弃实现IDomainTreeEntity<TParentKey, TEntity, TIdentityUserKey>接口
-    //先在基类实现IDomainEntity<TIdentityUserKey>接口，再在最终实体类实现ITree<T>接口
     public class ApplicationRole : ApplicationRole<int, ApplicationUser, ApplicationRole, ApplicationUserRole, ApplicationRoleClaim>
         , IStorageOrderRecordable
     {
