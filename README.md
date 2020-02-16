@@ -51,7 +51,7 @@
 1. 自定义项目发布配置，通过修改 csproj 项目文件实现全自动化发布。
 2. JQuery、Bootstrap4、Lay UI、Vue、Element-UI、Avue、Axios、Monaco-editor 等众多常用前端框架和库的使用。
 3. IdentityServer4 与 Identity Core 的使用；SSO 集成支持。
-4. Identity Core 管理；IdentityServer4 管理。（存在缺陷）
+4. Identity Core 管理；IdentityServer4 管理。
 5. Identity Core 隐私数据保护。
 6. Identity Core 双因素验证（两步登录）。在手机上配合 Microsoft Authenticator 或 Google Authenticator 应用使用。
 7. gRPC 服务的编写和使用，配合 GrpcClient。

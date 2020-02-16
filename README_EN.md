@@ -51,7 +51,7 @@ This is a .net core comprehensive learning and sample collection project that co
 1. Customize project release configuration, and realize fully automated release by modifying csproj project files.
 2. JQuery, Bootstrap4, Lay UI, Vue, Element-UI, Avue, Axios, Monaco-editor and many other common front-end frameworks and libraries.
 3. Use of IdentityServer4 and Identity Core; SSO integration support.
-4. Identity Core management; IdentityServer4 management. (Flawed)
+4. Identity Core management; IdentityServer4 management.
 5. Identity Core privacy data protection.
 6. Identity Core two-factor authentication (two-step login). Use with Microsoft Authenticator or Google Authenticator app on your phone.
 7. Writing and using gRPC service, cooperate with GrpcClient.
