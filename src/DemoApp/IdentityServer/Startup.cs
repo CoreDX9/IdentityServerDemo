@@ -171,7 +171,7 @@ namespace IdentityServer
                 var profileTypes =
                 from assembly in AppDomain.CurrentDomain.GetAssemblies()
                 from type in assembly.GetTypes()
-                where type.IsSubclassOf(typeof(Profile)) && !type.IsGenericType
+                where type.IsSubclassOf(typeof(Profile)) && !type.IsGenericType && !type.IsAbstract
                 select type;
 
                 var profiles = profileTypes.Select(x =>
@@ -1258,12 +1258,12 @@ namespace IdentityServer
             where TUserClaimDto : UserClaimDto<TUserDtoKey>
             where TRoleClaimDto : RoleClaimDto<TRoleDtoKey>
         {
-            ServiceCollectionServiceExtensions.AddTransient<IIdentityRepository<TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IdentityRepository<TIdentityDbContext, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>(services);
-            ServiceCollectionServiceExtensions.AddTransient<IPersistedGrantAspNetIdentityRepository, PersistedGrantAspNetIdentityRepository<TIdentityDbContext, TPersistedGrantDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>(services);
-            ServiceCollectionServiceExtensions.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IIdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.IdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>>(services);
-            ServiceCollectionServiceExtensions.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IPersistedGrantAspNetIdentityService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.PersistedGrantAspNetIdentityService>(services);
-            ServiceCollectionServiceExtensions.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IdentityServiceResources>(services);
-            ServiceCollectionServiceExtensions.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IPersistedGrantAspNetIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.PersistedGrantAspNetIdentityServiceResources>(services);
+            services.AddTransient<IIdentityRepository<TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IdentityRepository<TIdentityDbContext, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
+            services.AddTransient<IPersistedGrantAspNetIdentityRepository, PersistedGrantAspNetIdentityRepository<TIdentityDbContext, TPersistedGrantDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
+            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IIdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.IdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>>();
+            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IPersistedGrantAspNetIdentityService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.PersistedGrantAspNetIdentityService>();
+            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IdentityServiceResources>();
+            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IPersistedGrantAspNetIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.PersistedGrantAspNetIdentityServiceResources>();
             return services;
         }
     }
