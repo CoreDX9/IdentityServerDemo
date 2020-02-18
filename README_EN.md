@@ -81,6 +81,7 @@ This is a .net core comprehensive learning and sample collection project that co
 29. Convenient and fast database description extension.
 30. Razor view render to string example.
 31. MiniProfiler example.
+32. Blazor WebAssembly example.
 #### and more...
 
 ### IdentityServerGui

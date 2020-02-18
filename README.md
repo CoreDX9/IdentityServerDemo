@@ -81,6 +81,7 @@
 29. 方便快捷的数据库说明扩展。
 30. Razor 视图渲染为字符串服务示例。
 31. MiniProfiler 示例。
+32. Blazor WebAssembly 示例。
 #### 还有更多……
 
 ### IdentityServerGui
