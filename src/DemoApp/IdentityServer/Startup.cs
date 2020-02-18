@@ -186,7 +186,7 @@ namespace IdentityServer
                         }
                         catch(Exception ex)
                         {
-                            throw ex;
+                            throw new Exception("实例化映射配置失败。", ex);
                         }
                     }).Where(x => x != null);
                 cfg.AddProfiles(profiles);
