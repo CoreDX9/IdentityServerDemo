@@ -75,6 +75,7 @@ using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories;
+using Microsoft.AspNetCore.ResponseCompression;
 
 #endregion
 
@@ -129,10 +130,17 @@ namespace IdentityServer
 
             #endregion
 
+            //注册相应压缩服务
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
+
             //注册Http上下文访问服务
             services.AddHttpContextAccessor();
 
-            // 注册内存缓存
+            //注册内存缓存
             services.AddMemoryCache();
 
             //注册应用数据保护服务
@@ -927,6 +935,9 @@ namespace IdentityServer
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
 
+            //注册响应压缩到管道
+            app.UseResponseCompression();
+
             //注册请求限流到管道
             //app.UseIpRateLimiting();
             //app.UseClientRateLimiting();
@@ -936,6 +947,7 @@ namespace IdentityServer
                 //注册开发环境异常信息页面
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseBlazorDebugging();
             }
             else
             {
@@ -956,9 +968,6 @@ namespace IdentityServer
                 //注册强制Https跳转到管道
                 app.UseHttpsRedirection();
             }
-
-            //注册响应压缩到管道
-            app.UseResponseCompression();
 
             //注册内容安全策略到管道
             // Content Security Policy
@@ -1121,6 +1130,9 @@ namespace IdentityServer
 
             #endregion
 
+            //注册 Blazor 客户端文件
+            app.UseClientSideBlazorFiles<BlazorApp.Client.Program>();
+
             #region 注册 Swagger
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -1217,6 +1229,9 @@ namespace IdentityServer
 
                 //映射gRPC终结点
                 endpoints.MapGrpcService<GreeterService>();
+
+                //映射 Blazor 客户端终结点
+                endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
             });
         }
 
