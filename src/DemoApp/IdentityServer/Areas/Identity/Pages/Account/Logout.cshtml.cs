@@ -20,8 +20,23 @@ namespace IdentityServer.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
+            if(HttpContext.Request.Headers.TryGetValue("referer", out var referer) && new System.Uri(referer.ToString()).AbsolutePath.StartsWith("/blazor"))
+            {
+                await _signInManager.SignOutAsync();
+                _logger.LogInformation("User logged out.");
+                if (returnUrl != null)
+                {
+                    return LocalRedirect(returnUrl);
+                }
+                else
+                {
+                    return Page();
+                }
+            }
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPost(string returnUrl = null)

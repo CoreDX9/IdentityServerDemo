@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 #endif
 
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace WebAPI
 {
@@ -15,18 +15,20 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            var host = CreateWebHostBuilder(args).Build();//.Run();
+            var host = CreateHostBuilder(args).Build();//.Run();
             host.Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var host = WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
 #if !DEBUG
-            host.UseKestrel(SetHost);
+                    webBuilder.ConfigureKestrel(SetHost);
 #endif
+                    webBuilder.UseStartup<Startup>();
+                });
 
             return host;
         }

@@ -18,6 +18,28 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script src="/blazor/js/parse-url.js"></script>
+
+    <script>
+        function login() {
+            var lo = parseUrl(window.location);
+            var pfx = lo.protocol + '://' + lo.host;
+            if (!lo.isDefaultPort) pfx = pfx + ':' + lo.port;
+            var returnUrl = lo.source.href.replace(pfx, '');
+
+            window.location = '/Identity/Account/Login?ReturnUrl=' + encodeURIComponent(returnUrl);
+        }
+
+        function logout() {
+            var lo = parseUrl(window.location);
+            var pfx = lo.protocol + '://' + lo.host;
+            if (!lo.isDefaultPort) pfx = pfx + ':' + lo.port;
+            var returnUrl = lo.source.href.replace(pfx, '');
+
+            window.location = '/Identity/Account/Logout?ReturnUrl=' + encodeURIComponent(returnUrl);
+        }
+    </script>
+
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

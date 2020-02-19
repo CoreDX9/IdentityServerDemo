@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject HttpClient Http
 
 <div class="sidebar">
     <NavMenu />
@@ -6,10 +7,37 @@
 
 <div class="main">
     <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        @if (userName == string.Empty)
+        {
+            <a href="javascript:login();" class="ml-md-auto">Login</a>
+        }
+        else
+        {
+            <span class="ml-md-auto">
+                <a href="/Identity/Account/Manage">Hi! @userName</a>
+                <a href="javascript:logout();">Logout</a>
+            </span>
+        }
     </div>
 
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code {
+    private string userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (userName == string.Empty)
+        {
+            var res = await Http.GetAsync("/api/blazor/UserName");
+
+            if (res.IsSuccessStatusCode)
+            {
+                userName = await res.Content.ReadAsStringAsync();
+            }
+        }
+    }
+}

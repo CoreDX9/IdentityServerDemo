@@ -5,18 +5,11 @@ using IdentityModel.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Client
 {
-    interface Inter<T, TT>
-    {
-
-    }
-
-    class Cin<T,TT> : Inter<T, TT> { }
     public class Program
     {
         public static async Task Main(string[] args)
@@ -24,15 +17,8 @@ namespace Client
             //获取Http客户端工厂服务
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddTransient(typeof(IList<>), typeof(List<>));
-            serviceCollection.AddTransient(typeof(Inter<,>), typeof(Cin<,>));
-            serviceCollection.AddTransient(typeof(IDictionary<,>), typeof(Dictionary<,>));
             var services = serviceCollection.BuildServiceProvider();
             var clientFactory = services.GetService<IHttpClientFactory>();
-
-            var l = services.GetService<IList<int>>();
-            //var d = services.GetService<IDictionary<int, int>>();
-            var cc = services.GetService<Inter<int, int>>();
 
             Console.WriteLine("ClientCredentials模式演示");
             // discover endpoints from metadata
@@ -42,11 +28,12 @@ namespace Client
             if (disco.IsError)
             {
                 Console.WriteLine(disco.Error);
+                Console.ReadKey();
                 return;
             }
 
             // request token
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            var clientCredentialsToken = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
 
@@ -55,24 +42,27 @@ namespace Client
                 Scope = "api1"
             });
 
-            if (tokenResponse.IsError)
+            if (clientCredentialsToken.IsError)
             {
-                Console.WriteLine(tokenResponse.Error);
+                Console.WriteLine(clientCredentialsToken.Error);
+                Console.ReadKey();
                 return;
             }
 
-            Console.WriteLine(tokenResponse.Json);
+            Console.WriteLine(clientCredentialsToken.Json);
 
             Console.WriteLine("\n\n");
 
             // call api
             client = clientFactory.CreateClient();
-            client.SetBearerToken(tokenResponse.AccessToken);
+            client.SetBearerToken(clientCredentialsToken.AccessToken);
 
             var response = await client.GetAsync("https://localhost:5003/identity");
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine(response.StatusCode);
+                Console.ReadKey();
+                return;
             }
             else
             {
@@ -80,38 +70,49 @@ namespace Client
                 Console.WriteLine(JArray.Parse(content));
             }
 
-            //使用ResourceOwnerPassword模式获取授权
-            Console.WriteLine("ResourceOwnerPassword模式演示");
-            // discover endpoints from metadata
-            //var disco = await DiscoveryClient.GetAsync("https://localhost:5001");
+            //使用Password模式获取授权
+            Console.WriteLine("Password模式演示");
 
-            // request token
-            //var tokenClient = new TokenClient(disco.TokenEndpoint, new TokenClientOptions().) "ro.client", "secret");
-            //tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "Pass123$", "api1");//使用用户名密码
+            // request token 使用用户名密码
+            var passwordToken = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = disco.TokenEndpoint,
 
-            //if (tokenResponse.IsError)
-            //{
-            //    Console.WriteLine(tokenResponse.Error);
-            //    return;
-            //}
+                ClientId = "ro.client",
+                ClientSecret = "secret",
+                Scope = "api1",
 
-            //Console.WriteLine(tokenResponse.Json);
-            //Console.WriteLine("\n\n");
+                UserName = "bob",
+                Password = "Pass123$"
+            });
 
-            //// call api
-            //client = new HttpClient();
-            //client.SetBearerToken(tokenResponse.AccessToken);
+            if (passwordToken.IsError)
+            {
+                Console.WriteLine(passwordToken.Error);
+                Console.ReadKey();
+                return;
+            }
 
-            //response = await client.GetAsync("https://localhost:5003/identity");
-            //if (!response.IsSuccessStatusCode)
-            //{
-            //    Console.WriteLine(response.StatusCode);
-            //}
-            //else
-            //{
-            //    var content = await response.Content.ReadAsStringAsync();
-            //    Console.WriteLine(JArray.Parse(content));
-            //}
+            Console.WriteLine(passwordToken.Json);
+            Console.WriteLine("\n\n");
+
+            // call api
+            client = clientFactory.CreateClient();
+            client.SetBearerToken(passwordToken.AccessToken);
+
+            response = await client.GetAsync("https://localhost:5003/identity");
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(response.StatusCode);
+                Console.ReadKey();
+                return;
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(JArray.Parse(content));
+            }
+
             Console.ReadKey();
         }
     }
