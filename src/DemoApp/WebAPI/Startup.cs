@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using IdentityServer4.AccessTokenValidation;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
@@ -81,51 +78,6 @@ namespace WebAPI
             //    options.ExcludedHosts.Add("127.0.0.1:5004");
             //    options.ExcludedHosts.Add("127.0.0.1:5005");
             //});
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1",
-                     new OpenApiInfo()
-                     {
-                         Title = "IdentityServer Web API",
-                         Version = "v1",
-                         Description = "A simple example ASP.NET Core IdentityServer Web API. \r\n IdentityServer clientId: jsIm",
-                         TermsOfService = new Uri("https://example.com/terms"),
-                         Contact = new OpenApiContact
-                         {
-                             Name = "CoreDX",
-                             Email = string.Empty,
-                             Url = new Uri("https://example.com/coredx"),
-                         },
-                         License = new OpenApiLicense
-                         {
-                             Name = "Use under LICX",
-                             Url = new Uri("https://example.com/license"),
-                         }
-                     }
-                );
-
-                var basePath = Environment.ContentRootPath;
-
-                var xmlPath = Path.Combine(basePath, "WebAPI.xml");
-
-                c.IncludeXmlComments(xmlPath, true);
-
-                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        Implicit = new OpenApiOAuthFlow()
-                        {
-                            AuthorizationUrl = new Uri("https://localhost:5001/connect/authorize"),
-                            Scopes = new Dictionary<string, string> { { "api1", "api1" } }
-                        },
-                    },
-                });
-
-                //c.OperationFilter<IdentityServer4OAuth2OperationFilter>();
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -250,23 +202,4 @@ namespace WebAPI
             });
         }
     }
-
-    /// <summary>
-    /// IdentityServer4认证处理
-    /// </summary>
-    //public class IdentityServer4OAuth2OperationFilter : IOperationFilter
-    //{
-    //    public void Apply(Operation operation, OperationFilterContext context)
-    //    {
-
-    //        if (operation.Security == null)
-    //            operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
-    //        var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
-    //        {
-
-    //            {"oauth2", new List<string> { "openid", "profile", "api1" }}
-    //        };
-    //        operation.Security.Add(oAuthRequirements);
-    //    }
-    //}
 }

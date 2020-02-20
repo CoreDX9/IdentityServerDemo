@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using BlazorApp.Client.Models
+@inject UserInfo userInfo
 @inject HttpClient Http
 
 <div class="sidebar">
@@ -7,14 +9,14 @@
 
 <div class="main">
     <div class="top-row px-4">
-        @if (userName == string.Empty)
+        @if (userInfo.Name == string.Empty)
         {
             <a href="javascript:login();" class="ml-md-auto">Login</a>
         }
         else
         {
             <span class="ml-md-auto">
-                <a href="/Identity/Account/Manage">Hi! @userName</a>
+                <a href="/Identity/Account/Manage">Hi! @userInfo.Name</a>
                 <a href="javascript:logout();">Logout</a>
             </span>
         }
@@ -26,17 +28,15 @@
 </div>
 
 @code {
-    private string userName = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
-        if (userName == string.Empty)
+        if (userInfo.Name == string.Empty)
         {
             var res = await Http.GetAsync("/api/blazor/UserName");
 
             if (res.IsSuccessStatusCode)
             {
-                userName = await res.Content.ReadAsStringAsync();
+                userInfo.Name = await res.Content.ReadAsStringAsync();
             }
         }
     }

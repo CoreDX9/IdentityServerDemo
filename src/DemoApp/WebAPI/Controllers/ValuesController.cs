@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new[] { "value1", "value2", "apiDoc: https://localhost:5003/swagger" };
+            return new[] { "value1", "value2" };
         }
 
         /// <summary>
