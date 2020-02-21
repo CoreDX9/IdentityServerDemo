@@ -61,22 +61,22 @@ namespace IdentityServer
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var host = Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostContext, configApp) =>
+            var builder = Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostContext, configBuilder) =>
                 {
-                    configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile($"serilog.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile($"identitydata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile($"identityserverdata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile($"serilog.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile($"identitydata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
+                    configBuilder.AddJsonFile($"identityserverdata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
                     //if (hostContext.HostingEnvironment.IsDevelopment())
                     //{
-                    //    configApp.AddUserSecrets<Startup>();
+                    //    configBuilder.AddUserSecrets<Startup>();
                     //}
-                    configApp.AddEnvironmentVariables();
-                    configApp.AddCommandLine(args);
+                    configBuilder.AddEnvironmentVariables();
+                    configBuilder.AddCommandLine(args);
                 })
 
             #region NLog 配置
@@ -121,7 +121,7 @@ namespace IdentityServer
                     //webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
                 });
 
-            return host;
+            return builder;
         }
 
         public static IHostBuilder CreateHostBuilderP(string[] args)
