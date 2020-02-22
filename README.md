@@ -81,7 +81,7 @@
 29. 方便快捷的数据库说明扩展。相关博客：[EntityFramework Core 2.x/3.x （ef core） 在迁移中自动生成数据库表和列说明](https://www.cnblogs.com/coredx/p/10026783.html)
 30. Razor 视图渲染为字符串服务示例。
 31. MiniProfiler 示例。
-32. Blazor WebAssembly 示例。
+32. Blazor WebAssembly 示例。[浏览器中的 .Net Core —— Blazor WebAssembly 初体验](https://www.cnblogs.com/coredx/p/12342936.html)
 #### 还有更多……
 
 ### IdentityServerGui
