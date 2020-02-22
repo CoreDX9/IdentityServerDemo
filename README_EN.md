@@ -28,17 +28,19 @@ This is a .net core comprehensive learning and sample collection project that co
 2. Unload projects :<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
 3. Fix project references for Infrastructure/Harmonic.
 4. Wait for VS2019 to automatically restore Nuget and npm packages. If the automatic restore of the npm package fails, try running the npm install command in cmd. Make sure Node.js is installed.
-5. Set IdentityServer as the default startup project and set the startup mode to self-hosted.
-6. Modify the database connection strings in IdentityServer/appsettings.json and appsettings.Development.json according to your actual situation. Currently only MS SqlServer is supported. If you need other database support, please modify the code yourself.
-7. Run the IdentityServer project. Start experimenting and exploring various examples. All examples can be found in the navigation bar at the top of the web page. If the webpage is displaying abnormally, try resizing the browser window or adjusting the page zoom ratio.
-8. Run other executable program projects that interest you.
+5. Build project ```DemoPlugin/Plugin1```。
+6. Set IdentityServer as the default startup project and set the startup mode to self-hosted.
+7. Modify the database connection strings in IdentityServer/appsettings.json and appsettings.Development.json according to your actual situation. Currently only MS SqlServer is supported. If you need other database support, please modify the code yourself.
+8. Run the IdentityServer project. Start experimenting and exploring various examples. All examples can be found in the navigation bar at the top of the web page. If the webpage is displaying abnormally, try resizing the browser window or adjusting the page zoom ratio.
+9. Run other executable program projects that interest you.
 
 ### Release
 1. Follow the previous instructions to ensure that commissioning can be started normally.
 2. Right-click on the IdentityServer project and select Publish, select FolderProfileRelease Publish Configuration, and publish the project. If everything works, you can find the .publish folder in the solution folder.
-3. Right-click on the IdentityServerGui project and select Publish to publish the project. If all goes well, you can find IdentityServerGui.exe in the release location of IdentityServer.
-4. Modify the database connection strings of IdentityServer's appsettings.json and appsettings.Production.json according to your actual situation.
-5. Double-click IdentityServer.exe or IdentityServerGui.exe to run the application.
+3. Right-click on the Plugin1 project and select Publish to publish the project.
+4. Right-click on the IdentityServerGui project and select Publish to publish the project. If all goes well, you can find IdentityServerGui.exe in the release location of IdentityServer.
+5. Modify the database connection strings of IdentityServer's appsettings.json and appsettings.Production.json according to your actual situation.
+6. Double-click IdentityServer.exe or IdentityServerGui.exe to run the application.
 
 ### Precautions
 1. Try to use a higher version of the browser and try not to use IE.

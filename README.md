@@ -28,17 +28,19 @@
 2. 卸载这些项目：<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
 3. 修复 Infrastructure/Harmonic 的项目引用。
 4. 等待 VS2019 自动还原 Nuget 和 npm 包。如果 npm 包自动还原失败，可尝试在 cmd 中运行 npm install 命令。请确保已安装 Node.js。
-5. 把 IdentityServer 设置为默认启动项目并设置启动方式为自托管方式。
-6. 根据你的实际情况修改 IdentityServer/appsettings.json 和 appsettings.Development.json 中的数据库连接字符串。目前仅支持 MS SqlServer，需要其他数据库支持的请自行修改代码。
-7. 运行 IdentityServer 项目。开始试用并探索各种示例吧。所有示例均可在网页顶部的导航栏找到。如果网页显示效果异常，请尝试调整浏览器窗口大小或调整页面缩放比例。
-8. 运行你感兴趣的其他可执行程序项目。
+5. 编译生成 ```DemoPlugin/Plugin1```。
+6. 把 IdentityServer 设置为默认启动项目并设置启动方式为自托管方式。
+7. 根据你的实际情况修改 IdentityServer/appsettings.json 和 appsettings.Development.json 中的数据库连接字符串。目前仅支持 MS SqlServer，需要其他数据库支持的请自行修改代码。
+8. 运行 IdentityServer 项目。开始试用并探索各种示例吧。所有示例均可在网页顶部的导航栏找到。如果网页显示效果异常，请尝试调整浏览器窗口大小或调整页面缩放比例。
+9. 运行你感兴趣的其他可执行程序项目。
 
 ### 发布方式
 1. 根据前面的说明确保能正常启动调试。
 2. 在 IdentityServer 项目上单击右键并选择发布，选择 FolderProfileRelease 发布配置，发布项目。如果一切正常，可以在解决方案文件夹找到 .publish 文件夹。
-3. 在 IdentityServerGui 项目上单击右键并选择发布，发布项目。如果一切正常，可以在 IdentityServer 的发布位置找到 IdentityServerGui.exe。
-4. 根据你的实际情况修改 IdentityServer 的 appsettings.json 和 appsettings.Production.json 的数据库连接字符串。
-5. 双击 IdentityServer.exe 或者 IdentityServerGui.exe 运行程序。
+3. 在 Plugin1 项目上单击右键并选择发布，发布项目。
+4. 在 IdentityServerGui 项目上单击右键并选择发布，发布项目。如果一切正常，可以在 IdentityServer 的发布位置找到 IdentityServerGui.exe。
+5. 根据你的实际情况修改 IdentityServer 的 appsettings.json 和 appsettings.Production.json 的数据库连接字符串。
+6. 双击 IdentityServer.exe 或者 IdentityServerGui.exe 运行程序。
 
 ### 注意事项
 1. 尽量使用较高版本的浏览器，尽量不要使用 IE。
