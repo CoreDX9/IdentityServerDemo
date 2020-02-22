@@ -9,6 +9,10 @@
     <OutputPath>../../DemoApp/IdentityServer/Plugins/Plugin1/</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>../../../.publish/IdentityServer/release/Plugins/Plugin1/</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DepsOfPlugin1\DepsOfPlugin1.csproj" />
     <ProjectReference Include="..\PluginBase\PluginBase.csproj">
