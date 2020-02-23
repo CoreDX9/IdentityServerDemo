@@ -38,10 +38,11 @@ namespace CoreDX.Common.Util.TypeExtensions
         /// <typeparam name="T">数据类型</typeparam>
         /// <param name="item">数据</param>
         /// <param name="childSelector">下层数据选择器</param>
+        /// <param name="supportVariableDataSource">支持可变数据源，能对数据变动提供支持</param>
         /// <returns>已分层的数据</returns>
-        public static IHierarchical<T> AsHierarchical<T>(this T item, Func<T, IEnumerable<T>> childSelector)
+        public static IHierarchical<T> AsHierarchical<T>(this T item, Func<T, IEnumerable<T>> childSelector, bool supportVariableDataSource = false)
         {
-            return new Hierarchical<T>(item, childSelector);
+            return supportVariableDataSource ? new UpdateableHierarchical<T>(item, childSelector) : new Hierarchical<T>(item, childSelector);
         }
 
         /// <summary>
@@ -50,9 +51,9 @@ namespace CoreDX.Common.Util.TypeExtensions
         /// <typeparam name="T">数据类型</typeparam>
         private class Hierarchical<T> : IHierarchical<T>
         {
-            private readonly object _locker;
-            private readonly Func<T, IEnumerable<T>> _childSelector;
-            private IEnumerable<IHierarchical<T>> _children;
+            protected readonly object _locker;
+            protected readonly Func<T, IEnumerable<T>> _childSelector;
+            protected IEnumerable<IHierarchical<T>> _children;
 
             /// <summary>
             /// 实例化分层数据
@@ -73,7 +74,7 @@ namespace CoreDX.Common.Util.TypeExtensions
             /// <param name="item">数据</param>
             /// <param name="parent">上层数据</param>
             /// <param name="childSelector">下层数据选择器</param>
-            private Hierarchical(T item, IHierarchical<T> parent, Func<T, IEnumerable<T>> childSelector)
+            protected Hierarchical(T item, IHierarchical<T> parent, Func<T, IEnumerable<T>> childSelector)
                 : this(item, childSelector)
             {
                 Parent = parent;
@@ -86,7 +87,7 @@ namespace CoreDX.Common.Util.TypeExtensions
             private IEnumerable<IHierarchical<T>> InitializeChildren()
             {
                 var children = _childSelector(Current);
-                if (children == null)
+                if (!(children?.Count() > 0))
                     yield break;
 
                 foreach (T item in children)
@@ -128,7 +129,7 @@ namespace CoreDX.Common.Util.TypeExtensions
                 }
             }
 
-            public IEnumerable<IHierarchical<T>> Children
+            public virtual IEnumerable<IHierarchical<T>> Children
             {
                 get
                 {
@@ -193,19 +194,19 @@ namespace CoreDX.Common.Util.TypeExtensions
 
             public bool HasChild => !IsLeaf;
 
-            public string ToString(Func<T, string> formatter, bool convertToSingleLine = false)
+            public virtual string ToString(Func<IHierarchical<T>, string> formatter, bool convertToSingleLine = false)
             {
                 var sbr = new StringBuilder();
                 sbr.AppendLine(convertToSingleLine
-                    ? formatter(Current).Replace("\r", @"\r").Replace("\n", @"\n")
-                    : formatter(Current));
+                    ? formatter(this).Replace("\r", @"\r").Replace("\n", @"\n")
+                    : formatter(this));
 
                 var sb = new StringBuilder();
                 foreach (var node in Descendants)
                 {
                     sb.Append(convertToSingleLine
-                        ? formatter(node.Current).Replace("\r", @"\r").Replace("\n", @"\n")
-                        : formatter(node.Current));
+                        ? formatter(node).Replace("\r", @"\r").Replace("\n", @"\n")
+                        : formatter(node));
                     sb.Insert(0, node == node.Parent.Children.Last() ? "└─" : "├─");
 
                     for (int i = 0; i < node.Ancestors.Count() - (Ancestors?.Count() ?? 0) - 1; i++)
@@ -223,17 +224,69 @@ namespace CoreDX.Common.Util.TypeExtensions
                 return sbr.ToString();
             }
 
-            public IHierarchical<T> BuildNew()
+            public virtual IHierarchical<T> BuildNew()
             {
                 return new Hierarchical<T>(Current, _childSelector);
             }
 
             public override string ToString()
             {
-                return ToString(node => node.ToString());
+                return ToString(node => node.Current.ToString());
             }
 
             #endregion
+        }
+
+        /// <summary>
+        /// 可更新分层数据，每次查询都会尝试在缓存中查找，并更新 Children 缓存
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        private class UpdateableHierarchical<T> : Hierarchical<T>
+        {
+            public UpdateableHierarchical(T item, Func<T, IEnumerable<T>> childSelector) : base(item, childSelector)
+            {
+            }
+
+            protected UpdateableHierarchical(T item, IHierarchical<T> parent, Func<T, IEnumerable<T>> childSelector) : base(item, parent, childSelector)
+            {
+            }
+
+            private IEnumerable<IHierarchical<T>> UpdateChildren()
+            {
+                lock (_locker)
+                {
+                    var children = _childSelector(Current);
+                    if (!(children?.Count() > 0))
+                        yield break;
+
+                    foreach (T item in children)
+                    {
+                        var searchItem = _children?.SingleOrDefault(x => EqualityComparer<T>.Default.Equals(x.Current, item));
+                        if (searchItem != null)
+                        {
+                            yield return searchItem;
+                        }
+                        else
+                        {
+                            yield return new UpdateableHierarchical<T>(item, this, _childSelector);
+                        }
+                    }
+                }
+            }
+
+            public override IEnumerable<IHierarchical<T>> Children 
+            {
+                get
+                {
+                    _children = UpdateChildren().ToArray();
+                    return _children;
+                }
+            }
+
+            public override IHierarchical<T> BuildNew()
+            {
+                return new UpdateableHierarchical<T>(Current, _childSelector);
+            }
         }
 
         /// <summary>
@@ -543,7 +596,7 @@ namespace CoreDX.Common.Util.TypeExtensions
         {
             foreach (var root in roots)
             {
-                root.SetParentChildren(childrenSelector, false, parentSetter);
+                root.SetParentChildren(childrenSelector, clearChildrenBeforeSet, parentSetter);
             }
 
             return roots.Select(r => r.Current);

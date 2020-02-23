@@ -6,6 +6,7 @@ using CoreDX.Common.Util.TypeExtensions;
 using CoreDX.Domain.Entity.Identity;
 using CoreDX.Domain.Entity.App.Management;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace DomainSample
 {
@@ -114,55 +115,6 @@ namespace DomainSample
             //p5.Parent = p2;
             //p5.ParentId = p2.Id;
 
-            //TreeNode[] nodes = {
-            //    new TreeNode("@babel", null),
-            //    new TreeNode("code-frame", "@babel"),
-            //    new TreeNode("lib\r\n(code-frame)", "code-frame"),
-            //    new TreeNode("core", "@babel"),
-            //    new TreeNode("lib", "core"),
-            //    new TreeNode("config", "lib"),
-            //    new TreeNode("files", "config"),
-            //    new TreeNode("helpers", "config"),
-            //    new TreeNode("validation", "config"),
-            //    new TreeNode("tools", "lib"),
-            //    new TreeNode("transformation", "lib"),
-            //    new TreeNode("file", "transformation"),
-            //    new TreeNode("util", "transformation"),
-            //    new TreeNode("node_modules", "core"),
-            //    new TreeNode(".bin", "node_modules"),
-            //    new TreeNode("debug", "node_modules"),
-            //    new TreeNode("dist", "debug"),
-            //    new TreeNode("src", "debug"),
-            //    new TreeNode("ms", "node_modules"),
-            //    new TreeNode("generator", "@babel"),
-            //};
-
-            //var hNodes = nodes[0].AsHierarchical(tNode => nodes.Where(t => t.ParentValue == tNode.Value));
-            //var strNodes = hNodes.ToString(tn => tn.Value, true);
-            //Console.WriteLine("-------------------------------------------------------------");
-            //Console.WriteLine(strNodes);
-            //Console.WriteLine("-------------------------------------------------------------");
-
-            //var test = hNodes.AsEnumerable();
-            //var testC = test.Count();
-
-            //var start = test.ElementAt(new Random().Next(0, testC));
-            //var stst = start.ToString(tn => tn.Value, true);
-            //var end = test.ElementAt(new Random().Next(0, testC));
-            //var enst = end.ToString(tn => tn.Value, true);
-
-            //var path = start.GetPathToNode(end);
-            //var strPath = string.Join(" -> ", path.Select(p => p.Current.Value));
-
-            //Console.WriteLine("节点路径查找");
-            //Console.WriteLine($"起点：{start.Current.Value}");
-            //Console.WriteLine($"终点：{end.Current.Value}");
-            //Console.WriteLine($"路径：{strPath}");
-            //Console.WriteLine("-------------------------------------------------------------");
-            //Console.WriteLine($"起点的子树：\r\n{stst}");
-            //Console.WriteLine($"终点的子树：\r\n{enst}");
-            //Console.WriteLine("-------------------------------------------------------------");
-
             //var hi = p1.AsHierarchical(p => p.Children);
             //var b = hi.Children?.First() == hi?.Children?.First();
 
@@ -177,6 +129,61 @@ namespace DomainSample
             //{
             //    Console.WriteLine($@"person id:{p.Current.Id} name:{p.Current.Name} depth:{p.Current.Depth} pId:{p.Current.ParentId} children:{string.Join(',', p.Children.Select(x => x.Current.Id))}");
             //}
+
+            List<TreeNode> nodes = new List<TreeNode> {
+                new TreeNode("@babel", null),
+                new TreeNode("code-frame", "@babel"),
+                new TreeNode("lib\r\n(code-frame)", "code-frame"),
+                new TreeNode("core", "@babel"),
+                new TreeNode("lib", "core"),
+                new TreeNode("config", "lib"),
+                new TreeNode("files", "config"),
+                new TreeNode("helpers", "config"),
+                new TreeNode("validation", "config"),
+                new TreeNode("tools", "lib"),
+                new TreeNode("transformation", "lib"),
+                new TreeNode("file", "transformation"),
+                new TreeNode("util", "transformation"),
+                new TreeNode("node_modules", "core"),
+                new TreeNode(".bin", "node_modules"),
+                new TreeNode("debug", "node_modules"),
+                new TreeNode("dist", "debug"),
+                new TreeNode("src", "debug"),
+                new TreeNode("ms", "node_modules"),
+                new TreeNode("generator", "@babel"),
+            };
+
+            var hNodes = nodes.Single(x => x.ParentValue == null).AsHierarchical(x => nodes.Where(n => n.ParentValue == x.Value), true);
+            var strNodes = hNodes.ToString(tn => $"{tn.Current.Value} (hash: {tn.GetHashCode().ToString("X")})" , true);
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine(strNodes);
+            Console.WriteLine("-------------------------------------------------------------");
+
+            var test = hNodes.AsEnumerable();
+            var testC = test.Count();
+
+            var start = test.ElementAt(new Random().Next(0, testC));
+            var stst = start.ToString(tn => tn.Current.Value, true);
+            var end = test.ElementAt(new Random().Next(0, testC));
+            var enst = end.ToString(tn => tn.Current.Value, true);
+
+            var path = start.GetPathToNode(end);
+            var strPath = string.Join(" -> ", path.Select(p => p.Current.Value));
+
+            Console.WriteLine("节点路径查找");
+            Console.WriteLine($"起点：{start.Current.Value}");
+            Console.WriteLine($"终点：{end.Current.Value}");
+            Console.WriteLine($"路径：{strPath}");
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine($"起点的子树：\r\n{stst}");
+            Console.WriteLine($"终点的子树：\r\n{enst}");
+            Console.WriteLine("-------------------------------------------------------------");
+
+            nodes.Add(new TreeNode("data", "generator"));
+            //hNodes = nodes.Single(x => x.ParentValue == null).AsHierarchical(x => nodes.Where(n => n.ParentValue == x.Value), true);
+            strNodes = hNodes.ToString(tn => $"{tn.Current.Value} (hash: {tn.GetHashCode().ToString("X")})", true);
+            Console.WriteLine(strNodes);
+            Console.WriteLine("-------------------------------------------------------------");
 
             Console.WriteLine();
             Console.WriteLine("按任意键退出……");

@@ -97,6 +97,6 @@ namespace CoreDX.Common.Util.Hierarchical
         /// <param name="formatter">数据对象格式化器（内容要为一行，否则会影响排版）</param>
         /// <param name="convertToSingleLine">处理掉换行符变成单行文本</param>
         /// <returns></returns>
-        string ToString(Func<T, string> formatter, bool convertToSingleLine = false);
+        string ToString(Func<IHierarchical<T>, string> formatter, bool convertToSingleLine = false);
     }
 }

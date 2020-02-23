@@ -8,7 +8,7 @@
 
 ## 可运行的示例程序
 1. DemoApp
-   1.  Client： C# oidc 客户端示例和临时性测试代码。
+   1.  Client： C# oidc 客户端示例。
    2.  CSharpScriptDemo：使用 Roslyn 运行 C# 脚本的示例。
    3.  DomianSample：临时性测试代码。
    4.  GrpcClient：控制台 gRPC 客户端示例。

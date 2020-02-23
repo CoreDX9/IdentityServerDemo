@@ -8,7 +8,7 @@ This is a .net core comprehensive learning and sample collection project that co
 
 ## Executable Sample Program
 1. DemoApp
-   1. Client: C # oidc client example and temporary test code.
+   1. Client: C # oidc client example.
    2. CSharpScriptDemo: An example of running C# script using Roslyn.
    3. DomianSample: temporary test code.
    4. GrpcClient: Console gRPC client example.
