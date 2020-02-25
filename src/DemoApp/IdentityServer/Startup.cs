@@ -844,7 +844,7 @@ namespace IdentityServer
 
             #endregion
 
-            #region DDD+CQRS+EDA 相关服务
+            #region DDD+CQRS+EDA+ES 相关服务
 
             services.AddScoped(typeof(ICommandBus<>), typeof(MediatRCommandBus<>));
             services.AddScoped(typeof(ICommandBus<,>), typeof(MediatRCommandBus<,>));

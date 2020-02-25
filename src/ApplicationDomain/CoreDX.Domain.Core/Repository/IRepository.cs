@@ -8,6 +8,12 @@ using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Core.Repository
 {
+    public interface IBulkOperateRepository<TResult>
+    {
+        TResult SaveChanges();
+        Task<TResult> SaveChangesAsync(CancellationToken cancellationToken);
+    }
+
     public interface IBulkOperateRepository
     {
         void SaveChanges();
@@ -68,14 +74,25 @@ namespace CoreDX.Domain.Core.Repository
     {
     }
 
-    public interface IBulkOperateVariableRepository<TEntity> : IVariableRepository<TEntity>, IBulkOperateRepository
-         where TEntity : IEntity
-    {
-    }
+    //public interface IBulkOperateVariableRepository<TEntity> : IVariableRepository<TEntity>, IBulkOperateRepository
+    //     where TEntity : IEntity
+    //{
+    //}
 
-    public interface IBulkOperateVariableRepository<TEntity, TKey> : IBulkOperateVariableRepository<TEntity>, IVariableRepository<TEntity, TKey>
-        where TEntity : IEntity<TKey>
-        where TKey : IEquatable<TKey>
-    {
-    }
+    //public interface IBulkOperateVariableRepository<TEntity, TKey> : IBulkOperateVariableRepository<TEntity>, IVariableRepository<TEntity, TKey>
+    //    where TEntity : IEntity<TKey>
+    //    where TKey : IEquatable<TKey>
+    //{
+    //}
+
+    //public interface IBulkOperateVariableRepository<TEntity, TResult> : IVariableRepository<TEntity>, IBulkOperateRepository<TResult>
+    // where TEntity : IEntity
+    //{
+    //}
+
+    //public interface IBulkOperateVariableRepository<TEntity, TKey, TResult> : IBulkOperateVariableRepository<TEntity>, IVariableRepository<TEntity, TKey>
+    //    where TEntity : IEntity<TKey>
+    //    where TKey : IEquatable<TKey>
+    //{
+    //}
 }

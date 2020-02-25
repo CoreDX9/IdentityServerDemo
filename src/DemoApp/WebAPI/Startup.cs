@@ -190,12 +190,6 @@ namespace WebAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI V1");
-                });
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
