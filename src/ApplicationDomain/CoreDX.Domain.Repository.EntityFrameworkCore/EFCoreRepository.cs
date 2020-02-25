@@ -271,10 +271,6 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
 
             //初始化提取实体类型所有属性信息生成属性访问表达式并包装备用
             var keyValues = props.Select(x => new { key = x, value = x.GetValue(entity), propExp = Expression.Property(parameter, x) });
-            if (ignoreNullValue)
-            {
-                keyValues = keyValues.Where(x => x.value != null);
-            }
             //初始化存储由基础类型组成的属性信息（只要个空集合，实际数据在后面的循环中填充）
             var primitiveKeyValues = keyValues.Take(0).Where(x => IsPrimitiveType(x.key.PropertyType));
             //初始化基础类型属性的相等比较表达式存储集合（只要个空集合，实际数据在后面的循环中填充）
@@ -285,6 +281,10 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
             //如果还有元素，说明上次用于提取信息的复杂属性内部还存在复杂属性，接下来用提取到的基础类型属性信息生成相等比较表达式并合并到存储集合然后继续提取剩下的复杂类型属性的内部属性
             while (keyValues.Count() > 0)
             {
+                if (ignoreNullValue)
+                {
+                    keyValues = keyValues.Where(x => x.value != null);
+                }
                 //提取由基础类型组成的属性信息
                 primitiveKeyValues = keyValues.Where(x => IsPrimitiveType(x.key.PropertyType));
                 //生成基础类型属性的相等比较表达式
