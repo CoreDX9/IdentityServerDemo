@@ -27,8 +27,8 @@ namespace CoreDX.Domain.Core.Repository
         where TEntity : IEntity
     {
         IQueryable<TEntity> Set { get; }
-        TEntity Find(TEntity entity);
-        Task<TEntity> FindAsync(TEntity entity);
+        TEntity Find(TEntity entity, bool ignoreNullValue);
+        Task<TEntity> FindAsync(TEntity entity, bool ignoreNullValue);
 
     }
     public interface IReadOnlyRepository<TEntity, TKey> : IReadOnlyRepository<TEntity>
@@ -41,7 +41,7 @@ namespace CoreDX.Domain.Core.Repository
     }
 
     public interface IVariableRepository<TEntity>
-    where TEntity : IEntity
+        where TEntity : IEntity
     {
         void Add(TEntity entity);
         Task AddAsync(TEntity entity, CancellationToken cancellationToken);

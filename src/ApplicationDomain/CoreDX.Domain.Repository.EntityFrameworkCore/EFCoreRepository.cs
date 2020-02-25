@@ -48,27 +48,27 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
 
         public virtual TEntity Find(TKey key)
         {
-            return dbSet.AsNoTracking().SingleOrDefault(x => x.Id.Equals(key));
+            return Set.SingleOrDefault(x => x.Id.Equals(key));
         }
 
         public virtual IQueryable<TEntity> Find(IEnumerable<TKey> keys)
         {
-            return dbSet.AsNoTracking().Where(x => keys.Contains(x.Id));
+            return Set.Where(x => keys.Contains(x.Id));
         }
 
-        public override TEntity Find(TEntity entity)
+        public override TEntity Find(TEntity entity, bool ignoreNullValue)
         {
-            return Find(entity.Id);
+            return base.Find(entity, ignoreNullValue);
         }
 
         public virtual Task<TEntity> FindAsync(TKey key)
         {
-            return dbSet.FindAsync(key).AsTask();
+            return Set.SingleOrDefaultAsync(x => x.Id.Equals(key));
         }
 
-        public override Task<TEntity> FindAsync(TEntity entity)
+        public override Task<TEntity> FindAsync(TEntity entity, bool ignoreNullValue)
         {
-            return FindAsync(entity.Id);
+            return base.FindAsync(entity, ignoreNullValue);
         }
     }
 
@@ -82,7 +82,7 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
         protected virtual void ProcessChangedEntity()
         {
             var changedEntities = dbContext.ChangeTracker.Entries()
-                .Where(x => x.State == EntityState.Added || x.State == EntityState.Added);
+                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
             foreach (var entity in changedEntities)
             {
                 (entity as IOptimisticConcurrencySupported)?.GenerateNewConcurrencyStamp();
@@ -98,8 +98,7 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
                         {
                             if (entity is IActiveControllable)
                             {
-                                var active = (entity as IActiveControllable).Active;
-                                (entity as IActiveControllable).Active = active ?? true;
+                                (entity as IActiveControllable).Active ??= true;
                             }
                         }
                         break;
@@ -198,16 +197,16 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
             return Task.CompletedTask;
         }
 
-        public virtual TEntity Find(TEntity entity)
+        public virtual TEntity Find(TEntity entity, bool ignoreNullValue)
         {
-            var exp = GenerateWhere(dbContext, entity);
+            var exp = GenerateWhere(dbContext, entity, ignoreNullValue);
 
             return Set.SingleOrDefault(exp);
         }
 
-        public virtual Task<TEntity> FindAsync(TEntity entity)
+        public virtual Task<TEntity> FindAsync(TEntity entity, bool ignoreNullValue)
         {
-            var exp = GenerateWhere(dbContext, entity);
+            var exp = GenerateWhere(dbContext, entity, ignoreNullValue);
 
             return Set.SingleOrDefaultAsync(exp);
         }
@@ -250,7 +249,7 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
             return Task.CompletedTask;
         }
 
-        static private Expression<Func<TEntity, bool>> GenerateWhere(TDbContext dbContext, TEntity entity)
+        static private Expression<Func<TEntity, bool>> GenerateWhere(TDbContext dbContext, TEntity entity, bool ignoreNullValue)
         {
             //查找实体类型主键
             var model = dbContext.Model.FindEntityType(typeof(TEntity));
@@ -272,7 +271,10 @@ namespace CoreDX.Domain.Repository.EntityFrameworkCore
 
             //初始化提取实体类型所有属性信息生成属性访问表达式并包装备用
             var keyValues = props.Select(x => new { key = x, value = x.GetValue(entity), propExp = Expression.Property(parameter, x) });
-
+            if (ignoreNullValue)
+            {
+                keyValues = keyValues.Where(x => x.value != null);
+            }
             //初始化存储由基础类型组成的属性信息（只要个空集合，实际数据在后面的循环中填充）
             var primitiveKeyValues = keyValues.Take(0).Where(x => IsPrimitiveType(x.key.PropertyType));
             //初始化基础类型属性的相等比较表达式存储集合（只要个空集合，实际数据在后面的循环中填充）
