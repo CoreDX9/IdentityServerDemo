@@ -5,7 +5,7 @@ using System;
 
 namespace CoreDX.Domain.Repository.EntityFrameworkCore
 {
-    public interface IEFCoreRepository<TEntity, TDbContext> : IReadOnlyRepository<TEntity>, IVariableRepository<TEntity>, IBulkOperableRepository<int>
+    public interface IEFCoreRepository<TEntity, TDbContext> : IReadOnlyRepository<TEntity>, IVariableRepository<TEntity>, IBulkOperableVariableRepository<int, IEFCoreRepository<TEntity, TDbContext>, TEntity>
         where TEntity : class, IEntity
         where TDbContext : DbContext
     { }
