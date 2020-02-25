@@ -2,19 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoreDX.Domain.Core.Repository
 {
-    public interface IBulkOperateRepository<TResult>
+    public interface IBulkOperableRepository<TResult>
     {
         TResult SaveChanges();
         Task<TResult> SaveChangesAsync(CancellationToken cancellationToken);
     }
 
-    public interface IBulkOperateRepository
+    public interface IBulkOperableRepository
     {
         void SaveChanges();
         Task SaveChangesAsync(CancellationToken cancellationToken);
