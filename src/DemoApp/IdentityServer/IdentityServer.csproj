@@ -117,7 +117,7 @@
     <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.6.0" />
     <PackageReference Include="Localization.SqlLocalizer" Version="2.0.6" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.2.0-preview1.20073.1" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
@@ -153,6 +153,7 @@
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.1.0" />
     <PackageReference Include="MiniProfiler.Providers.SqlServer" Version="4.1.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.2.0.20200208" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.1" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
     <PackageReference Include="Serilog" Version="2.9.0" />
@@ -166,7 +167,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="7.9.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.39" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.40" />
   </ItemGroup>
 
   <!--项目引用-->
