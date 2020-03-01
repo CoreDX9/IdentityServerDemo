@@ -56,22 +56,26 @@ namespace IdentityServer.Helpers
             {
                 using (var context = scope.ServiceProvider.GetRequiredService<TPersistedGrantDbContext>())
                 {
-                    await context.Database.MigrateAsync();
+                    if(!context.Database.IsInMemory())
+                        await context.Database.MigrateAsync();
                 }
 
                 using (var context = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>())
                 {
-                    await context.Database.MigrateAsync();
+                    if (!context.Database.IsInMemory())
+                        await context.Database.MigrateAsync();
                 }
 
                 using (var context = scope.ServiceProvider.GetRequiredService<TConfigurationDbContext>())
                 {
-                    await context.Database.MigrateAsync();
+                    if (!context.Database.IsInMemory())
+                        await context.Database.MigrateAsync();
                 }
 
                 using (var context = scope.ServiceProvider.GetRequiredService<TLogDbContext>())
                 {
-                    await context.Database.MigrateAsync();
+                    if (!context.Database.IsInMemory())
+                        await context.Database.MigrateAsync();
                 }
 
                 using (var context = scope.ServiceProvider.GetRequiredService<TAuditLogDbContext>())
@@ -81,8 +85,10 @@ namespace IdentityServer.Helpers
 
                 try
                 {
-                    //这里不能用 using
-                    await scope.ServiceProvider.GetRequiredService<LocalizationModelContext>().Database.MigrateAsync();
+                    var context = scope.ServiceProvider.GetRequiredService<LocalizationModelContext>();
+                    if (!context.Database.IsInMemory())
+                        //这里不能用 using
+                        await context.Database.MigrateAsync();
                 }
                 catch { }
 
