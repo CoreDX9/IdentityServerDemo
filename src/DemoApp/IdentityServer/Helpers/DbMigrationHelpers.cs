@@ -80,7 +80,8 @@ namespace IdentityServer.Helpers
 
                 using (var context = scope.ServiceProvider.GetRequiredService<TAuditLogDbContext>())
                 {
-                    await context.Database.MigrateAsync();
+                    if (!context.Database.IsInMemory())
+                        await context.Database.MigrateAsync();
                 }
 
                 try
