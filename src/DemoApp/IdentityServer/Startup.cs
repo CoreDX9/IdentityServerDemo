@@ -151,9 +151,6 @@ namespace IdentityServer
             //注册响应压缩服务（gzip）
             services.AddResponseCompression();
 
-            //注册网站健康检查服务
-            services.AddHealthChecks();
-
             //注册文件夹浏览服务
             services.AddDirectoryBrowser();
 
@@ -493,9 +490,6 @@ namespace IdentityServer
             // Add audit logging
             services.AddAuditEventLogging<AdminAuditLogDbContext, AuditLog>(Configuration);
 
-            services.AddIdSHealthChecks<IdentityServerConfigurationDbContext,
-                IdentityServerPersistedGrantDbContext, ApplicationIdentityDbContext, AdminLogDbContext,
-                AdminAuditLogDbContext>(Configuration, rootConfiguration.AdminConfiguration, connectionString);
             #endregion
 
             #region 注册 FluentValidation 服务
@@ -880,6 +874,11 @@ namespace IdentityServer
             services.AddSingleton<RtmpServerManager>();
 
             #endregion
+
+            //注册网站健康检查服务
+            services.AddIdSHealthChecks<IdentityServerConfigurationDbContext,
+                IdentityServerPersistedGrantDbContext, ApplicationIdentityDbContext, AdminLogDbContext,
+                AdminAuditLogDbContext>(Configuration, rootConfiguration.AdminConfiguration, connectionString);
 
             #region 注册应用 cookie 配置，一定要放在最后
             //这个单例配置不知道为什么被注册了快20次，不放在最后很可能被中途不知道哪个服务注册扩展给你覆盖掉

@@ -98,7 +98,7 @@ namespace IdentityServer.Helpers.IdentityServerAdmin
                                 healthQuery: $"SELECT TOP 1 * FROM dbo.[{auditLogTableName}]")
                             .AddSqlServer(connectionString, name: "LocalizationModelDb",
                                 healthQuery: $"SELECT TOP 1 * FROM dbo.[{LocalizationTableName}]")
-                        .AddSqlServer(connectionString, name: "ApplicationDb",
+                            .AddSqlServer(connectionString, name: "ApplicationDb",
                                 healthQuery: $"SELECT TOP 1 * FROM dbo.[{ApplicationTableName}]");
                         break;
                     case DatabaseProviderType.PostgreSQL:
