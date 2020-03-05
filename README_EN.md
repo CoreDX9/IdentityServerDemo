@@ -18,6 +18,7 @@ This is a .net core comprehensive learning and sample collection project that co
    8. SudokuTset: Sudoku solver test code and usage examples.
    9. WebAPI mvc oidc client example.
    10. WebClient: Obsolete code archive.
+   11. GraphicDemo: Examples of Windows window screenshots and screenshots.
 2. IdentityServerAdmin
    1. IdentityServer.Admin: IdentityServer4 Web management interface. Depends on IdentityServer.
    2. IdentityServer.Admin.Api: IdentityServer4 Web Api. Depends on IdentityServer.
