@@ -24,7 +24,7 @@ namespace IdentityServer.Extensions
         /// <param name="ruleGroup">JqGrid搜索条件组</param>
         /// <param name="propertyMap">属性映射，把搜索规则的名称映射到属性名称，如果属性是复杂类型，使用点号可以继续访问内部属性</param>
         /// <returns>where表达式</returns>
-        public static Expression<Func<T, bool>> BuildWhere<T>(JqGridSearchRuleGroup ruleGroup, IDictionary<string, string> propertyMap)
+        public static Expression<Func<T, bool>> BuildWhere<T>(JqGridSearchRuleGroup ruleGroup, IDictionary<string, string> propertyMap = null)
         {
             ParameterExpression parameter = Expression.Parameter(typeof(T), "searchObject");
 

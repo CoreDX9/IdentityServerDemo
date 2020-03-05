@@ -84,7 +84,7 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Users
             var usersQuery = _userManager.Users.AsNoTracking();
             if (jqGridParameter._search == "true")
             {
-                usersQuery = usersQuery.Where(BuildWhere<ApplicationUser>(jqGridParameter.FilterObject, null));
+                usersQuery = usersQuery.Where(BuildWhere<ApplicationUser>(jqGridParameter.FilterObject));
             }
 
             var users = usersQuery.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).OrderBy(u => u.InsertOrder)
