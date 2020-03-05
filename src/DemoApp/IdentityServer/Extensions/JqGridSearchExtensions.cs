@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using IdentityServer.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 using CoreDX.Common.Util.TypeExtensions;
 
 namespace IdentityServer.Extensions
@@ -99,12 +99,13 @@ namespace IdentityServer.Extensions
         {
             Expression l;
 
+            string[] names = null;
             //如果实体属性名称和前端名称不一致，或者属性是一个自定义类型，需要继续访问其内部属性，使用点号分隔
             if (propertyMap?.ContainsKey(rule.Field) == true)
             {
-                var names = propertyMap[rule.Field].Split('.', StringSplitOptions.RemoveEmptyEntries);
+                names = propertyMap[rule.Field].Split('.', StringSplitOptions.RemoveEmptyEntries);
                 l = Expression.Property(parameter, names[0]);
-                foreach (var name in propertyMap[rule.Field].Split('.').Skip(1))
+                foreach (var name in names.Skip(1))
                 {
                     l = Expression.Property(l, name);
                 }
@@ -121,12 +122,24 @@ namespace IdentityServer.Extensions
             //为空和不为空的右值为常量null，不需要构造
             var specialRuleOps = SpecialRuleOps;
 
-            var isGen = false;
-            var pt = typeof(T).GetProperty(rule.PascalField).PropertyType;
+            var isNullable = false;
+            var pt = typeof(T);
+            if(names != null)
+            {
+                foreach(var name in names)
+                {
+                    pt = pt.GetProperty(name).PropertyType;
+                }
+            }
+            else
+            {
+                pt = pt.GetProperty(rule.PascalField).PropertyType;
+            }
+
             //如果属性类型是可空值类型，取出内部类型
             if (pt.IsDerivedFrom(typeof(Nullable<>)))
             {
-                isGen = true;
+                isNullable = true;
                 pt = pt.GenericTypeArguments[0];
             }
 
@@ -220,7 +233,7 @@ namespace IdentityServer.Extensions
                 }
             }
 
-            if (r != null && pt.IsValueType && isGen)
+            if (r != null && pt.IsValueType && isNullable)
             {
                 var gt = typeof(Nullable<>).MakeGenericType(pt);
                 r = Expression.Convert(r, gt);
@@ -334,7 +347,7 @@ namespace IdentityServer.Extensions
 
             return e;
 
-            Expression BuildConstantExpression<TValue>(JqGridSearchRule jRule, Func<string, TValue> valueConvertor)
+            static Expression BuildConstantExpression<TValue>(JqGridSearchRule jRule, Func<string, TValue> valueConvertor)
             {
                 var rv = valueConvertor(jRule.Data);
                 return Expression.Constant(rv);
@@ -355,7 +368,7 @@ namespace IdentityServer.Extensions
             var genMethod = typeof(Queryable).GetMethods()
                 .Single(m => m.Name == nameof(Queryable.Contains) && m.GetParameters().Length == 2);
 
-            var jsonArray = JsonConvert.DeserializeObject<string[]>(rule.Data);
+            var jsonArray = JsonSerializer.Deserialize<string[]>(rule.Data);
 
             switch (parameterType)
             {
@@ -439,7 +452,7 @@ namespace IdentityServer.Extensions
 
             return e;
 
-            MethodCallExpression CallContains<T>(Expression pa, string[] jArray, Func<string, T> selector, MethodInfo genericMethod, Type type)
+            static MethodCallExpression CallContains<T>(Expression pa, string[] jArray, Func<string, T> selector, MethodInfo genericMethod, Type type)
             {
                 var data = jArray.Select(selector).ToArray().AsQueryable();
                 var method = genericMethod.MakeGenericMethod(type);

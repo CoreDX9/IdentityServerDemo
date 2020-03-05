@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
-using CoreDX.Common.Util.TypeExtensions;
+﻿using CoreDX.Common.Util.TypeExtensions;
+using System.Linq;
+using System.Text.Json;
 
 namespace IdentityServer.Models
 {
@@ -11,7 +11,7 @@ namespace IdentityServer.Models
         /// </summary>
         public string _search { get; set; }
         /// <summary>
-        /// 请求发送次数，方面服务器处理重复请求
+        /// 请求发送次数，方便服务器处理重复请求
         /// </summary>
         public long Nd { get; set; }
         /// <summary>
@@ -29,7 +29,7 @@ namespace IdentityServer.Models
         /// <summary>
         /// 分离后的排序列
         /// </summary>
-        public string[][] SIdx => Sidx.Split(", ").Select(s=>s.Split(" ")).ToArray(); 
+        public string[][] SIdx => Sidx.Split(", ").Select(s => s.Split(" ")).ToArray();
         /// <summary>
         /// 排序方式：asc、desc
         /// </summary>
@@ -43,8 +43,8 @@ namespace IdentityServer.Models
         /// 序列化的高级搜索对象
         /// </summary>
         public JqGridSearchRuleGroup FilterObject => Filters.IsNullOrWhiteSpace()
-            ? new JqGridSearchRuleGroup {Rules = new[] {new JqGridSearchRule {Op = SearchOper, Data = SearchString, Field = SearchField}}}
-            : JsonConvert.DeserializeObject<JqGridSearchRuleGroup>(Filters ?? string.Empty);
+            ? new JqGridSearchRuleGroup { Rules = new[] { new JqGridSearchRule { Op = SearchOper, Data = SearchString, Field = SearchField } } }
+            : JsonSerializer.Deserialize<JqGridSearchRuleGroup>(Filters ?? string.Empty);
 
         /// <summary>
         /// 简单搜索字段
