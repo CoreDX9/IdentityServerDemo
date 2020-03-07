@@ -85,6 +85,7 @@ This is a .net core comprehensive learning and sample collection project that co
 30. Razor view render to string example.
 31. MiniProfiler example.
 32. Blazor WebAssembly example.
+33. Generate Linq Where expressions dynamically (data structures using JqGrid advanced queries).
 #### and more...
 
 ### IdentityServerGui
