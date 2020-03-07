@@ -19,6 +19,7 @@
    9.  WebAPI mvc oidc 客户端示例。
    10. WebClient：过时代码存档。
    11. GraphicDemo：Windows 窗口和屏幕截图示例。相关博客：[Windows GDI 窗口与 Direct3D 屏幕截图](https://www.cnblogs.com/coredx/p/12422559.html)
+   12. vJoyDemo：虚拟游戏手柄使用演示。
 2. IdentityServerAdmin
    1.  IdentityServer.Admin：IdentityServer4 Web 管理界面。依赖 IdentityServer。
    2.  IdentityServer.Admin.Api：IdentityServer4 Web Api。依赖 IdentityServer。
