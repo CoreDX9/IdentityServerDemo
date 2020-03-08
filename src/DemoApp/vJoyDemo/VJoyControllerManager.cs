@@ -56,28 +56,6 @@ namespace vJoyDemo
         public uint DllVer { get; }
         public uint DrvVer { get; }
 
-        public static VJoyControllerManager GetManager()
-        {
-            if (_manager == null)
-                lock (_locker)
-                    if (_manager == null)
-                        _manager = new VJoyControllerManager();
-
-            return _manager;
-        }
-
-        public static void ReleaseManager()
-        {
-            if (_manager != null)
-                lock (_locker)
-                    if (_manager != null)
-                    {
-                        _manager.UnLoadContext();
-                        _manager = null;
-                    }
-
-        }
-
         private VJoyControllerManager()
         {
             var path = Process.GetCurrentProcess().MainModule.FileName;
@@ -101,6 +79,28 @@ namespace vJoyDemo
             DriverMatch = (bool)_vJoyType.GetMethod("DriverMatch").Invoke(_joystick, args);
             DllVer = (uint)args[0];
             DrvVer = (uint)args[1];
+        }
+
+        public static VJoyControllerManager GetManager()
+        {
+            if (_manager == null)
+                lock (_locker)
+                    if (_manager == null)
+                        _manager = new VJoyControllerManager();
+
+            return _manager;
+        }
+
+        public static void ReleaseManager()
+        {
+            if (_manager != null)
+                lock (_locker)
+                    if (_manager != null)
+                    {
+                        _manager.UnLoadContext();
+                        _manager = null;
+                    }
+
         }
 
         private void UnLoadContext()
