@@ -9,6 +9,7 @@ namespace vJoyDemo
     public interface IVJoyController
     {
         uint Id { get; }
+        bool HasRelinquished { get; }
         bool HasAxisX { get; }
         bool HasAxisY { get; }
         bool HasAxisZ { get; }
@@ -211,6 +212,7 @@ namespace vJoyDemo
             }
 
             public uint Id { get; }
+            public bool HasRelinquished => _hasRelinquished;
             public bool HasAxisX { get; }
             public bool HasAxisY { get; }
             public bool HasAxisZ { get; }
