@@ -270,7 +270,7 @@ namespace vJoyDemo
                 return (bool)_setBtnFunc.DynamicInvoke(false, Id, btnNo);
             }
 
-            public bool PressButton(uint btnNo, int milliseconds)
+            public bool PressButton(uint btnNo, int milliseconds = 50)
             {
                 if (btnNo == 0 || btnNo > ButtonCount) return false;
                 _setBtnFunc.DynamicInvoke(true, Id, btnNo);
