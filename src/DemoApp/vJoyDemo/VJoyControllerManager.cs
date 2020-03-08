@@ -47,6 +47,7 @@ namespace vJoyDemo
 
         private readonly Delegate _getVJDStatusFunc;
 
+        public bool IsVJoyEnabled { get; }
         public string VJoyManufacturerString { get; }
         public string VJoyProductString { get; }
         public string VJoySerialNumberString { get; }
@@ -105,8 +106,6 @@ namespace vJoyDemo
         {
             _vJoyAssemblyLoadContext.Unload();
         }
-
-        public bool IsVJoyEnabled { get; }
 
         public object GetVJDStatus(uint id)
         {
