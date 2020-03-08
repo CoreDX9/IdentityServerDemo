@@ -18,34 +18,35 @@
 //	Here starts and endless loop that feedes data into the virtual device
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define ROBUST
+//#define ROBUST
 //#define EFFICIENT
 
 using System;
-using vJoyInterfaceWrap;
+using System.Diagnostics;
+using System.Reflection;
+//using vJoyInterfaceWrap;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 //需要先安装 vJoy http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
-//根据系统复制 x86 或 x64 文件夹中的程序集到编译的程序文件夹。依赖引用了 64 位版本，根据情况更换引用。
-// Win+R 运行后面的命令能打开游戏控制器设置（win10 把 vJoy 识别为未知类别的设备，无法在设备上右键打开） control.exe /name Microsoft.GameControllers
+//原版代码需要根据系统复制 x86 或 x64 文件夹中的程序集到编译的程序文件夹并添加程序集引用
+//Win+R 运行后面的命令能打开游戏控制器设置（win10 把 vJoy 识别为未知类别的设备，无法在设备上右键打开） control.exe /name Microsoft.GameControllers
 namespace vJoyDemo
 {
     class Program
     {
-        // Declaring one joystick (Device id 1) and a position structure. 
-        static public vJoy joystick;
-        static public vJoy.JoystickState iReport;
         static public uint id = 1;
 
-
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            // Create one joystick object and a position structure.
-            joystick = new vJoy();
-            iReport = new vJoy.JoystickState();
+            Console.WriteLine("Press Win+R to open control board with commond: control.exe /name Microsoft.GameControllers");
+            Console.WriteLine("");
 
+            #region 动态代理，根据运行环境载入 x86 或 x64 的程序集
 
             // Device ID can only be in the range 1-16
-            if (args.Length > 0 && !String.IsNullOrEmpty(args[0]))
+            if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
                 id = Convert.ToUInt32(args[0]);
             if (id <= 0 || id > 16)
             {
@@ -53,29 +54,31 @@ namespace vJoyDemo
                 return;
             }
 
+            var vJoyManager = VJoyControllerManager.GetManager();
+
             // Get the driver attributes (Vendor ID, Product ID, Version Number)
-            if (!joystick.vJoyEnabled())
+            if (!vJoyManager.IsVJoyEnabled)
             {
                 Console.WriteLine("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
                 return;
             }
             else
-                Console.WriteLine("Vendor: {0}\nProduct :{1}\nVersion Number:{2}\n", joystick.GetvJoyManufacturerString(), joystick.GetvJoyProductString(), joystick.GetvJoySerialNumberString());
+                Console.WriteLine("Vendor: {0}\nProduct :{1}\nVersion Number:{2}\n", vJoyManager.VJoyManufacturerString, vJoyManager.VJoyProductString, vJoyManager.VJoySerialNumberString);
 
             // Get the state of the requested device
-            VjdStat status = joystick.GetVJDStatus(id);
+            var status = vJoyManager.GetVJDStatus(id).ToString();
             switch (status)
             {
-                case VjdStat.VJD_STAT_OWN:
+                case "VJD_STAT_OWN":
                     Console.WriteLine("vJoy Device {0} is already owned by this feeder\n", id);
                     break;
-                case VjdStat.VJD_STAT_FREE:
+                case "VJD_STAT_FREE":
                     Console.WriteLine("vJoy Device {0} is free\n", id);
                     break;
-                case VjdStat.VJD_STAT_BUSY:
+                case "VJD_STAT_BUSY":
                     Console.WriteLine("vJoy Device {0} is already owned by another feeder\nCannot continue\n", id);
                     return;
-                case VjdStat.VJD_STAT_MISS:
+                case "VJD_STAT_MISS":
                     Console.WriteLine("vJoy Device {0} is not installed or disabled\nCannot continue\n", id);
                     return;
                 default:
@@ -83,16 +86,27 @@ namespace vJoyDemo
                     return;
             };
 
+            var joyCon = vJoyManager.GetController(id);
+
+            // Acquire the target
+            if (joyCon == null)
+            {
+                Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
+                return;
+            }
+            else
+                Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
+
             // Check which axes are supported
-            bool AxisX = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_X);
-            bool AxisY = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Y);
-            bool AxisZ = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Z);
-            bool AxisRX = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RX);
-            bool AxisRZ = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RZ);
+            bool AxisX = joyCon.HasAxisX;
+            bool AxisY = joyCon.HasAxisY;
+            bool AxisZ = joyCon.HasAxisZ;
+            bool AxisRX = joyCon.HasAxisRx;
+            bool AxisRZ = joyCon.HasAxisRz;
             // Get the number of buttons and POV Hat switchessupported by this vJoy device
-            int nButtons = joystick.GetVJDButtonNumber(id);
-            int ContPovNumber = joystick.GetVJDContPovNumber(id);
-            int DiscPovNumber = joystick.GetVJDDiscPovNumber(id);
+            int nButtons = joyCon.ButtonCount;
+            int ContPovNumber = joyCon.ContPovCount;
+            int DiscPovNumber = joyCon.DiscPovCount;
 
             // Print results
             Console.WriteLine("\nvJoy Device {0} capabilities:\n", id);
@@ -106,29 +120,20 @@ namespace vJoyDemo
             Console.WriteLine("Axis Rz\t\t{0}\n", AxisRZ ? "Yes" : "No");
 
             // Test if DLL matches the driver
-            UInt32 DllVer = 0, DrvVer = 0;
-            bool match = joystick.DriverMatch(ref DllVer, ref DrvVer);
+            bool match = vJoyManager.DriverMatch;
             if (match)
-                Console.WriteLine("Version of Driver Matches DLL Version ({0:X})\n", DllVer);
+                Console.WriteLine("Version of Driver Matches DLL Version ({0:X})\n", vJoyManager.DllVer);
             else
-                Console.WriteLine("Version of Driver ({0:X}) does NOT match DLL Version ({1:X})\n", DrvVer, DllVer);
-
-
-            // Acquire the target
-            if ((status == VjdStat.VJD_STAT_OWN) || ((status == VjdStat.VJD_STAT_FREE) && (!joystick.AcquireVJD(id))))
-            {
-                Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
-                return;
-            }
-            else
-                Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
+                Console.WriteLine("Version of Driver ({0:X}) does NOT match DLL Version ({1:X})\n", vJoyManager.DrvVer, vJoyManager.DllVer);
 
             Console.WriteLine("\npress enter to stat feeding");
             Console.ReadKey(true);
 
+            Console.WriteLine("\nfeeding……");
+
             int X, Y, Z, ZR, XR;
             uint count = 0;
-            long maxval = 0;
+            long maxval = joyCon.AxisMaxValue ?? 0;
 
             X = 20;
             Y = 30;
@@ -136,79 +141,269 @@ namespace vJoyDemo
             XR = 60;
             ZR = 80;
 
-            joystick.GetVJDAxisMax(id, HID_USAGES.HID_USAGE_X, ref maxval);
+            var cancel = new CancellationTokenSource();
+            var res = false;
+            var task = Task.Run(() =>
+            {
+                // Feed the device in endless loop
+                while (!cancel.IsCancellationRequested)
+                {
+                    // Set position of 4 axes
+                    res = joyCon.SetAxisX(X);
+                    res = joyCon.SetAxisY(Y);
+                    res = joyCon.SetAxisZ(Z);
+                    res = joyCon.SetAxisRx(XR);
+                    res = joyCon.SetAxisRz(ZR);
+
+                    // Press/Release Buttons
+                    res = joyCon.ButtonDown(count / 50);
+                    res = joyCon.ButtonUp(1 + count / 50);
+
+                    // If Continuous POV hat switches installed - make them go round
+                    // For high values - put the switches in neutral state
+                    if (joyCon.ContPovCount > 0)
+                    {
+                        if ((count * 70) < 30000)
+                        {
+                            res = joyCon.SetContPov(((int)count * 70), 1);
+                            res = joyCon.SetContPov(((int)count * 70) + 2000, 2);
+                            res = joyCon.SetContPov(((int)count * 70) + 4000, 3);
+                            res = joyCon.SetContPov(((int)count * 70) + 6000, 4);
+                        }
+                        else
+                        {
+                            res = joyCon.SetContPov(-1, 1);
+                            res = joyCon.SetContPov(-1, 2);
+                            res = joyCon.SetContPov(-1, 3);
+                            res = joyCon.SetContPov(-1, 4);
+                        };
+                    };
+
+                    // If Discrete POV hat switches installed - make them go round
+                    // From time to time - put the switches in neutral state
+                    if (joyCon.DiscPovCount > 0)
+                    {
+                        if (count < 550)
+                        {
+                            res = joyCon.SetDiscPov((((int)count / 20) + 0) % 4, 1);
+                            res = joyCon.SetDiscPov((((int)count / 20) + 1) % 4, 2);
+                            res = joyCon.SetDiscPov((((int)count / 20) + 2) % 4, 3);
+                            res = joyCon.SetDiscPov((((int)count / 20) + 3) % 4, 4);
+                        }
+                        else
+                        {
+                            res = joyCon.SetDiscPov(-1, 1);
+                            res = joyCon.SetDiscPov(-1, 2);
+                            res = joyCon.SetDiscPov(-1, 3);
+                            res = joyCon.SetDiscPov(-1, 4);
+                        };
+                    };
+
+                    System.Threading.Thread.Sleep(20);
+                    X += 150; if (X > maxval) X = 0;
+                    Y += 250; if (Y > maxval) Y = 0;
+                    Z += 350; if (Z > maxval) Z = 0;
+                    XR += 220; if (XR > maxval) XR = 0;
+                    ZR += 200; if (ZR > maxval) ZR = 0;
+                    count++;
+
+                    if (count > 640)
+                        count = 0;
+                }
+
+                joyCon.Reset();
+            }, cancel.Token);
+
+            Console.WriteLine("\npress enter to stop feeding");
+            Console.ReadKey(true);
+            cancel.Cancel();
+
+            await task;
+
+            Console.WriteLine("\nfeeding stoped");
+            Console.WriteLine("\npress enter to exit");
+            Console.ReadKey(true);
+
+            #endregion
+
+            #region 原版代码
+
+            // Declaring one joystick (Device id 1) and a position structure. 
+            //static public vJoy joystick;
+            //static public vJoy.JoystickState iReport;
+
+            // Create one joystick object and a position structure.
+            //            joystick = new vJoy();
+            //            iReport = new vJoy.JoystickState();
+
+
+            //            // Device ID can only be in the range 1-16
+            //            if (args.Length > 0 && !String.IsNullOrEmpty(args[0]))
+            //                id = Convert.ToUInt32(args[0]);
+            //            if (id <= 0 || id > 16)
+            //            {
+            //                Console.WriteLine("Illegal device ID {0}\nExit!", id);
+            //                return;
+            //            }
+
+            //            // Get the driver attributes (Vendor ID, Product ID, Version Number)
+            //            if (!joystick.vJoyEnabled())
+            //            {
+            //                Console.WriteLine("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
+            //                return;
+            //            }
+            //            else
+            //                Console.WriteLine("Vendor: {0}\nProduct :{1}\nVersion Number:{2}\n", joystick.GetvJoyManufacturerString(), joystick.GetvJoyProductString(), joystick.GetvJoySerialNumberString());
+
+            //            // Get the state of the requested device
+            //            VjdStat status = joystick.GetVJDStatus(id);
+            //            switch (status)
+            //            {
+            //                case VjdStat.VJD_STAT_OWN:
+            //                    Console.WriteLine("vJoy Device {0} is already owned by this feeder\n", id);
+            //                    break;
+            //                case VjdStat.VJD_STAT_FREE:
+            //                    Console.WriteLine("vJoy Device {0} is free\n", id);
+            //                    break;
+            //                case VjdStat.VJD_STAT_BUSY:
+            //                    Console.WriteLine("vJoy Device {0} is already owned by another feeder\nCannot continue\n", id);
+            //                    return;
+            //                case VjdStat.VJD_STAT_MISS:
+            //                    Console.WriteLine("vJoy Device {0} is not installed or disabled\nCannot continue\n", id);
+            //                    return;
+            //                default:
+            //                    Console.WriteLine("vJoy Device {0} general error\nCannot continue\n", id);
+            //                    return;
+            //            };
+
+            //            // Check which axes are supported
+            //            bool AxisX = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_X);
+            //            bool AxisY = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Y);
+            //            bool AxisZ = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_Z);
+            //            bool AxisRX = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RX);
+            //            bool AxisRZ = joystick.GetVJDAxisExist(id, HID_USAGES.HID_USAGE_RZ);
+            //            // Get the number of buttons and POV Hat switchessupported by this vJoy device
+            //            int nButtons = joystick.GetVJDButtonNumber(id);
+            //            int ContPovNumber = joystick.GetVJDContPovNumber(id);
+            //            int DiscPovNumber = joystick.GetVJDDiscPovNumber(id);
+
+            //            // Print results
+            //            Console.WriteLine("\nvJoy Device {0} capabilities:\n", id);
+            //            Console.WriteLine("Numner of buttons\t\t{0}\n", nButtons);
+            //            Console.WriteLine("Numner of Continuous POVs\t{0}\n", ContPovNumber);
+            //            Console.WriteLine("Numner of Descrete POVs\t\t{0}\n", DiscPovNumber);
+            //            Console.WriteLine("Axis X\t\t{0}\n", AxisX ? "Yes" : "No");
+            //            Console.WriteLine("Axis Y\t\t{0}\n", AxisX ? "Yes" : "No");
+            //            Console.WriteLine("Axis Z\t\t{0}\n", AxisX ? "Yes" : "No");
+            //            Console.WriteLine("Axis Rx\t\t{0}\n", AxisRX ? "Yes" : "No");
+            //            Console.WriteLine("Axis Rz\t\t{0}\n", AxisRZ ? "Yes" : "No");
+
+            //            // Test if DLL matches the driver
+            //            UInt32 DllVer = 0, DrvVer = 0;
+            //            bool match = joystick.DriverMatch(ref DllVer, ref DrvVer);
+            //            if (match)
+            //                Console.WriteLine("Version of Driver Matches DLL Version ({0:X})\n", DllVer);
+            //            else
+            //                Console.WriteLine("Version of Driver ({0:X}) does NOT match DLL Version ({1:X})\n", DrvVer, DllVer);
+
+
+            //            // Acquire the target
+            //            if ((status == VjdStat.VJD_STAT_OWN) || ((status == VjdStat.VJD_STAT_FREE) && (!joystick.AcquireVJD(id))))
+            //            {
+            //                Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
+            //                return;
+            //            }
+            //            else
+            //                Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
+
+            //            Console.WriteLine("\npress enter to stat feeding");
+            //            Console.ReadKey(true);
+
+            //            int X, Y, Z, ZR, XR;
+            //            uint count = 0;
+            //            long maxval = 0;
+
+            //            X = 20;
+            //            Y = 30;
+            //            Z = 40;
+            //            XR = 60;
+            //            ZR = 80;
+
+            //            joystick.GetVJDAxisMax(id, HID_USAGES.HID_USAGE_X, ref maxval);
+
+            #endregion
 
 #if ROBUST
-            bool res;
-            // Reset this device to default values
-            joystick.ResetVJD(id);
+                        bool res;
+                        // Reset this device to default values
+                        joystick.ResetVJD(id);
 
-            // Feed the device in endless loop
-            while (true)
-            {
-                // Set position of 4 axes
-                res = joystick.SetAxis(X, id, HID_USAGES.HID_USAGE_X);
-                res = joystick.SetAxis(Y, id, HID_USAGES.HID_USAGE_Y);
-                res = joystick.SetAxis(Z, id, HID_USAGES.HID_USAGE_Z);
-                res = joystick.SetAxis(XR, id, HID_USAGES.HID_USAGE_RX);
-                res = joystick.SetAxis(ZR, id, HID_USAGES.HID_USAGE_RZ);
+                        // Feed the device in endless loop
+                        while (true)
+                        {
+                            // Set position of 4 axes
+                            res = joystick.SetAxis(X, id, HID_USAGES.HID_USAGE_X);
+                            res = joystick.SetAxis(Y, id, HID_USAGES.HID_USAGE_Y);
+                            res = joystick.SetAxis(Z, id, HID_USAGES.HID_USAGE_Z);
+                            res = joystick.SetAxis(XR, id, HID_USAGES.HID_USAGE_RX);
+                            res = joystick.SetAxis(ZR, id, HID_USAGES.HID_USAGE_RZ);
 
-                // Press/Release Buttons
-                res = joystick.SetBtn(true, id, count / 50);
-                res = joystick.SetBtn(false, id, 1 + count / 50);
+                            // Press/Release Buttons
+                            res = joystick.SetBtn(true, id, count / 50);
+                            res = joystick.SetBtn(false, id, 1 + count / 50);
 
-                // If Continuous POV hat switches installed - make them go round
-                // For high values - put the switches in neutral state
-                if (ContPovNumber > 0)
-                {
-                    if ((count * 70) < 30000)
-                    {
-                        res = joystick.SetContPov(((int)count * 70), id, 1);
-                        res = joystick.SetContPov(((int)count * 70) + 2000, id, 2);
-                        res = joystick.SetContPov(((int)count * 70) + 4000, id, 3);
-                        res = joystick.SetContPov(((int)count * 70) + 6000, id, 4);
-                    }
-                    else
-                    {
-                        res = joystick.SetContPov(-1, id, 1);
-                        res = joystick.SetContPov(-1, id, 2);
-                        res = joystick.SetContPov(-1, id, 3);
-                        res = joystick.SetContPov(-1, id, 4);
-                    };
-                };
+                            // If Continuous POV hat switches installed - make them go round
+                            // For high values - put the switches in neutral state
+                            if (ContPovNumber > 0)
+                            {
+                                if ((count * 70) < 30000)
+                                {
+                                    res = joystick.SetContPov(((int)count * 70), id, 1);
+                                    res = joystick.SetContPov(((int)count * 70) + 2000, id, 2);
+                                    res = joystick.SetContPov(((int)count * 70) + 4000, id, 3);
+                                    res = joystick.SetContPov(((int)count * 70) + 6000, id, 4);
+                                }
+                                else
+                                {
+                                    res = joystick.SetContPov(-1, id, 1);
+                                    res = joystick.SetContPov(-1, id, 2);
+                                    res = joystick.SetContPov(-1, id, 3);
+                                    res = joystick.SetContPov(-1, id, 4);
+                                };
+                            };
 
-                // If Discrete POV hat switches installed - make them go round
-                // From time to time - put the switches in neutral state
-                if (DiscPovNumber > 0)
-                {
-                    if (count < 550)
-                    {
-                        joystick.SetDiscPov((((int)count / 20) + 0) % 4, id, 1);
-                        joystick.SetDiscPov((((int)count / 20) + 1) % 4, id, 2);
-                        joystick.SetDiscPov((((int)count / 20) + 2) % 4, id, 3);
-                        joystick.SetDiscPov((((int)count / 20) + 3) % 4, id, 4);
-                    }
-                    else
-                    {
-                        joystick.SetDiscPov(-1, id, 1);
-                        joystick.SetDiscPov(-1, id, 2);
-                        joystick.SetDiscPov(-1, id, 3);
-                        joystick.SetDiscPov(-1, id, 4);
-                    };
-                };
+                            // If Discrete POV hat switches installed - make them go round
+                            // From time to time - put the switches in neutral state
+                            if (DiscPovNumber > 0)
+                            {
+                                if (count < 550)
+                                {
+                                    joystick.SetDiscPov((((int)count / 20) + 0) % 4, id, 1);
+                                    joystick.SetDiscPov((((int)count / 20) + 1) % 4, id, 2);
+                                    joystick.SetDiscPov((((int)count / 20) + 2) % 4, id, 3);
+                                    joystick.SetDiscPov((((int)count / 20) + 3) % 4, id, 4);
+                                }
+                                else
+                                {
+                                    joystick.SetDiscPov(-1, id, 1);
+                                    joystick.SetDiscPov(-1, id, 2);
+                                    joystick.SetDiscPov(-1, id, 3);
+                                    joystick.SetDiscPov(-1, id, 4);
+                                };
+                            };
 
-                System.Threading.Thread.Sleep(20);
-                X += 150; if (X > maxval) X = 0;
-                Y += 250; if (Y > maxval) Y = 0;
-                Z += 350; if (Z > maxval) Z = 0;
-                XR += 220; if (XR > maxval) XR = 0;
-                ZR += 200; if (ZR > maxval) ZR = 0;
-                count++;
+                            System.Threading.Thread.Sleep(20);
+                            X += 150; if (X > maxval) X = 0;
+                            Y += 250; if (Y > maxval) Y = 0;
+                            Z += 350; if (Z > maxval) Z = 0;
+                            XR += 220; if (XR > maxval) XR = 0;
+                            ZR += 200; if (ZR > maxval) ZR = 0;
+                            count++;
 
-                if (count > 640)
-                    count = 0;
+                            if (count > 640)
+                                count = 0;
 
-            } // While (Robust)
+                        } // While (Robust)
 
 #endif // ROBUST
 #if EFFICIENT
