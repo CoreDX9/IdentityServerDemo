@@ -104,7 +104,10 @@ namespace vJoyDemo
             bool AxisY = joyCon.HasAxisY;
             bool AxisZ = joyCon.HasAxisZ;
             bool AxisRX = joyCon.HasAxisRx;
+            bool AxisRY = joyCon.HasAxisRy;
             bool AxisRZ = joyCon.HasAxisRz;
+            bool Slider0 = joyCon.HasSlider0;
+            bool Slider1 = joyCon.HasSlider1;
             // Get the number of buttons and POV Hat switchessupported by this vJoy device
             int nButtons = joyCon.ButtonCount;
             int ContPovNumber = joyCon.ContPovCount;
@@ -119,7 +122,10 @@ namespace vJoyDemo
             Console.WriteLine("Axis Y\t\t{0}\n", AxisX ? "Yes" : "No");
             Console.WriteLine("Axis Z\t\t{0}\n", AxisX ? "Yes" : "No");
             Console.WriteLine("Axis Rx\t\t{0}\n", AxisRX ? "Yes" : "No");
+            Console.WriteLine("Axis Ry\t\t{0}\n", AxisRY ? "Yes" : "No");
             Console.WriteLine("Axis Rz\t\t{0}\n", AxisRZ ? "Yes" : "No");
+            Console.WriteLine("Slider0\t\t{0}\n", Slider0 ? "Yes" : "No");
+            Console.WriteLine("Slider1\t\t{0}\n", Slider1 ? "Yes" : "No");
 
             // Test if DLL matches the driver
             bool match = vJoyManager.DriverMatch;
@@ -136,7 +142,7 @@ namespace vJoyDemo
             var cancel = new CancellationTokenSource();
             var task = Task.Run(() =>
             {
-                int X, Y, Z, ZR, XR;
+                int X, Y, Z, ZR, YR, XR, S0, S1;
                 uint count = 0;
                 long maxval = joyCon.AxisMaxValue ?? 0;
                 var successed = false;
@@ -145,7 +151,10 @@ namespace vJoyDemo
                 Y = 30;
                 Z = 40;
                 XR = 60;
-                ZR = 80;
+                YR = 80;
+                ZR = 100;
+                S0 = 120;
+                S1 = 140;
 
                 // Feed the device in endless loop
                 while (!cancel.IsCancellationRequested)
@@ -155,7 +164,10 @@ namespace vJoyDemo
                     successed = joyCon.SetAxisY(Y);
                     successed = joyCon.SetAxisZ(Z);
                     successed = joyCon.SetAxisRx(XR);
+                    successed = joyCon.SetAxisRy(YR);
                     successed = joyCon.SetAxisRz(ZR);
+                    successed = joyCon.SetSlider0(S0);
+                    successed = joyCon.SetSlider1(S1);
 
                     // Press/Release Buttons
                     successed = joyCon.ButtonDown(count / 50);
@@ -205,8 +217,11 @@ namespace vJoyDemo
                     X += 150; if (X > maxval) X = 0;
                     Y += 250; if (Y > maxval) Y = 0;
                     Z += 350; if (Z > maxval) Z = 0;
-                    XR += 220; if (XR > maxval) XR = 0;
+                    XR += 240; if (XR > maxval) XR = 0;
+                    YR += 220; if (YR > maxval) YR = 0;
                     ZR += 200; if (ZR > maxval) ZR = 0;
+                    S0 += 180; if (S0 > maxval) S0 = 0;
+                    S1 += 160; if (S1 > maxval) S1 = 0;
 
                     count++;
                     if (count > 640) count = 0;

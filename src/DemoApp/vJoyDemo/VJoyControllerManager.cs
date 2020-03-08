@@ -14,7 +14,11 @@ namespace vJoyDemo
         bool HasAxisY { get; }
         bool HasAxisZ { get; }
         bool HasAxisRx { get; }
+        bool HasAxisRy { get; }
         bool HasAxisRz { get; }
+        bool HasSlider0 { get; }
+        bool HasSlider1 { get; }
+        bool HasWheel { get; }
         int ButtonCount { get; }
         int ContPovCount { get; }
         int DiscPovCount { get; }
@@ -26,7 +30,11 @@ namespace vJoyDemo
         bool SetAxisY(int value);
         bool SetAxisZ(int value);
         bool SetAxisRx(int value);
+        bool SetAxisRy(int value);
         bool SetAxisRz(int value);
+        bool SetSlider0(int value);
+        bool SetSlider1(int value);
+        bool SetWheel(int value);
         bool ButtonDown(uint btnNo);
         bool ButtonUp(uint btnNo);
         bool PressButton(uint btnNo, int milliseconds);
@@ -159,8 +167,6 @@ namespace vJoyDemo
             private readonly Type _hidUsagesEnumType;
             private readonly object _joystick;
             private readonly object[] _axisEnumValues;
-            private bool _hasRelinquished = false;
-
             private readonly Delegate _setAxisFunc;
             private readonly Func<bool, uint, uint, bool> _setBtnFunc;
             private readonly Func<int, uint, uint, bool> _setContPovFunc;
@@ -182,14 +188,22 @@ namespace vJoyDemo
                         Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Y"),
                         Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Z"),
                         Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RX"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RZ")
+                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RY"),
+                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RZ"),
+                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL0"),
+                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL1"),
+                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_WHL")
                     };
 
                 HasAxisX = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[0] });
                 HasAxisY = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[1] });
                 HasAxisZ = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[2] });
                 HasAxisRx = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[3] });
-                HasAxisRz = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[4] });
+                HasAxisRy = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[4] });
+                HasAxisRz = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[5] });
+                HasSlider0 = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[6] });
+                HasSlider1 = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[7] });
+                HasWheel = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[8] });
                 // Get the number of buttons and POV Hat switchessupported by this vJoy device
                 ButtonCount = (int)_vJoyType.GetMethod("GetVJDButtonNumber").Invoke(_joystick, new object[] { Id });
                 ContPovCount = (int)_vJoyType.GetMethod("GetVJDContPovNumber").Invoke(_joystick, new object[] { Id });
@@ -212,12 +226,16 @@ namespace vJoyDemo
             }
 
             public uint Id { get; }
-            public bool HasRelinquished => _hasRelinquished;
+            public bool HasRelinquished { get; private set; } = false;
             public bool HasAxisX { get; }
             public bool HasAxisY { get; }
             public bool HasAxisZ { get; }
             public bool HasAxisRx { get; }
+            public bool HasAxisRy { get; }
             public bool HasAxisRz { get; }
+            public bool HasSlider0 { get; }
+            public bool HasSlider1 { get; }
+            public bool HasWheel { get; }
             public int ButtonCount { get; }
             public int ContPovCount { get; }
             public int DiscPovCount { get; }
@@ -227,69 +245,93 @@ namespace vJoyDemo
 
             public void Relinquish()
             {
-                _hasRelinquished = true;
+                HasRelinquished = true;
                 _relinquishFunc(Id);
             }
 
             public bool SetAxisX(int value)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || !HasAxisX || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[0]);
             }
 
             public bool SetAxisY(int value)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || !HasAxisY || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[1]);
             }
 
             public bool SetAxisZ(int value)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || !HasAxisZ || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[2]);
             }
 
             public bool SetAxisRx(int value)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || !HasAxisRx || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[3]);
+            }
+
+            public bool SetAxisRy(int value)
+            {
+                if (HasRelinquished || !HasAxisRy || value > AxisMaxValue) return false;
+                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[4]);
             }
 
             public bool SetAxisRz(int value)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
-                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[4]);
+                if (HasRelinquished || !HasAxisRz || value > AxisMaxValue) return false;
+                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[5]);
+            }
+
+            public bool SetSlider0(int value)
+            {
+                if (HasRelinquished || !HasSlider0 || value > AxisMaxValue) return false;
+                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[6]);
+            }
+
+            public bool SetSlider1(int value)
+            {
+                if (HasRelinquished || !HasSlider1 || value > AxisMaxValue) return false;
+                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[7]);
+            }
+
+            public bool SetWheel(int value)
+            {
+                if (HasRelinquished || !HasWheel || value > AxisMaxValue) return false;
+                return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[8]);
             }
 
             public bool ButtonDown(uint btnNo)
             {
-                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 return _setBtnFunc(true, Id, btnNo);
             }
 
             public bool ButtonUp(uint btnNo)
             {
-                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 return _setBtnFunc(false, Id, btnNo);
             }
 
             public bool PressButton(uint btnNo, int milliseconds = 50)
             {
-                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                _setBtnFunc.DynamicInvoke(true, Id, btnNo);
+                if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                _setBtnFunc(true, Id, btnNo);
                 System.Threading.Thread.Sleep(milliseconds);
                 return _setBtnFunc(false, Id, btnNo);
             }
 
             public bool SetContPov(int value, uint povNo)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || ContPovCount < 1 || value > AxisMaxValue) return false;
                 return _setContPovFunc(value, Id, povNo);
             }
 
             public bool SetDiscPov(int value, uint povNo)
             {
-                if (_hasRelinquished || value > AxisMaxValue) return false;
+                if (HasRelinquished || DiscPovCount < 1 || value > AxisMaxValue) return false;
                 return _setDiscPovFunc(value, Id, povNo);
             }
         }
