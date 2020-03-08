@@ -6,19 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-  
-    <None Update="x64\vJoyInterface.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x64\vJoyInterfaceWrap.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x86\vJoyInterface.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x86\vJoyInterfaceWrap.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\Common\CoreDX.vJoy.Wrapper\CoreDX.vJoy.Wrapper.csproj" />
   </ItemGroup>
 
 </Project>
