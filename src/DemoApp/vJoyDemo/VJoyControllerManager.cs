@@ -20,6 +20,7 @@ namespace vJoyDemo
         long? AxisMaxValue { get; }
 
         bool Reset();
+        void Relinquish();
         bool SetAxisX(int value);
         bool SetAxisY(int value);
         bool SetAxisZ(int value);
@@ -112,9 +113,10 @@ namespace vJoyDemo
             return _getVJDStatusFunc.DynamicInvoke(id);
         }
 
-        public IVJoyController GetController(uint id)
+        public IVJoyController AcquireController(uint id)
         {
             if (!IsVJoyEnabled) return null;
+            if (id == 0 || id > 16) return null;
 
             var status = _getVJDStatusFunc.DynamicInvoke(id).ToString();
             bool acquireSuccessed;
@@ -156,14 +158,14 @@ namespace vJoyDemo
             private readonly Type _hidUsagesEnumType;
             private readonly object _joystick;
             private readonly object[] _axisEnumValues;
+            private bool _hasRelinquished = false;
 
             private readonly Delegate _setAxisFunc;
-            private readonly Delegate _setBtnFunc;
-            private readonly Delegate _setContPovFunc;
-            private readonly Delegate _setDiscPovFunc;
-            private readonly Delegate _resetFunc;
-
-            delegate bool del(int a);
+            private readonly Func<bool, uint, uint, bool> _setBtnFunc;
+            private readonly Func<int, uint, uint, bool> _setContPovFunc;
+            private readonly Func<int, uint, uint, bool> _setDiscPovFunc;
+            private readonly Func<uint, bool> _resetFunc;
+            private readonly Action<uint> _relinquishFunc;
 
             public VJoyController(uint id, VJoyControllerManager manager)
             {
@@ -196,19 +198,16 @@ namespace vJoyDemo
                 var hasAxis = (bool)_vJoyType.GetMethod("GetVJDAxisMax").Invoke(_joystick, args);
                 AxisMaxValue = hasAxis ? (long)args[2] : (long?)null;
 
-                var funcType = typeof(Func<,>).MakeGenericType(new Type[] { typeof(uint), typeof(bool) });
-                _resetFunc = _vJoyType.GetMethod("ResetVJD").CreateDelegate(funcType, _joystick);
-                _resetFunc.DynamicInvoke(Id);
+                _resetFunc = (Func<uint, bool>)_vJoyType.GetMethod("ResetVJD").CreateDelegate(typeof(Func<uint, bool>), _joystick);
+                _resetFunc(Id);
 
-                funcType = typeof(Func<,,,>).MakeGenericType(new Type[] { typeof(int), typeof(uint), _hidUsagesEnumType, typeof(bool) });
+                _setBtnFunc = (Func<bool, uint, uint, bool>)_vJoyType.GetMethod("SetBtn").CreateDelegate(typeof(Func<bool, uint, uint, bool>), _joystick);
+                _setContPovFunc = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetContPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
+                _setDiscPovFunc = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetDiscPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
+                _relinquishFunc = (Action<uint>)_vJoyType.GetMethod("RelinquishVJD").CreateDelegate(typeof(Action<uint>), _joystick);
+
+                var funcType = typeof(Func<,,,>).MakeGenericType(new Type[] { typeof(int), typeof(uint), _hidUsagesEnumType, typeof(bool) });
                 _setAxisFunc = _vJoyType.GetMethod("SetAxis").CreateDelegate(funcType, _joystick);
-
-                funcType = typeof(Func<,,,>).MakeGenericType(new Type[] { typeof(bool), typeof(uint), typeof(uint), typeof(bool) });
-                _setBtnFunc = _vJoyType.GetMethod("SetBtn").CreateDelegate(funcType, _joystick);
-
-                funcType = typeof(Func<,,,>).MakeGenericType(new Type[] { typeof(int), typeof(uint), typeof(uint), typeof(bool) });
-                _setContPovFunc = _vJoyType.GetMethod("SetContPov").CreateDelegate(funcType, _joystick);
-                _setDiscPovFunc = _vJoyType.GetMethod("SetDiscPov").CreateDelegate(funcType, _joystick);
             }
 
             public uint Id { get; }
@@ -222,69 +221,74 @@ namespace vJoyDemo
             public int DiscPovCount { get; }
             public long? AxisMaxValue { get; }
 
-            public bool Reset()
+            public bool Reset() => _resetFunc(Id);
+
+            public void Relinquish()
             {
-                return (bool)_resetFunc.DynamicInvoke(Id);
+                _hasRelinquished = true;
+                _relinquishFunc(Id);
             }
 
             public bool SetAxisX(int value)
             {
-                if (value > AxisMaxValue) return false;
+                if (_hasRelinquished || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[0]);
             }
 
             public bool SetAxisY(int value)
             {
-                if (value > AxisMaxValue) return false;
+                if (_hasRelinquished || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[1]);
             }
 
             public bool SetAxisZ(int value)
             {
-                if (value > AxisMaxValue) return false;
+                if (_hasRelinquished || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[2]);
             }
 
             public bool SetAxisRx(int value)
             {
-                if (value > AxisMaxValue) return false;
+                if (_hasRelinquished || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[3]);
             }
 
             public bool SetAxisRz(int value)
             {
-                if (value > AxisMaxValue) return false;
+                if (_hasRelinquished || value > AxisMaxValue) return false;
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[4]);
             }
 
             public bool ButtonDown(uint btnNo)
             {
-                if (btnNo == 0 || btnNo > ButtonCount) return false;
-                return (bool)_setBtnFunc.DynamicInvoke(true, Id, btnNo);
+                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                return _setBtnFunc(true, Id, btnNo);
             }
 
             public bool ButtonUp(uint btnNo)
             {
-                if (btnNo == 0 || btnNo > ButtonCount) return false;
-                return (bool)_setBtnFunc.DynamicInvoke(false, Id, btnNo);
+                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                return _setBtnFunc(false, Id, btnNo);
             }
 
             public bool PressButton(uint btnNo, int milliseconds = 50)
             {
-                if (btnNo == 0 || btnNo > ButtonCount) return false;
+                if (_hasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 _setBtnFunc.DynamicInvoke(true, Id, btnNo);
                 System.Threading.Thread.Sleep(milliseconds);
-                return (bool)_setBtnFunc.DynamicInvoke(false, Id, btnNo);
+                return _setBtnFunc(false, Id, btnNo);
             }
 
             public bool SetContPov(int value, uint povNo)
             {
-                return (bool)_setContPovFunc.DynamicInvoke(value, Id, povNo);
+                if (_hasRelinquished || value > AxisMaxValue) return false;
+                return _setContPovFunc(value, Id, povNo);
             }
 
             public bool SetDiscPov(int value, uint povNo)
             {
-                return (bool)_setDiscPovFunc.DynamicInvoke(value, Id, povNo);
+                if (_hasRelinquished || value > AxisMaxValue) return false;
+                return _setDiscPovFunc(value, Id, povNo);
             }
         }
     }

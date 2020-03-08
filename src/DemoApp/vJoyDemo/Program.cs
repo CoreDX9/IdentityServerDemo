@@ -59,6 +59,9 @@ namespace vJoyDemo
             // Get the driver attributes (Vendor ID, Product ID, Version Number)
             if (!vJoyManager.IsVJoyEnabled)
             {
+                VJoyControllerManager.ReleaseManager();
+                vJoyManager = null;
+
                 Console.WriteLine("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
                 return;
             }
@@ -86,9 +89,8 @@ namespace vJoyDemo
                     return;
             };
 
-            var joyCon = vJoyManager.GetController(id);
-
             // Acquire the target
+            var joyCon = vJoyManager.AcquireController(id);
             if (joyCon == null)
             {
                 Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
@@ -131,33 +133,33 @@ namespace vJoyDemo
 
             Console.WriteLine("\nfeeding……");
 
-            int X, Y, Z, ZR, XR;
-            uint count = 0;
-            long maxval = joyCon.AxisMaxValue ?? 0;
-
-            X = 20;
-            Y = 30;
-            Z = 40;
-            XR = 60;
-            ZR = 80;
-
             var cancel = new CancellationTokenSource();
-            var res = false;
             var task = Task.Run(() =>
             {
+                int X, Y, Z, ZR, XR;
+                uint count = 0;
+                long maxval = joyCon.AxisMaxValue ?? 0;
+                var successed = false;
+
+                X = 20;
+                Y = 30;
+                Z = 40;
+                XR = 60;
+                ZR = 80;
+
                 // Feed the device in endless loop
                 while (!cancel.IsCancellationRequested)
                 {
                     // Set position of 4 axes
-                    res = joyCon.SetAxisX(X);
-                    res = joyCon.SetAxisY(Y);
-                    res = joyCon.SetAxisZ(Z);
-                    res = joyCon.SetAxisRx(XR);
-                    res = joyCon.SetAxisRz(ZR);
+                    successed = joyCon.SetAxisX(X);
+                    successed = joyCon.SetAxisY(Y);
+                    successed = joyCon.SetAxisZ(Z);
+                    successed = joyCon.SetAxisRx(XR);
+                    successed = joyCon.SetAxisRz(ZR);
 
                     // Press/Release Buttons
-                    res = joyCon.ButtonDown(count / 50);
-                    res = joyCon.ButtonUp(1 + count / 50);
+                    successed = joyCon.ButtonDown(count / 50);
+                    successed = joyCon.ButtonUp(1 + count / 50);
 
                     // If Continuous POV hat switches installed - make them go round
                     // For high values - put the switches in neutral state
@@ -165,17 +167,17 @@ namespace vJoyDemo
                     {
                         if ((count * 70) < 30000)
                         {
-                            res = joyCon.SetContPov(((int)count * 70), 1);
-                            res = joyCon.SetContPov(((int)count * 70) + 2000, 2);
-                            res = joyCon.SetContPov(((int)count * 70) + 4000, 3);
-                            res = joyCon.SetContPov(((int)count * 70) + 6000, 4);
+                            successed = joyCon.SetContPov(((int)count * 70), 1);
+                            successed = joyCon.SetContPov(((int)count * 70) + 2000, 2);
+                            successed = joyCon.SetContPov(((int)count * 70) + 4000, 3);
+                            successed = joyCon.SetContPov(((int)count * 70) + 6000, 4);
                         }
                         else
                         {
-                            res = joyCon.SetContPov(-1, 1);
-                            res = joyCon.SetContPov(-1, 2);
-                            res = joyCon.SetContPov(-1, 3);
-                            res = joyCon.SetContPov(-1, 4);
+                            successed = joyCon.SetContPov(-1, 1);
+                            successed = joyCon.SetContPov(-1, 2);
+                            successed = joyCon.SetContPov(-1, 3);
+                            successed = joyCon.SetContPov(-1, 4);
                         };
                     };
 
@@ -185,33 +187,33 @@ namespace vJoyDemo
                     {
                         if (count < 550)
                         {
-                            res = joyCon.SetDiscPov((((int)count / 20) + 0) % 4, 1);
-                            res = joyCon.SetDiscPov((((int)count / 20) + 1) % 4, 2);
-                            res = joyCon.SetDiscPov((((int)count / 20) + 2) % 4, 3);
-                            res = joyCon.SetDiscPov((((int)count / 20) + 3) % 4, 4);
+                            successed = joyCon.SetDiscPov((((int)count / 20) + 0) % 4, 1);
+                            successed = joyCon.SetDiscPov((((int)count / 20) + 1) % 4, 2);
+                            successed = joyCon.SetDiscPov((((int)count / 20) + 2) % 4, 3);
+                            successed = joyCon.SetDiscPov((((int)count / 20) + 3) % 4, 4);
                         }
                         else
                         {
-                            res = joyCon.SetDiscPov(-1, 1);
-                            res = joyCon.SetDiscPov(-1, 2);
-                            res = joyCon.SetDiscPov(-1, 3);
-                            res = joyCon.SetDiscPov(-1, 4);
+                            successed = joyCon.SetDiscPov(-1, 1);
+                            successed = joyCon.SetDiscPov(-1, 2);
+                            successed = joyCon.SetDiscPov(-1, 3);
+                            successed = joyCon.SetDiscPov(-1, 4);
                         };
                     };
 
-                    System.Threading.Thread.Sleep(20);
+                    Thread.Sleep(20);
                     X += 150; if (X > maxval) X = 0;
                     Y += 250; if (Y > maxval) Y = 0;
                     Z += 350; if (Z > maxval) Z = 0;
                     XR += 220; if (XR > maxval) XR = 0;
                     ZR += 200; if (ZR > maxval) ZR = 0;
-                    count++;
 
-                    if (count > 640)
-                        count = 0;
+                    count++;
+                    if (count > 640) count = 0;
                 }
 
-                joyCon.Reset();
+                successed = joyCon.Reset();
+                joyCon.Relinquish();
             }, cancel.Token);
 
             Console.WriteLine("\npress enter to stop feeding");
