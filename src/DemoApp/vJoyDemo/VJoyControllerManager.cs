@@ -25,6 +25,8 @@ namespace vJoyDemo
         long? AxisMaxValue { get; }
 
         bool Reset();
+        bool ResetButtons();
+        bool ResetPovs();
         void Relinquish();
         bool SetAxisX(int value);
         bool SetAxisY(int value);
@@ -54,8 +56,14 @@ namespace vJoyDemo
         private readonly Type _vJoyType;
         private readonly Type _VjdStatEnumType;
         private readonly Type _hidUsagesEnumType;
+        private readonly object[] _axisEnumValues;
 
         private readonly Delegate _getVJDStatusFunc;
+        private readonly Delegate _getVJDAxisExist;
+        private readonly Func<uint, int> _getVJDButtonNumber;
+        private readonly Func<uint, int> _getVJDContPovNumber;
+        private readonly Func<uint, int> _getVJDDiscPovNumber;
+        private readonly Func<bool> _resetAll;
 
         public bool IsVJoyEnabled { get; }
         public string VJoyManufacturerString { get; }
@@ -76,13 +84,34 @@ namespace vJoyDemo
             _vJoyType = _joystick.GetType();
             _VjdStatEnumType = _vJoyInterfaceWrapAssembly.GetType("VjdStat");
             _hidUsagesEnumType = _vJoyInterfaceWrapAssembly.GetType("HID_USAGES");
+            _axisEnumValues = new[]
+                {
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_X"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Y"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Z"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RX"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RY"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RZ"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL0"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL1"),
+                    Enum.Parse(_hidUsagesEnumType, "HID_USAGE_WHL")
+                };
+
             IsVJoyEnabled = (bool)_vJoyType.GetMethod("vJoyEnabled").Invoke(_joystick, null);
             VJoyManufacturerString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoyManufacturerString").Invoke(_joystick, null) : null;
             VJoyProductString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoyProductString").Invoke(_joystick, null) : null;
             VJoySerialNumberString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoySerialNumberString").Invoke(_joystick, null) : null;
 
+            _getVJDButtonNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDButtonNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
+            _getVJDContPovNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDContPovNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
+            _getVJDDiscPovNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDDiscPovNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
+            _resetAll = (Func<bool>)_vJoyType.GetMethod("ResetAll").CreateDelegate(typeof(Func<bool>), _joystick);
+
             var funcType = typeof(Func<,>).MakeGenericType(new Type[] { typeof(uint), _VjdStatEnumType });
             _getVJDStatusFunc = _vJoyType.GetMethod("GetVJDStatus").CreateDelegate(funcType, _joystick);
+
+            funcType = typeof(Func<,,>).MakeGenericType(new Type[] { typeof(uint), _hidUsagesEnumType, typeof(bool) });
+            _getVJDAxisExist = _vJoyType.GetMethod("GetVJDAxisExist").CreateDelegate(funcType, _joystick);
 
             var args = new object[] { 0u, 0u };
             DriverMatch = (bool)_vJoyType.GetMethod("DriverMatch").Invoke(_joystick, args);
@@ -121,6 +150,16 @@ namespace vJoyDemo
         {
             return _getVJDStatusFunc.DynamicInvoke(id);
         }
+
+        public int GetVJDButtonNumber(uint id) => _getVJDButtonNumber(id);
+
+        public int GetVJDContPovNumber(uint id) => _getVJDContPovNumber(id);
+
+        public int GetVJDDiscPovNumber(uint id) => _getVJDDiscPovNumber(id);
+
+        public bool GetVJDAxisExist(uint id, USAGES usages) => (bool)_getVJDAxisExist.DynamicInvoke(new object[] { id, _axisEnumValues[(int)usages] });
+
+        public bool ResetAll() => _resetAll();
 
         public IVJoyController AcquireController(uint id)
         {
@@ -168,11 +207,13 @@ namespace vJoyDemo
             private readonly object _joystick;
             private readonly object[] _axisEnumValues;
             private readonly Delegate _setAxisFunc;
-            private readonly Func<bool, uint, uint, bool> _setBtnFunc;
-            private readonly Func<int, uint, uint, bool> _setContPovFunc;
-            private readonly Func<int, uint, uint, bool> _setDiscPovFunc;
-            private readonly Func<uint, bool> _resetFunc;
-            private readonly Action<uint> _relinquishFunc;
+            private readonly Func<bool, uint, uint, bool> _setBtn;
+            private readonly Func<int, uint, uint, bool> _setContPov;
+            private readonly Func<int, uint, uint, bool> _setDiscPov;
+            private readonly Func<uint, bool> _reset;
+            private readonly Func<uint, bool> _resetButtons;
+            private readonly Func<uint, bool> _resetPovs;
+            private readonly Action<uint> _relinquish;
 
             public VJoyController(uint id, VJoyControllerManager manager)
             {
@@ -180,46 +221,37 @@ namespace vJoyDemo
                 _vJoyType = manager._vJoyType;
                 _joystick = manager._joystick;
                 _hidUsagesEnumType = manager._hidUsagesEnumType;
+                _axisEnumValues = manager._axisEnumValues;
 
                 // Check which axes are supported
-                _axisEnumValues = new[]
-                    {
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_X"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Y"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_Z"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RX"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RY"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_RZ"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL0"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL1"),
-                        Enum.Parse(_hidUsagesEnumType, "HID_USAGE_WHL")
-                    };
 
-                HasAxisX = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[0] });
-                HasAxisY = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[1] });
-                HasAxisZ = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[2] });
-                HasAxisRx = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[3] });
-                HasAxisRy = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[4] });
-                HasAxisRz = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[5] });
-                HasSlider0 = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[6] });
-                HasSlider1 = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[7] });
-                HasWheel = (bool)_vJoyType.GetMethod("GetVJDAxisExist").Invoke(_joystick, new object[] { Id, _axisEnumValues[8] });
+                HasAxisX = manager.GetVJDAxisExist(id, USAGES.X);
+                HasAxisY = manager.GetVJDAxisExist(id, USAGES.Y);
+                HasAxisZ = manager.GetVJDAxisExist(id, USAGES.Z);
+                HasAxisRx = manager.GetVJDAxisExist(id, USAGES.Rx);
+                HasAxisRy = manager.GetVJDAxisExist(id, USAGES.Ry);
+                HasAxisRz = manager.GetVJDAxisExist(id, USAGES.Rz);
+                HasSlider0 = manager.GetVJDAxisExist(id, USAGES.Slider0);
+                HasSlider1 = manager.GetVJDAxisExist(id, USAGES.Slider1);
+                HasWheel = manager.GetVJDAxisExist(id, USAGES.Wheel);
                 // Get the number of buttons and POV Hat switchessupported by this vJoy device
-                ButtonCount = (int)_vJoyType.GetMethod("GetVJDButtonNumber").Invoke(_joystick, new object[] { Id });
-                ContPovCount = (int)_vJoyType.GetMethod("GetVJDContPovNumber").Invoke(_joystick, new object[] { Id });
-                DiscPovCount = (int)_vJoyType.GetMethod("GetVJDDiscPovNumber").Invoke(_joystick, new object[] { Id });
+                ButtonCount = manager.GetVJDButtonNumber(id);
+                ContPovCount = manager.GetVJDContPovNumber(id);
+                DiscPovCount = manager.GetVJDDiscPovNumber(id);
 
                 var args = new object[] { Id, _axisEnumValues[0], 0L };
                 var hasAxis = (bool)_vJoyType.GetMethod("GetVJDAxisMax").Invoke(_joystick, args);
                 AxisMaxValue = hasAxis ? (long)args[2] : (long?)null;
 
-                _resetFunc = (Func<uint, bool>)_vJoyType.GetMethod("ResetVJD").CreateDelegate(typeof(Func<uint, bool>), _joystick);
-                _resetFunc(Id);
+                _reset = (Func<uint, bool>)_vJoyType.GetMethod("ResetVJD").CreateDelegate(typeof(Func<uint, bool>), _joystick);
+                _reset(Id);
 
-                _setBtnFunc = (Func<bool, uint, uint, bool>)_vJoyType.GetMethod("SetBtn").CreateDelegate(typeof(Func<bool, uint, uint, bool>), _joystick);
-                _setContPovFunc = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetContPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
-                _setDiscPovFunc = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetDiscPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
-                _relinquishFunc = (Action<uint>)_vJoyType.GetMethod("RelinquishVJD").CreateDelegate(typeof(Action<uint>), _joystick);
+                _setBtn = (Func<bool, uint, uint, bool>)_vJoyType.GetMethod("SetBtn").CreateDelegate(typeof(Func<bool, uint, uint, bool>), _joystick);
+                _setContPov = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetContPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
+                _setDiscPov = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetDiscPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
+                _relinquish = (Action<uint>)_vJoyType.GetMethod("RelinquishVJD").CreateDelegate(typeof(Action<uint>), _joystick);
+                _resetButtons = (Func<uint, bool>)_vJoyType.GetMethod("ResetButtons").CreateDelegate(typeof(Func<uint, bool>), _joystick);
+                _resetPovs = (Func<uint, bool>)_vJoyType.GetMethod("ResetPovs").CreateDelegate(typeof(Func<uint, bool>), _joystick);
 
                 var funcType = typeof(Func<,,,>).MakeGenericType(new Type[] { typeof(int), typeof(uint), _hidUsagesEnumType, typeof(bool) });
                 _setAxisFunc = _vJoyType.GetMethod("SetAxis").CreateDelegate(funcType, _joystick);
@@ -241,12 +273,16 @@ namespace vJoyDemo
             public int DiscPovCount { get; }
             public long? AxisMaxValue { get; }
 
-            public bool Reset() => _resetFunc(Id);
+            public bool Reset() => _reset(Id);
+
+            public bool ResetButtons() => _resetButtons(Id);
+
+            public bool ResetPovs() => _resetPovs(Id);
 
             public void Relinquish()
             {
                 HasRelinquished = true;
-                _relinquishFunc(Id);
+                _relinquish(Id);
             }
 
             public bool SetAxisX(int value)
@@ -306,34 +342,47 @@ namespace vJoyDemo
             public bool ButtonDown(uint btnNo)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                return _setBtnFunc(true, Id, btnNo);
+                return _setBtn(true, Id, btnNo);
             }
 
             public bool ButtonUp(uint btnNo)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                return _setBtnFunc(false, Id, btnNo);
+                return _setBtn(false, Id, btnNo);
             }
 
             public bool PressButton(uint btnNo, int milliseconds = 50)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                _setBtnFunc(true, Id, btnNo);
+                _setBtn(true, Id, btnNo);
                 System.Threading.Thread.Sleep(milliseconds);
-                return _setBtnFunc(false, Id, btnNo);
+                return _setBtn(false, Id, btnNo);
             }
 
             public bool SetContPov(int value, uint povNo)
             {
                 if (HasRelinquished || ContPovCount < 1 || value > AxisMaxValue) return false;
-                return _setContPovFunc(value, Id, povNo);
+                return _setContPov(value, Id, povNo);
             }
 
             public bool SetDiscPov(int value, uint povNo)
             {
                 if (HasRelinquished || DiscPovCount < 1 || value > AxisMaxValue) return false;
-                return _setDiscPovFunc(value, Id, povNo);
+                return _setDiscPov(value, Id, povNo);
             }
+        }
+
+        public enum USAGES
+        {
+            X = 0,
+            Y,
+            Z,
+            Rx,
+            Ry,
+            Rz,
+            Slider0,
+            Slider1,
+            Wheel
         }
     }
 }
