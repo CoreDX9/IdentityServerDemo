@@ -11,7 +11,7 @@
     <PackageTags>vJoy;joystick;gamepad;virtual-joysticks</PackageTags>
     <Company />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
