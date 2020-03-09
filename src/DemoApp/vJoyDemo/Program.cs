@@ -22,13 +22,10 @@
 //#define EFFICIENT
 
 using System;
-using System.Diagnostics;
-using System.Reflection;
-//using vJoyInterfaceWrap;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using CoreDX.vJoy.Wrapper;
+//using vJoyInterfaceWrap;
 
 //需要先安装 vJoy http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
 //原版代码需要根据系统复制 x86 或 x64 文件夹中的程序集到编译的程序文件夹并添加程序集引用

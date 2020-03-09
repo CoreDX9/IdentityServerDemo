@@ -2,24 +2,27 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Title>CoreDX.vJoy.Wrapper</Title>
     <Authors>CoreDX</Authors>
-    <Description>vJoy .Net Core Wrapper</Description>
+    <Description>vJoy .Net Core Wrapper. Support AnyCPU.</Description>
+    <RepositoryUrl>https://github.com/CoreDX9/IdentityServerDemo/tree/NetCore_3.0/src/Common/CoreDX.vJoy.Wrapper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/CoreDX9/IdentityServerDemo</PackageProjectUrl>
+    <PackageTags>vJoy;joystick;gamepad;virtual-joysticks</PackageTags>
+    <Company />
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="x64\vJoyInterface.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x64\vJoyInterfaceWrap.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x86\vJoyInterface.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="x86\vJoyInterfaceWrap.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="x64\*.dll" Pack="true" PackageCopyToOutput="true" PackagePath="x64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x86\*.dll" Pack="true" PackageCopyToOutput="true" PackagePath="x86">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CoreDX.vJoy.Wrapper.targets" Pack="true" PackageCopyToOutput="true" PackagePath="build/">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
