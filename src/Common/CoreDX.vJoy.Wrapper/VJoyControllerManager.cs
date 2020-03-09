@@ -3,10 +3,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CoreDX.vJoy.Wrapper
 {
-    public interface IVJoyController
+    public interface IVJoyController : IDisposable
     {
         uint Id { get; }
         bool HasRelinquished { get; }
@@ -37,33 +39,34 @@ namespace CoreDX.vJoy.Wrapper
         bool SetSlider0(int value);
         bool SetSlider1(int value);
         bool SetWheel(int value);
-        bool ButtonDown(uint btnNo);
-        bool ButtonUp(uint btnNo);
-        bool PressButton(uint btnNo, int milliseconds);
+        bool PressButton(uint btnNo);
+        bool ReleaseButton(uint btnNo);
+        bool ClickButton(uint btnNo, int milliseconds);
+        Task<bool> ClickButtonAsync(uint btnNo, int milliseconds, CancellationToken token);
         bool SetContPov(int value, uint povNo);
         bool SetDiscPov(int value, uint povNo);
     }
 
-    public class VJoyControllerManager
+    public class VJoyControllerManager : IDisposable
     {
         private static readonly bool _is64BitRuntime = IntPtr.Size == 8;
         private static readonly object _locker = new object();
         private static VJoyControllerManager _manager = null;
 
-        private readonly VJoyAssemblyLoadContext _vJoyAssemblyLoadContext;
-        private readonly Assembly _vJoyInterfaceWrapAssembly;
-        private readonly object _joystick;
-        private readonly Type _vJoyType;
-        private readonly Type _VjdStatEnumType;
-        private readonly Type _hidUsagesEnumType;
-        private readonly object[] _axisEnumValues;
+        private VJoyAssemblyLoadContext _vJoyAssemblyLoadContext;
+        private Assembly _vJoyInterfaceWrapAssembly;
+        private object _joystick;
+        private Type _vJoyType;
+        private Type _VjdStatEnumType;
+        private Type _hidUsagesEnumType;
+        private object[] _axisEnumValues;
 
-        private readonly Delegate _getVJDStatusFunc;
-        private readonly Delegate _getVJDAxisExist;
-        private readonly Func<uint, int> _getVJDButtonNumber;
-        private readonly Func<uint, int> _getVJDContPovNumber;
-        private readonly Func<uint, int> _getVJDDiscPovNumber;
-        private readonly Func<bool> _resetAll;
+        private Delegate _getVJDStatusFunc;
+        private Delegate _getVJDAxisExist;
+        private Func<uint, int> _getVJDButtonNumber;
+        private Func<uint, int> _getVJDContPovNumber;
+        private Func<uint, int> _getVJDDiscPovNumber;
+        private Func<bool> _resetAll;
 
         public bool IsVJoyEnabled { get; }
         public string VJoyManufacturerString { get; }
@@ -82,6 +85,10 @@ namespace CoreDX.vJoy.Wrapper
             _vJoyInterfaceWrapAssembly = _vJoyAssemblyLoadContext.LoadFromAssemblyPath(filePath);
             _joystick = Activator.CreateInstance(_vJoyInterfaceWrapAssembly.GetTypes().Single(t => t.Name == "vJoy"));
             _vJoyType = _joystick.GetType();
+
+            IsVJoyEnabled = (bool)_vJoyType.GetMethod("vJoyEnabled").Invoke(_joystick, null);
+            if (!IsVJoyEnabled) return;
+
             _VjdStatEnumType = _vJoyInterfaceWrapAssembly.GetType("VjdStat");
             _hidUsagesEnumType = _vJoyInterfaceWrapAssembly.GetType("HID_USAGES");
             _axisEnumValues = new[]
@@ -97,10 +104,9 @@ namespace CoreDX.vJoy.Wrapper
                     Enum.Parse(_hidUsagesEnumType, "HID_USAGE_WHL")
                 };
 
-            IsVJoyEnabled = (bool)_vJoyType.GetMethod("vJoyEnabled").Invoke(_joystick, null);
-            VJoyManufacturerString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoyManufacturerString").Invoke(_joystick, null) : null;
-            VJoyProductString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoyProductString").Invoke(_joystick, null) : null;
-            VJoySerialNumberString = IsVJoyEnabled ? (string)_vJoyType.GetMethod("GetvJoySerialNumberString").Invoke(_joystick, null) : null;
+            VJoyManufacturerString = (string)_vJoyType.GetMethod("GetvJoyManufacturerString").Invoke(_joystick, null);
+            VJoyProductString = (string)_vJoyType.GetMethod("GetvJoyProductString").Invoke(_joystick, null);
+            VJoySerialNumberString = (string)_vJoyType.GetMethod("GetvJoySerialNumberString").Invoke(_joystick, null);
 
             _getVJDButtonNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDButtonNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
             _getVJDContPovNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDContPovNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
@@ -135,6 +141,19 @@ namespace CoreDX.vJoy.Wrapper
                 lock (_locker)
                     if (_manager != null)
                     {
+                        _manager._axisEnumValues = null;
+                        _manager._getVJDAxisExist = null;
+                        _manager._getVJDButtonNumber = null;
+                        _manager._getVJDContPovNumber = null;
+                        _manager._getVJDDiscPovNumber = null;
+                        _manager._getVJDStatusFunc = null;
+                        _manager._hidUsagesEnumType = null;
+                        _manager._joystick = null;
+                        _manager._resetAll = null;
+                        _manager._VjdStatEnumType = null;
+                        _manager._vJoyInterfaceWrapAssembly = null;
+                        _manager._vJoyType = null;
+                        
                         _manager.UnLoadContext();
                         _manager = null;
                     }
@@ -144,22 +163,20 @@ namespace CoreDX.vJoy.Wrapper
         private void UnLoadContext()
         {
             _vJoyAssemblyLoadContext.Unload();
+            _vJoyAssemblyLoadContext = null;
         }
 
-        public object GetVJDStatus(uint id)
-        {
-            return _getVJDStatusFunc.DynamicInvoke(id);
-        }
+        public object GetVJDStatus(uint id) => IsVJoyEnabled ? _getVJDStatusFunc.DynamicInvoke(id) : null;
 
-        public int GetVJDButtonNumber(uint id) => _getVJDButtonNumber(id);
+        public int GetVJDButtonNumber(uint id) => IsVJoyEnabled ? _getVJDButtonNumber(id) : 0;
 
-        public int GetVJDContPovNumber(uint id) => _getVJDContPovNumber(id);
+        public int GetVJDContPovNumber(uint id) => IsVJoyEnabled ? _getVJDContPovNumber(id) : 0;
 
-        public int GetVJDDiscPovNumber(uint id) => _getVJDDiscPovNumber(id);
+        public int GetVJDDiscPovNumber(uint id) => IsVJoyEnabled ? _getVJDDiscPovNumber(id) : 0;
 
-        public bool GetVJDAxisExist(uint id, USAGES usages) => (bool)_getVJDAxisExist.DynamicInvoke(new object[] { id, _axisEnumValues[(int)usages] });
+        public bool GetVJDAxisExist(uint id, USAGES usages) => IsVJoyEnabled ? (bool)_getVJDAxisExist.DynamicInvoke(new object[] { id, _axisEnumValues[(int)usages] }) : false;
 
-        public bool ResetAll() => _resetAll();
+        public bool ResetAll() => _resetAll?.Invoke() ?? false;
 
         public IVJoyController AcquireController(uint id)
         {
@@ -187,6 +204,43 @@ namespace CoreDX.vJoy.Wrapper
 
             return new VJoyController(id, _manager);
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 要检测冗余调用
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)。
+                    ReleaseManager();
+                }
+
+                // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
+                // TODO: 将大型字段设置为 null。
+                
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 仅当以上 Dispose(bool disposing) 拥有用于释放未托管资源的代码时才替代终结器。
+        // ~VJoyControllerManager()
+        // {
+        //   // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+        //   Dispose(false);
+        // }
+
+        // 添加此代码以正确实现可处置模式。
+        public void Dispose()
+        {
+            // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+            Dispose(true);
+            // TODO: 如果在以上内容中替代了终结器，则取消注释以下行。
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
 
         private class VJoyAssemblyLoadContext : AssemblyLoadContext
         {
@@ -339,23 +393,31 @@ namespace CoreDX.vJoy.Wrapper
                 return (bool)_setAxisFunc.DynamicInvoke(value, Id, _axisEnumValues[8]);
             }
 
-            public bool ButtonDown(uint btnNo)
+            public bool PressButton(uint btnNo)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 return _setBtn(true, Id, btnNo);
             }
 
-            public bool ButtonUp(uint btnNo)
+            public bool ReleaseButton(uint btnNo)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 return _setBtn(false, Id, btnNo);
             }
 
-            public bool PressButton(uint btnNo, int milliseconds = 50)
+            public bool ClickButton(uint btnNo, int milliseconds = 50)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
                 _setBtn(true, Id, btnNo);
-                System.Threading.Thread.Sleep(milliseconds);
+                Thread.Sleep(milliseconds);
+                return _setBtn(false, Id, btnNo);
+            }
+
+            public async Task<bool> ClickButtonAsync(uint btnNo, int milliseconds, CancellationToken token = default)
+            {
+                if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
+                _setBtn(true, Id, btnNo);
+                await Task.Delay(milliseconds);
                 return _setBtn(false, Id, btnNo);
             }
 
@@ -370,6 +432,46 @@ namespace CoreDX.vJoy.Wrapper
                 if (HasRelinquished || DiscPovCount < 1 || value > AxisMaxValue) return false;
                 return _setDiscPov(value, Id, povNo);
             }
+
+            #region IDisposable Support
+            private bool disposedValue = false; // 要检测冗余调用
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!disposedValue)
+                {
+                    if (disposing)
+                    {
+                        // TODO: 释放托管状态(托管对象)。
+                        ResetPovs();
+                        ResetButtons();
+                        Reset();
+                        Relinquish();
+                    }
+
+                    // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
+                    // TODO: 将大型字段设置为 null。
+
+                    disposedValue = true;
+                }
+            }
+
+            // TODO: 仅当以上 Dispose(bool disposing) 拥有用于释放未托管资源的代码时才替代终结器。
+            // ~VJoyController()
+            // {
+            //   // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+            //   Dispose(false);
+            // }
+
+            // 添加此代码以正确实现可处置模式。
+            public void Dispose()
+            {
+                // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+                Dispose(true);
+                // TODO: 如果在以上内容中替代了终结器，则取消注释以下行。
+                // GC.SuppressFinalize(this);
+            }
+            #endregion
         }
 
         public enum USAGES

@@ -52,188 +52,188 @@ namespace vJoyDemo
                 return;
             }
 
-            var vJoyManager = VJoyControllerManager.GetManager();
-
-            // Get the driver attributes (Vendor ID, Product ID, Version Number)
-            if (!vJoyManager.IsVJoyEnabled)
+            using (var vJoyManager = VJoyControllerManager.GetManager())
             {
-                VJoyControllerManager.ReleaseManager();
-                vJoyManager = null;
-
-                Console.WriteLine("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
-                return;
-            }
-            else
-                Console.WriteLine("Vendor: {0}\nProduct :{1}\nVersion Number:{2}\n", vJoyManager.VJoyManufacturerString, vJoyManager.VJoyProductString, vJoyManager.VJoySerialNumberString);
-
-            // Get the state of the requested device
-            var status = vJoyManager.GetVJDStatus(id).ToString();
-            switch (status)
-            {
-                case "VJD_STAT_OWN":
-                    Console.WriteLine("vJoy Device {0} is already owned by this feeder\n", id);
-                    break;
-                case "VJD_STAT_FREE":
-                    Console.WriteLine("vJoy Device {0} is free\n", id);
-                    break;
-                case "VJD_STAT_BUSY":
-                    Console.WriteLine("vJoy Device {0} is already owned by another feeder\nCannot continue\n", id);
-                    return;
-                case "VJD_STAT_MISS":
-                    Console.WriteLine("vJoy Device {0} is not installed or disabled\nCannot continue\n", id);
-                    return;
-                default:
-                    Console.WriteLine("vJoy Device {0} general error\nCannot continue\n", id);
-                    return;
-            };
-
-            // Acquire the target
-            var joyCon = vJoyManager.AcquireController(id);
-            if (joyCon == null)
-            {
-                Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
-                return;
-            }
-            else
-                Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
-
-            // Check which axes are supported
-            bool AxisX = joyCon.HasAxisX;
-            bool AxisY = joyCon.HasAxisY;
-            bool AxisZ = joyCon.HasAxisZ;
-            bool AxisRX = joyCon.HasAxisRx;
-            bool AxisRY = joyCon.HasAxisRy;
-            bool AxisRZ = joyCon.HasAxisRz;
-            bool Slider0 = joyCon.HasSlider0;
-            bool Slider1 = joyCon.HasSlider1;
-            // Get the number of buttons and POV Hat switchessupported by this vJoy device
-            int nButtons = joyCon.ButtonCount;
-            int ContPovNumber = joyCon.ContPovCount;
-            int DiscPovNumber = joyCon.DiscPovCount;
-
-            // Print results
-            Console.WriteLine("\nvJoy Device {0} capabilities:\n", id);
-            Console.WriteLine("Numner of buttons\t\t{0}\n", nButtons);
-            Console.WriteLine("Numner of Continuous POVs\t{0}\n", ContPovNumber);
-            Console.WriteLine("Numner of Descrete POVs\t\t{0}\n", DiscPovNumber);
-            Console.WriteLine("Axis X\t\t{0}\n", AxisX ? "Yes" : "No");
-            Console.WriteLine("Axis Y\t\t{0}\n", AxisX ? "Yes" : "No");
-            Console.WriteLine("Axis Z\t\t{0}\n", AxisX ? "Yes" : "No");
-            Console.WriteLine("Axis Rx\t\t{0}\n", AxisRX ? "Yes" : "No");
-            Console.WriteLine("Axis Ry\t\t{0}\n", AxisRY ? "Yes" : "No");
-            Console.WriteLine("Axis Rz\t\t{0}\n", AxisRZ ? "Yes" : "No");
-            Console.WriteLine("Slider0\t\t{0}\n", Slider0 ? "Yes" : "No");
-            Console.WriteLine("Slider1\t\t{0}\n", Slider1 ? "Yes" : "No");
-
-            // Test if DLL matches the driver
-            bool match = vJoyManager.DriverMatch;
-            if (match)
-                Console.WriteLine("Version of Driver Matches DLL Version ({0:X})\n", vJoyManager.DllVer);
-            else
-                Console.WriteLine("Version of Driver ({0:X}) does NOT match DLL Version ({1:X})\n", vJoyManager.DrvVer, vJoyManager.DllVer);
-
-            Console.WriteLine("\npress enter to stat feeding");
-            Console.ReadKey(true);
-
-            Console.WriteLine("\nfeeding……");
-
-            var cancel = new CancellationTokenSource();
-            var task = Task.Run(() =>
-            {
-                int X, Y, Z, ZR, YR, XR, S0, S1;
-                uint count = 0;
-                long maxval = joyCon.AxisMaxValue ?? 0;
-                var successed = false;
-
-                X = 20;
-                Y = 30;
-                Z = 40;
-                XR = 60;
-                YR = 80;
-                ZR = 100;
-                S0 = 120;
-                S1 = 140;
-
-                // Feed the device in endless loop
-                while (!cancel.IsCancellationRequested)
+                // Get the driver attributes (Vendor ID, Product ID, Version Number)
+                if (!vJoyManager.IsVJoyEnabled)
                 {
-                    // Set position of 4 axes
-                    successed = joyCon.SetAxisX(X);
-                    successed = joyCon.SetAxisY(Y);
-                    successed = joyCon.SetAxisZ(Z);
-                    successed = joyCon.SetAxisRx(XR);
-                    successed = joyCon.SetAxisRy(YR);
-                    successed = joyCon.SetAxisRz(ZR);
-                    successed = joyCon.SetSlider0(S0);
-                    successed = joyCon.SetSlider1(S1);
-
-                    // Press/Release Buttons
-                    successed = joyCon.ButtonDown(count / 50);
-                    successed = joyCon.ButtonUp(1 + count / 50);
-
-                    // If Continuous POV hat switches installed - make them go round
-                    // For high values - put the switches in neutral state
-                    if (joyCon.ContPovCount > 0)
-                    {
-                        if ((count * 70) < 30000)
-                        {
-                            successed = joyCon.SetContPov(((int)count * 70), 1);
-                            successed = joyCon.SetContPov(((int)count * 70) + 2000, 2);
-                            successed = joyCon.SetContPov(((int)count * 70) + 4000, 3);
-                            successed = joyCon.SetContPov(((int)count * 70) + 6000, 4);
-                        }
-                        else
-                        {
-                            successed = joyCon.SetContPov(-1, 1);
-                            successed = joyCon.SetContPov(-1, 2);
-                            successed = joyCon.SetContPov(-1, 3);
-                            successed = joyCon.SetContPov(-1, 4);
-                        };
-                    };
-
-                    // If Discrete POV hat switches installed - make them go round
-                    // From time to time - put the switches in neutral state
-                    if (joyCon.DiscPovCount > 0)
-                    {
-                        if (count < 550)
-                        {
-                            successed = joyCon.SetDiscPov((((int)count / 20) + 0) % 4, 1);
-                            successed = joyCon.SetDiscPov((((int)count / 20) + 1) % 4, 2);
-                            successed = joyCon.SetDiscPov((((int)count / 20) + 2) % 4, 3);
-                            successed = joyCon.SetDiscPov((((int)count / 20) + 3) % 4, 4);
-                        }
-                        else
-                        {
-                            successed = joyCon.SetDiscPov(-1, 1);
-                            successed = joyCon.SetDiscPov(-1, 2);
-                            successed = joyCon.SetDiscPov(-1, 3);
-                            successed = joyCon.SetDiscPov(-1, 4);
-                        };
-                    };
-
-                    Thread.Sleep(20);
-                    X += 150; if (X > maxval) X = 0;
-                    Y += 250; if (Y > maxval) Y = 0;
-                    Z += 350; if (Z > maxval) Z = 0;
-                    XR += 240; if (XR > maxval) XR = 0;
-                    YR += 220; if (YR > maxval) YR = 0;
-                    ZR += 200; if (ZR > maxval) ZR = 0;
-                    S0 += 180; if (S0 > maxval) S0 = 0;
-                    S1 += 160; if (S1 > maxval) S1 = 0;
-
-                    count++;
-                    if (count > 640) count = 0;
+                    Console.WriteLine("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
+                    Console.WriteLine("\npress enter to exit");
+                    Console.ReadKey(true);
+                    return;
                 }
+                else
+                    Console.WriteLine("Vendor: {0}\nProduct :{1}\nVersion Number:{2}\n", vJoyManager.VJoyManufacturerString, vJoyManager.VJoyProductString, vJoyManager.VJoySerialNumberString);
 
-                successed = joyCon.Reset();
-                joyCon.Relinquish();
-            }, cancel.Token);
+                // Get the state of the requested device
+                var status = vJoyManager.GetVJDStatus(id).ToString();
+                switch (status)
+                {
+                    case "VJD_STAT_OWN":
+                        Console.WriteLine("vJoy Device {0} is already owned by this feeder\n", id);
+                        break;
+                    case "VJD_STAT_FREE":
+                        Console.WriteLine("vJoy Device {0} is free\n", id);
+                        break;
+                    case "VJD_STAT_BUSY":
+                        Console.WriteLine("vJoy Device {0} is already owned by another feeder\nCannot continue\n", id);
+                        return;
+                    case "VJD_STAT_MISS":
+                        Console.WriteLine("vJoy Device {0} is not installed or disabled\nCannot continue\n", id);
+                        return;
+                    default:
+                        Console.WriteLine("vJoy Device {0} general error\nCannot continue\n", id);
+                        return;
+                };
 
-            Console.WriteLine("\npress enter to stop feeding");
-            Console.ReadKey(true);
-            cancel.Cancel();
+                // Acquire the target
+                var joyCon = vJoyManager.AcquireController(id);
+                if (joyCon == null)
+                {
+                    Console.WriteLine("Failed to acquire vJoy device number {0}.\n", id);
+                    return;
+                }
+                else
+                    Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
 
-            await task;
+                using (joyCon)
+                {
+                    // Check which axes are supported
+                    bool AxisX = joyCon.HasAxisX;
+                    bool AxisY = joyCon.HasAxisY;
+                    bool AxisZ = joyCon.HasAxisZ;
+                    bool AxisRX = joyCon.HasAxisRx;
+                    bool AxisRY = joyCon.HasAxisRy;
+                    bool AxisRZ = joyCon.HasAxisRz;
+                    bool Slider0 = joyCon.HasSlider0;
+                    bool Slider1 = joyCon.HasSlider1;
+                    // Get the number of buttons and POV Hat switchessupported by this vJoy device
+                    int nButtons = joyCon.ButtonCount;
+                    int ContPovNumber = joyCon.ContPovCount;
+                    int DiscPovNumber = joyCon.DiscPovCount;
+
+                    // Print results
+                    Console.WriteLine("\nvJoy Device {0} capabilities:\n", id);
+                    Console.WriteLine("Numner of buttons\t\t{0}\n", nButtons);
+                    Console.WriteLine("Numner of Continuous POVs\t{0}\n", ContPovNumber);
+                    Console.WriteLine("Numner of Descrete POVs\t\t{0}\n", DiscPovNumber);
+                    Console.WriteLine("Axis X\t\t{0}\n", AxisX ? "Yes" : "No");
+                    Console.WriteLine("Axis Y\t\t{0}\n", AxisX ? "Yes" : "No");
+                    Console.WriteLine("Axis Z\t\t{0}\n", AxisX ? "Yes" : "No");
+                    Console.WriteLine("Axis Rx\t\t{0}\n", AxisRX ? "Yes" : "No");
+                    Console.WriteLine("Axis Ry\t\t{0}\n", AxisRY ? "Yes" : "No");
+                    Console.WriteLine("Axis Rz\t\t{0}\n", AxisRZ ? "Yes" : "No");
+                    Console.WriteLine("Slider0\t\t{0}\n", Slider0 ? "Yes" : "No");
+                    Console.WriteLine("Slider1\t\t{0}\n", Slider1 ? "Yes" : "No");
+
+                    // Test if DLL matches the driver
+                    bool match = vJoyManager.DriverMatch;
+                    if (match)
+                        Console.WriteLine("Version of Driver Matches DLL Version ({0:X})\n", vJoyManager.DllVer);
+                    else
+                        Console.WriteLine("Version of Driver ({0:X}) does NOT match DLL Version ({1:X})\n", vJoyManager.DrvVer, vJoyManager.DllVer);
+
+                    Console.WriteLine("\npress enter to stat feeding");
+                    Console.ReadKey(true);
+
+                    Console.WriteLine("\nfeeding……");
+
+                    var cancel = new CancellationTokenSource();
+                    var task = Task.Run(() =>
+                    {
+                        int X, Y, Z, ZR, YR, XR, S0, S1;
+                        uint count = 0;
+                        long maxval = joyCon.AxisMaxValue ?? 0;
+                        var successed = false;
+
+                        X = 20;
+                        Y = 30;
+                        Z = 40;
+                        XR = 60;
+                        YR = 80;
+                        ZR = 100;
+                        S0 = 120;
+                        S1 = 140;
+
+                        // Feed the device in endless loop
+                        while (!cancel.IsCancellationRequested)
+                        {
+                            // Set position of 4 axes
+                            successed = joyCon.SetAxisX(X);
+                            successed = joyCon.SetAxisY(Y);
+                            successed = joyCon.SetAxisZ(Z);
+                            successed = joyCon.SetAxisRx(XR);
+                            successed = joyCon.SetAxisRy(YR);
+                            successed = joyCon.SetAxisRz(ZR);
+                            successed = joyCon.SetSlider0(S0);
+                            successed = joyCon.SetSlider1(S1);
+
+                            // Press/Release Buttons
+                            successed = joyCon.PressButton(count / 50);
+                            successed = joyCon.ReleaseButton(1 + count / 50);
+
+                            // If Continuous POV hat switches installed - make them go round
+                            // For high values - put the switches in neutral state
+                            if (joyCon.ContPovCount > 0)
+                            {
+                                if ((count * 70) < 30000)
+                                {
+                                    successed = joyCon.SetContPov(((int)count * 70), 1);
+                                    successed = joyCon.SetContPov(((int)count * 70) + 2000, 2);
+                                    successed = joyCon.SetContPov(((int)count * 70) + 4000, 3);
+                                    successed = joyCon.SetContPov(((int)count * 70) + 6000, 4);
+                                }
+                                else
+                                {
+                                    successed = joyCon.SetContPov(-1, 1);
+                                    successed = joyCon.SetContPov(-1, 2);
+                                    successed = joyCon.SetContPov(-1, 3);
+                                    successed = joyCon.SetContPov(-1, 4);
+                                };
+                            };
+
+                            // If Discrete POV hat switches installed - make them go round
+                            // From time to time - put the switches in neutral state
+                            if (joyCon.DiscPovCount > 0)
+                            {
+                                if (count < 550)
+                                {
+                                    successed = joyCon.SetDiscPov((((int)count / 20) + 0) % 4, 1);
+                                    successed = joyCon.SetDiscPov((((int)count / 20) + 1) % 4, 2);
+                                    successed = joyCon.SetDiscPov((((int)count / 20) + 2) % 4, 3);
+                                    successed = joyCon.SetDiscPov((((int)count / 20) + 3) % 4, 4);
+                                }
+                                else
+                                {
+                                    successed = joyCon.SetDiscPov(-1, 1);
+                                    successed = joyCon.SetDiscPov(-1, 2);
+                                    successed = joyCon.SetDiscPov(-1, 3);
+                                    successed = joyCon.SetDiscPov(-1, 4);
+                                };
+                            };
+
+                            Thread.Sleep(20);
+                            X += 150; if (X > maxval) X = 0;
+                            Y += 250; if (Y > maxval) Y = 0;
+                            Z += 350; if (Z > maxval) Z = 0;
+                            XR += 240; if (XR > maxval) XR = 0;
+                            YR += 220; if (YR > maxval) YR = 0;
+                            ZR += 200; if (ZR > maxval) ZR = 0;
+                            S0 += 180; if (S0 > maxval) S0 = 0;
+                            S1 += 160; if (S1 > maxval) S1 = 0;
+
+                            count++;
+                            if (count > 640) count = 0;
+                        }
+                    }, cancel.Token);
+
+                    Console.WriteLine("\npress enter to stop feeding");
+                    Console.ReadKey(true);
+                    cancel.Cancel();
+
+                    await task;
+                }
+            }
 
             Console.WriteLine("\nfeeding stoped");
             Console.WriteLine("\npress enter to exit");
@@ -437,34 +437,34 @@ namespace vJoyDemo
             // Set buttons one by one
             iReport.Buttons = (uint)(0x1 <<  (int)(count / 20));
 
-		if (ContPovNumber>0)
-		{
-			// Make Continuous POV Hat spin
-			iReport.bHats		= (count*70);
-			iReport.bHatsEx1	= (count*70)+3000;
-			iReport.bHatsEx2	= (count*70)+5000;
-			iReport.bHatsEx3	= 15000 - (count*70);
-			if ((count*70) > 36000)
-			{
-				iReport.bHats =    0xFFFFFFFF; // Neutral state
+        if (ContPovNumber>0)
+        {
+            // Make Continuous POV Hat spin
+            iReport.bHats		= (count*70);
+            iReport.bHatsEx1	= (count*70)+3000;
+            iReport.bHatsEx2	= (count*70)+5000;
+            iReport.bHatsEx3	= 15000 - (count*70);
+            if ((count*70) > 36000)
+            {
+                iReport.bHats =    0xFFFFFFFF; // Neutral state
                 iReport.bHatsEx1 = 0xFFFFFFFF; // Neutral state
                 iReport.bHatsEx2 = 0xFFFFFFFF; // Neutral state
                 iReport.bHatsEx3 = 0xFFFFFFFF; // Neutral state
-			};
-		}
-		else
-		{
-			// Make 5-position POV Hat spin
-			
-			pov[0] = (byte)(((count / 20) + 0)%4);
+            };
+        }
+        else
+        {
+            // Make 5-position POV Hat spin
+            
+            pov[0] = (byte)(((count / 20) + 0)%4);
             pov[1] = (byte)(((count / 20) + 1) % 4);
             pov[2] = (byte)(((count / 20) + 2) % 4);
             pov[3] = (byte)(((count / 20) + 3) % 4);
 
-			iReport.bHats		= (uint)(pov[3]<<12) | (uint)(pov[2]<<8) | (uint)(pov[1]<<4) | (uint)pov[0];
-			if ((count) > 550)
-				iReport.bHats = 0xFFFFFFFF; // Neutral state
-		};
+            iReport.bHats		= (uint)(pov[3]<<12) | (uint)(pov[2]<<8) | (uint)(pov[1]<<4) | (uint)pov[0];
+            if ((count) > 550)
+                iReport.bHats = 0xFFFFFFFF; // Neutral state
+        };
 
         /*** Feed the driver with the position packet - is fails then wait for input then try to re-acquire device ***/
         if (!joystick.UpdateVJD(id, ref iReport))
