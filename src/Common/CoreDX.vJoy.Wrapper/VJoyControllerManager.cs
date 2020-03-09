@@ -408,17 +408,19 @@ namespace CoreDX.vJoy.Wrapper
             public bool ClickButton(uint btnNo, int milliseconds = 50)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                _setBtn(true, Id, btnNo);
+                var result = _setBtn(true, Id, btnNo);
                 Thread.Sleep(milliseconds);
-                return _setBtn(false, Id, btnNo);
+                return _setBtn(false, Id, btnNo) && result;
             }
 
             public async Task<bool> ClickButtonAsync(uint btnNo, int milliseconds, CancellationToken token = default)
             {
                 if (HasRelinquished || btnNo == 0 || btnNo > ButtonCount) return false;
-                _setBtn(true, Id, btnNo);
+                if (token.IsCancellationRequested) return false;
+                var result = _setBtn(true, Id, btnNo);
                 await Task.Delay(milliseconds);
-                return _setBtn(false, Id, btnNo);
+                if (token.IsCancellationRequested) return false;
+                return _setBtn(false, Id, btnNo) && result;
             }
 
             public bool SetContPov(int value, uint povNo)
