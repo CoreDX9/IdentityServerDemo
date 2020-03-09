@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup  Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="CoreDX.vJoy.Wrapper" Version="1.0.0" />
+    <PackageReference Include="CoreDX.vJoy.Wrapper" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup  Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\Common\CoreDX.vJoy.Wrapper\CoreDX.vJoy.Wrapper.csproj" />
