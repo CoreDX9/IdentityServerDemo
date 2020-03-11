@@ -2,7 +2,15 @@
 
 using AspNetCoreRateLimit;
 using AutoMapper;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
 using CoreDX.Application.EntityFrameworkCore;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer;
+using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
 using CoreDX.Domain.Core.Command;
 using CoreDX.Domain.Core.Event;
 using CoreDX.Domain.Entity.Identity;
@@ -17,6 +25,8 @@ using IdentityServer.CustomMiddlewares;
 using IdentityServer.CustomServices;
 using IdentityServer.Extensions;
 using IdentityServer.Grpc.Services;
+using IdentityServer.Helpers;
+using IdentityServer.Helpers.IdentityServerAdmin;
 using IdentityServer.Hubs;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
@@ -33,49 +43,34 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Skoruba.AuditLogging.EntityFramework.Entities;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Linq;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
-using CoreDX.Applicaiton.IdnetityServerAdmin.MvcFilters;
-using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Helpers.Localization;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Razor;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
-using IdentityServer.Helpers.IdentityServerAdmin;
-using Skoruba.AuditLogging.EntityFramework.Entities;
 using System.Threading.Tasks;
-using CoreDX.Application.EntityFrameworkCore.IdentityServer;
-using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.Authorization;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
-using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
-using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories;
-using Microsoft.AspNetCore.ResponseCompression;
 
 #endregion
 
@@ -98,7 +93,7 @@ namespace IdentityServer
         {
             #region 注册 IdentityServer 管理用配置项
 
-            var rootConfiguration = CreateRootConfiguration();
+            var rootConfiguration = ConfigureServicesHelper.CreateRootConfiguration(Configuration);
             services.AddSingleton(rootConfiguration);
 
             var adminApiConfiguration = Configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
@@ -162,7 +157,7 @@ namespace IdentityServer
                 options.RouteBasePath = "/MiniProfilerBase";
 
                 // 请确保已经在迁移中创建了表，本演示已经在初始迁移中集成了表创建
-                if(Configuration.GetValue("SaveMiniProfilerData", false))
+                if (Configuration.GetValue("SaveMiniProfilerData", false))
                 {
                     options.Storage = new StackExchange.Profiling.Storage.SqlServerStorage(connectionString);
                 }
@@ -189,7 +184,7 @@ namespace IdentityServer
                         {
                             return null;
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             throw new Exception("实例化映射配置失败。", ex);
                         }
@@ -480,7 +475,7 @@ namespace IdentityServer
             //        UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
             //        UserClaimsDto<int>, UserProviderDto<int>, UserProvidersDto<int>, UserChangePasswordDto<int>,
             //        RoleClaimsDto<int>, UserClaimDto<int>, RoleClaimDto<int>>();
-            AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
+            ConfigureServicesHelper.AddAdminAspNetIdentityServices<ApplicationIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<int>, int, RoleDto<int>, int, int, int,
                     ApplicationUser, ApplicationRole, int, ApplicationUserClaim, ApplicationUserRole,
                     ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken,
                     UsersDto<UserDto<int>, int>, RolesDto<RoleDto<int>, int>, UserRolesDto<RoleDto<int>, int, int>,
@@ -644,7 +639,7 @@ namespace IdentityServer
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {
-                    var cultures =  Configuration.GetSection("Internationalization").GetSection("Cultures")
+                    var cultures = Configuration.GetSection("Internationalization").GetSection("Cultures")
                     .Get<List<string>>()
                     .Select(x => new CultureInfo(x)).ToList();
                     var supportedCultures = cultures;
@@ -1159,53 +1154,6 @@ namespace IdentityServer
                 //映射 Blazor 客户端终结点
                 endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
             });
-        }
-
-        /// <summary>
-        /// IdentityServer 管理用
-        /// </summary>
-        /// <returns></returns>
-        private IRootConfiguration CreateRootConfiguration()
-        {
-            var rootConfiguration = new RootConfiguration();
-            Configuration.GetSection(ConfigurationConsts.AdminConfigurationKey).Bind(rootConfiguration.AdminConfiguration);
-            Configuration.GetSection(ConfigurationConsts.IdentityDataConfigurationKey).Bind(rootConfiguration.IdentityDataConfiguration);
-            Configuration.GetSection(ConfigurationConsts.IdentityServerDataConfigurationKey).Bind(rootConfiguration.IdentityServerDataConfiguration);
-            return rootConfiguration;
-        }
-
-        //临时替换服务，内置服务与 DI 中的 AutoMapper 冲突
-        private static IServiceCollection AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext, TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(IServiceCollection services)
-            where TIdentityDbContext : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-            where TPersistedGrantDbContext : DbContext, Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces.IAdminPersistedGrantDbContext
-            where TUserDto : UserDto<TUserDtoKey>
-            where TRoleDto : RoleDto<TRoleDtoKey>
-            where TUser : IdentityUser<TKey>
-            where TRole : IdentityRole<TKey>
-            where TKey : IEquatable<TKey>
-            where TUserClaim : IdentityUserClaim<TKey>
-            where TUserRole : IdentityUserRole<TKey>
-            where TUserLogin : IdentityUserLogin<TKey>
-            where TRoleClaim : IdentityRoleClaim<TKey>
-            where TUserToken : IdentityUserToken<TKey>
-            where TUsersDto : UsersDto<TUserDto, TUserDtoKey>
-            where TRolesDto : RolesDto<TRoleDto, TRoleDtoKey>
-            where TUserRolesDto : UserRolesDto<TRoleDto, TUserDtoKey, TRoleDtoKey>
-            where TUserClaimsDto : UserClaimsDto<TUserDtoKey>
-            where TUserProviderDto : UserProviderDto<TUserDtoKey>
-            where TUserProvidersDto : UserProvidersDto<TUserDtoKey>
-            where TUserChangePasswordDto : UserChangePasswordDto<TUserDtoKey>
-            where TRoleClaimsDto : RoleClaimsDto<TRoleDtoKey>
-            where TUserClaimDto : UserClaimDto<TUserDtoKey>
-            where TRoleClaimDto : RoleClaimDto<TRoleDtoKey>
-        {
-            services.AddTransient<IIdentityRepository<TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IdentityRepository<TIdentityDbContext, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
-            services.AddTransient<IPersistedGrantAspNetIdentityRepository, PersistedGrantAspNetIdentityRepository<TIdentityDbContext, TPersistedGrantDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
-            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IIdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.IdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>>();
-            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IPersistedGrantAspNetIdentityService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.PersistedGrantAspNetIdentityService>();
-            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IdentityServiceResources>();
-            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IPersistedGrantAspNetIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.PersistedGrantAspNetIdentityServiceResources>();
-            return services;
         }
     }
 }

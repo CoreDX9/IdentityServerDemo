@@ -1,10 +1,19 @@
 ﻿using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration;
 using CoreDX.Applicaiton.IdnetityServerAdmin.Api.Configuration.Authorization;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Constants;
+using CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.Interfaces;
 using IdentityServer.Extensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -12,6 +21,56 @@ using System.IO;
 
 namespace IdentityServer.Helpers
 {
+    public static class ConfigureServicesHelper
+    {
+        /// <summary>
+        /// IdentityServer 管理用
+        /// </summary>
+        /// <returns></returns>
+        public static IRootConfiguration CreateRootConfiguration(IConfiguration configuration)
+        {
+            var rootConfiguration = new RootConfiguration();
+            configuration.GetSection(ConfigurationConsts.AdminConfigurationKey).Bind(rootConfiguration.AdminConfiguration);
+            configuration.GetSection(ConfigurationConsts.IdentityDataConfigurationKey).Bind(rootConfiguration.IdentityDataConfiguration);
+            configuration.GetSection(ConfigurationConsts.IdentityServerDataConfigurationKey).Bind(rootConfiguration.IdentityServerDataConfiguration);
+            return rootConfiguration;
+        }
+
+        //临时替换服务，内置服务与 DI 中的 AutoMapper 冲突
+        public static IServiceCollection AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext, TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(IServiceCollection services)
+            where TIdentityDbContext : Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+            where TPersistedGrantDbContext : DbContext, Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces.IAdminPersistedGrantDbContext
+            where TUserDto : UserDto<TUserDtoKey>
+            where TRoleDto : RoleDto<TRoleDtoKey>
+            where TUser : IdentityUser<TKey>
+            where TRole : IdentityRole<TKey>
+            where TKey : IEquatable<TKey>
+            where TUserClaim : IdentityUserClaim<TKey>
+            where TUserRole : IdentityUserRole<TKey>
+            where TUserLogin : IdentityUserLogin<TKey>
+            where TRoleClaim : IdentityRoleClaim<TKey>
+            where TUserToken : IdentityUserToken<TKey>
+            where TUsersDto : UsersDto<TUserDto, TUserDtoKey>
+            where TRolesDto : RolesDto<TRoleDto, TRoleDtoKey>
+            where TUserRolesDto : UserRolesDto<TRoleDto, TUserDtoKey, TRoleDtoKey>
+            where TUserClaimsDto : UserClaimsDto<TUserDtoKey>
+            where TUserProviderDto : UserProviderDto<TUserDtoKey>
+            where TUserProvidersDto : UserProvidersDto<TUserDtoKey>
+            where TUserChangePasswordDto : UserChangePasswordDto<TUserDtoKey>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleDtoKey>
+            where TUserClaimDto : UserClaimDto<TUserDtoKey>
+            where TRoleClaimDto : RoleClaimDto<TRoleDtoKey>
+        {
+            services.AddTransient<IIdentityRepository<TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IdentityRepository<TIdentityDbContext, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
+            services.AddTransient<IPersistedGrantAspNetIdentityRepository, PersistedGrantAspNetIdentityRepository<TIdentityDbContext, TPersistedGrantDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>>();
+            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IIdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.IdentityService<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>>();
+            services.AddTransient<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces.IPersistedGrantAspNetIdentityService, CoreDX.Applicaiton.IdnetityServerAdmin.Services.Identity.PersistedGrantAspNetIdentityService>();
+            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IdentityServiceResources>();
+            services.AddScoped<Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.IPersistedGrantAspNetIdentityServiceResources, Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Resources.PersistedGrantAspNetIdentityServiceResources>();
+            return services;
+        }
+    }
+
     public class ConfigureSwaggerGenOptions : ConfigureOptionsUseServiceBase<SwaggerGenOptions>
     {
         public ConfigureSwaggerGenOptions(IServiceProvider service) : base(service) { }
