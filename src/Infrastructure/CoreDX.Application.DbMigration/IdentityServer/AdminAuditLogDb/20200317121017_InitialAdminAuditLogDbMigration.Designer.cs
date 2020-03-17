@@ -10,22 +10,22 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreDX.Application.DbMigration.IdentityServer.AdminAuditLogDb
 {
     [DbContext(typeof(AdminAuditLogDbContext))]
-    [Migration("20200202181736_InitialAdminAuditLogDbMigration")]
+    [Migration("20200317121017_InitialAdminAuditLogDbMigration")]
     partial class InitialAdminAuditLogDbMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Skoruba.AuditLogging.EntityFramework.Entities.AuditLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Action")

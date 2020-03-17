@@ -11,7 +11,7 @@ namespace CoreDX.Application.DbMigration.IdentityServer.AdminAuditLogDb
                 name: "AuditLog",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Event = table.Column<string>(nullable: true),
                     Source = table.Column<string>(nullable: true),
