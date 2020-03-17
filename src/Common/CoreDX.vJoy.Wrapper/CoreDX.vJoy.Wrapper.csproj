@@ -9,6 +9,7 @@
     <RepositoryUrl>https://github.com/CoreDX9/IdentityServerDemo/tree/NetCore_3.0/src/Common/CoreDX.vJoy.Wrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/CoreDX9/IdentityServerDemo</PackageProjectUrl>
     <PackageTags>vJoy;joystick;gamepad;virtual-joysticks</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <Company />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>1.1.1</Version>
