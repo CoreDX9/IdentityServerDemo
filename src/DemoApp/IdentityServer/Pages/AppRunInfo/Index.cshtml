@@ -1,0 +1,54 @@
+﻿@page
+@using CoreDX.Common.Util
+@{
+    ViewData["Title"] = "App run info";
+}
+
+@{
+    static IEnumerable<(string name, List<KeyValuePair<string, object>> info)> GetEnvironmentInfo()
+    {
+        yield return EnvironmentInfo.GetApplicationRunInfo();
+        yield return EnvironmentInfo.GetSystemPlatformInfo();
+        yield return EnvironmentInfo.GetSystemRunEvnInfo();
+        yield return EnvironmentInfo.GetEnvironmentVariables();
+    }
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@foreach (var item in GetEnvironmentInfo())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p>@item.name</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 table-responsive resize-border">
+            <table class="table table-sm table-striped table-bordered table-hover">
+                <tbody>
+                    @foreach (var info in item.info)
+                    {
+                    <tr class="table-info">
+                        <td>@info.Key</td>
+                        <td>@info.Value</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@*@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            var resizeEl = '.resize-border';
+
+            elementResize(resizeEl);
+
+            $(window).resize(function () { elementResize(resizeEl); });
+        });
+    </script>
+}*@
