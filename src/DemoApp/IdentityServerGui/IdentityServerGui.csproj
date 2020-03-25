@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.6" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.7" />
   </ItemGroup>
 
   <ItemGroup>
