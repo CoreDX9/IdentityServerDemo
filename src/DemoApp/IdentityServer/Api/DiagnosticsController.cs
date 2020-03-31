@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace IdentityServer.Api
