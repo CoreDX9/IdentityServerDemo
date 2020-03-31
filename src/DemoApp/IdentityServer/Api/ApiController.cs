@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace IdentityServer.Api
 {
     [Route("api")]
+    [ApiVersion("2.0")]
     [ApiController]
     public class ApiController : ControllerBase
     {
