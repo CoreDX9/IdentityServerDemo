@@ -1,0 +1,213 @@
+﻿@page
+
+@{
+    ViewData["Title"] = "Memory Diagnostic";
+}
+
+@section Styles
+{
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .chart-container {
+            width: 800px;
+            margin-left: 40px;
+            margin-right: 40px;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+}
+
+    <p>
+        <button id="collect-btn" type="button" style="visibility:hidden">Collect</button>
+    </p>
+
+    <div class="container">
+        <div class="chart-container">
+            <canvas id="memory-canvas"></canvas>
+        </div>
+    </div>
+
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        var memoryContext = document.getElementById("memory-canvas").getContext('2d');
+        var memoryChart = new Chart(memoryContext, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'Allocated',
+                        data: [],
+                        yAxisID: 'y-axis-memory',
+                        borderColor: 'red',
+                        backgroundColor: 'red',
+                        pointRadius: 0,
+                        fill: false
+                    },
+                    {
+                        label: 'Working Set',
+                        data: [],
+                        yAxisID: 'y-axis-memory',
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        pointRadius: 0,
+                        fill: false
+                    },
+                    {
+                        label: 'Gen 0',
+                        data: [],
+                        yAxisID: 'y-axis-collections',
+                        borderColor: 'green',
+                        backgroundColor: 'green',
+                        fill: false,
+                        showLine: false, // only show point
+                        pointStyle: 'triangle',
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Gen 1',
+                        data: [],
+                        yAxisID: 'y-axis-collections',
+                        borderColor: 'orange',
+                        backgroundColor: 'orange',
+                        fill: false,
+                        showLine: false, // only show point
+                        pointStyle: 'triangle',
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Gen 2',
+                        data: [],
+                        yAxisID: 'y-axis-collections',
+                        borderColor: 'black',
+                        backgroundColor: 'black',
+                        fill: false,
+                        showLine: false, // only show point
+                        pointStyle: 'triangle',
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'CPU',
+                        data: []
+                    },
+                    {
+                        label: 'RPS',
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        distribution: 'linear',
+                        time: {
+                            unit: 'second',
+                            displayFormats: {
+                                second: 'mm:ss'
+                            }
+                        },
+                        bounds: 'ticks',
+                        ticks: {
+                            callback: function (value, index, values) {
+                                return index;
+                            }
+                        }
+                    }],
+                    yAxes: [{
+                        id: 'y-axis-memory',
+                        ticks: {
+                            beginAtZero: true,
+                            bounds: 'data',
+                            position: 'left',
+                            callback: function (value, index, values) {
+                                return value + ' MB';
+                            }
+                        }
+                    },
+                    {
+                        id: 'y-axis-collections',
+                        display: false,
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 2
+                        }
+                    }]
+                },
+                tooltips: {
+                    enabled: false
+                }
+            }
+        });
+        const diagnosticsUrl = "/api/diagnostics";
+        const collectUrl = "/api/collect";
+        const maxEntries = 50;
+        const interval = 300;
+        var allocated = memoryChart.data.datasets[0].data;
+        var workingSet = memoryChart.data.datasets[1].data;
+        var generation0 = memoryChart.data.datasets[2].data;
+        var generation1 = memoryChart.data.datasets[3].data;
+        var generation2 = memoryChart.data.datasets[4].data;
+        var previousGen0 = 0,
+            previousGen1 = 0,
+            previousGen2 = 0;
+        setInterval(function () {
+            fetch(diagnosticsUrl)
+                .then(response => {
+                    return response.json();
+                })
+                .then(diagnostics => {
+                    var now = new Date();
+                    allocated.push({ x: now, y: diagnostics.allocated / 1000000 });
+                    workingSet.push({ x: now, y: diagnostics.workingSet / 1000000 });
+                    memoryChart.data.datasets[5].label = `CPU (${Math.round(diagnostics.cpu)}%)`;
+                    memoryChart.data.datasets[6].label = `RPS (${Math.round(diagnostics.rps / 1000)}K)`;
+                    if (previousGen2 < diagnostics.gen2) {
+                        generation2.push({ x: now, y: 1 });
+                        previousGen2 = diagnostics.gen2;
+                        previousGen1 = diagnostics.gen1;
+                        previousGen0 = diagnostics.gen0;
+                    }
+                    else if (previousGen1 < diagnostics.gen1) {
+                        generation1.push({ x: now, y: 1 });
+                        previousGen2 = diagnostics.gen2;
+                        previousGen1 = diagnostics.gen1;
+                        previousGen0 = diagnostics.gen0;
+                    }
+                    else if (previousGen0 < diagnostics.gen0) {
+                        generation0.push({ x: now, y: 1 });
+                        previousGen2 = diagnostics.gen2;
+                        previousGen1 = diagnostics.gen1;
+                        previousGen0 = diagnostics.gen0;
+                    }
+                    if (allocated.length > maxEntries) {
+                        let firstDate = allocated[0].x;
+                        allocated.shift();
+                        workingSet.shift();
+                        while (generation0.length > 0 && generation0[0].x < firstDate) generation0.shift();
+                        while (generation1.length > 0 && generation1[0].x < firstDate) generation1.shift();
+                        while (generation2.length > 0 && generation2[0].x < firstDate) generation2.shift();
+                    }
+                    memoryChart.update();
+                });
+        }, interval);
+        document.getElementById("collect-btn").addEventListener("click", function () { fetch(collectUrl); });
+    </script>
+}
