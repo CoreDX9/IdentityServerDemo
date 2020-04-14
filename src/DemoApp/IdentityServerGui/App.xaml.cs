@@ -51,6 +51,7 @@ namespace IdentityServerGui
 
         private void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
             services.AddTransient<MainWindow>();
             services.AddTransient<PerformanceMonitor>();

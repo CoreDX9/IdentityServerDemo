@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,26 +12,29 @@ namespace IdentityServerGui
     public class PerformanceMonitor
     {
         private Process process;
+        private readonly IConfiguration _configuration;
         private CancellationTokenSource tokenSource;
         private Task task;
 
-        public PerformanceMonitor()
+        public PerformanceMonitor(IConfiguration configuration)
         {
             process = Process.GetCurrentProcess();
+            _configuration = configuration;
         }
 
         public void Start(Data data)
         {
 
             tokenSource = new CancellationTokenSource();
-            task = Task.Run(() => {
+            task = Task.Run(() =>
+            {
                 var name = this.process.ProcessName;
                 var cpuCounter = new PerformanceCounter("Process", "% Processor Time", name, true);
                 var ramCounter = new PerformanceCounter("Process", "Working Set - Private", name, true);
 
-                NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-                var netRecvCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", adapters[0].Description, true);
-                var netSendCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", adapters[0].Description, true);
+                NetworkInterface adapter = NetworkInterface.GetAllNetworkInterfaces().Single(x => x.Name == _configuration.GetValue<string>("MonitorNetworkName"));
+                var netRecvCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", adapter.Description, true);
+                var netSendCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", adapter.Description, true);
 
                 while (!tokenSource.Token.IsCancellationRequested)
                 {
@@ -41,7 +46,7 @@ namespace IdentityServerGui
                     Thread.Sleep(1000);
                 }
 
-                using(cpuCounter)
+                using (cpuCounter)
                 using (ramCounter)
                 using (netRecvCounter)
                 using (netSendCounter)
@@ -56,7 +61,7 @@ namespace IdentityServerGui
 
         public async void Stop()
         {
-            using(task)
+            using (task)
             using (tokenSource)
             {
                 tokenSource.Cancel();
