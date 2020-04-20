@@ -64,19 +64,18 @@ namespace IdentityServer
             var builder = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostContext, configBuilder) =>
                 {
-                    configBuilder.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
-                    configBuilder.AddJsonFile($"serilog.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    configBuilder.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
-                    configBuilder.AddJsonFile($"identitydata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    configBuilder.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
-                    configBuilder.AddJsonFile($"identityserverdata.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    configBuilder
+                        .AddJsonConfiguration("serilog", hostContext.HostingEnvironment.EnvironmentName)
+                        .AddJsonConfiguration("identitydata", hostContext.HostingEnvironment.EnvironmentName)
+                        .AddJsonConfiguration("identityserverdata", hostContext.HostingEnvironment.EnvironmentName)
+                        .AddJsonConfiguration("appRateLimitSettings", hostContext.HostingEnvironment.EnvironmentName)
+                        .AddEnvironmentVariables()
+                        .AddCommandLine(args);
 
                     //if (hostContext.HostingEnvironment.IsDevelopment())
                     //{
                     //    configBuilder.AddUserSecrets<Startup>();
                     //}
-                    configBuilder.AddEnvironmentVariables();
-                    configBuilder.AddCommandLine(args);
                 })
 
             #region NLog 配置
