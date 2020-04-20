@@ -18,6 +18,7 @@ using CoreDX.Domain.Model.Command;
 using CoreDX.Domain.Model.Event;
 using CoreDX.Domain.Repository.EntityFrameworkCore;
 using CoreDX.Identity.Extensions;
+using CrystalQuartz.AspNetCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
@@ -173,6 +174,7 @@ namespace IdentityServer
             {
                 var profileTypes =
                 from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                where assembly.GetName().Name != "AutoMapper"
                 from type in assembly.GetTypes()
                 where type.IsSubclassOf(typeof(Profile)) && !type.IsGenericType && !type.IsAbstract
                 select type;
@@ -1068,6 +1070,9 @@ namespace IdentityServer
             app.UseStaticFiles(devStaticFileOptions);
 
             #endregion
+
+            //注册任务调度管理面板
+            app.UseCrystalQuartz(() => quartz._scheduler);
 
             //注册 Blazor 客户端文件
             app.UseClientSideBlazorFiles<BlazorApp.Client.Program>();

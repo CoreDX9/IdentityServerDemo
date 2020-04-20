@@ -45,7 +45,8 @@ namespace CoreDX.Applicaiton.IdnetityServerAdmin.Configuration.ApplicationParts
             //    TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>).Assembly;
             var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             var types = from assembly in currentAssemblies
-                    from exType in assembly.GetTypes()
+                        where assembly.GetName().Name != "CrystalQuartz.AspNetCore"
+                        from exType in assembly.GetTypes()
                     select exType;
 
             var controllerTypes = types
