@@ -1,23 +1,27 @@
 ﻿#if !DEBUG
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 #endif
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using Serilog;
 using CoreDX.Application.EntityFrameworkCore;
-using CoreDX.Domain.Entity.Identity;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using CoreDX.Domain.Entity.Identity;
 using IdentityServer.Helpers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using NLog;
+using NLog.Layouts;
+using NLog.Web;
+using Serilog;
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace IdentityServer
 {
@@ -27,7 +31,7 @@ namespace IdentityServer
         {
             #region 确保只有一个实例在运行
 
-            var mutex = new Mutex(true, "IdentityServerDemo",out var isUniqueInstanceOfApplication);
+            var mutex = new Mutex(true, "IdentityServerDemo", out var isUniqueInstanceOfApplication);
             if (!isUniqueInstanceOfApplication)
             {
                 Console.WriteLine("已经有一个实例正在运行。");
@@ -61,8 +65,8 @@ namespace IdentityServer
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
-            var builder = Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostContext, configBuilder) =>
+            var builder = Host.CreateDefaultBuilder(args);
+            builder.ConfigureAppConfiguration((hostContext, configBuilder) =>
                 {
                     configBuilder
                         .AddJsonConfiguration("serilog", hostContext.HostingEnvironment.EnvironmentName)
@@ -76,43 +80,46 @@ namespace IdentityServer
                     //{
                     //    configBuilder.AddUserSecrets<Startup>();
                     //}
-                })
+                });
 
-            #region NLog 配置
+            using var loggingConfigFile = File.OpenText("LoggingModule.json");
+            var jsonOptions = new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip };
+            var loggingModule = JsonDocument.Parse(loggingConfigFile.BaseStream, jsonOptions).RootElement.GetProperty("Name").GetString();
+            switch (loggingModule)
+            {
+                case "NLog":
+                    builder.ConfigureLogging((hostContext, logging) =>
+                    {
+                        var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
+                        var nlogConfig = File.Exists(path)
+                            ? path
+                            : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
 
-                //.ConfigureLogging((hostContext, logging) =>
-                //{
-                //    var path = $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.{hostContext.HostingEnvironment.EnvironmentName}.config";
-                //    var nlogConfig = File.Exists(path)
-                //        ? path
-                //        : $@"{hostContext.HostingEnvironment.ContentRootPath}\NLog.config";
+                        var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
+                        configuration.Variables.Add("rootPath", new SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));
+                        logging.AddNLog(configuration);
+                    })
+                        .UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true });
+                    break;
+                case "Serilog":
+                    goto default;
+                default:
+                    builder.UseSerilog((hostContext, loggerConfig) =>
+                    {
+                        //var logDB = @"Server=...";
+                        //var logTable = "Logs";
+                        //var opts = new Serilog.Sinks.MSSqlServer.ColumnOptions();
 
-                //    var configuration = LogManager.LoadConfiguration(nlogConfig).Configuration;
-                //    configuration.Variables.Add("rootPath", new NLog.Layouts.SimpleLayout(hostContext.HostingEnvironment.ContentRootPath));
-                //    logging.AddNLog(configuration);
-                //})
-                //.UseNLog(new NLogAspNetCoreOptions() { ShutdownOnDispose = true, IncludeScopes = true, RegisterHttpContextAccessor = true })
+                        loggerConfig
+                            .ReadFrom.Configuration(hostContext.Configuration)
+                            .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
+                    });
+                    break;
+            }
 
-            #endregion
-
-            #region Serilog 配置
-
-                .UseSerilog((hostContext, loggerConfig) =>
-                {
-                    //var logDB = @"Server=...";
-                    //var logTable = "Logs";
-                    //var opts = new Serilog.Sinks.MSSqlServer.ColumnOptions();
-
-                    loggerConfig
-                        .ReadFrom.Configuration(hostContext.Configuration)
-                        .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
-                })
-
-            #endregion
-
-                .UseWindowsService()//如果将应用安装为Windows服务，会自动以服务方式运行，否则继续以控制台方式运行
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
+            builder.UseWindowsService()//如果将应用安装为Windows服务，会自动以服务方式运行，否则继续以控制台方式运行
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
 #if !DEBUG
                     webBuilder.ConfigureKestrel(SetHost);
 #endif

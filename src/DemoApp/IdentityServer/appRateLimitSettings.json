@@ -1,5 +1,5 @@
-{
-  //IP请求限流配置
+锘縶
+  //IP璇锋眰闄愭祦閰嶇疆
   "IpRateLimiting": {
     "EnableEndpointRateLimiting": false,
     "StackBlockedRequests": false,
@@ -71,7 +71,7 @@
       }
     ]
   },
-  //客户端ID请求限流配置
+  //瀹㈡埛绔疘D璇锋眰闄愭祦閰嶇疆
   "ClientRateLimiting": {
     "EnableEndpointRateLimiting": false,
     "StackBlockedRequests": false,
