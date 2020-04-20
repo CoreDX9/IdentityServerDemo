@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic" Version="1.0.0-rc1" />
     <PackageReference Include="Skoruba.IdentityServer4.Admin.BusinessLogic.Identity" Version="1.0.0-rc1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="X.PagedList" Version="8.0.5" />
+    <PackageReference Include="X.PagedList" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>

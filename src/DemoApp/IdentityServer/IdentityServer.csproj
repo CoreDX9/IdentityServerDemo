@@ -98,8 +98,8 @@
 
   <!--包引用-->
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="3.1.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.1.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="3.1.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.1.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.1.0" />
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="2.1.0" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
@@ -108,7 +108,7 @@
     <PackageReference Include="BundlerMinifier.Core" Version="3.2.447" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.28.0" />
-    <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5559-preview2" />
+    <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5671-preview3" />
     <PackageReference Include="IdentityServer4" Version="3.1.2" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="3.1.2" />
@@ -148,14 +148,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
     <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.1.0" />
     <PackageReference Include="MiniProfiler.Providers.SqlServer" Version="4.1.0" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.1" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.3.0.20200405" />
-    <PackageReference Include="PuppeteerSharp" Version="2.0.2" />
+    <PackageReference Include="PuppeteerSharp" Version="2.0.3" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
@@ -164,11 +164,11 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.2.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.2" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
-    <PackageReference Include="X.PagedList" Version="8.0.5" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.46" />
+    <PackageReference Include="X.PagedList" Version="8.0.7" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.48" />
   </ItemGroup>
 
   <!--项目引用-->
