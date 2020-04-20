@@ -28,6 +28,7 @@ using IdentityServer.Grpc.Services;
 using IdentityServer.Helpers;
 using IdentityServer.Helpers.IdentityServerAdmin;
 using IdentityServer.Hubs;
+using IdentityServer.QuartzJob;
 using IdentityServer4.Configuration;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Localization.SqlLocalizer.DbStringLocalizer;
@@ -56,6 +57,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
+using Quartz.Impl;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
@@ -747,6 +750,13 @@ namespace IdentityServer
 
             #endregion
 
+            #region 注册任务调度服务
+
+            services.AddTransient<DemoJob>();
+            services.AddSingleton<QuartzManager>();
+
+            #endregion
+
             #region 注册自己写的各种服务
 
             #region 配置 RabbitMQ 使用测试
@@ -851,8 +861,16 @@ namespace IdentityServer
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
         {
+            #region 绑定任务调度服务生命周期事件
+
+            var quartz = app.ApplicationServices.GetRequiredService<QuartzManager>();
+            applicationLifetime.ApplicationStarted.Register(quartz.Start);
+            applicationLifetime.ApplicationStopped.Register(quartz.Stop);
+
+            #endregion
+
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
 
