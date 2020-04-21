@@ -155,7 +155,7 @@
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.1.0" />
     <PackageReference Include="MiniProfiler.Providers.SqlServer" Version="4.1.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.3.0.20200405" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.3.0.20200421" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.3" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
@@ -167,7 +167,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.3.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.3" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="8.0.7" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.48" />
