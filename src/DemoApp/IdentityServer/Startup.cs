@@ -865,6 +865,8 @@ namespace IdentityServer
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
         {
+            #region 与管道无关的部分
+
             #region 绑定任务调度服务生命周期事件
 
             var quartz = app.ApplicationServices.GetRequiredService<QuartzManager>();
@@ -876,12 +878,17 @@ namespace IdentityServer
             //配置FluentValidation验证信息的本地化，这个不是中间件，只是需要 IApplicationBuilder 提供参数，所以放这里
             app.ConfigLocalizationFluentValidation();
 
+            #endregion
+
             //注册响应压缩到管道
             app.UseResponseCompression();
 
             //注册请求限流到管道
-            //app.UseIpRateLimiting();
-            //app.UseClientRateLimiting();
+            if(Configuration.GetValue("EnableRateLimit", false))
+            {
+                app.UseIpRateLimiting();
+                app.UseClientRateLimiting();
+            }
 
             if (env.IsDevelopment())
             {
