@@ -167,7 +167,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.3.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.0" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="8.0.7" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.48" />
