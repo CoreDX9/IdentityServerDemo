@@ -87,6 +87,7 @@
 31. MiniProfiler 示例。
 32. Blazor WebAssembly 示例。相关博客：[浏览器中的 .Net Core —— Blazor WebAssembly 初体验](https://www.cnblogs.com/coredx/p/12342936.html)
 33. 动态生成 Linq Where 表达式（使用 JqGrid 高级查询的数据结构）。相关博客：[动态构造任意复杂的 Linq Where 表达式](https://www.cnblogs.com/coredx/p/12423929.html)
+34. 基于内置依赖注入框架的动态代理扩展。
 #### 还有更多……
 
 ### IdentityServerGui
