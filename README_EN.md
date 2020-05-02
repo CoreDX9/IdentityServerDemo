@@ -87,6 +87,7 @@ This is a .net core comprehensive learning and sample collection project that co
 31. MiniProfiler example.
 32. Blazor WebAssembly example.
 33. Generate Linq Where expressions dynamically (data structures using JqGrid advanced queries).
+34. Dynamic proxy extension based on built-in dependency injection framework.
 #### and more...
 
 ### IdentityServerGui
