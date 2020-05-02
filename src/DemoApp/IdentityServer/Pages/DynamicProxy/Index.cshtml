@@ -1,0 +1,62 @@
+﻿@page
+@using CoreDX.DependencyInjection.DynamicProxyExtensions
+@using IdentityServer.DynamicProxy
+@using Microsoft.Extensions.DependencyInjection
+@{
+    ViewData["Title"] = "DynamicProxy with DI";
+}
+
+@functions
+{
+
+    public void OnGet()
+    {
+
+    }
+
+    public IActionResult OnGetResult(bool withProxy = true)
+    {
+        var result = string.Empty;
+        if (withProxy) result = HttpContext.RequestServices.GetRequiredService<IProxyService<IServiceWithProxy>>().Proxy.ProxyMethod();
+        else result = HttpContext.RequestServices.GetRequiredService<IServiceWithProxy>().ProxyMethod();
+
+        return Content(result);
+    }
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <button id="proxy" type="button">Run with Proxy</button>
+        <button id="noProxy" type="button">Run without Proxy</button>
+    </div>
+    <div class="col-md-6">
+        <textarea id="result" class="form-control" rows="2" readonly="readonly" style="resize: none" ></textarea>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('#proxy').on('click',
+            function () {
+                $.ajax({
+                    url: '/DynamicProxy/Index?handler=Result&withProxy=true',
+                    success: function (res) {
+                        $('#result').val(res);
+                    }
+                });
+            });
+
+        $('#noProxy').on('click',
+            function () {
+                $.ajax({
+                    url: '/DynamicProxy/Index?handler=Result&withProxy=false',
+                    success: function (res) {
+                        $('#result').val(res);
+                    }
+                });
+            });
+    </script>
+}

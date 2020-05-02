@@ -872,14 +872,6 @@ namespace IdentityServer
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
         {
-            #region 测试动态代理
-
-            var proxy = app.ApplicationServices.GetRequiredService<IProxyService<IServiceWithProxy>>();
-            //var proxy = app.ApplicationServices.GetRequiredService<IProxyService<ServiceWithProxy>>();
-            proxy.Proxy.ProxyMethod();
-
-            #endregion
-
             #region 与管道无关的部分
 
             #region 绑定任务调度服务生命周期事件
