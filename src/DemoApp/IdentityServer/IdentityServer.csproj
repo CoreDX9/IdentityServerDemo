@@ -167,7 +167,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.3.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="8.0.7" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.48" />
@@ -178,6 +178,7 @@
     <ProjectReference Include="..\..\..\..\Harmonic\Harmonic\Harmonic.csproj" />
     <ProjectReference Include="..\..\ApplicationDomain\CoreDX.Domain.Service.App\CoreDX.Domain.Service.App.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Common.Util\CoreDX.Common.Util.csproj" />
+    <ProjectReference Include="..\..\Common\CoreDX.DependencyInjection.DynamicProxyExtensions\CoreDX.DependencyInjection.DynamicProxyExtensions.csproj" />
     <ProjectReference Include="..\..\Common\CoreDX.Identity.Extensions\CoreDX.Identity.Extensions.csproj" />
     <ProjectReference Include="..\..\Common\Sudoku\CoreDX.Sudoku.csproj" />
     <ProjectReference Include="..\..\DemoPlugin\PluginBase\PluginBase.csproj" />

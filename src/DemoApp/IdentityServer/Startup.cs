@@ -11,6 +11,7 @@ using CoreDX.Applicaiton.IdnetityServerAdmin.Services;
 using CoreDX.Application.EntityFrameworkCore;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer;
 using CoreDX.Application.EntityFrameworkCore.IdentityServer.Admin;
+using CoreDX.DependencyInjection.DynamicProxyExtensions;
 using CoreDX.Domain.Core.Command;
 using CoreDX.Domain.Core.Event;
 using CoreDX.Domain.Entity.Identity;
@@ -24,6 +25,7 @@ using FluentValidation.AspNetCore;
 using HealthChecks.UI.Client;
 using IdentityServer.CustomMiddlewares;
 using IdentityServer.CustomServices;
+using IdentityServer.DynamicProxy;
 using IdentityServer.Extensions;
 using IdentityServer.Grpc.Services;
 using IdentityServer.Helpers;
@@ -58,8 +60,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Quartz;
-using Quartz.Impl;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
@@ -809,6 +809,13 @@ namespace IdentityServer
 
             #endregion
 
+            #region 注册动态代理服务
+
+            services.AddProxyTransient<IServiceWithProxy, ServiceWithProxy>(typeof(LoggingInterceptor));
+            //services.AddProxyTransient<ServiceWithProxy>(typeof(LoggingInterceptor));
+
+            #endregion
+
             //注册网站健康检查服务
             services.AddIdSHealthChecks<IdentityServerConfigurationDbContext,
                 IdentityServerPersistedGrantDbContext, ApplicationIdentityDbContext, AdminLogDbContext,
@@ -865,6 +872,14 @@ namespace IdentityServer
         //注册管道是有顺序的，先注册的中间在请求处理管道中会先运行
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, IApiVersionDescriptionProvider apiVersionDescription, AdminApiConfiguration adminApiConfiguration)
         {
+            #region 测试动态代理
+
+            var proxy = app.ApplicationServices.GetRequiredService<IProxyService<IServiceWithProxy>>();
+            //var proxy = app.ApplicationServices.GetRequiredService<IProxyService<ServiceWithProxy>>();
+            proxy.Proxy.ProxyMethod();
+
+            #endregion
+
             #region 与管道无关的部分
 
             #region 绑定任务调度服务生命周期事件
@@ -884,7 +899,7 @@ namespace IdentityServer
             app.UseResponseCompression();
 
             //注册请求限流到管道
-            if(Configuration.GetValue("EnableRateLimit", false))
+            if (Configuration.GetValue("EnableRateLimit", false))
             {
                 app.UseIpRateLimiting();
                 app.UseClientRateLimiting();
