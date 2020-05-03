@@ -13,7 +13,7 @@
    3.  DomianSample：临时性测试代码。
    4.  GrpcClient：控制台 gRPC 客户端示例。
    5.  IdentityServer：主要项目，所有客户端的服务端。包括大多数示例。
-   6.  IdentityServerGui：IdentityServer 的 图形化 外壳。.net core 3.x Window 桌面应用开发示例（WPF）。
+   6.  IdentityServerGui：IdentityServer 的图形化外壳。.net core 3.x Windows 桌面应用开发示例（WPF）。
    7.  JavascriptClient：js oidc 客户端示例。
    8.  SudokuTset：数独求解器测试代码和使用示例。
    9.  WebAPI mvc oidc 客户端示例。
