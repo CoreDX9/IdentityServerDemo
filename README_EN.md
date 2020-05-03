@@ -13,7 +13,7 @@ This is a .net core comprehensive learning and sample collection project that co
    3. DomianSample: temporary test code.
    4. GrpcClient: Console gRPC client example.
    5. IdentityServer: The main project, the server of all clients. Includes most examples.
-   6. IdentityServerGui: Graphical shell of IdentityServer. .net core 3.x Window Desktop Application Development Example (WPF).
+   6. IdentityServerGui: Graphical shell of IdentityServer. .net core 3.x Windows Desktop Application Development Example (WPF).
    7. JavascriptClient: js oidc client example.
    8. SudokuTset: Sudoku solver test code and usage examples.
    9. WebAPI mvc oidc client example.
