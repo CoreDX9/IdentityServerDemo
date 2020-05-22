@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace IdentityServer.Hubs
 {
-    [Authorize]
+    //[Authorize] //安卓连接的时候只能用 jwt 认证，但是目前已经使用了 cookie 认证，两边会打架，有一个不起作用，先取消强制认证
     public class ChatHub : Hub<IChatClient>, IChatServer
     {
         public async Task SendMessage(string message)
         {
-            await Clients.All.ReceiveMessage(Context.User.GetDisplayName(), message);
+            await Clients.All.ReceiveMessage(GetDisplayName(), message);
         }
 
         public Task SendMessageToCaller(string message)
@@ -28,21 +28,23 @@ namespace IdentityServer.Hubs
 
         public Task SendClearOnlineUsersChatBoardCommand()
         {
-            return Clients.All.ReceiveClearChatBoardCommand(Context.User.GetDisplayName());
+            return Clients.All.ReceiveClearChatBoardCommand(GetDisplayName());
         }
 
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
-            await Clients.Others.ReceiveOnlineNotice(Context.User.GetDisplayName());
+            await Clients.Others.ReceiveOnlineNotice(GetDisplayName());
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
-            await Clients.Others.ReceiveOfflineNotice(Context.User.GetDisplayName());
+            await Clients.Others.ReceiveOfflineNotice(GetDisplayName());
             await base.OnDisconnectedAsync(exception);
         }
+
+        private string GetDisplayName() => Context?.User?.GetDisplayName() ?? Context.ConnectionId;
     }
 }

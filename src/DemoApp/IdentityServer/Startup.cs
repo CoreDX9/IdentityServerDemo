@@ -58,6 +58,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Skoruba.AuditLogging.EntityFramework.Entities;
@@ -672,6 +673,13 @@ namespace IdentityServer
                         NameClaimType = "name",
                         RoleClaimType = "role"
                     };
+                })
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "http://coredx.eicp.net:10080";
+                    options.RequireHttpsMetadata = false;
+                    options.JwtValidationClockSkew = TimeSpan.FromSeconds(10);
+                    options.ApiName = "api1";
                 });
             //安装以下包后下面这段代码可用
             //< PackageReference Include = "IdentityServer4.AccessTokenValidation" Version = "x.x.x" />
@@ -1141,8 +1149,45 @@ namespace IdentityServer
             //注册跨域策略到管道
             app.UseCors("CorsPolicy");
 
+            app.Use(async (context, next) =>
+            {
+                var logger = context.RequestServices.GetService<ILogger<Startup>>();
+                if (context.Request.Query.TryGetValue("negotiateVersion", out var version))
+                {
+                    logger.LogWarning($"发现安卓连接 SignalR。negotiateVersion = {version.FirstOrDefault()}");
+                    logger.LogWarning($"发现安卓连接 SignalR。查询字符串详细");
+                    foreach (var query in context.Request.Query)
+                    {
+                        logger.LogWarning($"Key = {query.Key} | Value = {query.Value}");
+                    }
+                    logger.LogWarning($"发现安卓连接 SignalR。请求头详细");
+                    foreach (var query in context.Request.Headers)
+                    {
+                        logger.LogWarning($"Key = {query.Key} | Value = {query.Value}");
+                    }
+                }
+                if (context.Request.Query.TryGetValue("Bearer", out var token))
+                {
+                    context.Request.Headers.Add("Authorization", $"Bearer {token}");
+                }
+
+                await next.Invoke();
+            });
+
             //注册IdentityServer4到管道
             app.UseIdentityServer();
+
+            app.Use(async (context, next) =>
+            {
+                var logger = context.RequestServices.GetService<ILogger<Startup>>();
+                if (context.Request.Query.TryGetValue("negotiateVersion", out var version))
+                {
+                    logger.LogWarning($"发现安卓连接 SignalR。User = {context?.User?.Identity?.Name}");
+                }
+
+                await next.Invoke();
+            });
+
             //新版IdentityServer4要自己调用；
             app.UseAuthorization();
 
