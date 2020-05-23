@@ -128,10 +128,11 @@ namespace IdentityServerGui
             txtConsoleOut.Clear();
 
             await Task.Run(async () => {
-                var host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
+                IHost host = null;
 
                 try
                 {
+                    host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
                     await Program.EnsureSeedDataAsync(host); //初始化数据库
                     await host.StartAsync();
                     Host = host;

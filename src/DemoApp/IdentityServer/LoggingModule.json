@@ -1,4 +1,4 @@
 ﻿{
-  //Serilog/NLog
+  //Serilog/NLog/Default
   "Name": "Serilog"
 }

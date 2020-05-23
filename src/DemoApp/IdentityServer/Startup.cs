@@ -173,9 +173,11 @@ namespace IdentityServer
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             AutoMapper.IConfigurationProvider config = new MapperConfiguration(cfg =>
             {
+                //排除一些会导致异常并且肯定不包括映射配置的程序集
+                string[] exclude = new[] { "CrystalQuartz.AspNetCore", "AutoMapper" };
                 var profileTypes =
                 from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                where assembly.GetName().Name != "AutoMapper"
+                where !exclude.Any( x => x ==  assembly.GetName().Name) 
                 from type in assembly.GetTypes()
                 where type.IsSubclassOf(typeof(Profile)) && !type.IsGenericType && !type.IsAbstract
                 select type;

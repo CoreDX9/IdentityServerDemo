@@ -58,6 +58,9 @@ namespace IdentityServerGui
             services.AddTransient(service =>
             {
                 var host = Program.CreateHostBuilderP(Environment.GetCommandLineArgs())
+#if DEBUG
+                .UseEnvironment("Staging")
+#endif
                 .Build();
                 return host;
             });

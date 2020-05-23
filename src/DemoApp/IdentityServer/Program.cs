@@ -87,6 +87,8 @@ namespace IdentityServer
             var loggingModule = JsonDocument.Parse(loggingConfigFile.BaseStream, jsonOptions).RootElement.GetProperty("Name").GetString();
             switch (loggingModule)
             {
+                case "Default":
+                    break;
                 case "NLog":
                     builder.ConfigureLogging((hostContext, logging) =>
                     {
