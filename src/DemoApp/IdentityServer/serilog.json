@@ -3,7 +3,8 @@
     "MinimumLevel": {
       "Default": "Error",
       "Override": {
-        "Skoruba": "Information"
+        "Skoruba": "Information",
+        "Microsoft.Hosting.Lifetime": "Information"
       }
     },
     "WriteTo": [
