@@ -2,6 +2,7 @@
 @using BlazorApp.Client.Models
 @inject UserInfo userInfo
 @inject HttpClient Http
+@inject ILogger<MainLayout> Logger
 
 <div class="sidebar">
     <NavMenu />
@@ -32,7 +33,15 @@
     {
         if (userInfo.Name == string.Empty)
         {
-            var res = await Http.GetAsync("/api/blazor/UserName");
+            HttpResponseMessage res = null;
+            try
+            {
+                res = await Http.GetAsync("/api/blazor/UserName");
+            }
+            catch(Exception e)
+            {
+                Logger.LogError(e, "获取用户名发生错误");
+            }
 
             if (res.IsSuccessStatusCode)
             {

@@ -17,9 +17,9 @@
         <input @bind="_messageInput" size="50" />
     </label>
 </div>
-<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
-<button @onclick="ClearChatBoard" disabled="@(!IsConnected)">Clear chat board</button>
-@if (!IsConnected)
+<button @onclick="Send" disabled="@(string.IsNullOrEmpty(userInfo.Name) || !IsConnected)">Send</button>
+<button @onclick="ClearChatBoard" disabled="@(string.IsNullOrEmpty(userInfo.Name) || !IsConnected)">Clear chat board</button>
+@if (string.IsNullOrEmpty(userInfo.Name) || !IsConnected)
 {
 <button @onclick="Login">Login</button>
 }
@@ -75,8 +75,13 @@
 
     void Login() => NavigationManager.NavigateTo($"{NavigationManager.ToAbsoluteUri("/Identity/Account/Login").ToString()}?returnUrl={WebUtility.UrlEncode("/blazor/signalr/chat")}", true);
 
-    Task Send() =>
-        _hubConnection.SendAsync("SendMessage", _messageInput);
+    Task Send() 
+    {
+        var task = _hubConnection.SendAsync("SendMessage", _messageInput);
+        _messageInput = string.Empty;
+
+        return task;
+    }
 
     Task ClearChatBoard() =>  _hubConnection.SendAsync("SendClearOnlineUsersChatBoardCommand");
 

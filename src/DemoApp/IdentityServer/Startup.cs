@@ -912,7 +912,7 @@ namespace IdentityServer
                 //注册开发环境异常信息页面
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseBlazorDebugging();
+                app.UseWebAssemblyDebugging();
             }
             else
             {
@@ -1098,9 +1098,6 @@ namespace IdentityServer
             //注册任务调度管理面板
             app.UseCrystalQuartz(() => quartz._scheduler);
 
-            //注册 Blazor 客户端文件
-            app.UseClientSideBlazorFiles<BlazorApp.Client.Program>();
-
             #region 注册 Swagger
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -1120,6 +1117,9 @@ namespace IdentityServer
             });
 
             #endregion
+
+            //注册 Blazor 客户端文件
+            app.UseBlazorFrameworkFiles();
 
             //注册开发环境的npm资源
             if (Environment.IsDevelopment())
@@ -1236,7 +1236,8 @@ namespace IdentityServer
                 endpoints.MapGrpcService<GreeterService>();
 
                 //映射 Blazor 客户端终结点
-                endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
+                //endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
+                endpoints.MapFallbackToFile("/blazor/{**subPath}", "blazor/index.html");
             });
         }
     }
