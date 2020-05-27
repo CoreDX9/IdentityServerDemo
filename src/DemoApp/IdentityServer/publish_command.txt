@@ -1,0 +1,1 @@
+dotnet build IdentityServer.csproj /p:DeployOnBuild=true /p:PublishProfile=FolderProfileRelease
