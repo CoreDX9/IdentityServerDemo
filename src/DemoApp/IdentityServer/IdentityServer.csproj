@@ -47,7 +47,6 @@
     <DotnetPublishFiles Include="@(_MonacoEditorFiles)">
       <DestinationRelativePath>wwwroot/lib/monaco-editor/vs/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
-    <_MonacoEditorFiles Remove="node_modules\monaco-editor\min\vs\editor\editor.main.nls.zh-cn.1.js" />
 
     <!--包含layui文件-->
     <_LayuiFiles Include="node_modules/layui-src/dist/**/*.*" />
@@ -79,6 +78,7 @@
     <None Remove="Areas\Manage\Views\RequestAuthorizationRules\**" />
     <None Remove="Areas\Manage\Views\RolePermissionDeclaration\**" />
     <None Remove="Areas\Manage\Views\UserPermissionDeclaration\**" />
+    <TypeScriptCompile Remove="node_modules\**" />
     <Compile Remove="Areas\Manage\Controllers\ListUserCommand.cs" />
     <Compile Remove="Extensions\MyAuthorize.cs" />
     <Content Remove="Areas\Manage\Views\AuthorizationRules\Index-old.cshtml" />

@@ -124,6 +124,24 @@
     }
   },
   {
+    "outputFileName": "wwwroot/lib/bootstrap/js/bootstrap.bundle.min.js",
+    "inputFiles": [
+      "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap/css/bootstrap.min.css",
+    "inputFiles": [
+      "node_modules/bootstrap/dist/css/bootstrap.min.css"
+    ],
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
     "outputFileName": "wwwroot/lib/bootstrap-dropdown-hover/jquery.bootstrap-dropdown-hover.min.js",
     "inputFiles": [
       "node_modules/bootstrap-dropdown-hover/dist/jquery.bootstrap-dropdown-hover.min.js"

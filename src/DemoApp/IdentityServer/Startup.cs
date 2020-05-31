@@ -118,7 +118,7 @@ namespace IdentityServer
                 .Replace("{EnvironmentName}", Environment.EnvironmentName);
 
             //重定向数据库文件（默认文件在用户文件夹，改到项目内部文件夹方便管理）
-            if (!useInMemoryDatabase)
+            if (!useInMemoryDatabase && connectionString.IndexOf("(localdb)\\MSSQLLocalDB") >= 0)
             {
                 connectionString += $@";AttachDbFileName={Environment.ContentRootPath}\App_Data\Database\IdentityServerDb-{Environment.EnvironmentName}.mdf";
             }
