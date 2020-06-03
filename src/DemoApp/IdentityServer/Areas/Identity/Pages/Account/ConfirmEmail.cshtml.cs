@@ -5,6 +5,8 @@ using IdentityServer.HttpHandlerBase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace IdentityServer.Areas.Identity.Pages.Account
 {
@@ -31,6 +33,7 @@ namespace IdentityServer.Areas.Identity.Pages.Account
                 return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
