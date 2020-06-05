@@ -54,6 +54,7 @@ namespace IdentityServerGui
         private IHost Host { get; set; }
         private PerformanceMonitor PerformanceMonitor { get; set; }
         private TextBoxWriter TextBoxWriter { get; }
+        public bool IsHostRunning => Host != null;
 
         public class Data : INotifyPropertyChanged
         {

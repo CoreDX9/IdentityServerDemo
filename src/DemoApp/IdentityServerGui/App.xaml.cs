@@ -76,13 +76,16 @@ namespace IdentityServerGui
 
         private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
         {
-            string msg = string.Format("{0}. End session?", e.ReasonSessionEnding);
+            var m = (this.MainWindow as MainWindow);
+            if (!m.IsHostRunning) return;
+
+            string msg = string.Format("{0}. Host is Running. End session?", e.ReasonSessionEnding);
             MessageBoxResult result = MessageBox.Show(msg, "Session Ending", MessageBoxButton.YesNo);
 
             // End session, if specified
             if (result == MessageBoxResult.Yes)
             {
-                (this.MainWindow as MainWindow).StopHostAndClose();
+                m.StopHostAndClose();
             }
             if (result == MessageBoxResult.No)
             {
