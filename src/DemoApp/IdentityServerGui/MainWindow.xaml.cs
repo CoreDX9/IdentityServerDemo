@@ -33,14 +33,15 @@ namespace IdentityServerGui
         /// <summary>
         /// 释放内存
         /// </summary>
-        private static void ClearMemory()
+        private static int ClearMemory()
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+                return SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
             }
+            return 0;
         }
 
         private void timer2_Tick(object sender, EventArgs e)
@@ -52,6 +53,7 @@ namespace IdentityServerGui
 
         private IHost Host { get; set; }
         private PerformanceMonitor PerformanceMonitor { get; set; }
+        private TextBoxWriter TextBoxWriter { get; }
 
         public class Data : INotifyPropertyChanged
         {
@@ -84,7 +86,7 @@ namespace IdentityServerGui
 
                 if(stopTask != null)
                 {
-                    await stopTask;
+                    await stopTask.ConfigureAwait(false); ;
                 }
             }
             catch(OperationCanceledException e)
@@ -99,13 +101,20 @@ namespace IdentityServerGui
 
         }
 
+        public async void StopHostAndClose()
+        {
+            await TryStopHostAsync().ConfigureAwait(false);
+            Close();
+        }
+
         public MainWindow(IOptions<AppSettings> settings, PerformanceMonitor performanceMonitor)
         {
             InitializeComponent();
 
             PerformanceMonitor = performanceMonitor;
 
-            Console.SetOut(new TextBoxWriter(this, txtConsoleOut));
+            TextBoxWriter = new TextBoxWriter(this, txtConsoleOut);
+            Console.SetOut(TextBoxWriter);
 
             MyData = new Data()
             {
@@ -115,7 +124,7 @@ namespace IdentityServerGui
                 HostState = "网站未运行"
             };
             winMainWindow.DataContext = MyData;
-            PerformanceMonitor.Start(MyData);
+            PerformanceMonitor?.Start(MyData);
 
             tbiNotify.DoubleClickCommand = new ShowMainWindowCommand(this, tbiNotify);
             tbiNotify.DoubleClickCommandParameter = null;
@@ -133,8 +142,8 @@ namespace IdentityServerGui
                 try
                 {
                     host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
-                    await Program.EnsureSeedDataAsync(host); //初始化数据库
-                    await host.StartAsync();
+                    await Program.EnsureSeedDataAsync(host).ConfigureAwait(false); //初始化数据库
+                    await host.StartAsync().ConfigureAwait(false);
                     Host = host;
                     MyData.HostState = "网站运行中";
                 }
@@ -142,7 +151,7 @@ namespace IdentityServerGui
                 {
                     MyData.HostState = "正在停止网站";
                     host?.Dispose();
-                    await TryStopHostAsync();
+                    await TryStopHostAsync().ConfigureAwait(false);
                     MyData.HostState = "网站未运行（启动失败）";
                     MessageBox.Show("启动网站时发生错误：" + e.Message);
 
@@ -152,14 +161,14 @@ namespace IdentityServerGui
                 {
                     UpdateHostState();
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         private async void btnStopWebHost_ClickAsync(object sender, RoutedEventArgs e)
         {
             MyData.HostState = "正在停止网站";
             MyData.CanStopHost = false;
-            await TryStopHostAsync();
+            await TryStopHostAsync().ConfigureAwait(false);
             MyData.HostState = "网站未运行（已停止）";
 
             UpdateHostState();
@@ -179,8 +188,11 @@ namespace IdentityServerGui
             }
         }
 
-        private void MyMainWindow_Closed(object sender, EventArgs e)
+        private async void MyMainWindow_Closed(object sender, EventArgs e)
         {
+            await TryStopHostAsync().ConfigureAwait(false);
+            var v = TextBoxWriter?.DisposeAsync();
+            if (v.HasValue) await v.Value.ConfigureAwait(false);
             PerformanceMonitor.Stop();
             Application.Current.Shutdown(0);
         }

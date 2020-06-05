@@ -46,6 +46,7 @@ namespace IdentityServerGui
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            this.MainWindow = mainWindow;
             mainWindow.Show();
         }
 
@@ -71,6 +72,22 @@ namespace IdentityServerGui
             MessageBox.Show("捕获到未处理异常：" + e.Exception.Message);
             e.Handled = true;
             Shutdown(-1);
+        }
+
+        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            string msg = string.Format("{0}. End session?", e.ReasonSessionEnding);
+            MessageBoxResult result = MessageBox.Show(msg, "Session Ending", MessageBoxButton.YesNo);
+
+            // End session, if specified
+            if (result == MessageBoxResult.Yes)
+            {
+                (this.MainWindow as MainWindow).StopHostAndClose();
+            }
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }
