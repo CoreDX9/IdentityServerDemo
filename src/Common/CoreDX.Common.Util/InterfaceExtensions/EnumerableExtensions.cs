@@ -17,5 +17,11 @@ namespace CoreDX.Common.Util.InterfaceExtensions
         {
             return source.GroupBy(keySelector).Select(selector);
         }
+
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source,
+            Func<TSource, TSource, bool> comparer, Func<TSource, int> hashCodeGenerator = null)
+        {
+            return source.Distinct(EqualityComparerHelper.Create(comparer, hashCodeGenerator));
+        }
     }
 }

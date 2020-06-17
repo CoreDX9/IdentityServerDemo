@@ -35,8 +35,8 @@ namespace IdentityServer.Models
         {
             public string Name { get; set; }
             public string Signature { get; set; }
-            public string Description { get; set; }
             public string Url { get; set; }
+            public string Description { get; set; }
             public string HandlerIdentification { get; set; }
             [JsonIgnore]
             public ActionDescriptor ActionDescriptor { get; set; }

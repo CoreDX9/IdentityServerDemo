@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.AspNetCore.Routing;
+using CoreDX.Common.Util.InterfaceExtensions;
 
 namespace IdentityServer.CustomServices
 {
@@ -107,6 +108,12 @@ namespace IdentityServer.CustomServices
                     //遍历动作
                     foreach (var action in controllerActions)
                     {
+                        //跳过重复动作，不知道为什么，里面有些重复项目
+                        if (conInfo.Actions.Any(a => a.MethodInfo == action.MethodInfo))
+                        {
+                            continue;
+                        }
+
                         var act = new AreaInfo.ControllerInfo.ActionInfo
                         {
                             Name = action.MethodInfo.Name,
@@ -147,6 +154,11 @@ namespace IdentityServer.CustomServices
 
                     foreach (var handlerMethod in page.HandlerMethods)
                     {
+                        if(pageInfo.PageHandlers.Any(p => p.MethodInfo == handlerMethod.MethodInfo))
+                        {
+                            continue;
+                        }
+
                         pageInfo.PageHandlers.Add(new AreaInfo.PageInfo.PageHandlerInfo
                         {
                             HttpMethod = handlerMethod.HttpMethod,

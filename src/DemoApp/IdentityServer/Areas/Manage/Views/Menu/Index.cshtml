@@ -94,6 +94,7 @@
                                            :data="menuItems.pagedData"
                                            :option="menuItems.option"
                                            v-model="menuItems.form"
+                                           :before-open="beforeMenuItemOpen"
                                            @@row-save="onAddMenuItem"
                                            @@row-update="onUpdateMenuItem"
                                            @@row-del="onDelMenuItem"
@@ -120,6 +121,10 @@
                                             <i class="el-icon-delete"></i><span>删 除</span>
                                         </el-button>
                                     </template>
+                                    <template slot-scope="scope" slot="menuIdForm">
+                                        <el-input v-model="menuItems.form.menuId"
+                                                  :disabled="true"></el-input>
+                                    </template>
                                     <template slot-scope="scope" slot="linkForm">
                                         <el-select v-loading="links.length === 0"
                                                    v-model="menuItems.form.link"
@@ -137,12 +142,12 @@
                                             </el-option-group>
                                         </el-select>
                                     </template>
-                                    <template slot-scope="scope" slot="icon">
-                                        <i v-if="scope.label && scope.label.type == 'css'" :class="scope.label.value"></i>
-                                        <img v-if="scope.label && scope.label.type == 'img'" :src="scope.label.value" style="width: 24px" />
+                                    <template slot-scope="scope" slot="menuItemIcon">
+                                        <i v-if="log('aaa',scope) || scope.row.menuItemIcon  && scope.row.menuItemIcon.type == 'css'" :class="scope.row.menuItemIcon.value"></i>
+                                        <img v-if="scope.row.menuItemIcon && scope.row.menuItemIcon.type == 'img'" :src="scope.row.menuItemIcon.value" style="width: 24px" />
                                     </template>
-                                    <template slot-scope="scope" slot="iconForm">
-                                        <el-input v-model="menuItems.form.icon.value"
+                                    <template slot-scope="scope" slot="menuItemIconForm">
+                                        <el-input v-model="menuItems.form.menuItemIcon.value"
                                                   :disabled="menuItems.uneditable"></el-input>
                                     </template>
                                 </avue-crud>
@@ -225,7 +230,11 @@
                     menuItems: {
                         uneditable: false,
                         selectedMenu: null,
-                        form: {},
+                        form: {
+                            menuItemIcon: {
+                                value:""
+                            }
+                        },
                         option: {
                             title: '菜单项',
                             page: false,
@@ -239,7 +248,7 @@
                                     label: '菜单Id',
                                     prop: 'menuId',
                                     hide: true,
-                                    visdiplay: false
+                                    formslot: true
                                 },
                                 {
                                     label: '标题',
@@ -255,7 +264,7 @@
                                 {
                                     label: '链接',
                                     prop: 'link',
-                                    formsolt: true,
+                                    formslot: true,
                                     rules: [
                                         {
                                             required: true,
@@ -266,20 +275,14 @@
                                 },
                                 {
                                     label: '图标',
-                                    prop: 'icon',
-                                    solt: true,
-                                    formsolt: true
+                                    prop: 'menuItemIcon',
+                                    slot: true,
+                                    formslot: true
                                 },
                                 {
                                     label: '排序',
                                     prop: 'order',
                                     type: 'number'
-                                },
-                                {
-                                    label: '备注',
-                                    prop: 'remark',
-                                    type: 'textarea',
-                                    span: 24
                                 }
                             ]
                         },
@@ -329,6 +332,9 @@
             },
 
             methods: {
+                log: function (l,o) {
+                    console.log(l,o);
+                },
                 onMenuNodeClick: function (data) {
                     this.menuItems.selectedMenu = data;
                     this.menuItems.data = data.items;
@@ -431,15 +437,26 @@
                             });
                         });
                 },
+                beforeMenuItemOpen: function (done, type) {
+                    if (['views', 'edit'].includes(type)) {
+                        // 查看和编辑逻辑
+                    } else {
+                        //新增逻辑
+                        //一定要用setTimeout包裹，由于form组件底层一些机制的设计
+                        setTimeout(() => {
+                            this.menuItems.form.menuId = this.menuItems.selectedMenu.id;
+                            this.menuItems.form.menuItemIcon = {
+                                type: 'css',
+                                value: 'home'
+                            };
+                        }, 0)
+                    }
+                    done();
+                },
                 onMenuItemAddClick: function () {
                     this.menuItems.uneditable = false;
 
                     this.$refs.menuItem.rowAdd();
-                    this.menuItems.form.menuId = this.menuItems.selectedMenu.id;
-                    this.menuItems.form.icon = {
-                        type: 'css',
-                        value: ''
-                    };
                 },
                 onAddMenuItem: function (form, done) {
                     this.menuItems.uneditable = true;
@@ -565,7 +582,7 @@
 
                         for (var i = 0; i < pArr.length; i++) {
                             var tmp = nowMenus.asEnumerable()
-                                .single(m => m.id === pArr[i]);
+                                .single(m => m.id.toString() === pArr[i]);
                             menus.push(tmp);
 
                             nowMenus = tmp.children;

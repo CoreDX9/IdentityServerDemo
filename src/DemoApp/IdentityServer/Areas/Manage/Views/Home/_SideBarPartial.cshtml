@@ -82,7 +82,7 @@
         </template>
         <el-menu-item v-for="item in menu.items"
                       :index="item.index"
-                      :key="item.index">
+                      :key="item.index * 2">
             <i v-if="item.icon && item.icon.type == 'css'" :class="item.icon.value"></i>
             <img v-if="item.icon && item.icon.type == 'img'" :src="item.icon.value" style="width: 24px" />
             <span slot="title">{{item.title}}</span>
@@ -104,7 +104,7 @@
         </el-menu-item-group>
         <sub-side-bar v-for="subMenu in menu.children"
                       :menu="subMenu"
-                      :key="subMenu.index"></sub-side-bar>
+                      :key="subMenu.index * 2 + 1"></sub-side-bar>
     </el-submenu>
 </template>
 

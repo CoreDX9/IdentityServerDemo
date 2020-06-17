@@ -54,6 +54,12 @@
       <DestinationRelativePath>wwwroot/lib/layui/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
     </DotnetPublishFiles>
     
+        <!--包含element-ui字体文件-->
+    <_ElementUI Include="node_modules/element-ui/lib/theme-chalk/fonts/**/*.*" />
+    <DotnetPublishFiles Include="@(_ElementUI)">
+      <DestinationRelativePath>wwwroot/lib/element-ui/fonts/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotnetPublishFiles>
+    
     <Compile Remove="Areas\Manage\Views\OrganizationPermissionDeclaration\**" />
     <Compile Remove="Areas\Manage\Views\Organizations\**" />
     <Compile Remove="Areas\Manage\Views\PermissionDefinition\**" />
@@ -145,7 +151,7 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.2">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

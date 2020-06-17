@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace CoreDX.Common.Util.EnumerableExtensions
+namespace CoreDX.Common.Util.InterfaceExtensions
 {
-    public static class QueryableExtensions
+    public static class LinqExtensions
     {
         public static IEnumerable<T> WhereIf<T>(this IEnumerable<T> query, bool condition, Func<T, bool> predicate)
         {
