@@ -13,7 +13,8 @@
     <partial name="_SiteStylesPartial" />
     
     <style>
-        .avue-tree .el-input-group__append {
+        @*把内置树表菜单的新增按钮藏起来*@
+        .avue-tree__item:not(.my-custom-btn) {
             display: none;
         }
     </style>
@@ -32,10 +33,10 @@
                                    @@save="onAddMenu"
                                    @@del="onDelMenu"
                                    v-model="menu.form">
-                            <template slot-scope="scope" slot="menuBtn">
-                                <el-dropdown-item @@click.native="onMenuAddClick(scope.node,scope.data)">新增</el-dropdown-item>
-                                <el-dropdown-item @@click.native="onMenuEditClick(scope.node,scope.data)">修改</el-dropdown-item>
-                                <el-dropdown-item @@click.native="onMenuDelClick(scope.node,scope.data)">删除</el-dropdown-item>
+                            <template slot-scope="scope" slot="menu">
+                                <div class="avue-tree__item my-custom-btn" @@click="onMenuAddClick(scope.node,scope.data)">新增</div>
+                                <div class="avue-tree__item my-custom-btn" @@click="onMenuEditClick(scope.node,scope.data)">修改</div>
+                                <div class="avue-tree__item my-custom-btn" @@click="onMenuDelClick(scope.node,scope.data)">删除</div>
                             </template>
                         </avue-tree>
                     </el-col>
@@ -121,10 +122,6 @@
                                             <i class="el-icon-delete"></i><span>删 除</span>
                                         </el-button>
                                     </template>
-                                    <template slot-scope="scope" slot="menuIdForm">
-                                        <el-input v-model="menuItems.form.menuId"
-                                                  :disabled="true"></el-input>
-                                    </template>
                                     <template slot-scope="scope" slot="linkForm">
                                         <el-select v-loading="links.length === 0"
                                                    v-model="menuItems.form.link"
@@ -178,7 +175,7 @@
                         uneditable: false,
                         form: {},
                         option: {
-                            addBtn: false,
+                            addBtn: true,
                             editBtn: false,
                             delBtn: false,
                             nodeKey: 'id',
@@ -188,7 +185,7 @@
                                     {
                                         label: 'Id',
                                         prop: 'id',
-                                        visdiplay: false
+                                        display: false
                                     },
                                     {
                                         label: '排序',
@@ -199,7 +196,7 @@
                                         prop: 'parentId',
                                         type: 'tree',
                                         dicData: [],
-                                        visdiplay: false,
+                                        display: false,
                                         props: {
                                             label: 'title',
                                             value: 'id'
@@ -209,11 +206,6 @@
                                             message: "请选择父菜单",
                                             trigger: "change"
                                         }],
-                                        span: 24
-                                    }, {
-                                        label: '备注',
-                                        prop: 'remark',
-                                        type: 'textarea',
                                         span: 24
                                     }
                                 ]
@@ -248,7 +240,7 @@
                                     label: '菜单Id',
                                     prop: 'menuId',
                                     hide: true,
-                                    formslot: true
+                                    readonly: true
                                 },
                                 {
                                     label: '标题',
@@ -339,9 +331,9 @@
                     this.menuItems.selectedMenu = data;
                     this.menuItems.data = data.items;
                 },
-                onMenuAddClick: function (node, data) {
-                    this.$refs.menu.append(node, data);
-                    setTimeout(() => this.menu.form.parentId = data.id, 0);
+                onMenuAddClick: function (node) {
+                    this.$refs.menu.rowAdd();
+                    setTimeout(() => this.menu.form.parentId = node.id, 0);
 
                 },
                 onAddMenu: function (data, node, done) {
@@ -371,8 +363,8 @@
                             });
                         });
                 },
-                onMenuEditClick: function (node, data) {
-                    this.$refs.menu.edit(node, data);
+                onMenuEditClick: function (node) {
+                    this.$refs.menu.rowEdit(node);
                 },
                 onUpdateMenu: function (data, node, done) {
                     var _this = this;
