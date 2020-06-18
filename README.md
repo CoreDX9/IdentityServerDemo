@@ -32,7 +32,7 @@
 1. 下载这两个项目并打开 IdentityServerDemo 解决方案： <br>``` https://github.com/CoreDX9/IdentityServerDemo.git ```<br>``` https://github.com/CoreDX9/Harmonic.git ```
 2. 卸载这些项目：<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
 3. 修复 Infrastructure/Harmonic 的项目引用。
-4. 等待 VS2019 自动还原 Nuget 和 npm 包。如果 npm 包自动还原失败，可尝试在 cmd 中运行 npm install 命令。请确保已安装 Node.js。
+4. 等待 VS2019 自动还原 Nuget 和 npm 包。如果 npm 包自动还原失败，可尝试在 cmd 中运行 npm install 命令。请确保已安装 Node.js。如果出现 gyp 错误，可尝试运行命令```npm install --global --production windows-build-tools```进行修复。
 5. 编译生成 ```DemoPlugin/Plugin1```。
 6. 把 IdentityServer 设置为默认启动项目并设置启动方式为自托管方式。
 7. 根据你的实际情况修改 IdentityServer/appsettings.json 和 appsettings.Development.json 中的数据库连接字符串。目前仅支持 MS SqlServer，需要其他数据库支持的请自行修改代码。
