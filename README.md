@@ -6,6 +6,9 @@
 <br> 初始账号： `admin`、`coredx`、`alice`、`bob`
 <br> 初始密码： `Pass123$`
 
+## 解决 Github 克隆速度慢的方法
+将 ```www.github.com/仓库地址``` 改为 ```www.github.com.cnpmjs.org/仓库地址```
+
 ## 可运行的示例程序
 1. DemoApp
    1.  Client： C# oidc 客户端示例。
