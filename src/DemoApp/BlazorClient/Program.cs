@@ -4,6 +4,10 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorApp.Client.Models;
+using Grpc.Net.Client;
+using Grpc.Net.Client.Web;
+using Microsoft.AspNetCore.Components;
+using IdentityServer.Grpc.Services;
 
 namespace BlazorApp.Client
 {
@@ -18,6 +22,17 @@ namespace BlazorApp.Client
             builder.Services.AddScoped<UserInfo>();
             builder.Services.AddSingleton(builder.Services);
             builder.Services.AddOptions();
+
+            builder.Services.AddSingleton(services =>
+            {
+                // Create a gRPC-Web channel pointing to the backend server
+                var httpClient = new HttpClient(new GrpcWebHandler(GrpcWebMode.GrpcWeb, new HttpClientHandler()));
+                var baseUri = services.GetRequiredService<NavigationManager>().BaseUri;
+                var channel = GrpcChannel.ForAddress(baseUri, new GrpcChannelOptions { HttpClient = httpClient });
+
+                // Now we can instantiate gRPC clients for this channel
+                return new Greeter.GreeterClient(channel);
+            });
 
             await builder.Build().RunAsync();
         }

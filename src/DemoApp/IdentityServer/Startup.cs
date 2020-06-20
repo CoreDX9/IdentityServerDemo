@@ -710,7 +710,8 @@ namespace IdentityServer
                 {
                     builder.WithOrigins("https://localhost:5001", "https://localhost:5003", "https://localhost:5005", "https://localhost:5007")
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding"); //注册 gRPC Web 跨域访问所需的 Http 标头
                 }));
 
             //注册反CSRF服务并配置请求头名称
@@ -1145,6 +1146,9 @@ namespace IdentityServer
             //注册路由到管道
             app.UseRouting();
 
+            //注册gRPC Web 兼容组件到管道
+            app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
+
             //注册Cookie策略到管道（GDPR）
             app.UseCookiePolicy();
 
@@ -1233,7 +1237,9 @@ namespace IdentityServer
                 endpoints.MapRazorPages();
 
                 //映射gRPC终结点
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<GreeterService>()
+                //.EnableGrpcWeb()
+                .RequireCors("CorsPolicy");
 
                 //映射 Blazor 客户端终结点
                 //endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
