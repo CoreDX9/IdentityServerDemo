@@ -29,7 +29,7 @@ This is a .net core comprehensive learning and sample collection project that co
 1. Download both projects and open IdentityServerDemo solution: <br> ``` https://github.com/CoreDX9/IdentityServerDemo.git ``` <br> ``` https://github.com/CoreDX9/Harmonic.git ```
 2. Unload projects :<br>```Data/Domain.EntityFrameworkCore```<br>```Data/EntityHistoryMQReceive```<br>```Data/Repository```<br>```DemoApp/WebClient```<br>```Infrastructure/ResourceOwnerClient```
 3. Fix project references for Infrastructure/Harmonic.
-4. Wait for VS2019 to automatically restore Nuget and npm packages. If the automatic restore of the npm package fails, try running the npm install command in cmd. Make sure Node.js is installed.
+4. Wait for VS2019 to automatically restore Nuget and npm packages. If the automatic restore of the npm package fails, try running the ```npm install``` command in cmd. Make sure Node.js is installed. If a gyp error occurs, you can try (as an administrator) to run the command ```npm install --global --production windows-build-tools``` to fix it.
 5. Build project ```DemoPlugin/Plugin1```。
 6. Set IdentityServer as the default startup project and set the startup mode to self-hosted.
 7. Modify the database connection strings in IdentityServer/appsettings.json and appsettings.Development.json according to your actual situation. Currently only MS SqlServer is supported. If you need other database support, please modify the code yourself.
@@ -88,6 +88,7 @@ This is a .net core comprehensive learning and sample collection project that co
 32. Blazor WebAssembly example.
 33. Generate Linq Where expressions dynamically (data structures using JqGrid advanced queries).
 34. Dynamic proxy extension based on built-in dependency injection framework.
+35. Example of using gRPC Web Client based on Blazor WebAssembly.
 #### and more...
 
 ### IdentityServerGui
