@@ -110,10 +110,16 @@
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="2.1.1" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="BuildBundlerMinifier" Version="3.2.447" />
-    <PackageReference Include="BundlerMinifier.Core" Version="3.2.447" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="BundlerMinifier.Core" Version="3.2.449" />
     <PackageReference Include="CrystalQuartz.AspNetCore" Version="6.11.0.3-beta" />
+    <PackageReference Include="Faker.Net" Version="1.3.77" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.5.0-alpha0046" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="3.5.0-alpha0046" />
+    <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.5.0-alpha0046" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="3.5.0-alpha0046" />
+    <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="3.5.0-alpha0046" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.29.0" />
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.29.0" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="6.0.0.5800-preview4" />
@@ -174,7 +180,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="Tesseract" Version="4.1.0-beta1" />
     <PackageReference Include="X.PagedList" Version="8.0.7" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.50" />

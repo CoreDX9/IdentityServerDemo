@@ -76,6 +76,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using GraphQL.Server;
 
 #endregion
 
@@ -827,6 +828,31 @@ namespace IdentityServer
 
             #endregion
 
+            #region 注册 GraphQL 服务
+
+            services.AddGraphQL((provider, options) =>
+            {
+                options.EnableMetrics = true;
+                options.ExposeExceptions = true;
+                var logger = provider.GetRequiredService<ILogger<Startup>>();
+                options.UnhandledExceptionDelegate = context => logger.LogError(context.OriginalException, "{Error} occured", context.OriginalException.Message);
+            })
+                .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { })
+                .AddWebSockets()
+                .AddDataLoader()
+                .AddGraphTypes(typeof(IdentityServer.GraphQL.Schema.MoviesSchema));
+
+            services.AddSingleton<IdentityServer.GraphQL.Services.IMovieService, IdentityServer.GraphQL.Services.MovieService>();
+            services.AddSingleton<IdentityServer.GraphQL.Services.IActorService, IdentityServer.GraphQL.Services.ActorService>();
+
+            //services.AddSingleton<IdentityServer.GraphQL.Schema.MovieType>();
+            //services.AddSingleton<IdentityServer.GraphQL.Schema.ActorType>();
+            //services.AddSingleton<IdentityServer.GraphQL.Schema.MovieRatngEnum>();
+            //services.AddSingleton<IdentityServer.GraphQL.Schema.MoviesQuery>();
+            services.AddSingleton<IdentityServer.GraphQL.Schema.MoviesSchema>();
+
+            #endregion
+
             //注册网站健康检查服务
             services.AddIdSHealthChecks<IdentityServerConfigurationDbContext,
                 IdentityServerPersistedGrantDbContext, ApplicationIdentityDbContext, AdminLogDbContext,
@@ -956,7 +982,8 @@ namespace IdentityServer
                     .From("localhost:5004")
                     .From("localhost:5005")
                     .From("ajax.aspnetcdn.com")
-                    .From("cdnjs.cloudflare.com");
+                    .From("cdnjs.cloudflare.com")
+                    .From("cdn.jsdelivr.net");
                 //.AddNonce();//此项与AllowUnsafeInline冲突，会被AllowUnsafeInline选项覆盖
 
                 // CSS allowed from:
@@ -971,7 +998,8 @@ namespace IdentityServer
                     .From("localhost:5005")
                     .From("ajax.aspnetcdn.com")
                     .From("fonts.googleapis.com")
-                    .From("cdnjs.cloudflare.com");
+                    .From("cdnjs.cloudflare.com")
+                    .From("cdn.jsdelivr.net");
                 //.AddNonce();//此项与AllowUnsafeInline冲突，会被AllowUnsafeInline选项覆盖
 
                 csp.AllowImages
@@ -983,7 +1011,8 @@ namespace IdentityServer
                     .From("localhost:5003")
                     .From("localhost:5004")
                     .From("localhost:5005")
-                    .From("ajax.aspnetcdn.com");
+                    .From("ajax.aspnetcdn.com")
+                    .From("cdn.jsdelivr.net");
 
                 // HTML5 audio and video elemented sources can be from:
                 csp.AllowAudioAndVideo
@@ -999,7 +1028,8 @@ namespace IdentityServer
                     .ToSelf()
                     .To("ws://localhost:8080")
                     .To("ws://localhost:5000")
-                    .To("wss://localhost:5001");
+                    .To("wss://localhost:5001")
+                    .To("https://cdn.jsdelivr.net");
 
                 // Allow fonts to be downloaded from:
                 csp.AllowFonts
@@ -1196,6 +1226,21 @@ namespace IdentityServer
 
             //新版IdentityServer4要自己调用；
             app.UseAuthorization();
+
+            #region GraphQL 相关中间件
+
+            //给 GraphQL 准备的
+            app.UseWebSockets();
+
+            app.UseGraphQLWebSockets<IdentityServer.GraphQL.Schema.MoviesSchema>();
+
+            app.UseGraphQL<IdentityServer.GraphQL.Schema.MoviesSchema>();
+
+            app.UseGraphQLPlayground(new global::GraphQL.Server.Ui.Playground.GraphQLPlaygroundOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/playground" });
+
+            app.UseGraphQLVoyager(new global::GraphQL.Server.Ui.Voyager.GraphQLVoyagerOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/voyager" });
+
+            #endregion
 
             //注册自定义中间件到管道
             app.UseAntiforgeryTokenGenerateMiddleware();
