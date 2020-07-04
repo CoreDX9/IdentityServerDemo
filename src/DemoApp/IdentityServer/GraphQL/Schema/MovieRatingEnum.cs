@@ -7,9 +7,9 @@ using IdentityServer.GraphQL.Models;
 
 namespace IdentityServer.GraphQL.Schema
 {
-    public class MovieRatngEnum : EnumerationGraphType<MovieRating>
+    public class MovieRatingEnum : EnumerationGraphType<MovieRating>
     {
-        public MovieRatngEnum()
+        public MovieRatingEnum()
         {
             Name = nameof(MovieRating) + "s";
             Description = "";

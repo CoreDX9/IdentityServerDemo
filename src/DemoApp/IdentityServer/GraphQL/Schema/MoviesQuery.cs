@@ -11,7 +11,7 @@ namespace IdentityServer.GraphQL.Schema
     {
         public MoviesQuery(IMovieService movieService)
         {
-            Name = "Query";
+            Name = nameof(MoviesQuery);
 
             Field<ListGraphType<MovieType>>("movies", resolve: context => movieService.GetAsync());
         }

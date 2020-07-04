@@ -5,6 +5,17 @@ using System.Threading.Tasks;
 
 namespace IdentityServer.GraphQL.Models
 {
+    [Flags]
+    public enum MovieRating
+    {
+        Unrated = 0,
+        G = 1,
+        PG = 1 << 1,
+        PG13 = 1 << 2,
+        R = 1 << 3,
+        NC17 = 1 << 4
+    }
+
     public class Movie
     {
         public int Id { get; set; }
@@ -15,14 +26,12 @@ namespace IdentityServer.GraphQL.Models
         public MovieRating MovieRating { get; set; }
     }
 
-    [Flags]
-    public enum MovieRating
+    public class MovieInput
     {
-        Unrated = 0,
-        G = 1,
-        PG = 2,
-        PG13 = 3,
-        R = 4,
-        NC17 =5
+        public string Name { get; set; }
+        public DateTimeOffset ReleaseDate { get; set; }
+        public string Company { get; set; }
+        public int ActorId { get; set; }
+        public MovieRating MovieRating { get; set; }
     }
 }

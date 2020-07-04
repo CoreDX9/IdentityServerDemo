@@ -13,6 +13,8 @@ namespace IdentityServer.GraphQL.Schema
             IServiceProvider services) :base(services)
         {
             Query = services.GetRequiredService<MoviesQuery>();
+            Mutation = services.GetRequiredService<MociesMutation>();
+            Subscription = services.GetRequiredService<MoviesSubscription>();
         }
     }
 }

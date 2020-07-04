@@ -828,7 +828,7 @@ namespace IdentityServer
 
             #endregion
 
-            #region 注册 GraphQL 服务
+            #region 注册 GraphQL 相关服务
 
             services.AddGraphQL((provider, options) =>
             {
@@ -837,6 +837,7 @@ namespace IdentityServer
                 var logger = provider.GetRequiredService<ILogger<Startup>>();
                 options.UnhandledExceptionDelegate = context => logger.LogError(context.OriginalException, "{Error} occured", context.OriginalException.Message);
             })
+                .AddUserContextBuilder(httpContext => new IdentityServer.GraphQL.GraphQlUserContext(httpContext.User))
                 .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { })
                 .AddWebSockets()
                 .AddDataLoader()
@@ -844,11 +845,8 @@ namespace IdentityServer
 
             services.AddSingleton<IdentityServer.GraphQL.Services.IMovieService, IdentityServer.GraphQL.Services.MovieService>();
             services.AddSingleton<IdentityServer.GraphQL.Services.IActorService, IdentityServer.GraphQL.Services.ActorService>();
+            services.AddSingleton<IdentityServer.GraphQL.Services.IMovieEventService, IdentityServer.GraphQL.Services.MovieEventService>();
 
-            //services.AddSingleton<IdentityServer.GraphQL.Schema.MovieType>();
-            //services.AddSingleton<IdentityServer.GraphQL.Schema.ActorType>();
-            //services.AddSingleton<IdentityServer.GraphQL.Schema.MovieRatngEnum>();
-            //services.AddSingleton<IdentityServer.GraphQL.Schema.MoviesQuery>();
             services.AddSingleton<IdentityServer.GraphQL.Schema.MoviesSchema>();
 
             #endregion

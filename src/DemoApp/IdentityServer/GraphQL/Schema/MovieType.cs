@@ -20,7 +20,7 @@ namespace IdentityServer.GraphQL.Schema
             Field(x => x.Name);
             Field(x => x.ReleaseDate);
             Field(x => x.ActorId);
-            Field<MovieRatngEnum>(nameof(MovieRating), resolve: context => context.Source.MovieRating);
+            Field<MovieRatingEnum>(nameof(MovieRating), resolve: context => context.Source.MovieRating);
 
             Field<ActorType>(nameof(Actor), resolve: context => actorService.GetByIdAsync(context.Source.ActorId));
         }
