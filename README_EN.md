@@ -89,6 +89,7 @@ This is a .net core comprehensive learning and sample collection project that co
 33. Generate Linq Where expressions dynamically (data structures using JqGrid advanced queries).
 34. Dynamic proxy extension based on built-in dependency injection framework.
 35. Example of using gRPC Web Client based on Blazor WebAssembly.
+36. Example of using GraphQL Server. Reference: [Query](src/DemoApp/IdentityServer/GraphQL/GraphQlQuerySample.md "Query").
 #### and more...
 
 ### IdentityServerGui

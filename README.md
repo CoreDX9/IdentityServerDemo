@@ -92,6 +92,7 @@
 33. 动态生成 Linq Where 表达式（使用 JqGrid 高级查询的数据结构）。相关博客：[动态构造任意复杂的 Linq Where 表达式](https://www.cnblogs.com/coredx/p/12423929.html)
 34. 基于内置依赖注入框架的动态代理扩展。
 35. 基于 Blazor WebAssembly 的 gRPC Web Client 使用示例。
+36. GraphQL Server 使用示例。参考：[查询](src/DemoApp/IdentityServer/GraphQL/GraphQlQuerySample.md "查询")。
 #### 还有更多……
 
 ### IdentityServerGui
