@@ -11,7 +11,7 @@ namespace IdentityServer.GraphQL.Schema
     {
         public MovieRatingEnum()
         {
-            Name = nameof(MovieRating) + "s";
+            Name = $"{nameof(MovieRating)}s";
             Description = "";
 
             foreach (var value in Enum.GetValues(typeof(MovieRating)))
