@@ -44,6 +44,9 @@ namespace CoreDX.Domain.Entity.App.Sample
     {
         [DbDescription("示例列")]
         public virtual string SampleColumn { get; set; }
+
+        public override int? CreatorId { get; set; }
+        public override int? LastModifierId { get; set; }
     }
 
     public class TreeDomainView : DomainTreeEntityViewBase<int, TreeDomainView, int>

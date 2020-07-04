@@ -37,9 +37,13 @@ namespace IdentityServer.Pages.TreeDomainDemo
             {
                 return Page();
             }
-            
-            TreeDomain.CreatorId = int.Parse(HttpContext.User.GetSubjectId());
-            TreeDomain.LastModifierId = int.Parse(HttpContext.User.GetSubjectId());
+
+            if(int.TryParse(HttpContext.User.GetSubjectId(), out var subId))
+            {
+                TreeDomain.CreatorId = subId;
+                TreeDomain.LastModifierId = subId;
+            }
+
             _context.TreeDomains.Add(TreeDomain);
 
             await _context.SaveChangesAsync();

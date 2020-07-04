@@ -11,6 +11,10 @@ namespace CoreDX.Domain.Entity.Identity
     , IStorageOrderRecordable
     {
         public long InsertOrder { get; set; }
+        public override int? CreatorId { get; set; }
+        public override int? LastModifierId { get; set; }
+        public override ApplicationUser Creator { get; set; }
+        public override ApplicationUser LastModifier { get; set; }
     }
 
     public abstract class Organization<TKey, TEntity, TIdentityUser, TUserOrganization> : DomainTreeEntityBase<TKey, TEntity, TKey, TIdentityUser>

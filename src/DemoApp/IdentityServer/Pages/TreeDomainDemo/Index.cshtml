@@ -50,12 +50,6 @@
                 {{item.parentId}}
             </td>
             <td>
-                {{item.orderNumber}}
-            </td>
-            <td>
-                {{item.rowVersion}}
-            </td>
-            <td>
                 {{item.isDeleted}}
             </td>
             <td>
@@ -119,13 +113,11 @@
                     repeatitems: false
                 },
 
-                colNames: ["Id", "数据列", "序号", "行版本", "已启用", "创建人", "创建时间", "上次修改人", "上次修改时间", "路径"],
+                colNames: ["Id", "数据列", "已启用", "创建人", "创建时间", "上次修改人", "上次修改时间", "路径"],
                 colModel: [
                     { name: 'id', index: 'id', hidden: true, key: true },
                     { name: 'sampleColumn', index: 'sampleColumn' },
-                    { name: 'orderNumber', index: 'orderNumber' },
-                    { name: 'rowVersion', index: 'rowVersion', align: "center" },
-                    { name: 'isEnable', index: 'isEnable', align: "center", formatter: 'checkbox' },
+                    { name: 'isActive', index: 'isActive', align: "center", formatter: 'checkbox' },
                     { name: 'CreatorId', index: 'CreatorId', align: "center" },
                     { name: 'creationTime', index: 'creationTime', align: "center" },
                     { name: 'lastModificationUserId', index: 'lastModificationUserId', align: "center" },

@@ -21,12 +21,8 @@ namespace CoreDX.Domain.Model.Entity
         where TIdentityKey : struct, IEquatable<TIdentityKey>
         where TIdentityUser : IEntity<TIdentityKey>
     {
-        #region IDomainEntity成员
-
-        public virtual TIdentityUser Creator { get; set; }
-        public virtual TIdentityUser LastModifier { get; set; }
-
-        #endregion
+        public abstract TIdentityUser Creator { get; set; }
+        public abstract TIdentityUser LastModifier { get; set; }
     }
 
     /// <summary>
@@ -42,8 +38,9 @@ namespace CoreDX.Domain.Model.Entity
         where TEntity : DomainTreeEntityBase<TKey, TEntity, TIdentityKey>
         where TIdentityKey : struct, IEquatable<TIdentityKey>
     {
-        public virtual TIdentityKey? CreatorId { get; set; }
-        public virtual TIdentityKey? LastModifierId { get; set; }
+        //这里的属性必须使用抽象实现，由具体类重写，否则会在赋值时引发违反泛型约束异常，原因未知
+        public abstract TIdentityKey? CreatorId { get; set; }
+        public abstract TIdentityKey? LastModifierId { get; set; }
     }
 
     /// <summary>

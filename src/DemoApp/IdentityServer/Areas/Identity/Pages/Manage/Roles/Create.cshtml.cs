@@ -44,13 +44,16 @@ namespace IdentityServer.Areas.Identity.Pages.Manage.Roles
         {
             if (ModelState.IsValid)
             {
-                var userId = int.Parse(User.GetSubjectId());
                 var role = new ApplicationRole(Input.Name)
                 {
-                    ParentId = Input.ParentId,
-                    CreatorId = userId,
-                    LastModifierId = userId
+                    ParentId = Input.ParentId
                 };
+
+                if (int.TryParse(User.GetSubjectId(), out var subId))
+                {
+                    role.CreatorId = subId;
+                    role.LastModifierId = subId;
+                }
 
                 var result = await _roleManager.CreateAsync(role);
 

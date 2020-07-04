@@ -48,6 +48,8 @@ namespace CoreDX.Domain.Entity.App.Management
         public short Order { get; set; }
 
         public virtual List<MenuItem> Items { get; set; } = new List<MenuItem>();
+        public override int? CreatorId { get; set; }
+        public override int? LastModifierId { get; set; }
         //public List<Group> Groups { get; set; }
     }
 

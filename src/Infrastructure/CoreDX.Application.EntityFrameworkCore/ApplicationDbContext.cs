@@ -63,7 +63,7 @@ namespace CoreDX.Application.EntityFrameworkCore
                     b.HasOne(e => e.Parent)
                         .WithMany(e => e.Children)
                         .HasForeignKey(e => e.ParentId);
-                    b.ToView($"view_treeTreeDomains");
+                    b.ToView($"view_tree_TreeDomains");
                 });
 
             builder.ConfigDatabaseDescription();
