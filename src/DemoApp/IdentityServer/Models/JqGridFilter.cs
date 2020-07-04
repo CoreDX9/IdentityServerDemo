@@ -44,7 +44,7 @@ namespace IdentityServer.Models
         /// </summary>
         public JqGridSearchRuleGroup FilterObject => Filters.IsNullOrWhiteSpace()
             ? new JqGridSearchRuleGroup { Rules = new[] { new JqGridSearchRule { Op = SearchOper, Data = SearchString, Field = SearchField } } }
-            : JsonSerializer.Deserialize<JqGridSearchRuleGroup>(Filters ?? string.Empty);
+            : JsonSerializer.Deserialize<JqGridSearchRuleGroup>(Filters, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
         /// <summary>
         /// 简单搜索字段
