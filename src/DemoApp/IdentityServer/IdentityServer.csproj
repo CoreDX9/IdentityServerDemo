@@ -168,9 +168,9 @@
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.2.1" />
     <PackageReference Include="MiniProfiler.Providers.SqlServer" Version="4.2.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.3.0.20200701" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.4.0.20200725" />
     <PackageReference Include="PuppeteerSharp" Version="2.0.3" />
-    <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="Quartz" Version="3.1.0" />
     <PackageReference Include="Selz.IdentityServer4.MongoDB" Version="2.0.5" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
