@@ -830,7 +830,7 @@ namespace IdentityServer
 
             #region 注册 GraphQL 相关服务
 
-            services.AddGraphQL((provider, options) =>
+            services.AddGraphQL((options, provider) =>
             {
                 options.EnableMetrics = true;
                 options.ExposeExceptions = true;

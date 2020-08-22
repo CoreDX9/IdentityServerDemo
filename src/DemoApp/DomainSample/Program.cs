@@ -195,11 +195,15 @@ namespace DomainSample
     {
         public string Name { get; set; }
         public int Age { get; set; }
+        public override int? CreatorId { get; set; }
+        public override int? LastModifierId { get; set; }
     }
 
     public class P2 : DomainTreeEntityBase<int, P2, int>
     {
         public int i { get; set; }
+        public override int? CreatorId { get; set; }
+        public override int? LastModifierId { get; set; }
     }
 
     public class P3 : P2
