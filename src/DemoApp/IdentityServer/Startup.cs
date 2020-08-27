@@ -77,6 +77,9 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Server;
+using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 #endregion
 
@@ -545,6 +548,8 @@ namespace IdentityServer
                 })
                 //设定兼容性
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.Configure<WebEncoderOptions>(options => options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
             #region 注册SignalR服务
 
