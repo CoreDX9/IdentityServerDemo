@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +27,8 @@ namespace IdentityServerGui
 
         public override Task WriteAsync(char value)
         {
-            Window.Dispatcher.InvokeAsync(() => {
+            Window.Dispatcher.InvokeAsync(() =>
+            {
                 TextBox.AppendText(value.ToString());
                 TextBox.ScrollToEnd();
             }, System.Windows.Threading.DispatcherPriority.Normal);
@@ -42,7 +42,8 @@ namespace IdentityServerGui
 
         public override Task WriteLineAsync(string value)
         {
-            Window.Dispatcher.InvokeAsync(() => {
+            Window.Dispatcher.InvokeAsync(() =>
+            {
                 TextBox.AppendText(value + Environment.NewLine);
                 TextBox.ScrollToEnd();
             }, System.Windows.Threading.DispatcherPriority.Normal);

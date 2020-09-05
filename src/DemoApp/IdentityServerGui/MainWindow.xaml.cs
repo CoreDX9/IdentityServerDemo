@@ -1,24 +1,13 @@
-﻿using Microsoft.Extensions.Options;
+﻿using IdentityServer;
+using IdentityServerGui.Commands;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using IdentityServer;
-using Microsoft.Extensions.Hosting;
-using System.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
-using IdentityServerGui.Commands;
-using System.Runtime.InteropServices;
 
 namespace IdentityServerGui
 {
@@ -85,12 +74,12 @@ namespace IdentityServerGui
                 using var _ = Host;
                 using var stopTask = Host?.StopAsync();
 
-                if(stopTask != null)
+                if (stopTask != null)
                 {
                     await stopTask.ConfigureAwait(false); ;
                 }
             }
-            catch(OperationCanceledException e)
+            catch (OperationCanceledException e)
             {
                 //SignalR有连接的时候停止网站会报这个错，不知道为什么，不管。。。
             }
@@ -137,18 +126,19 @@ namespace IdentityServerGui
             MyData.HostState = "正在启动网站";
             txtConsoleOut.Clear();
 
-            await Task.Run(async () => {
+            await Task.Run(async () =>
+            {
                 IHost host = null;
 
                 try
                 {
-                    host = (Application.Current as App).ServiceProvider.GetRequiredService<IHost>();
+                    host = (Application.Current as App).ScopedService.GetRequiredService<IHost>();
                     await Program.EnsureSeedDataAsync(host).ConfigureAwait(false); //初始化数据库
                     await host.StartAsync().ConfigureAwait(false);
                     Host = host;
                     MyData.HostState = "网站运行中";
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     MyData.HostState = "正在停止网站";
                     host?.Dispose();

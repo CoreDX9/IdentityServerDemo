@@ -1,6 +1,7 @@
 ﻿{
   "AppSettings": {
-    "AppName": "IdentityServerGui"
+    "AppName": "IdentityServerGui",
+    "TriggerSessionEnding" : false
   },
   "MonitorNetworkName": "以太网"
 }

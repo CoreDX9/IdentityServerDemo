@@ -2,13 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 #if !DEBUG
@@ -22,7 +18,8 @@ namespace IdentityServerGui
     /// </summary>
     public partial class App : Application
     {
-        public IServiceProvider ServiceProvider { get; private set; }
+        public IServiceProvider ApplicationService { get; private set; }
+        public IServiceProvider ScopedService { get; private set; }
         public IConfiguration Configuration { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -43,11 +40,37 @@ namespace IdentityServerGui
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            ApplicationService = serviceCollection.BuildServiceProvider();
+            ScopedService = ApplicationService.CreateScope().ServiceProvider;
 
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            var mainWindow = ScopedService.GetRequiredService<MainWindow>();
             this.MainWindow = mainWindow;
             mainWindow.Show();
+        }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show("捕获到未处理异常：" + e.Exception.Message);
+            e.Handled = true;
+            Shutdown(-1);
+        }
+
+        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            if (!ScopedService.GetRequiredService<IOptions<AppSettings>>().Value.TriggerSessionEnding) return;
+            if (!(MainWindow as MainWindow).IsHostRunning) return;
+
+            MessageBoxResult result = MessageBox.Show($"{e.ReasonSessionEnding}. Host is Running. End session?", "Session Ending", MessageBoxButton.YesNo);
+
+            // End session, if specified
+            if (result == MessageBoxResult.Yes)
+            {
+                (MainWindow as MainWindow).StopHostAndClose();
+            }
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
         }
 
         private void ConfigureServices(IServiceCollection services)
@@ -65,32 +88,6 @@ namespace IdentityServerGui
                 .Build();
                 return host;
             });
-        }
-
-        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            MessageBox.Show("捕获到未处理异常：" + e.Exception.Message);
-            e.Handled = true;
-            Shutdown(-1);
-        }
-
-        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
-        {
-            var m = (this.MainWindow as MainWindow);
-            if (!m.IsHostRunning) return;
-
-            string msg = string.Format("{0}. Host is Running. End session?", e.ReasonSessionEnding);
-            MessageBoxResult result = MessageBox.Show(msg, "Session Ending", MessageBoxButton.YesNo);
-
-            // End session, if specified
-            if (result == MessageBoxResult.Yes)
-            {
-                m.StopHostAndClose();
-            }
-            if (result == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-            }
         }
     }
 }
