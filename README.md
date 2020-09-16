@@ -9,6 +9,10 @@
 ## 解决 Github 克隆速度慢的方法
 将 ```www.github.com/仓库地址``` 改为 ```www.github.com.cnpmjs.org/仓库地址```
 
+## 码云镜像（不定期同步）
+[IdentityServerDemo](https://gitee.com/coredx9/IdentityServerDemo)
+[Harmonic](https://gitee.com/coredx9/Harmonic)
+
 ## 可运行的示例程序
 1. DemoApp
    1.  Client： C# oidc 客户端示例。
