@@ -130,7 +130,7 @@ namespace IdentityServer
             //迁移程序集名
             var migrationsAssemblyName = useInMemoryDatabase
                 ? string.Empty
-                : typeof(CoreDX.Application.DbMigration.Application.InitialApplicationDbMigration).Assembly.GetName().Name;
+                : "CoreDX.Application.DbMigration";
 
             #endregion
 
