@@ -838,7 +838,7 @@ namespace IdentityServer
             services.AddGraphQL((options, provider) =>
             {
                 options.EnableMetrics = true;
-                options.ExposeExceptions = true;
+                options.UnhandledExceptionDelegate = ex => { throw ex.Exception; };
                 var logger = provider.GetRequiredService<ILogger<Startup>>();
                 options.UnhandledExceptionDelegate = context => logger.LogError(context.OriginalException, "{Error} occured", context.OriginalException.Message);
             })
