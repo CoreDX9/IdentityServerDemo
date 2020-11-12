@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup  Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="CoreDX.vJoy.Wrapper" Version="1.1.1" />
+    <PackageReference Include="CoreDX.vJoy.Wrapper" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup  Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\Common\CoreDX.vJoy.Wrapper\CoreDX.vJoy.Wrapper.csproj" />

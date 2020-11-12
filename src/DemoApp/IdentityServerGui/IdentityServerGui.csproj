@@ -1,15 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Icons\app.ico" />
-  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Icons\app.ico">
@@ -19,15 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.2.6">
+    <PackageReference Include="Fody" Version="6.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
   </ItemGroup>
 
   <ItemGroup>

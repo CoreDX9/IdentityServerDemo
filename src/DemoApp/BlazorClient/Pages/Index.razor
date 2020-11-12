@@ -28,10 +28,17 @@ Welcome to your new app.
                 : service.Lifetime == Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped
                     ? "table-warning"
                     : "table-danger";
+
+            var implementation = service.ImplementationType != null
+                ? $"Type: {service.ImplementationType}"
+                : service.ImplementationInstance != null
+                    ? $"Instance: {service.ImplementationInstance?.GetType()}"
+                    : $"Factory: {service.ImplementationFactory?.Method?.ReturnType}";
+
             <tr class="@rowClass">
                 <td>@service.Lifetime</td>
                 <td>@service.ServiceType</td>
-                <td>@service.ImplementationType</td>
+                <td>@implementation</td>
             </tr>
         }
     </tbody>

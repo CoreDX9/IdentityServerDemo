@@ -560,7 +560,7 @@ namespace IdentityServer
             {
                 var redisConfig = Configuration.GetSection("RedisForSignalR");
 
-                signalRServer.AddRedis(options =>
+                signalRServer.AddStackExchangeRedis(options =>
                 {
                     options.ConnectionFactory = async writer =>
                     {

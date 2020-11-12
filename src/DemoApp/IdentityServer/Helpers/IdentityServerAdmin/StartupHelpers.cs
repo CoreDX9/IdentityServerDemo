@@ -73,13 +73,13 @@ namespace IdentityServer.Helpers.IdentityServerAdmin
             var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
             using (var scope = scopeFactory.CreateScope())
             {
-                var configurationTableName = DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
-                var persistedGrantTableName = DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
-                var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
-                var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
-                var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
-                var LocalizationTableName = DbContextHelpers.GetEntityTable<LocalizationModelContext>(scope.ServiceProvider);
-                var ApplicationTableName = DbContextHelpers.GetEntityTable<ApplicationDbContext>(scope.ServiceProvider);
+                var configurationTableName = "abc";// DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
+                var persistedGrantTableName = "abc";// DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
+                var identityTableName = "abc";// DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
+                var logTableName = "abc";// DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
+                var auditLogTableName = "abc";// DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
+                var LocalizationTableName = "abc";// DbContextHelpers.GetEntityTable<LocalizationModelContext>(scope.ServiceProvider);
+                var ApplicationTableName = "abc";// DbContextHelpers.GetEntityTable<ApplicationDbContext>(scope.ServiceProvider);
 
                 var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
                 switch (databaseProvider.ProviderType)
