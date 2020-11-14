@@ -1,8 +1,8 @@
 # English [中文](README.md "中文")
 # IdentityServerDemo
 This is a .net core comprehensive learning and sample collection project that contains basic usage and comprehensive application examples for various functions. The goal is to show as quickly and easily as possible the use and practical effects of various functions.
-<br> Current framework version: .Net Core 3.1
-<br> VS 2019 version: 16.6.0 +
+<br> Current framework version: .Net 5.0
+<br> VS 2019 version: 16.8.0 +
 <br> Initial account: `admin`、`coredx`、`alice`、`bob`
 <br> Initial password: `Pass123$`
 
