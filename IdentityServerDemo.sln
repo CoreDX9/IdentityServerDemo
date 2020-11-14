@@ -118,8 +118,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.vJoy.Wrapper", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDX.DependencyInjection.DynamicProxyExtensions", "src\Common\CoreDX.DependencyInjection.DynamicProxyExtensions\CoreDX.DependencyInjection.DynamicProxyExtensions.csproj", "{46668E4F-065E-46F9-AE53-27EC1D118660}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localization.SqlLocalizer", "..\..\..\GitHub\forked\AspNetCoreLocalization\src\Localization.SqlLocalizer\Localization.SqlLocalizer.csproj", "{FD72E0D0-6C40-478F-B1B3-E0CA6803F3C2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -326,10 +324,6 @@ Global
 		{46668E4F-065E-46F9-AE53-27EC1D118660}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46668E4F-065E-46F9-AE53-27EC1D118660}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46668E4F-065E-46F9-AE53-27EC1D118660}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD72E0D0-6C40-478F-B1B3-E0CA6803F3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD72E0D0-6C40-478F-B1B3-E0CA6803F3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD72E0D0-6C40-478F-B1B3-E0CA6803F3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD72E0D0-6C40-478F-B1B3-E0CA6803F3C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
