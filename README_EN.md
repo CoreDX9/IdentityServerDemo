@@ -90,6 +90,8 @@ This is a .net core comprehensive learning and sample collection project that co
 34. Dynamic proxy extension based on built-in dependency injection framework.
 35. Example of using gRPC Web Client based on Blazor WebAssembly.
 36. Example of using GraphQL Server. Reference: [Query](src/DemoApp/IdentityServer/GraphQL/GraphQlQuerySample.md "Query").
+37. Example of using Quartz.NET and CrystalQuartz Panel.
+38. Example of using NetPacket.
 #### and more...
 
 ### IdentityServerGui
