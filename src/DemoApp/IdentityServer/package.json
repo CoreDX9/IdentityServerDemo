@@ -44,7 +44,7 @@
     "linq-js": "2.1.24",
     "vue": "2.6.11",
     "vue-template-compiler": "2.6.11",
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "qs": "6.9.4",
     "element-ui": "2.13.2",
     "@smallwei/avue": "2.6.0",
