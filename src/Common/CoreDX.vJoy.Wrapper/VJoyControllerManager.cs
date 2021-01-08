@@ -8,50 +8,12 @@ using System.Threading.Tasks;
 
 namespace CoreDX.vJoy.Wrapper
 {
-    public interface IVJoyController : IDisposable
-    {
-        uint Id { get; }
-        bool HasRelinquished { get; }
-        bool HasAxisX { get; }
-        bool HasAxisY { get; }
-        bool HasAxisZ { get; }
-        bool HasAxisRx { get; }
-        bool HasAxisRy { get; }
-        bool HasAxisRz { get; }
-        bool HasSlider0 { get; }
-        bool HasSlider1 { get; }
-        bool HasWheel { get; }
-        int ButtonCount { get; }
-        int ContPovCount { get; }
-        int DiscPovCount { get; }
-        long? AxisMaxValue { get; }
-
-        bool Reset();
-        bool ResetButtons();
-        bool ResetPovs();
-        void Relinquish();
-        bool SetAxisX(int value);
-        bool SetAxisY(int value);
-        bool SetAxisZ(int value);
-        bool SetAxisRx(int value);
-        bool SetAxisRy(int value);
-        bool SetAxisRz(int value);
-        bool SetSlider0(int value);
-        bool SetSlider1(int value);
-        bool SetWheel(int value);
-        bool PressButton(uint btnNo);
-        bool ReleaseButton(uint btnNo);
-        bool ClickButton(uint btnNo, int milliseconds);
-        Task<bool> ClickButtonAsync(uint btnNo, int milliseconds, CancellationToken token);
-        bool SetContPov(int value, uint povNo);
-        bool SetDiscPov(int value, uint povNo);
-    }
-
     public class VJoyControllerManager : IDisposable
     {
         private static readonly bool _is64BitRuntime = IntPtr.Size == 8;
         private static readonly object _locker = new object();
         private static VJoyControllerManager _manager = null;
+        private static WeakReference alcWeakRef;
 
         private VJoyAssemblyLoadContext _vJoyAssemblyLoadContext;
         private Assembly _vJoyInterfaceWrapAssembly;
@@ -68,6 +30,7 @@ namespace CoreDX.vJoy.Wrapper
         private Func<uint, int> _getVJDDiscPovNumber;
         private Func<bool> _resetAll;
 
+        public static bool IsDriverLoaded => alcWeakRef?.IsAlive == true;
         public bool IsVJoyEnabled { get; }
         public string VJoyManufacturerString { get; }
         public string VJoyProductString { get; }
@@ -132,6 +95,7 @@ namespace CoreDX.vJoy.Wrapper
                     if (_manager == null)
                         _manager = new VJoyControllerManager();
 
+            alcWeakRef = new WeakReference(_manager._vJoyAssemblyLoadContext, trackResurrection: true);
             return _manager;
         }
 
@@ -153,11 +117,27 @@ namespace CoreDX.vJoy.Wrapper
                         _manager._VjdStatEnumType = null;
                         _manager._vJoyInterfaceWrapAssembly = null;
                         _manager._vJoyType = null;
-                        
+
                         _manager.UnLoadContext();
                         _manager = null;
                     }
 
+        }
+
+        public static bool UnloadDriver(bool releaseManagerFirst = false, int retryCount = 3)
+        {
+            if (!IsDriverLoaded) return false;
+
+            if (releaseManagerFirst) ReleaseManager();
+
+            for (int i = 0; IsDriverLoaded && (i < retryCount); i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+
+            if (alcWeakRef is { IsAlive: false }) alcWeakRef = null;
+            return !IsDriverLoaded;
         }
 
         private void UnLoadContext()
@@ -220,7 +200,7 @@ namespace CoreDX.vJoy.Wrapper
 
                 // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
                 // TODO: 将大型字段设置为 null。
-                
+
                 disposedValue = true;
             }
         }
@@ -244,14 +224,9 @@ namespace CoreDX.vJoy.Wrapper
 
         private class VJoyAssemblyLoadContext : AssemblyLoadContext
         {
-            public VJoyAssemblyLoadContext() : base(isCollectible: true)
-            {
-            }
+            public VJoyAssemblyLoadContext() : base(isCollectible: true) { }
 
-            protected override Assembly Load(AssemblyName name)
-            {
-                return null;
-            }
+            protected override Assembly Load(AssemblyName name) => null;
         }
 
         private class VJoyController : IVJoyController

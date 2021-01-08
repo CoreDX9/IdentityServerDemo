@@ -2,15 +2,19 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Title>CoreDX.vJoy.Wrapper</Title>
     <Authors>CoreDX</Authors>
     <Description>vJoy .Net Core Wrapper. Support AnyCPU.</Description>
     <PackageReleaseNotes>
-      1.0.0 : Base features support
-      1.1.0 : IDisposeable support; Asynchronous call support
-      1.1.1 : .NET Core 3.1 support
-      1.2.0 : .NET 5.0 support; Remove .NET Core 3.0 support
+      1.0.0 : Base features support.
+      1.1.0 : IDisposeable support; Asynchronous call support.
+      1.1.1 : .NET Core 3.1 support.
+      1.2.0 : .NET 5.0 support; Remove .NET Core 3.0 support.
+      1.2.1 : Add API to unload driver and assembly for manager. Add SourceLink support.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/CoreDX9/IdentityServerDemo/tree/NetCore_3.0/src/Common/CoreDX.vJoy.Wrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/CoreDX9/IdentityServerDemo</PackageProjectUrl>
@@ -18,7 +22,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <Company />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +35,13 @@
     <Content Include="CoreDX.vJoy.Wrapper.targets" Pack="true" PackageCopyToOutput="true" PackagePath="build/">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

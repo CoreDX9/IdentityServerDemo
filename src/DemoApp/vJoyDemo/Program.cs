@@ -236,6 +236,16 @@ namespace vJoyDemo
             }
 
             Console.WriteLine("\nfeeding stoped");
+
+            if (VJoyControllerManager.IsDriverLoaded)
+            {
+                Console.WriteLine("\nunloading driver...");
+                VJoyControllerManager.UnloadDriver();
+
+                if (!VJoyControllerManager.IsDriverLoaded) Console.WriteLine("unload driver successed");
+                else Console.WriteLine("unload driver failed");
+            }
+
             Console.WriteLine("\npress enter to exit");
             Console.ReadKey(true);
 
