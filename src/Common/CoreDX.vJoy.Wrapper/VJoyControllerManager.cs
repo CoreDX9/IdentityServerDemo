@@ -22,6 +22,7 @@ namespace CoreDX.vJoy.Wrapper
         private Type _VjdStatEnumType;
         private Type _hidUsagesEnumType;
         private object[] _axisEnumValues;
+        private IVJoyController[] _controllers;
 
         private Delegate _getVJDStatusFunc;
         private Delegate _getVJDAxisExist;
@@ -29,6 +30,8 @@ namespace CoreDX.vJoy.Wrapper
         private Func<uint, int> _getVJDContPovNumber;
         private Func<uint, int> _getVJDDiscPovNumber;
         private Func<bool> _resetAll;
+        private Func<uint, bool> _acquireVJD;
+        private Action<uint> _relinquishVJD;
 
         public static bool IsDriverLoaded => alcWeakRef?.IsAlive == true;
         public bool IsVJoyEnabled { get; }
@@ -66,6 +69,7 @@ namespace CoreDX.vJoy.Wrapper
                     Enum.Parse(_hidUsagesEnumType, "HID_USAGE_SL1"),
                     Enum.Parse(_hidUsagesEnumType, "HID_USAGE_WHL")
                 };
+            _controllers = new IVJoyController[16];
 
             VJoyManufacturerString = (string)_vJoyType.GetMethod("GetvJoyManufacturerString").Invoke(_joystick, null);
             VJoyProductString = (string)_vJoyType.GetMethod("GetvJoyProductString").Invoke(_joystick, null);
@@ -75,6 +79,8 @@ namespace CoreDX.vJoy.Wrapper
             _getVJDContPovNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDContPovNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
             _getVJDDiscPovNumber = (Func<uint, int>)_vJoyType.GetMethod("GetVJDDiscPovNumber").CreateDelegate(typeof(Func<uint, int>), _joystick);
             _resetAll = (Func<bool>)_vJoyType.GetMethod("ResetAll").CreateDelegate(typeof(Func<bool>), _joystick);
+            _acquireVJD = (Func<uint, bool>)_vJoyType.GetMethod("AcquireVJD").CreateDelegate(typeof(Func<uint, bool>), _joystick);
+            _relinquishVJD = (Action<uint>)_vJoyType.GetMethod("RelinquishVJD").CreateDelegate(typeof(Action<uint>), _joystick);
 
             var funcType = typeof(Func<,>).MakeGenericType(new Type[] { typeof(uint), _VjdStatEnumType });
             _getVJDStatusFunc = _vJoyType.GetMethod("GetVJDStatus").CreateDelegate(funcType, _joystick);
@@ -107,6 +113,12 @@ namespace CoreDX.vJoy.Wrapper
                 lock (_locker)
                     if (_manager != null)
                     {
+                        var inUse = _manager._controllers.Where(c => c?.HasRelinquished == false);
+                        if (inUse.Any())
+                        {
+                            throw new InvalidOperationException($"Controllers with index ({string.Join(", ", inUse.Select(x => x.Id))}) are in use. Please relinquish first.");
+                        }
+
                         _manager._axisEnumValues = null;
                         _manager._getVJDAxisExist = null;
                         _manager._getVJDButtonNumber = null;
@@ -116,9 +128,12 @@ namespace CoreDX.vJoy.Wrapper
                         _manager._hidUsagesEnumType = null;
                         _manager._joystick = null;
                         _manager._resetAll = null;
+                        _manager._acquireVJD = null;
+                        _manager._relinquishVJD = null;
                         _manager._VjdStatEnumType = null;
                         _manager._vJoyInterfaceWrapAssembly = null;
                         _manager._vJoyType = null;
+                        _manager._controllers = null;
 
                         _manager.UnloadContext();
                         _manager = null;
@@ -126,12 +141,11 @@ namespace CoreDX.vJoy.Wrapper
 
         }
 
-        public static bool UnloadDriver(bool releaseManagerFirst = false, int retryCount = 3)
+        public static bool UnloadDriver(int retryCount = 3)
         {
             if (!IsDriverLoaded) return false;
 
-            if (releaseManagerFirst) ReleaseManager();
-
+            ReleaseManager();
             for (int i = 0; IsDriverLoaded && (i < retryCount); i++)
             {
                 GC.Collect();
@@ -172,7 +186,7 @@ namespace CoreDX.vJoy.Wrapper
                 case "VJD_STAT_OWN":
                     goto case "VJD_STAT_FREE";
                 case "VJD_STAT_FREE":
-                    acquireSuccessed = (bool)_vJoyType.GetMethod("AcquireVJD").Invoke(_joystick, new object[] { id });
+                    acquireSuccessed = _acquireVJD(id);
                     break;
                 case "VJD_STAT_BUSY":
                     goto default;
@@ -184,7 +198,20 @@ namespace CoreDX.vJoy.Wrapper
 
             if (!acquireSuccessed) return null;
 
-            return new VJoyController(id, _manager);
+            var controller = new VJoyController(id, _manager);
+            _manager._controllers[id - 1] = controller;
+            return controller;
+        }
+
+        public void RelinquishController(IVJoyController controller)
+        {
+            if (!controller.HasRelinquished)
+                lock (controller)
+                    if (!controller.HasRelinquished)
+                    {
+                        _relinquishVJD(controller.Id);
+                        (controller as VJoyController).SetHasRelinquished();
+                    }
         }
 
         #region IDisposable Support
@@ -233,42 +260,44 @@ namespace CoreDX.vJoy.Wrapper
 
         private class VJoyController : IVJoyController
         {
-            private readonly Type _vJoyType;
-            private readonly Type _hidUsagesEnumType;
-            private readonly object _joystick;
-            private readonly object[] _axisEnumValues;
-            private readonly Delegate _setAxisFunc;
-            private readonly Func<bool, uint, uint, bool> _setBtn;
-            private readonly Func<int, uint, uint, bool> _setContPov;
-            private readonly Func<int, uint, uint, bool> _setDiscPov;
-            private readonly Func<uint, bool> _reset;
-            private readonly Func<uint, bool> _resetButtons;
-            private readonly Func<uint, bool> _resetPovs;
-            private readonly Action<uint> _relinquish;
+            private VJoyControllerManager _manager;
+            private bool _hasRelinquished = false;
+            private Type _vJoyType;
+            private Type _hidUsagesEnumType;
+            private object _joystick;
+            private object[] _axisEnumValues;
+            private Delegate _setAxisFunc;
+            private Func<bool, uint, uint, bool> _setBtn;
+            private Func<int, uint, uint, bool> _setContPov;
+            private Func<int, uint, uint, bool> _setDiscPov;
+            private Func<uint, bool> _reset;
+            private Func<uint, bool> _resetButtons;
+            private Func<uint, bool> _resetPovs;
 
             public VJoyController(uint id, VJoyControllerManager manager)
             {
                 Id = id;
-                _vJoyType = manager._vJoyType;
-                _joystick = manager._joystick;
-                _hidUsagesEnumType = manager._hidUsagesEnumType;
-                _axisEnumValues = manager._axisEnumValues;
+                _manager = manager;
+                _vJoyType = _manager._vJoyType;
+                _joystick = _manager._joystick;
+                _hidUsagesEnumType = _manager._hidUsagesEnumType;
+                _axisEnumValues = _manager._axisEnumValues;
 
                 // Check which axes are supported
 
-                HasAxisX = manager.GetVJDAxisExist(id, USAGES.X);
-                HasAxisY = manager.GetVJDAxisExist(id, USAGES.Y);
-                HasAxisZ = manager.GetVJDAxisExist(id, USAGES.Z);
-                HasAxisRx = manager.GetVJDAxisExist(id, USAGES.Rx);
-                HasAxisRy = manager.GetVJDAxisExist(id, USAGES.Ry);
-                HasAxisRz = manager.GetVJDAxisExist(id, USAGES.Rz);
-                HasSlider0 = manager.GetVJDAxisExist(id, USAGES.Slider0);
-                HasSlider1 = manager.GetVJDAxisExist(id, USAGES.Slider1);
-                HasWheel = manager.GetVJDAxisExist(id, USAGES.Wheel);
+                HasAxisX = _manager.GetVJDAxisExist(id, USAGES.X);
+                HasAxisY = _manager.GetVJDAxisExist(id, USAGES.Y);
+                HasAxisZ = _manager.GetVJDAxisExist(id, USAGES.Z);
+                HasAxisRx = _manager.GetVJDAxisExist(id, USAGES.Rx);
+                HasAxisRy = _manager.GetVJDAxisExist(id, USAGES.Ry);
+                HasAxisRz = _manager.GetVJDAxisExist(id, USAGES.Rz);
+                HasSlider0 = _manager.GetVJDAxisExist(id, USAGES.Slider0);
+                HasSlider1 = _manager.GetVJDAxisExist(id, USAGES.Slider1);
+                HasWheel = _manager.GetVJDAxisExist(id, USAGES.Wheel);
                 // Get the number of buttons and POV Hat switchessupported by this vJoy device
-                ButtonCount = manager.GetVJDButtonNumber(id);
-                ContPovCount = manager.GetVJDContPovNumber(id);
-                DiscPovCount = manager.GetVJDDiscPovNumber(id);
+                ButtonCount = _manager.GetVJDButtonNumber(id);
+                ContPovCount = _manager.GetVJDContPovNumber(id);
+                DiscPovCount = _manager.GetVJDDiscPovNumber(id);
 
                 var args = new object[] { Id, _axisEnumValues[0], 0L };
                 var hasAxis = (bool)_vJoyType.GetMethod("GetVJDAxisMax").Invoke(_joystick, args);
@@ -280,7 +309,6 @@ namespace CoreDX.vJoy.Wrapper
                 _setBtn = (Func<bool, uint, uint, bool>)_vJoyType.GetMethod("SetBtn").CreateDelegate(typeof(Func<bool, uint, uint, bool>), _joystick);
                 _setContPov = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetContPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
                 _setDiscPov = (Func<int, uint, uint, bool>)_vJoyType.GetMethod("SetDiscPov").CreateDelegate(typeof(Func<int, uint, uint, bool>), _joystick);
-                _relinquish = (Action<uint>)_vJoyType.GetMethod("RelinquishVJD").CreateDelegate(typeof(Action<uint>), _joystick);
                 _resetButtons = (Func<uint, bool>)_vJoyType.GetMethod("ResetButtons").CreateDelegate(typeof(Func<uint, bool>), _joystick);
                 _resetPovs = (Func<uint, bool>)_vJoyType.GetMethod("ResetPovs").CreateDelegate(typeof(Func<uint, bool>), _joystick);
 
@@ -289,7 +317,7 @@ namespace CoreDX.vJoy.Wrapper
             }
 
             public uint Id { get; }
-            public bool HasRelinquished { get; private set; } = false;
+            public bool HasRelinquished => _hasRelinquished;
             public bool HasAxisX { get; }
             public bool HasAxisY { get; }
             public bool HasAxisZ { get; }
@@ -309,12 +337,6 @@ namespace CoreDX.vJoy.Wrapper
             public bool ResetButtons() => _resetButtons(Id);
 
             public bool ResetPovs() => _resetPovs(Id);
-
-            public void Relinquish()
-            {
-                HasRelinquished = true;
-                _relinquish(Id);
-            }
 
             public bool SetAxisX(int value)
             {
@@ -412,6 +434,13 @@ namespace CoreDX.vJoy.Wrapper
                 return _setDiscPov(value, Id, povNo);
             }
 
+            internal void SetHasRelinquished() => _hasRelinquished = true;
+
+            private void Relinquish()
+            {
+                _manager.RelinquishController(this);
+            }
+
             #region IDisposable Support
             private bool disposedValue = false; // 要检测冗余调用
 
@@ -426,6 +455,19 @@ namespace CoreDX.vJoy.Wrapper
                         ResetButtons();
                         Reset();
                         Relinquish();
+
+                        _manager = null;
+                        _vJoyType = null;
+                        _hidUsagesEnumType = null;
+                        _joystick = null;
+                        _axisEnumValues = null;
+                        _setAxisFunc = null;
+                        _setBtn = null;
+                        _setContPov = null;
+                        _setDiscPov = null;
+                        _reset = null;
+                        _resetButtons = null;
+                        _resetPovs = null;
                     }
 
                     // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。

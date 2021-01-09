@@ -25,7 +25,6 @@ namespace CoreDX.vJoy.Wrapper
         bool Reset();
         bool ResetButtons();
         bool ResetPovs();
-        void Relinquish();
         bool SetAxisX(int value);
         bool SetAxisY(int value);
         bool SetAxisZ(int value);

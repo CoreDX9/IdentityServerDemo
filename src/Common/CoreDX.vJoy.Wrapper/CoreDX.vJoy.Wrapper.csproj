@@ -12,6 +12,7 @@
     <Authors>CoreDX</Authors>
     <Description>vJoy .Net Core Wrapper. Support AnyCPU.</Description>
     <PackageReleaseNotes>
+      1.2.3 : Move relinquish from controller to manager.
       1.2.2 : bug fix
       1.2.1 : Add API to unload driver and assembly for manager. Add SourceLink support.
       1.2.0 : .NET 5.0 support; Remove .NET Core 3.0 support.
@@ -25,7 +26,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <Company />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
