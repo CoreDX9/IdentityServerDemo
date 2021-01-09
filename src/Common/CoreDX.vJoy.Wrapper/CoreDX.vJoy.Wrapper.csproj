@@ -12,11 +12,12 @@
     <Authors>CoreDX</Authors>
     <Description>vJoy .Net Core Wrapper. Support AnyCPU.</Description>
     <PackageReleaseNotes>
-      1.0.0 : Base features support.
-      1.1.0 : IDisposeable support; Asynchronous call support.
-      1.1.1 : .NET Core 3.1 support.
-      1.2.0 : .NET 5.0 support; Remove .NET Core 3.0 support.
+      1.2.2 : bug fix
       1.2.1 : Add API to unload driver and assembly for manager. Add SourceLink support.
+      1.2.0 : .NET 5.0 support; Remove .NET Core 3.0 support.
+      1.1.1 : .NET Core 3.1 support.
+      1.1.0 : IDisposeable support; Asynchronous call support.
+      1.0.0 : Base features support.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/CoreDX9/IdentityServerDemo/tree/NetCore_3.0/src/Common/CoreDX.vJoy.Wrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/CoreDX9/IdentityServerDemo</PackageProjectUrl>
@@ -24,7 +25,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <Company />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

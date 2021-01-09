@@ -93,9 +93,11 @@ namespace CoreDX.vJoy.Wrapper
             if (_manager == null)
                 lock (_locker)
                     if (_manager == null)
+                    {
                         _manager = new VJoyControllerManager();
+                        alcWeakRef = new WeakReference(_manager._vJoyAssemblyLoadContext, trackResurrection: true);
+                    }
 
-            alcWeakRef = new WeakReference(_manager._vJoyAssemblyLoadContext, trackResurrection: true);
             return _manager;
         }
 
@@ -118,7 +120,7 @@ namespace CoreDX.vJoy.Wrapper
                         _manager._vJoyInterfaceWrapAssembly = null;
                         _manager._vJoyType = null;
 
-                        _manager.UnLoadContext();
+                        _manager.UnloadContext();
                         _manager = null;
                     }
 
@@ -140,7 +142,7 @@ namespace CoreDX.vJoy.Wrapper
             return !IsDriverLoaded;
         }
 
-        private void UnLoadContext()
+        private void UnloadContext()
         {
             _vJoyAssemblyLoadContext.Unload();
             _vJoyAssemblyLoadContext = null;
