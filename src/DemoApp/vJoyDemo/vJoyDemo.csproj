@@ -5,10 +5,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup  Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="CoreDX.vJoy.Wrapper" Version="1.2.3" />
   </ItemGroup>
-  <ItemGroup  Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\Common\CoreDX.vJoy.Wrapper\CoreDX.vJoy.Wrapper.csproj" />
   </ItemGroup>
 

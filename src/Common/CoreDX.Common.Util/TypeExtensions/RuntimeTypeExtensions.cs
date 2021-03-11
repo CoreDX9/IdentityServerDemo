@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CoreDX.Common.Util.TypeExtensions
 {
-    public static class TypeExtensions
+    public static class RuntimeTypeExtensions
     {
         /// <summary>
         /// 判断 <paramref name="type"/> 指定的类型是否继承自 <paramref name="pattern"/> 指定的类型，或实现了 <paramref name="pattern"/> 指定的接口

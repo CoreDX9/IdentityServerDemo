@@ -1,4 +1,5 @@
 ﻿@page
+@using CoreDX.Common.Util.TypeExtensions
 @using PuppeteerSharp
 @using IdentityServer.CustomServices
 @inject HeadlessChromeManager browserManager
@@ -11,7 +12,7 @@
 
     public void OnGet()
     {
-        var type = typeof(CoreDX.Common.Util.TypeExtensions.TypeExtensions);
+        var type = typeof(RuntimeTypeExtensions);
         var types = type.Assembly.GetTypes().Select(x => x.FullName);
 
         ViewBag.Types = types;

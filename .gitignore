@@ -270,3 +270,4 @@ src/DemoApp/IdentityServer/wwwroot/lib
 /src/DemoApp/IdentityServer/wwwroot/videos/1htt.flv
 /src/DemoApp/IdentityServer/Plugins
 /src/DemoApp/IdentityServer/App_Data/AesDataProtectionKey
+/src/DemoApp/IdentityServer/App_Data/DataProtectionKey

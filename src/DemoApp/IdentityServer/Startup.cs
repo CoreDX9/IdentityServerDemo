@@ -1129,29 +1129,6 @@ namespace IdentityServer
 
             #endregion
 
-            //注册任务调度管理面板
-            app.UseCrystalQuartz(() => quartz._scheduler);
-
-            #region 注册 Swagger
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(options =>
-            {
-                foreach (var description in apiVersionDescription.ApiVersionDescriptions)
-                {
-                    options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-                }
-
-                options.OAuthClientId(adminApiConfiguration.OidcSwaggerUIClientId);
-                options.OAuthAppName(adminApiConfiguration.ApiName);
-            });
-
-            #endregion
-
             //注册 Blazor 客户端文件
             app.UseBlazorFrameworkFiles();
 
@@ -1188,62 +1165,14 @@ namespace IdentityServer
             //注册跨域策略到管道
             app.UseCors("CorsPolicy");
 
-            app.Use(async (context, next) =>
-            {
-                var logger = context.RequestServices.GetService<ILogger<Startup>>();
-                if (context.Request.Query.TryGetValue("negotiateVersion", out var version))
-                {
-                    logger.LogWarning($"发现安卓连接 SignalR。negotiateVersion = {version.FirstOrDefault()}");
-                    logger.LogWarning($"发现安卓连接 SignalR。查询字符串详细");
-                    foreach (var query in context.Request.Query)
-                    {
-                        logger.LogWarning($"Key = {query.Key} | Value = {query.Value}");
-                    }
-                    logger.LogWarning($"发现安卓连接 SignalR。请求头详细");
-                    foreach (var query in context.Request.Headers)
-                    {
-                        logger.LogWarning($"Key = {query.Key} | Value = {query.Value}");
-                    }
-                }
-                if (context.Request.Query.TryGetValue("Bearer", out var token))
-                {
-                    context.Request.Headers.Add("Authorization", $"Bearer {token}");
-                }
-
-                await next.Invoke();
-            });
-
             //注册IdentityServer4到管道
             app.UseIdentityServer();
-
-            app.Use(async (context, next) =>
-            {
-                var logger = context.RequestServices.GetService<ILogger<Startup>>();
-                if (context.Request.Query.TryGetValue("negotiateVersion", out var version))
-                {
-                    logger.LogWarning($"发现安卓连接 SignalR。User = {context?.User?.Identity?.Name}");
-                }
-
-                await next.Invoke();
-            });
 
             //新版IdentityServer4要自己调用；
             app.UseAuthorization();
 
-            #region GraphQL 相关中间件
-
             //给 GraphQL 准备的
             app.UseWebSockets();
-
-            app.UseGraphQLWebSockets<IdentityServer.GraphQL.Schema.MoviesSchema>();
-
-            app.UseGraphQL<IdentityServer.GraphQL.Schema.MoviesSchema>();
-
-            app.UseGraphQLPlayground(new global::GraphQL.Server.Ui.Playground.GraphQLPlaygroundOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/playground" });
-
-            app.UseGraphQLVoyager(new global::GraphQL.Server.Ui.Voyager.GraphQLVoyagerOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/voyager" });
-
-            #endregion
 
             //注册自定义中间件到管道
             app.UseAntiforgeryTokenGenerateMiddleware();
@@ -1290,8 +1219,59 @@ namespace IdentityServer
                 .RequireCors("CorsPolicy");
 
                 //映射 Blazor 客户端终结点
-                //endpoints.MapFallbackToClientSideBlazor<BlazorApp.Client.Program>("/blazor/{**subPath}", "index.html");
                 endpoints.MapFallbackToFile("/blazor/{**subPath}", "blazor/index.html");
+
+                #region 通过端点路由集成 GraphQL 相关中间件
+
+                var graphQlPipeline = endpoints.CreateApplicationBuilder()
+                    .UseGraphQLWebSockets<IdentityServer.GraphQL.Schema.MoviesSchema>()
+                    .UseGraphQL<IdentityServer.GraphQL.Schema.MoviesSchema>();
+                var graphQLPlaygroundPipeline = endpoints.CreateApplicationBuilder()
+                    .UseGraphQLPlayground(new global::GraphQL.Server.Ui.Playground.GraphQLPlaygroundOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/playground" });
+                var graphQLVoyagerPipeline = endpoints.CreateApplicationBuilder()
+                    .UseGraphQLVoyager(new global::GraphQL.Server.Ui.Voyager.GraphQLVoyagerOptions { GraphQLEndPoint = "/graphql", Path = "/graphqlui/voyager" });
+
+                endpoints.Map("/graphql", graphQlPipeline.Build());
+                endpoints.Map("/graphqlui/playground", graphQLPlaygroundPipeline.Build());
+                endpoints.Map("/graphqlui/voyager", graphQLVoyagerPipeline.Build());
+
+                #endregion
+
+                #region 映射 Swagger
+
+                endpoints.MapSwagger();
+
+                var swaggerUiPipeline = endpoints.CreateApplicationBuilder()
+                    .Use(async (context, next) =>
+                    {
+                        var originalEndpoint = context.GetEndpoint();
+                        context.SetEndpoint(null);
+                        await next();
+                        context.SetEndpoint(originalEndpoint);
+                    })
+                    .UseSwaggerUI(options =>
+                    {
+                        foreach (var description in apiVersionDescription.ApiVersionDescriptions)
+                        {
+                            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                        }
+
+                        options.OAuthClientId(adminApiConfiguration.OidcSwaggerUIClientId);
+                        options.OAuthAppName(adminApiConfiguration.ApiName);
+                    });
+
+                    endpoints.Map("swagger/{*wildcard}", swaggerUiPipeline.Build());
+
+                #endregion
+
+                #region 映射任务调度管理面板
+
+                var quartzUiPipeline = endpoints.CreateApplicationBuilder();
+                quartzUiPipeline.UseCrystalQuartz(() => quartz._scheduler);
+
+                endpoints.Map("/quartz", quartzUiPipeline.Build());
+
+                #endregion
             });
         }
     }
