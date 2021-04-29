@@ -1244,10 +1244,9 @@ namespace IdentityServer
                 var swaggerUiPipeline = endpoints.CreateApplicationBuilder()
                     .Use(async (context, next) =>
                     {
-                        var originalEndpoint = context.GetEndpoint();
+                        context.Items.Add("OriginalEndpoint", context.GetEndpoint());
                         context.SetEndpoint(null);
                         await next();
-                        context.SetEndpoint(originalEndpoint);
                     })
                     .UseSwaggerUI(options =>
                     {
