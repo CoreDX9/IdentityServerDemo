@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="3.0.13" />
   </ItemGroup>
